@@ -1,0 +1,262 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package si.jrc.msh.interceptor;
+
+import java.io.File;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Properties;
+import java.util.UUID;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.namespace.QName;
+import javax.xml.soap.AttachmentPart;
+import javax.xml.soap.MimeHeader;
+import javax.xml.soap.SOAPException;
+import javax.xml.soap.SOAPHeader;
+import javax.xml.soap.SOAPMessage;
+import org.apache.cxf.attachment.AttachmentImpl;
+import org.apache.cxf.binding.soap.SoapFault;
+import org.apache.cxf.binding.soap.SoapMessage;
+import org.apache.cxf.binding.soap.SoapVersion;
+import org.apache.cxf.binding.soap.interceptor.AbstractSoapInterceptor;
+import org.apache.cxf.binding.soap.saaj.SAAJOutInterceptor;
+import org.apache.cxf.helpers.CastUtils;
+import org.apache.cxf.interceptor.Fault;
+import org.apache.cxf.message.MessageUtils;
+import org.apache.cxf.phase.Phase;
+import org.apache.cxf.ws.security.wss4j.WSS4JOutInterceptor;
+import org.apache.wss4j.dom.handler.WSHandlerConstants;
+import org.msh.ebms.outbox.mail.MSHOutMail;
+import org.msh.svev.pmode.Certificate;
+import org.msh.svev.pmode.PMode;
+import org.msh.svev.pmode.References;
+import org.msh.svev.pmode.Security;
+import org.msh.svev.pmode.X509;
+
+import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.Messaging;
+import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.SignalMessage;
+import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.UserMessage;
+import si.sed.commons.utils.SEDLogger;
+import si.jrc.msh.utils.EBMSUtils;
+import si.jrc.msh.utils.EbMSConstants;
+import si.jrc.msh.client.sec.KeyPasswordCallback;
+import si.jrc.msh.client.sec.SecurityProperties;
+import si.jrc.msh.exception.ExceptionUtils;
+import si.jrc.msh.exception.SOAPExceptionCode;
+import si.sed.commons.utils.Utils;
+
+/**
+ *
+ * @author sluzba
+ */
+public class EBMSOutInterceptor extends AbstractSoapInterceptor {
+
+    protected final SEDLogger mlog = new SEDLogger(EBMSOutInterceptor.class);
+
+    EBMSUtils mEBMSUtil = new EBMSUtils();
+
+    public EBMSOutInterceptor() {
+        super(Phase.PRE_PROTOCOL);
+        addAfter(SAAJOutInterceptor.class.getName());
+
+    }
+
+    @Override
+    public void handleMessage(SoapMessage msg) {
+        long l = mlog.logStart(msg);
+        SoapVersion version = msg.getVersion();
+        boolean isRequest =  MessageUtils.isRequestor(msg);       
+        QName sv =  (isRequest?SoapFault.FAULT_CODE_CLIENT:SoapFault.FAULT_CODE_SERVER);
+        
+        if (version.getVersion() != 1.2) {
+            String errmsg = "ebMS AS4 supports only soap 1.2 protocol!";
+            mlog.logError(l, errmsg, null);
+            throw ExceptionUtils.createSoapFault(SOAPExceptionCode.SoapVersionMismatch, sv, errmsg);
+        }
+
+        if (msg.getContent(SOAPMessage.class) == null) {
+            String errmsg = "Internal error missing SOAPMessage!";
+            mlog.logError(l, errmsg, null);
+            throw ExceptionUtils.createSoapFault(SOAPExceptionCode.InternalFailure,sv, errmsg);
+        }
+
+        PMode pmd = msg.getExchange().get(PMode.class);
+        if (pmd == null) {
+            String errmsg = "Missing PMode configuration";
+            mlog.logError(l, errmsg, null);
+            throw ExceptionUtils.createSoapFault(SOAPExceptionCode.ConfigurationFailure,sv, errmsg);
+        }
+        // set attachment fpr wss signature!
+        setAttachments(msg);
+        
+        MSHOutMail outMail = msg.getExchange().get(MSHOutMail.class);
+        SignalMessage signal = msg.getExchange().get(SignalMessage.class);
+        
+        
+        // MshIncomingMail inMail = msg.getExchange().get(MshIncomingMail.class);
+        //EBMSError err = msg.getExchange().get(EBMSError.class);
+        //Messaging mgsInboundMessage = msg.getExchange().get(Messaging.class);
+        //SVEVEncryptionKey msgSvevKey = msg.getExchange().get(SVEVEncryptionKey.class);
+        //File fInMessageRequest = (File) msg.getExchange().get(EbMSConstants.ContextProperty_In_SOAP_Message_File);
+        //boolean isRequestor = isRequestor(msg);
+
+        // if sending usermessage, svevkey or as4 receipt -> pmode is mandatory
+        
+        // create  MESSAGING
+        Messaging msgHeader = mEBMSUtil.createMessaging(version);
+        // add user message
+        if (outMail != null) {
+            UserMessage um = mEBMSUtil.createUserMessage(pmd, outMail, Utils.getDomainFromAddress(outMail.getSenderEBox()));
+            msgHeader.getUserMessages().add(um);
+        } 
+        if (signal!= null) {        
+            msgHeader.getSignalMessages().add(signal);
+        }
+        
+  //      }
+/*
+        // add error
+        if (err != null) {
+            SignalMessage sm = mEBMSUtil.generateErrorSignal(err, mSettings.getDomain());
+            msgHeader.getSignalMessages().add(sm);
+        }*/
+        // add svev signal
+        // add error
+        /*  if (msgSvevKey != null) {
+         SignalMessage sm = mEBMSUtil.generateSVEVKeySignal(msgSvevKey, mSettings.getDomain());
+         sm.getMessageInfo().setRefToMessageId(mgsInboundMessage.getUserMessages().get(0).getMessageInfo().getMessageId());
+         msgHeader.getSignalMessages().add(sm);
+         }*/
+
+        try {
+            SOAPMessage request = msg.getContent(SOAPMessage.class);
+            SOAPHeader sh = request.getSOAPHeader();
+            Marshaller marshaller = JAXBContext.newInstance(Messaging.class).createMarshaller();
+            marshaller.marshal(msgHeader, sh);
+            request.saveChanges();
+        } catch (JAXBException | SOAPException ex) {
+            mlog.logError(l,"Error adding ebms header to soap", ex);
+        }
+
+        // if out mail add security / f
+        if (pmd.getLegs().get(0).getSecurity() != null) {
+            Security scPolicy = pmd.getLegs().get(0).getSecurity();
+            WSS4JOutInterceptor sc = configureSecurityInterceptors(scPolicy);
+            sc.handleMessage(msg);
+        } else {
+            mlog.log("No Security policy for message: '" + outMail.getId().toString() + "' pmode: " + pmd.getId() + "!");
+        }
+        mlog.logEnd(l);
+    }
+
+    public WSS4JOutInterceptor configureSecurityInterceptors(Security sc) {
+        long l = mlog.logStart();
+        WSS4JOutInterceptor sec = null;
+        Map<String, Object> outProps = new HashMap<>();
+
+
+        if (sc.getX509() != null && sc.getX509().getSignature() != null
+                && sc.getX509().getSignature().getSign() != null) {
+            X509.Signature sig = sc.getX509().getSignature();
+            String alias = sig.getSign().getSignCertAlias();
+            References sign = sig.getSign();
+            Certificate c = sig.getCertificate();
+            StringWriter elmWr = new StringWriter();
+            if (sign.getSignElements()
+                    && sign.getElements() != null
+                    && sign.getElements().getXPaths().size() > 0) {
+                for (References.Elements.XPath el : sign.getElements().getXPaths()) {
+                    String[] lst = el.getXpath().split("/");
+                    if (lst.length > 0) {
+                        String[] nslst = lst[lst.length - 1].split(":");
+                        if (nslst.length == 1) {
+                            elmWr.write(";");
+                            elmWr.write("{Element}");
+                            elmWr.write(nslst[0]);
+                            elmWr.write(";");
+                        }
+                        if (nslst.length == 2) {
+                            elmWr.write("{Element}");
+                            elmWr.write("{");
+
+                            for (References.Elements.XPath.Namespace n : el.getNamespaces()) {
+                                if (n.getPrefix().equals(nslst[0])) {
+                                    elmWr.write(n.getNamespace());
+                                    elmWr.write("}");
+                                }
+                            }
+                            elmWr.write(nslst[1]);
+                            elmWr.write(";");
+                        } else {
+                            mlog.logError(l, "bad xpath definition!", null);
+                        }
+                    }
+                }
+            }
+            if (sig.getSign().getSignAttachments()) {
+                elmWr.write("{}cid:Attachments;");
+            }
+
+            // create signature priperties
+            String cpropname = "CP." + UUID.randomUUID().toString();
+            System.out.println("SET alias****************: " + alias);
+            Properties cp = SecurityProperties.getInstance().getSignProperties(alias) ;            
+            outProps.put(cpropname, cp); 
+            // set wss properties
+            outProps.put(WSHandlerConstants.ACTION, WSHandlerConstants.SIGNATURE);
+            outProps.put(WSHandlerConstants.SIGNATURE_PARTS, elmWr.toString());
+            outProps.put(WSHandlerConstants.SIGNATURE_USER, alias);
+            outProps.put(WSHandlerConstants.USER, alias);
+            outProps.put(WSHandlerConstants.PW_CALLBACK_CLASS, KeyPasswordCallback.class.getName());    
+            outProps.put(WSHandlerConstants.SIG_PROP_REF_ID,cpropname);
+
+            if (sig.getAlgorithm() != null || !sig.getAlgorithm().isEmpty()) {
+                outProps.put(WSHandlerConstants.SIG_ALGO, sig.getAlgorithm());
+            }
+            if (sig.getHashFunction() != null || !sig.getHashFunction().isEmpty()) {
+               outProps.put(WSHandlerConstants.SIG_DIGEST_ALGO, sig.getHashFunction());
+            }
+            sec = new WSS4JOutInterceptor(outProps);
+        }
+        mlog.logEnd(l);
+        return sec;
+    }
+    
+    private void setAttachments(SoapMessage msg){
+        
+        SOAPMessage soapMessage = msg.getContent(SOAPMessage.class);
+
+        if (soapMessage.countAttachments() > 0) {
+            if (msg.getAttachments() == null) {
+                msg.setAttachments(new ArrayList<>(soapMessage
+                        .countAttachments()));
+            }
+            Iterator<AttachmentPart> it = CastUtils.cast(soapMessage.getAttachments());
+            while (it.hasNext()) {
+                AttachmentPart part = it.next();
+                AttachmentImpl att = new AttachmentImpl(part.getContentId());
+                try {
+                    att.setDataHandler(part.getDataHandler());
+                } catch (SOAPException e) {
+                    throw new Fault(e);
+                }
+                Iterator<MimeHeader> it2 = CastUtils.cast(part.getAllMimeHeaders());
+                while (it2.hasNext()) {
+                    MimeHeader header = it2.next();
+                    att.setHeader(header.getName(), header.getValue());
+                }
+                msg.getAttachments().add(att);
+            }
+            soapMessage.removeAllAttachments();
+        }    
+    }
+
+}

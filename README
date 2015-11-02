@@ -1,0 +1,46 @@
+Aplikacija ebms-sed je "out-of-the box" aplikacija za varno elektronsko vročanje po specifikacijah SVEV 2.0
+
+Uporabljene tehnologije
+- aplikacija uporablja maven 3.0.2 in jdk 1.8.
+- za aplikacijski strežnik je uporabljen Jetty,
+- za vizalizacijo apacheFOP,
+- apache-cxf za ws-security (in WS-ReliableMessaging)
+
+
+Sestava embs-sed projekta:
+- ebms-sed: osnovni projekt določa vse plugin-e in verzije odvisnih knjižnic;
+	- ebms-sed-libs: skupne knjižnice, ki jih uporabljajo posamezni moduli;
+		- ebms-msh-xsd: modul generira java objekte iz ebMS 3.0 shem. SOAP_1.1.xsd (http://schemas.xmlsoap.org/soap/envelope/)
+			,SOAP_1.2.xsd (http://www.w3.org/2003/05/soap-envelope/), xml.xsd (http://www.w3.org/2001/03/xml.xsd)
+			, ebms-header-3_0-200704.xsd (http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/core/ebms-header-3_0-200704.xsd)
+			, ebbp-signals-2.0.xsd  (http://docs.oasis-open.org/ebxml-bp/2.0.4/ebbp-signals-2.0.4.xsd)
+			, xenc-schema.xsd  (http://www.w3.org/TR/xmlenc-core/xenc-schema.xsd)
+			, xmldsig-core-schema.xsd (http://www.w3.org/TR/xmldsig-core/xmldsig-core-schema.xsd)
+			, xlink.xsd (http://www.w3.org/TR/xml-i18n-bp/xmlspec/xlink.xsd);
+		- ebms-sed-wsdl: modul generira java klienta in WS-API iz spletnega opisa (wsdl) SED-WS modula.
+		- ebms-sed-commons: skupna orodja in šifiranti.
+	- ebms-sed-module: implementacija ebms-sed spletnih storitev
+	- ebms-msh-module: implementacija ebMS 3.0. modula
+
+za izgradnjo se postavi v mapo: ebms-sed 
+in poženi ukaz:
+mvn clean install
+
+Pri tem se izgradita aplikacije:
+ebms-sed/ebms-msh-module/ebms-msh-ear/target/ebms-msh.ear
+in 
+
+ebms-sed-module/ebms-sed-ws/target/ebms-sed-ws.war
+
+Za namestitev preveri namestivena navodila v mapi:
+ebms-sed/documentation/
+
+po uspešni namestitvi sta na voljo dva sklopa spletnih storitev: 
+
+ebMS 3.0 spletne storitve: 
+http://localhost:8080/ebms-msh/ebms?wsdl
+
+Interne spletne storitve za pošiljanje in prevzem dohodne pošte
+http://localhost:8080/ebms-sed-ws/SEDMailBoxWS?wsdl
+
+

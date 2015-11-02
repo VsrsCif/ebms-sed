@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>si.vsrs.cif.sed</groupId>
+    <artifactId>ebms-sed</artifactId>
+    <version>1.0</version>
+    <packaging>pom</packaging>
+    
+    <licenses>
+        <license>
+            <name>European Union Public Licence (EUPL)</name>
+            <url>https://joinup.ec.europa.eu/software/page/eupl</url>
+            <distribution>repo</distribution>
+            <comments>European Free/Open Source Software (F/OSS) licence</comments>
+        </license>
+    </licenses>
+    <organization>
+        <name>Supreme Court Republic of Slovenia</name>
+        <url>http://www.sodisce.si/</url>
+    </organization>
+    
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <cxf-rt.version>3.1.3</cxf-rt.version>        
+        <javax.javaee-api.version>7.0</javax.javaee-api.version>
+        <junit.version>4.10</junit.version>                
+        <log4j.version>1.2.17</log4j.version>
+        <org.apache.derby.version>10.10.2.0</org.apache.derby.version>
+        <org.hibernate.version>4.2.6.Final</org.hibernate.version>
+        <org.apache.xmlgraphics.fop.version>1.0</org.apache.xmlgraphics.fop.version>
+    </properties>
+    
+    <developers>
+        <developer>
+            <id>jrc</id>
+            <name>Jože Rihtaršič</name>
+            <email>joze.rihtarsic@sodisce.si</email>
+            <organization>Supreme Court Republic of Slovenia</organization>
+            <organizationUrl>http://www.sodisce.si/</organizationUrl>
+            <roles>
+                <role>architect</role>
+                <role>developer</role>
+            </roles>
+        </developer>
+    </developers>
+    
+    
+    
+    <modules>
+        <module>ebms-sed-libs</module>
+        <module>ebms-sed-module</module>                
+        <module>ebms-msh-module</module>
+    </modules>
+    
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.1</version>
+                    <configuration>
+                        <source>${maven.compiler.source}</source>
+                        <target>${maven.compiler.target}</target>
+                        <showDeprecation>true</showDeprecation>
+                        <showWarnings>true</showWarnings>
+                    </configuration>
+                </plugin>
+                
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-ejb-plugin</artifactId>
+                    <version>2.5.1</version>
+                    <configuration>
+                        <ejbVersion>3.0</ejbVersion>
+                    </configuration>
+                </plugin>
+                
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>jaxb2-maven-plugin</artifactId>
+                    <version>1.3.1</version>
+                    <executions>
+                        <execution>
+                            <id>xjc</id>
+                            <goals>
+                                <goal>xjc</goal>
+                            </goals>
+                        </execution>
+                    </executions>                    
+                    <configuration>                    
+                        <extension>true</extension>                    
+                        <schemaDirectory>${project.basedir}/src/main/resources/schemas</schemaDirectory>
+                        <bindingDirectory>${project.basedir}/src/main/resources/schemas</bindingDirectory>
+                        <bindingFiles>binding.xml</bindingFiles>
+                        <includeSchemas>
+                            <include>*.xsd</include>
+                        </includeSchemas>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>2.16</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-clean-plugin</artifactId>
+                    <version>2.6.1</version>               
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <version>2.10</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-war-plugin</artifactId>
+                    <version>2.6</version>
+                </plugin>                              
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>  
+                    <version>2.6</version>
+                </plugin>      
+               
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>buildnumber-maven-plugin</artifactId>
+                    <version>1.3</version>
+                    <executions>
+                        <execution>
+                            <phase>validate</phase>
+                            <goals>
+                                <goal>create</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <configuration>                    
+                        <format> {0}.{1} - {2,date, dd.MM.yyyy HH:mm}</format>
+                        <items>
+                            <item>${project.version}</item>
+                            <item>scmVersion</item>
+                            <item>timestamp</item>                        
+                        </items>
+                        <doCheck>false</doCheck>
+                        <doUpdate>false</doUpdate>
+                        <revisiononscmfailure>     
+                            <!--
+                             Generate sequence build number based on:
+                             build number and timestamp     
+                            -->
+                            <format> {0}.{1} - {2,date, dd.MM.yyyy HH:mm}</format>
+                            <items>
+                                <item>${project.version}</item>
+                                <item>scmVersion</item>
+                                <item>timestamp</item>
+                            </items>
+                        </revisiononscmfailure>
+                         
+                    </configuration>
+                </plugin>        
+                
+                  
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>exec-maven-plugin</artifactId>
+                    <version>1.2.1</version>                
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>jaxws-maven-plugin</artifactId>
+                    <version>1.12</version>                
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>wsimport</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <bindingDirectory>${basedir}/src/main/resources/bindings</bindingDirectory>
+                        <wsdlDirectory>${basedir}/src/main/resources/wsdl</wsdlDirectory>
+                        <wsdlFiles>
+                            <wsdlFile>svev-msh-interface.wsdl</wsdlFile>
+                        </wsdlFiles>
+                        <!-- generate to src only because of netbeans to help code completion -->
+                        <sourceDestDir>${basedir}/src/main/java/</sourceDestDir>
+                    
+                    </configuration>
+                </plugin>
+            </plugins>
+            
+        </pluginManagement>
+
+       
+    </build>
+
+	
+    
+
+
+    <dependencyManagement>
+        <dependencies>
+            
+            <dependency>
+                <groupId>javax</groupId>
+                <artifactId>javaee-api</artifactId>
+                <version>${javax.javaee-api.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            
+            
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${junit.version}</version>
+            </dependency>
+            
+            <dependency>
+                <groupId>log4j</groupId>
+                <artifactId>log4j</artifactId>
+                <version>${log4j.version}</version>                
+            </dependency>
+            <dependency>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-rt-frontend-jaxws</artifactId>
+                <version>${cxf-rt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-rt-transports-http</artifactId>
+                <version>${cxf-rt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-rt-ws-security</artifactId>
+                <version>${cxf-rt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-rt-ws-policy</artifactId>
+                <version>${cxf-rt.version}</version>
+            </dependency>
+            
+            <!-- Jetty is needed if you're using the CXFServlet -->
+            <dependency>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-rt-transports-http-jetty</artifactId>
+                <version>${cxf-rt.version}</version>
+            </dependency>
+            <!-- dependency>
+                <groupId>org.apache.cxf.xjc-utils</groupId>
+                <artifactId>cxf-xjc-runtime</artifactId>
+                <version>${cxf-xjc-runtime.version}</version>
+            </dependency -->
+           
+            <dependency>
+                <groupId>org.apache.xmlgraphics</groupId>
+                <artifactId>fop</artifactId>
+                <version>${org.apache.xmlgraphics.fop.version}</version>            
+            </dependency>
+            <!-- database -->
+            <dependency>
+                <groupId>org.apache.derby</groupId>
+                <artifactId>derby</artifactId>
+                <version>${org.apache.derby.version}</version>                
+            </dependency>
+            <dependency>
+                <groupId>org.apache.derby</groupId>
+                <artifactId>derbyclient</artifactId>
+                <version>${org.apache.derby.version}</version>
+            </dependency>            
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-entitymanager</artifactId>
+                <version>${org.hibernate.version}</version>            
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+</project>
