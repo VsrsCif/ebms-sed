@@ -15,9 +15,16 @@
 * limitations under the Licence.
 */
 package si.sed.msh.plugin;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.math.BigInteger;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.Arrays;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
@@ -41,7 +48,7 @@ import si.sed.commons.SEDValues;
  * @author Joze Rihtarsic <joze.rihtarsic@sodisce.si>
  */
 public abstract class AbstractPluginInterceptor extends AbstractSoapInterceptor {
-    private static String EBMS_MSH_PLUGIN_PU = "ebMS_MSH_PLUGIN_PU";
+    private static String EBMS_MSH_PLUGIN_PU = "EBMS_MSH_PLUGIN_PU";
      String LOADED_CLASSES = "hibernate.ejb.loaded.classes";
 
     public AbstractPluginInterceptor(String p) {
@@ -53,16 +60,56 @@ public abstract class AbstractPluginInterceptor extends AbstractSoapInterceptor 
  
     }
  
-    public EntityManagerFactory getSEDEntityManagerFactory(Class ... entCls){ 
-        if (entCls!= null){
+    public EntityManagerFactory getSEDEntityManagerFactory(){ 
+        
+        /*if (entCls!= null){
             Properties mp = new Properties();
             mp.put(LOADED_CLASSES,  Arrays.asList(entCls));
             return Persistence.createEntityManagerFactory(EBMS_MSH_PLUGIN_PU, mp);
-        }
+        }*/
         return Persistence.createEntityManagerFactory(EBMS_MSH_PLUGIN_PU);
     }
     
-    
+      /*public EntityManagerFactory getSEDEntityManagerFactory(Class ... entCls){ 
+        FileWriter fw = null;
+        try {
+            //File fl  =File.createTempFile("persistence", ".xml");
+            File fl  = new File("persistence.xml");
+            fw = new FileWriter(fl);
+            fw.append("<persistence>");
+            fw.append("<persistence-unit name=\""+EBMS_MSH_PLUGIN_PU+"\" transaction-type=\"RESOURCE_LOCAL\">");
+            fw.append("<provider>org.hibernate.ejb.HibernatePersistence</provider>");
+            fw.append("<jta-data-source>java:/dsEBMS_SED</jta-data-source>");
+            for (Class cls: entCls) {
+                fw.append("<class>"+cls.getName()+"</class>");
+            }
+            fw.append("<mapping-file>shared/hbm/msh-in-event.hbm.xml</mapping-file>");
+            fw.append("<mapping-file>shared/hbm/msh-in-mail.hbm.xml</mapping-file>");
+            fw.append("<mapping-file>shared/hbm/msh-in-payload.hbm.xml</mapping-file>");
+            fw.append("<mapping-file>shared/hbm/msh-out-event.hbm.xml</mapping-file>");
+            fw.append("<mapping-file>shared/hbm/msh-out-mail.hbm.xml</mapping-file>");
+            fw.append("<mapping-file>shared/hbm/msh-out-payload.hbm.xml</mapping-file>");
+            fw.append("<properties>");
+            fw.append("<property name=\"hibernate.dialect\" value=\"org.hibernate.dialect.PostgreSQLDialect\" />");
+            fw.append("</properties>");
+            fw.append("</persistence-unit>");
+            fw.append("</persistence>");
+            
+            URL[] urls = {new URL("jar:" + fl.toURI().toURL() + "!/")};
+            URLClassLoader cl = new URLClassLoader(urls, Thread.currentThread().getContextClassLoader());
+            
+
+            return Persistence.createEntityManagerFactory(EBMS_MSH_PLUGIN_PU);
+        } catch (IOException ex) {
+            Logger.getLogger(AbstractPluginInterceptor.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                fw.close();
+            } catch (IOException ex) {
+                Logger.getLogger(AbstractPluginInterceptor.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+*/
 
     @Override
     public abstract void handleMessage(SoapMessage t) throws Fault;

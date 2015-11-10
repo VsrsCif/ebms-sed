@@ -225,12 +225,24 @@ not set by users.</xs:documentation>
 			<xs:documentation>This set of parameters only applies to user messages.</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="Service" type="xs:string" minOccurs="0">
+			<xs:element name="Service" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>Name of the service to which the User message is intended to
 be delivered. Its content should map to the element
 eb:Messaging/eb:UserMessage/eb:CollaborationInfo/eb:Service.</xs:documentation>
 				</xs:annotation>
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="xs:string">
+							<xs:attribute name="inPlugin"/>
+							<xs:attribute name="outPlugin">
+								<xs:annotation>
+									<xs:documentation>plugin jar name and class name jarname!classname</xs:documentation>
+								</xs:annotation>
+							</xs:attribute>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
 			</xs:element>
 			<xs:element name="Action" minOccurs="0" maxOccurs="unbounded">
 				<xs:annotation>

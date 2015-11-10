@@ -30,11 +30,9 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Enumeration;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import si.sed.commons.SEDSystemProperties;
-import si.sed.commons.utils.SEDLogger;
 import si.sed.commons.exception.SEDSecurityException;
+import si.sed.commons.utils.SEDLogger;
 
 /**
  *

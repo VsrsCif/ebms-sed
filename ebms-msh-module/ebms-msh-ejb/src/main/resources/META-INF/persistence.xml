@@ -9,21 +9,17 @@
             <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect" />
         </properties>
     </persistence-unit>
-    <persistence-unit name="ebMS_MSH_PLUGIN_PU" transaction-type="RESOURCE_LOCAL">
+    <persistence-unit name="EBMS_MSH_PLUGIN_PU" transaction-type="RESOURCE_LOCAL">
         <provider>org.hibernate.ejb.HibernatePersistence</provider>
         <jta-data-source>java:/dsEBMS_SED</jta-data-source>
-               <mapping-file>shared/hbm/msh-in-event.hbm.xml</mapping-file>
+        <mapping-file>shared/hbm/msh-in-event.hbm.xml</mapping-file>
         <mapping-file>shared/hbm/msh-in-mail.hbm.xml</mapping-file>
         <mapping-file>shared/hbm/msh-in-payload.hbm.xml</mapping-file>
         <mapping-file>shared/hbm/msh-out-event.hbm.xml</mapping-file>
         <mapping-file>shared/hbm/msh-out-mail.hbm.xml</mapping-file>
         <mapping-file>shared/hbm/msh-out-payload.hbm.xml</mapping-file>
-        
         <properties>
             <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect" />
         </properties>
-        
- 
-        
     </persistence-unit>
 </persistence>

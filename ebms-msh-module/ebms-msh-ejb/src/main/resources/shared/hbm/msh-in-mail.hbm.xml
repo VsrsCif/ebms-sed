@@ -58,4 +58,5 @@
     </class>
     
     <query name="MSHInMail.getById" ><![CDATA[SELECT p FROM MSHInMail p WHERE p.Id = :id]]></query>
+    <query name="MSHInMail.getByConvIdAndAction" ><![CDATA[SELECT p FROM MSHInMail p WHERE p.ConversationId = :convId and p.Action = :action]]></query>
 </hibernate-mapping>

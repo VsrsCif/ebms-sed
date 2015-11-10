@@ -45,13 +45,11 @@ import org.apache.cxf.message.Message;
 import org.msh.ebms.inbox.event.MSHInEvent;
 import org.msh.ebms.inbox.mail.MSHInMail;
 import org.msh.svev.pmode.PMode;
-import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.SignalMessage;
 import si.jrc.msh.utils.EBMSUtils;
 import si.sed.commons.SEDInboxMailStatus;
 
 import si.sed.commons.utils.HashUtils;
 import si.sed.commons.utils.StorageUtils;
-import si.sed.commons.utils.Utils;
 
 @WebServiceProvider(serviceName = "ebms")
 @ServiceMode(value = Service.Mode.MESSAGE)
@@ -105,8 +103,8 @@ public class EBMSEndpoint implements Provider<SOAPMessage> {
 
             serializeMail(inmail, msg.getAttachments());
 
-            SignalMessage as4Receipt = mebmsUtils.generateAS4ReceiptSignal(inmail.getMessageId(), Utils.getDomainFromAddress(inmail.getReceiverEBox()), request.getSOAPPart().getDocumentElement());
-            msg.getExchange().put(SignalMessage.class, as4Receipt);
+           // SignalMessage as4Receipt = mebmsUtils.generateAS4ReceiptSignal(inmail.getMessageId(), Utils.getDomainFromAddress(inmail.getReceiverEBox()), request.getSOAPPart().getDocumentElement());
+           // msg.getExchange().put(SignalMessage.class, as4Receipt);
 
             /*   EBMSError err = ex.get(EBMSError.class);
                 Messaging mgsInboundMessage = ex.get(Messaging.class);

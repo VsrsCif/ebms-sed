@@ -218,19 +218,19 @@ public class PModeManager {
                     target.getSignature().getSign().setSignAttachments(template.getSignature().getSign().getSignAttachments());
                     target.getSignature().getSign().setSignElements(template.getSignature().getSign().getSignElements());
                 }
-            
+
                 if (template.getSignature().getSign().getElements() != null && !template.getSignature().getSign().getElements().getXPaths().isEmpty()) {
-                    if (target.getSignature().getSign().getElements() == null){
+                    if (target.getSignature().getSign().getElements() == null) {
                         target.getSignature().getSign().setElements(new References.Elements());
                     }
-                    
+
                     if (isEmpty(target.getSignature().getSign().getSignCertAlias()) && !isEmpty(template.getSignature().getSign().getSignCertAlias())) {
                         target.getSignature().getSign().setSignCertAlias(template.getSignature().getSign().getSignCertAlias());
                     }
-                    mergeXPaths(target.getSignature().getSign().getElements().getXPaths(), template.getSignature().getSign().getElements().getXPaths());                    
+                    mergeXPaths(target.getSignature().getSign().getElements().getXPaths(), template.getSignature().getSign().getElements().getXPaths());
                 }
             }
-            
+
             if (template.getSignature().getCertificate() != null) {
                 if (target.getSignature().getCertificate() == null) {
                     target.getSignature().setCertificate(new Certificate());
@@ -243,8 +243,8 @@ public class PModeManager {
         }
 
     }
-    
-     public void mergeXPaths(List<References.Elements.XPath> target, List<References.Elements.XPath> template) {
+
+    public void mergeXPaths(List<References.Elements.XPath> target, List<References.Elements.XPath> template) {
         for (int i = 0; i < template.size(); i++) {
             if (target.size() <= i) {
                 target.add(new References.Elements.XPath());
@@ -258,7 +258,8 @@ public class PModeManager {
             mergeXPathsNamespaces(ltrg.getNamespaces(), ltmp.getNamespaces());
         }
     }
-     public void mergeXPathsNamespaces(List<References.Elements.XPath.Namespace> target, List<References.Elements.XPath.Namespace> template) {
+
+    public void mergeXPathsNamespaces(List<References.Elements.XPath.Namespace> target, List<References.Elements.XPath.Namespace> template) {
         for (int i = 0; i < template.size(); i++) {
             if (target.size() <= i) {
                 target.add(new References.Elements.XPath.Namespace());
@@ -279,10 +280,23 @@ public class PModeManager {
         if (isEmpty(target.getMPC()) && !isEmpty(template.getMPC())) {
             target.setMPC(template.getMPC());
         }
-        if (isEmpty(target.getService()) && !isEmpty(template.getService())) {
-            target.setService(template.getService());
-        }
 
+        if (template.getService() != null) {
+            if (target.getService() == null) {
+                target.setService(new BusinessInfo.Service());
+            }
+
+            if (isEmpty(target.getService().getValue()) && !isEmpty(template.getService().getValue())) {
+                target.getService().setValue(template.getService().getValue());
+            }
+            if (isEmpty(target.getService().getInPlugin()) && !isEmpty(template.getService().getInPlugin())) {
+                target.getService().setInPlugin(template.getService().getInPlugin());
+            }
+            if (isEmpty(target.getService().getOutPlugin()) && !isEmpty(template.getService().getOutPlugin())) {
+                target.getService().setOutPlugin(template.getService().getOutPlugin());
+            }
+
+        }
         for (BusinessInfo.Action actTmpl : template.getActions()) {
             BusinessInfo.Action actTrg = getActionByValue(target.getActions(), actTmpl.getValue());
             if (actTrg == null) {
@@ -456,7 +470,7 @@ public class PModeManager {
     public List<String> getServices() {
         List<String> lstPMSrv = new ArrayList<>();
         for (PMode pm : pmodes.getPModes()) {
-            String strVal = pm.getLegs().get(0).getBusinessInfo().getService();
+            String strVal = pm.getLegs().get(0).getBusinessInfo().getService().getValue();
             if (!lstPMSrv.contains(strVal)) {
                 lstPMSrv.add(strVal);
             }

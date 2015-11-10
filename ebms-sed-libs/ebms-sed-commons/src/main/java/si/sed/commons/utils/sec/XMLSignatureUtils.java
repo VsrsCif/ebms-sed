@@ -55,6 +55,7 @@ import org.xml.sax.SAXException;
 import si.sed.commons.exception.SEDSecurityException;
 
 
+
 public class XMLSignatureUtils {
 
     protected static final Logger mlgLogger = Logger.getLogger(XMLSignatureUtils.class.getName());

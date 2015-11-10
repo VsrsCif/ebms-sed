@@ -37,7 +37,7 @@
                         <webModule>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>ebms-msh-ws</artifactId>
-                            <contextRoot>/ebms-msh</contextRoot>
+                            <contextRoot>/ebms-sed</contextRoot>
                         </webModule>
                     </modules>                    
                 </configuration>

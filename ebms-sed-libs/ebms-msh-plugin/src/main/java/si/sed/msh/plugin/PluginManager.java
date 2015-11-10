@@ -35,7 +35,6 @@ public class PluginManager {
 
     public static URLClassLoader addURLToSystemClassLoader(File file) throws IntrospectionException {
         try {
-            JarFile jar = new JarFile(file);
             URL[] urls = {new URL("jar:" + file.toURI().toURL() + "!/")};
             URLClassLoader cl = new URLClassLoader(urls, Thread.currentThread().getContextClassLoader());
             return cl;

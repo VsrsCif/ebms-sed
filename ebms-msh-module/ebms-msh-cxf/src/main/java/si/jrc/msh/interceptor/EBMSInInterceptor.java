@@ -43,6 +43,7 @@ import org.apache.cxf.ws.security.wss4j.WSS4JInInterceptor;
 import org.apache.wss4j.dom.handler.WSHandlerConstants;
 import org.msh.ebms.inbox.mail.MSHInMail;
 import org.msh.ebms.inbox.payload.MSHInPart;
+import org.msh.ebms.outbox.mail.MSHOutMail;
 
 import org.msh.svev.pmode.Certificate;
 import org.msh.svev.pmode.PMode;
@@ -137,10 +138,6 @@ public class EBMSInInterceptor extends AbstractSoapInterceptor {
                 String wrnmsg = "No security is defined for pmode: '" + pm.getId() + "'";
                 mlog.logWarn(l, wrnmsg, null);
             }
-            
-            
-            
-           
 
             // create receive message entitity
             // process signals 
@@ -200,24 +197,9 @@ public class EBMSInInterceptor extends AbstractSoapInterceptor {
 
                 msg.getExchange().put(MSHInMail.class, mMail);
 
-                // generate receipt 
-                // check 
-                // rename filename
-                //File f = (File) msg.getExchange().get(EbMSConstants.ContextProperty_In_SOAP_Message_File);
-                /* if (f != null) {
-                        File nFile;
-                        try {
-                            nFile = EBMSUtils.createSoapLogFile(mMail, !isRequestor, isRequestor);
-                            f.renameTo(nFile);
-                            f = nFile;
-                            msg.getExchange().put(EbMSConstants.ContextProperty_In_SOAP_Message_File, nFile);
-
-                        } catch (IOException ex) {
-                            // ignore use old file
-                        }
-
-                        mim.setSoapRequestFileName(f.getName());
-                    }*/
+                SOAPMessage request = msg.getContent(SOAPMessage.class);
+                SignalMessage as4Receipt = mebmsUtils.generateAS4ReceiptSignal(mMail.getMessageId(), Utils.getDomainFromAddress(mMail.getReceiverEBox()), request.getSOAPPart().getDocumentElement());
+                msg.getExchange().put(SignalMessage.class, as4Receipt);
             } else {
                 String errmsg = "Missing userMessage! In a SVEV-MSH  pull-MEP is not exepected!";
                 mlog.logError(l, errmsg, null);;
@@ -267,71 +249,76 @@ public class EBMSInInterceptor extends AbstractSoapInterceptor {
     // receive 
     private void processResponseSignals(List<SignalMessage> lstSignals, PMode pm, SoapMessage msg) throws EBMSError {
         SoapVersion version = msg.getVersion();
-        /*
-         for (SignalMessage sm : lstSignals) {
-         MessageInfo mi = sm.getMessageInfo();
-         if (mi == null) {
-         String errmsg = "Missing MessageInfo in SignalMessage";
-         mlog.error(errmsg, null);
-         throw new SoapFault(errmsg, version.getReceiver());
-         }
+             long l = mlog.logStart();
 
-         if (sm.getPullRequest() != null) {
-         String errmsg = "Pull MEP is not supported! Pull signal is ignored";
-         mlog.error(errmsg, null);
+        for (SignalMessage sm : lstSignals) {
+            MessageInfo mi = sm.getMessageInfo();
+            if (mi == null) {
+                String errmsg = "Missing MessageInfo in SignalMessage";
+                mlog.logError(l, errmsg, null);
+                throw new SoapFault(errmsg, version.getReceiver());
+            }
 
-         }
+            if (sm.getPullRequest() != null) {
+                String errmsg = "Pull MEP is not supported! Pull signal is ignored";
+                mlog.logError(l, errmsg, null);
 
-         if (mi.getRefToMessageId() == null || mi.getRefToMessageId().trim().isEmpty()) {
-         String errmsg = "Missing missing RefToMessageId";
-         mlog.error(errmsg, null);
-         throw new SoapFault(errmsg, version.getReceiver());
-         }
-         MshOutgoingMail outmsg = msg.getExchange().get(MshOutgoingMail.class);
-         String strOutMsg = outmsg.getId() + "@" + mSettings.getDomain();
-         if (!strOutMsg.equals(mi.getRefToMessageId())) {
-         String errmsg = "Outgoing msg ID '" + strOutMsg + "' not equals to received response signal RefToMessageId: '" + mi.getRefToMessageId() + "' ";
-         mlog.error(errmsg, null);
-         throw new SoapFault(errmsg, version.getReceiver());
-         }
+            }
 
-         if (sm.getReceipt() != null) {
-         outmsg.getMmshMail().setSentDate(mi.getTimestamp());
-         outmsg.getMmshMail().setStatus(MSHStatusType.Sent.name());
-         outmsg.setStatusChangeDate(Calendar.getInstance().getTime());
-         mSHDB.update(outmsg);
-         }
+            if (mi.getRefToMessageId() == null || mi.getRefToMessageId().trim().isEmpty()) {
+                String errmsg = "Missing missing RefToMessageId";
+                mlog.logError(l, errmsg, null);
+                throw new SoapFault(errmsg, version.getReceiver());
+            }
+            /*
+            MSHOutMail outmsg = msg.getExchange().get(MSHOutMail.class);
+            String strOutMsg = outmsg.getMessageId(); //+ "@" + mSettings.getDomain();
+            if (!strOutMsg.equals(mi.getRefToMessageId())) {
+                String errmsg = "Outgoing msg ID '" + strOutMsg + "' not equals to received response signal RefToMessageId: '" + mi.getRefToMessageId() + "' ";
+                mlog.logError(l, errmsg, null);
+                //throw new SoapFault(errmsg, version.getReceiver());
+            }*/
 
-         for (Element e : sm.getAnies()) {
+            if (sm.getReceipt() != null) {
+                //outmsg.getMmshMail().setSentDate(mi.getTimestamp());
+               // outmsg.getMmshMail().setStatus(MSHStatusType.Sent.name());
+               // outmsg.setStatusChangeDate(Calendar.getInstance().getTime());
+               // mSHDB.update(outmsg);
+            }
+            
+            msg.getExchange().put("SIGNAL_ELEMENTS", sm.getAnies());
 
-         if (e.getLocalName().equals("SVEVEncryptionKey")) {
-         System.out.println("********************** got encryptionKey");
-         try {
-         SVEVEncryptionKey se = (SVEVEncryptionKey) XMLUtils.deserialize(e, SVEVEncryptionKey.class);
-         MshIncomingMail mm = mSHDB.getIncomingMailByActionAndByConversationId(SVEVConstants.SVEV_ACTION_DeliveryNotification, se.getId());
-         if (mm == null) {
-         String errmsg = "Incoming mail with message ID: " + se.getId() + " not exists!";
-         mlog.error(errmsg);
-         throw new EBMSError(EBMSErrorCode.ProcessingModeMismatch, null, errmsg);
-         }
-         System.out.println("SET enc key");
-         mm.getMmshMail().setSVEVEncryptionKey(se);
-         System.out.println("update incoming mail!!!!");
-         mSHDB.update(mm);
+            for (Element e : sm.getAnies()) {
+                System.out.println("Got elements in signal: " + e.getLocalName());
+              /* if (e.getLocalName().equals("SVEVEncryptionKey")) {
+                    System.out.println("********************** got encryptionKey");
+                    try {
+                        SVEVEncryptionKey se = (SVEVEncryptionKey) XMLUtils.deserialize(e, SVEVEncryptionKey.class);
+                        MshIncomingMail mm = mSHDB.getIncomingMailByActionAndByConversationId(SVEVConstants.SVEV_ACTION_DeliveryNotification, se.getId());
+                        if (mm == null) {
+                            String errmsg = "Incoming mail with message ID: " + se.getId() + " not exists!";
+                            mlog.error(errmsg);
+                            throw new EBMSError(EBMSErrorCode.ProcessingModeMismatch, null, errmsg);
+                        }
+                        System.out.println("SET enc key");
+                        mm.getMmshMail().setSVEVEncryptionKey(se);
+                        System.out.println("update incoming mail!!!!");
+                        mSHDB.update(mm);
 
-         } catch (JAXBException ex) {
-         String errmsg = "Error parsing  '" + e.getNamespaceURI() + "', tagname: '" + e.getLocalName() + "'! Error: " + ex.getMessage();
-         mlog.error(errmsg, ex);
-         throw new EBMSError(EBMSErrorCode.ProcessingModeMismatch, null, errmsg, ex);
-         }
-         } else {
-         String errmsg = "Error parsing  '" + e.getNamespaceURI() + "', tagname: '" + e.getLocalName() + "'!";
-         mlog.error(errmsg);
-         throw new EBMSError(EBMSErrorCode.ProcessingModeMismatch, null, errmsg);
-         }
-         }
+                    } catch (JAXBException ex) {
+                        String errmsg = "Error parsing  '" + e.getNamespaceURI() + "', tagname: '" + e.getLocalName() + "'! Error: " + ex.getMessage();
+                        mlog.error(errmsg, ex);
+                        throw new EBMSError(EBMSErrorCode.ProcessingModeMismatch, null, errmsg, ex);
+                    }
+                } else {
+                    String errmsg = "Error parsing  '" + e.getNamespaceURI() + "', tagname: '" + e.getLocalName() + "'!";
+                    mlog.logError(l, errmsg);
+                    throw new EBMSError(EBMSErrorCode.ProcessingModeMismatch, null, errmsg);
+                }
+*/
+            }
 
-         }*/
+        }
     }
 
     private Messaging vaildateMessagingData(SoapMessage msg) throws SoapFault, EBMSError {
@@ -378,8 +365,8 @@ public class EBMSInInterceptor extends AbstractSoapInterceptor {
             mlog.logError(l, errmsg, null);
             throw new EBMSError(EBMSErrorCode.InvalidHeader, null, errmsg);
         }
-        
-        if (msgHeader == null){
+
+        if (msgHeader == null) {
             String errmsg = "Missing header";
             mlog.logError(l, errmsg, null);
             throw new EBMSError(EBMSErrorCode.InvalidHeader, getMessageId(msgHeader), errmsg);

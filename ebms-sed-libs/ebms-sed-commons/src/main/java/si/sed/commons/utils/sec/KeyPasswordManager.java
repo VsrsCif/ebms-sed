@@ -20,8 +20,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
-import si.sed.commons.exception.SEDSecurityException;
 import si.sed.commons.SEDSystemProperties;
+import si.sed.commons.exception.SEDSecurityException;
 import si.sed.commons.utils.SEDLogger;
 
 
