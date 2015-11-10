@@ -16,18 +16,15 @@
  */
 package si.jrc.msh.client.sec;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.Properties;
 
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.callback.UnsupportedCallbackException;
 
 import org.apache.wss4j.common.ext.WSPasswordCallback;
-import si.sed.commons.SEDSystemProperties;
+import si.sed.commons.exception.SEDSecurityException;
 import si.sed.commons.utils.SEDLogger;
+import si.sed.commons.utils.sec.KeyPasswordManager;
 
 /**
  *
@@ -35,31 +32,25 @@ import si.sed.commons.utils.SEDLogger;
  */
 public class KeyPasswordCallback implements CallbackHandler {
 
-    private final Properties passwords = new Properties();
     protected final SEDLogger mlog = new SEDLogger(KeyPasswordCallback.class);
 
-    private Properties getPasswords() throws IOException {
-        long l = mlog.logStart();
-        String fileProperty = System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR, "") + File.separator + SEDSystemProperties.SYS_KEY_PASSWD_DEF;
-        try (FileInputStream fis = new FileInputStream(fileProperty)) {
-            passwords.load(fis);
-        } catch (IOException ex) {
-            mlog.logError(l, "Error reading password property file: " + fileProperty, ex);
-        }
-        return passwords;
-    }
-
     @Override
-    public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException {
+    public void handle(Callback[] callbacks) throws  UnsupportedCallbackException {
         long l = mlog.logStart();
         for (Callback callback : callbacks) {
             WSPasswordCallback pc = (WSPasswordCallback) callback;
-            String pass = getPasswords().getProperty(pc.getIdentifier());
+            String pass;
+            String identifier = pc.getIdentifier();
+            try {
+                pass = KeyPasswordManager.getInstance().getPasswordForAlias(identifier);                
+            } catch (SEDSecurityException ex) {
+                throw  new UnsupportedCallbackException(callback, ex.getMessage()); 
+            }
             if (pass != null) {
                 pc.setPassword(pass);
                 return;
             } else {
-                String msg = String.format("Missing password for key with alias '%s'.", pc.getIdentifier());
+                String msg = String.format("Missing password for key with alias '%s'.", identifier);
                 mlog.logError(l,msg ,null);
                 throw  new UnsupportedCallbackException(callback, msg); 
             }

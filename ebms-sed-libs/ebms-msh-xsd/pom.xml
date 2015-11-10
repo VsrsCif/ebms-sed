@@ -21,6 +21,7 @@
         - xenc-schema.xsd  (http://www.w3.org/TR/xmlenc-core/xenc-schema.xsd)
         - xmldsig-core-schema.xsd (http://www.w3.org/TR/xmldsig-core/xmldsig-core-schema.xsd)
         - xlink.xsd (http://www.w3.org/TR/xml-i18n-bp/xmlspec/xlink.xsd)      
+        - XAdES-1.1.1.xsd (http://uri.etsi.org/01903/v1.1.1/XAdES.xsd)
     </description>
         
     <licenses>

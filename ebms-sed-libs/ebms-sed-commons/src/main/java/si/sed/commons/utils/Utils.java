@@ -16,15 +16,6 @@
 */
 package si.sed.commons.utils;
 
-import java.beans.IntrospectionException;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.Method;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.Random;
 
 
@@ -35,18 +26,19 @@ import java.util.Random;
 public class Utils {
     Random random = new Random();
     
-    public static final Utils mInstance = new Utils();
+    public static Utils mInstance = null;
     private Utils(){
         
         
     }
     public static synchronized Utils getInstance(){
-        return mInstance;
+        return mInstance = mInstance==null? new Utils():mInstance;
     }
     /**
      * Return a GUID as a string.  This is completely arbitrary, and
      * returns the hexification of a random value followed by a
      * timestamp.
+     * @return 
      */
     public String getGuidString() {
         long rand = (random.nextLong() & 0x7FFFFFFFFFFFFFFFL)
@@ -54,18 +46,7 @@ public class Utils {
         return Long.toString(rand, 32)
                 + Long.toString(System.currentTimeMillis() & 0xFFFFFFFFFFFFFL, 32);
     }
-    public void storeToFile(InputStream is, File fn) throws IOException{
-        int i = 1024;
-        byte[] buff = new byte[i];
-        try (FileOutputStream fos = new FileOutputStream(fn)){
-            while (is.available()>0){
-                i = is.read(buff);                
-                fos.write(buff, 0, i);
-            }
-            
-        }
-        
-    }
+/*
     
     public static void addURLToSystemClassLoader(URL url) throws IntrospectionException {
         URLClassLoader systemClassLoader = (URLClassLoader) ClassLoader.getSystemClassLoader();
@@ -78,7 +59,7 @@ public class Utils {
         } catch (Throwable t) {
             throw new IntrospectionException("Error when adding url "+url.getPath()+" to system ClassLoader ");
         }
-    }
+    }*/
     
     
     public static boolean isEmptyString(String strVal){

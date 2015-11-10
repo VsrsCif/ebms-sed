@@ -24,7 +24,7 @@
                             <addClasspath>false</addClasspath>
                         </manifest>
                         <manifestEntries>                            
-                            <Dependencies>org.apache.cxf,org.apache.cxf.impl,org.apache.commons.io, org.apache.ws.security</Dependencies>
+                            <Dependencies>org.apache.cxf,org.apache.cxf.impl,org.apache.commons.io, org.apache.ws.security, org.apache.santuario.xmlsec</Dependencies>
                         </manifestEntries>
                     </archive>
                     <defaultLibBundleDir>lib</defaultLibBundleDir>
@@ -67,13 +67,24 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>ebms-sed-commons</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.xmlgraphics</groupId>
+            <artifactId>fop</artifactId>
+            
             <exclusions>
                 <exclusion>
                     <artifactId>xalan</artifactId>
-                    <groupId>xalan</groupId> <!-- FOP uses xala 2.6.0. which does not have method:  .TransformerFactoryImpl.setFeature(Ljava/lang/String;Z)V¨-->
+                    <groupId>xalan</groupId>
                 </exclusion>
             </exclusions>
+            <!-- scope>provided</scope --> 
         </dependency>
+        <dependency>             
+            <groupId>${project.groupId}</groupId>
+            <artifactId>ebms-msh-plugin</artifactId>
+            <version>${project.version}</version>		
+        </dependency>  
         <dependency>             
             <groupId>${project.groupId}</groupId>
             <artifactId>ebms-msh-cxf</artifactId>

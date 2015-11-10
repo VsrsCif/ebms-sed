@@ -23,15 +23,15 @@ public class JEELogInterceptor {
     public Object intercept(InvocationContext context) throws Exception {
 
         long l = getTime();
-        System.out.println(context.getMethod().getName() + "BEGIN" );
+        System.out.println(context.getMethod().getName() +  " BEGIN" );
         Object result = null;
         try {
             result = context.proceed();
         } catch (Exception e) {
-            System.out.println(context.getMethod().getName() + "ERROR" + "time: "+getDuration(l)+" ");
+            System.out.println(context.getMethod().getName() + " ERROR" + " time: "+getDuration(l)+" ms.");
             throw e;
         }
-        System.out.println(context.getMethod().getName() + "END" + "time: "+getDuration(l)+" ");
+        System.out.println(context.getMethod().getName() + " END" + " time: "+getDuration(l)+" ms.");
         return result;
     }
 

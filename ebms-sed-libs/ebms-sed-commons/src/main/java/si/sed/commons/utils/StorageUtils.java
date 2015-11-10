@@ -25,8 +25,6 @@ import java.io.InputStream;
 import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import si.sed.commons.MimeValues;
 import si.sed.commons.SEDSystemProperties;
 import si.sed.commons.exception.StorageException;
@@ -52,7 +50,7 @@ public class StorageUtils {
         if (fIn.exists()) {
             throw new StorageException(String.format("File in message: '%s' not exists ", fIn.getAbsolutePath()));
         }
-        File fStore = getNewFile(S_IN_PREFIX, MimeValues.getSuffixBYMimeType(mimeType));
+        File fStore = getNewStorageFile(S_IN_PREFIX, MimeValues.getSuffixBYMimeType(mimeType));
 
         try {
             copyFile(fIn, fStore);
@@ -75,7 +73,7 @@ public class StorageUtils {
         if (fIn.exists()) {
             throw new StorageException(String.format("File in message: '%s' not exists ", fIn.getAbsolutePath()));
         }
-        File fStore = getNewFile(S_OUT_PREFIX, MimeValues.getSuffixBYMimeType(mimeType));
+        File fStore = getNewStorageFile(S_OUT_PREFIX, MimeValues.getSuffixBYMimeType(mimeType));
 
         try {
             copyFile(fIn, fStore);
@@ -91,14 +89,14 @@ public class StorageUtils {
     }
 
     public File storeFile(String prefix, String suffix, InputStream inStream) throws StorageException {
-        File fStore = getNewFile(suffix, prefix);
+        File fStore = getNewStorageFile(suffix, prefix);
 
         try (FileOutputStream fos = new FileOutputStream(fStore)) {
 
             byte[] buffer = new byte[1024];
             int len = inStream.read(buffer);
             while (len != -1) {
-                fos.write(buffer);
+                fos.write(buffer, 0,len );
                 len = inStream.read(buffer);
             }
 
@@ -118,7 +116,7 @@ public class StorageUtils {
         }
     }
 
-    private File getNewFile(String suffix, String prefix) throws StorageException {
+    public static File getNewStorageFile(String suffix, String prefix) throws StorageException {
         File fStore;
         try {
             fStore = File.createTempFile(prefix, "." + suffix, currentStorageFolder());

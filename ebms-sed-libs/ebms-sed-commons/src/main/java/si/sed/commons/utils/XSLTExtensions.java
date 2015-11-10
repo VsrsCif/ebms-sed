@@ -27,8 +27,8 @@ import java.util.GregorianCalendar;
  */
 public class XSLTExtensions {
 
-    private static final SimpleDateFormat msfDate = new SimpleDateFormat("dd.MM.yyyy");
-    private static final SimpleDateFormat msfDateTime = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+    private static final SimpleDateFormat S_DATE_FORMAT = new SimpleDateFormat("dd.MM.yyyy");
+    private static final SimpleDateFormat S_DATE_TIME_FORMAT = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
 
     public static Object formatDate(String str) {
         if (str == null  || str.trim().isEmpty()){
@@ -36,7 +36,7 @@ public class XSLTExtensions {
         }
 
         Date dt = com.jrc.xml.DateAdapter.parseDateTime(str);
-        return msfDate.format(dt);
+        return S_DATE_FORMAT.format(dt);
     }
                          
     public static Object getZPPFictionDate(String str) {
@@ -47,16 +47,16 @@ public class XSLTExtensions {
         Calendar c = new GregorianCalendar();
         c.setTime(dt);
         c.add(Calendar.DAY_OF_MONTH, 15);
-        return msfDate.format(c.getTime());
+        return S_DATE_FORMAT.format(c.getTime());
         
     }
     
     public static Object currentDate() {
-        return msfDate.format(Calendar.getInstance().getTime());
+        return S_DATE_FORMAT.format(Calendar.getInstance().getTime());
     }
     
     public static Object currentDateTime() {
-        return msfDateTime.format(Calendar.getInstance().getTime());
+        return S_DATE_TIME_FORMAT.format(Calendar.getInstance().getTime());
     }
 
 }

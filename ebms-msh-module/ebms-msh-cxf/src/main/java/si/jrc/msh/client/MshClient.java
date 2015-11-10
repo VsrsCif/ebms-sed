@@ -1,16 +1,22 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+* Copyright 2015, Supreme Court Republic of Slovenia 
+*
+* Licensed under the EUPL, Version 1.1 or – as soon they will be approved by 
+* the European Commission - subsequent versions of the EUPL (the "Licence");
+* You may not use this work except in compliance with the Licence.
+* You may obtain a copy of the Licence at:
+*
+* https://joinup.ec.europa.eu/software/page/eupl
+*
+* Unless required by applicable law or agreed to in writing, software 
+* distributed under the Licence is distributed on an "AS IS" basis, WITHOUT 
+* WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the Licence for the specific language governing permissions and  
+* limitations under the Licence.
  */
 package si.jrc.msh.client;
 
-import java.util.UUID;
-import javax.activation.DataHandler;
-import javax.activation.FileDataSource;
-import javax.crypto.SecretKey;
 import javax.xml.namespace.QName;
-import javax.xml.soap.AttachmentPart;
 import javax.xml.soap.MessageFactory;
 import javax.xml.soap.SOAPConstants;
 import javax.xml.soap.SOAPException;
@@ -24,19 +30,19 @@ import org.apache.cxf.interceptor.LoggingInInterceptor;
 import org.apache.cxf.interceptor.LoggingOutInterceptor;
 import org.apache.cxf.jaxws.DispatchImpl;
 import org.msh.ebms.outbox.mail.MSHOutMail;
-import org.msh.ebms.outbox.payload.MSHOutPart;
 import org.msh.svev.pmode.PMode;
 import si.jrc.msh.exception.MSHException;
 import si.jrc.msh.exception.MSHExceptionCode;
 
 import si.jrc.msh.interceptor.EBMSInInterceptor;
+import si.jrc.msh.interceptor.EBMSLogInInterceptor;
+import si.jrc.msh.interceptor.EBMSLogOutInterceptor;
 import si.jrc.msh.interceptor.EBMSOutInterceptor;
 import si.sed.commons.utils.SEDLogger;
 
-
 import si.jrc.msh.utils.SvevUtils;
-import si.sed.commons.exception.StorageException;
-import si.sed.commons.utils.StorageUtils;
+import si.sed.msh.plugin.MSHPluginInInterceptor;
+import si.sed.msh.plugin.MSHPluginOutInterceptor;
 
 /**
  *
@@ -46,6 +52,7 @@ public class MshClient {
 
     protected final SEDLogger mlog = new SEDLogger(MshClient.class);
     SvevUtils msvevUtils = new SvevUtils();
+
     public void sendMessage(MSHOutMail mail, PMode pmode) throws MSHException {
 
         long l = mlog.logStart(mail);
@@ -60,22 +67,27 @@ public class MshClient {
         Dispatch<SOAPMessage> client = getClient(pmode);
 
         DispatchImpl dimpl = (org.apache.cxf.jaxws.DispatchImpl) client;
+        
+        
 
+        
         // configure svev-msh transport
+        System.out.println("MshClient  SET PMODE:" + pmode );
+        System.out.println("MshClient  MSHOutMail:" + mail );
         client.getRequestContext().put(PMode.class.getName(), pmode);
         client.getRequestContext().put(MSHOutMail.class.getName(), mail);
-               
-    
+
         // create empty soap mesage
         MessageFactory mf;
         SOAPMessage soapReq;
         try {
             mf = MessageFactory.newInstance(SOAPConstants.SOAP_1_2_PROTOCOL);
             soapReq = mf.createMessage();
+            
         } catch (SOAPException ex) {
             throw new MSHException(MSHExceptionCode.EmptyMail, ex);
         }
-
+/*
         try {
             for (MSHOutPart p : mail.getMSHOutPayload().getMSHOutParts()) {
                 String id = UUID.randomUUID().toString();
@@ -90,21 +102,20 @@ public class MshClient {
 
         } catch (StorageException ex) {
             throw new MSHException(MSHExceptionCode.InvalidMail, ex);
-        }
+        }*/
         dimpl.invoke(soapReq);
 
         mlog.logEnd(l);
     }
-    
 
     public Dispatch<SOAPMessage> getClient(PMode pmode) throws MSHException {
 
-         if (pmode.getLegs().isEmpty() || pmode.getLegs().get(0).getProtocol() == null
+        if (pmode.getLegs().isEmpty() || pmode.getLegs().get(0).getProtocol() == null
                 || pmode.getLegs().get(0).getProtocol().getAddress() == null
                 || pmode.getLegs().get(0).getProtocol().getAddress().trim().isEmpty()) {
             throw new MSHException(MSHExceptionCode.InvalidPMode, pmode.getId(), "Missing Protocol/Address value");
         }
-         
+
         // get sending leg!
         String url = pmode.getLegs().get(0).getProtocol().getAddress();
 
@@ -121,19 +132,30 @@ public class MshClient {
         SOAPBinding sb = (SOAPBinding) dispSOAPMsg.getBinding();
         sb.setMTOMEnabled(true);
         // configure interceptors
-        Client cxfClient = dimpl.getClient();
-        cxfClient.getInInterceptors().add(new LoggingInInterceptor());
-        //cxfClient.getInInterceptors().add(new EBMSLogInInterceptor());
-        cxfClient.getInInterceptors().add(new EBMSInInterceptor());
 
-        cxfClient.getOutInterceptors().add(new EBMSOutInterceptor());
-        cxfClient.getOutInterceptors().add(new LoggingOutInterceptor());
-        //cxfClient.getOutInterceptors().add(new EBMSLogOutInterceptor());
+        // check plugins for interceptor
+        // load jar (check if already loaded)
+        // create interceptpr
+        // install inteceptor
+        try {
+            
+            Client cxfClient = dimpl.getClient();
+            
+            //cxfClient.getInInterceptors().add(new LoggingInInterceptor());
+            cxfClient.getInInterceptors().add(new EBMSLogInInterceptor());
+            cxfClient.getInInterceptors().add(new EBMSInInterceptor());
+            cxfClient.getInInterceptors().add(new MSHPluginInInterceptor());
+            
+            cxfClient.getOutInterceptors().add(new MSHPluginOutInterceptor());
+            cxfClient.getOutInterceptors().add(new EBMSOutInterceptor());
+            cxfClient.getOutInterceptors().add(new EBMSLogOutInterceptor());
+            //cxfClient.getOutInterceptors().add(new LoggingOutInterceptor());
+        } catch (Throwable th) {
+            th.printStackTrace();
+            throw new MSHException(MSHExceptionCode.InvalidPMode, pmode.getId(), "Missing Protocol/Address value");
+        }
 
         return dispSOAPMsg;
     }
 
-  
-
-    
 }

@@ -13,26 +13,29 @@
 * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the Licence for the specific language governing permissions and  
 * limitations under the Licence.
-*/
+ */
 package si.sed.commons.utils;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.util.JAXBSource;
 
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
+import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.sax.SAXResult;
+import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import org.apache.fop.apps.Fop;
 import org.apache.fop.apps.FopFactory;
-import org.apache.fop.apps.MimeConstants;
-import org.apache.log4j.Logger;
+import org.msh.ebms.outbox.mail.MSHOutMail;
 
 import org.xml.sax.SAXException;
 import si.sed.commons.exception.FOPException;
@@ -45,9 +48,9 @@ public class FOPUtils {
 
     public enum FopTransformations {
 
-        DeliveryNotification("DeliveryNotification.fo"),
-        AdviceOfDelivery("AdviceOfDelivery.fo"),
-        AdviceOfDeliveryFiction("AdviceOfDeliveryFiction.fo");
+        DeliveryNotification("LegalDelivery_ZPP-DeliveryNotification.fo"),
+        AdviceOfDelivery("LegalDelivery_ZPP-AdviceOfDelivery.fo"),
+        AdviceOfDeliveryFiction("LegalDelivery_ZPP-AdviceOfDeliveryFiction.fo");
 
         private final String mstrfileName;
 
@@ -59,7 +62,7 @@ public class FOPUtils {
             return mstrfileName;
         }
     }
-    private static final Logger mlog = Logger.getLogger(FOPUtils.class);
+
     FopFactory mfopFactorory = null;
     String mTransformationFolder;
     File msfConfigFile;
@@ -72,50 +75,55 @@ public class FOPUtils {
 
     private FopFactory getFopFactory() throws SAXException, IOException {
         if (mfopFactorory == null) {
-            mfopFactorory = FopFactory.newInstance();
-            if (msfConfigFile != null) {
-                mfopFactorory.setUserConfig(msfConfigFile);
-            }
+            mfopFactorory = FopFactory.newInstance(msfConfigFile);
         }
         return mfopFactorory;
 
     }
 
-    public static void main(String... args) {
+    /*
+    public static void main(String... args) {        
         try {
-            File cfile = new File("/sluzba/mag-naloga/izmenjava-podatkov/code/SVEVDemo/msh-AS4/msh/config/fop.xconf");
+            File cfile = new File("/sluzba/code/SVEV2.0/sed-home/svev/fop.xconf");
             File fIn = new File("/sluzba/mag-naloga/izmenjava-podatkov/code/SVEVDemo/msh-AS4/msh/inbox/msh-as4/msh--653980083958689530-Request.xml");
             File fOut = new File("/sluzba/mag-naloga/izmenjava-podatkov/code/SVEVDemo/msh-AS4/msh/inbox/msh-as4/msh--653980083958689530-Request.pdf");
             String folder = "/sluzba/mag-naloga/izmenjava-podatkov/code/SVEVDemo/msh-AS4/msh/config/xslt/";
 
             FOPUtils fu = new FOPUtils(cfile, folder);
-            fu.generateVisualization(fIn, fOut, "", FopTransformations.DeliveryNotification);
+          /  fu.generateVisualization(fIn, fOut, "", FopTransformations.DeliveryNotification);
         } catch (FOPException ex) {
             ex.printStackTrace();
         }
+     */
 
+    public void generateVisualization(Object outMail, File f, FopTransformations xslt, String mime) throws FOPException {
+
+        File fxslt = getTransformatinoFile(xslt);
+        try (FileOutputStream fos = new FileOutputStream(f)) {
+            StreamSource ssXslt = new StreamSource(fxslt);
+            JAXBSource source = new JAXBSource(JAXBContext.newInstance(outMail.getClass()), outMail);
+
+            generateVisualization(source, fos, ssXslt, mime);
+
+        } catch (IOException | JAXBException ex) {
+            String msg = "Error generating visualization" + ex.getMessage();
+            throw new FOPException(msg, ex);
+        }
     }
 
-
-
-    public byte[] generateVisualization(File inputRequest, String service, FopTransformations xslt) throws FOPException {
-        // get service  + "get vssl"
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        Source src = new StreamSource(inputRequest);
-        generateVisualization(src, bos, new StreamSource(getTransformatinoFile(xslt, service)));
-        return bos.toByteArray();
-    }
-
-    public void generateVisualization(Source src, OutputStream out, Source xslt) throws FOPException {
+    public void generateVisualization(Source src, OutputStream out, Source xslt, String mime) throws FOPException {
 
         try {
-            Fop fop = getFopFactory().newFop(MimeConstants.MIME_PDF, out);
+            Fop fop = getFopFactory().newFop(mime, out);
+
+            //Fop fop = getFopFactory().newFop(MimeConstants.MIME_PDF, out);
             TransformerFactory factory = TransformerFactory.newInstance();
-            Transformer transformer = factory.newTransformer(xslt);
+            Templates template = factory.newTemplates(xslt);
+            Transformer transformer = template.newTransformer();
             Result res = new SAXResult(fop.getDefaultHandler());
             transformer.transform(src, res);
         } catch (IOException | SAXException | TransformerException ex) {
-            String msg = "Error generating visualization";
+            String msg = "Error generating visualization" + ex.getMessage();
             throw new FOPException(msg, ex);
         } finally {
             try {
@@ -125,6 +133,39 @@ public class FOPUtils {
             }
         }
     }
+
+    public void generateVisualizationToHtml(Source src, OutputStream out, Source xslt) throws FOPException {
+
+        try {
+
+            TransformerFactory factory = TransformerFactory.newInstance();
+            Templates template = factory.newTemplates(xslt);
+            Transformer transformer = template.newTransformer();
+            Result result = new StreamResult(out);
+            transformer.transform(src, result);
+        } catch (TransformerException ex) {
+            String msg = "Error generating visualization" + ex.getMessage();
+            throw new FOPException(msg, ex);
+        } finally {
+            try {
+                out.close();
+            } catch (IOException ignore) {
+
+            }
+        }
+    }
+
+    /*
+
+    public byte[] generateVisualization(File inputRequest, String service, FopTransformations xslt) throws FOPException {
+        // get service  + "get vssl"
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        Source src = new StreamSource(inputRequest);
+        generateVisualization(src, bos, new StreamSource(getTransformatinoFile(xslt, service)));
+        return bos.toByteArray();
+    }
+
+    
 
     public void generateVisualization(File fIn, File fOut, String service, FopTransformations xslt) throws FOPException {
 
@@ -136,12 +177,12 @@ public class FOPUtils {
             throw new FOPException(msg, ex);
         }
     }
-
-    private File getTransformatinoFile(FopTransformations xslt, String service) {
+     */
+    private File getTransformatinoFile(FopTransformations xslt) {
         if (mTransformationFolder == null) {
             return new File(xslt.getFileName());
         }
-        return new File(mTransformationFolder, service + "-" + xslt.getFileName());
+        return new File(mTransformationFolder, xslt.getFileName());
 
     }
 

@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.activation.DataHandler;
 import javax.rmi.CORBA.Util;
 import javax.xml.bind.DatatypeConverter;
 import javax.xml.bind.JAXBException;
@@ -63,6 +65,7 @@ import si.jrc.msh.client.MshClient;
 import si.jrc.msh.exception.EBMSError;
 import si.jrc.msh.exception.EBMSErrorCode;
 import si.sed.commons.utils.SEDLogger;
+import si.sed.commons.utils.StorageUtils;
 import si.sed.commons.utils.Utils;
 import si.sed.commons.utils.xml.XMLUtils;
 
@@ -473,6 +476,7 @@ public class EBMSUtils {
                         }
                     }
                 }
+                
                 lstParts.add(part);
             }
             if (!lstParts.isEmpty()) {
@@ -483,6 +487,8 @@ public class EBMSUtils {
 
         return mshmail;
     }
+    
+    
     /*
     public static File createSoapLogFile(MSHMail mm, boolean isRequest, boolean isOutgoingMail) throws IOException {
         File f;

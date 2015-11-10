@@ -13,17 +13,19 @@
 * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the Licence for the specific language governing permissions and  
 * limitations under the Licence.
-*/
+ */
 package si.sed.commons.utils.xml;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.StringWriter;
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -42,12 +44,15 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.ls.DOMImplementationLS;
+import org.w3c.dom.ls.LSSerializer;
 import org.xml.sax.SAXException;
 
 /**
@@ -89,6 +94,37 @@ public class XMLUtils {
         return obj;
     }
 
+    public static synchronized String getElementValue(InputStream source, InputStream xsltSource) throws TransformerConfigurationException, JAXBException, TransformerException {
+        TransformerFactory factory = TransformerFactory.newInstance();
+        Transformer transformer;
+        transformer = factory.newTransformer(new StreamSource(xsltSource));
+        StringWriter sw = new StringWriter();
+        StreamResult result = new StreamResult(sw);
+        transformer.transform(new StreamSource(source), result);
+        return  sw.toString();
+    }
+
+    public static Document deserializeToDom(InputStream xmlIS) throws IOException, ParserConfigurationException, SAXException {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+
+        factory.setNamespaceAware(true);
+        DocumentBuilder builder = factory.newDocumentBuilder();
+
+        return builder.parse(xmlIS);
+    }
+
+    public static Document deserializeToDom(File xmlFile) throws IOException, ParserConfigurationException, SAXException {
+        Document doc = null;
+        try (FileInputStream fis = new FileInputStream(xmlFile)) {
+            doc = deserializeToDom(fis);
+        }
+        return doc;
+    }
+
+    public static Document deserializeToDom(String xml) throws IOException, ParserConfigurationException, SAXException {
+        return deserializeToDom(new ByteArrayInputStream(xml.getBytes()));
+    }
+
     public static synchronized Document deserializeToDom(InputStream source, InputStream xsltSource) throws TransformerConfigurationException, JAXBException, TransformerException, ParserConfigurationException, SAXException, IOException {
         Document obj;
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -105,6 +141,7 @@ public class XMLUtils {
         }
         return obj;
     }
+
     public static synchronized Document transform(Element source, InputStream xsltSource) throws TransformerConfigurationException, JAXBException, TransformerException, ParserConfigurationException, SAXException, IOException {
         Document obj = null;
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -115,7 +152,7 @@ public class XMLUtils {
             obj = dbf.newDocumentBuilder().newDocument();
             Result result = new DOMResult(obj);
             transformer.transform(new DOMSource(source), result);
-        } 
+        }
         return obj;
     }
 
@@ -135,6 +172,13 @@ public class XMLUtils {
         final Marshaller m = JAXBContext.newInstance(obj.getClass()).createMarshaller();
         m.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
         m.marshal(obj, System.out);
+    }
+
+    public static String serializeToString(Element rootElement, boolean setXmlDecl) {
+        DOMImplementationLS lsImpl = (DOMImplementationLS) rootElement.getOwnerDocument().getImplementation().getFeature("LS", "3.0");
+        LSSerializer serializer = lsImpl.createLSSerializer();
+        serializer.getDomConfig().setParameter("xml-declaration", setXmlDecl); //set it to false to get String without xml-declaration
+        return serializer.writeToString(rootElement);
     }
 
     public static Document jaxbToDocument(Object obj) throws JAXBException, ParserConfigurationException {
@@ -173,12 +217,12 @@ public class XMLUtils {
     public static String validateBySchema(Object jabxObj, InputStream schXsd, String xsdResourceFolder) {
         String res = "";
         try {
-            SchemaErrorHandler se = new SchemaErrorHandler();
             JAXBContext jbc = JAXBContext.newInstance(jabxObj.getClass());
             Source xml = new JAXBSource(jbc, jabxObj);
             res = validateBySchema(xml, schXsd, xsdResourceFolder);
         } catch (JAXBException ex) {
-            res += "SchemaValidationError:" + ex.getMessage() + "\n";
+            ex.printStackTrace();
+            res += "SchemaValidationError 2:" + ex.getMessage() + "\n";
         }
         return res;
 
@@ -199,7 +243,8 @@ public class XMLUtils {
             validator.validate(xml);
             res = se.getErrorAsString();
         } catch (SAXException | IOException ex) {
-            res += "SchemaValidationError:" + ex.getMessage() + "\n";
+            ex.printStackTrace();
+            res += "SchemaValidationError 1:" + ex.getMessage() + "\n";
         }
 
         return res;

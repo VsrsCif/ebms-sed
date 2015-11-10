@@ -18,14 +18,10 @@ package si.sed.commons.utils;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.imageio.stream.FileImageInputStream;
 import si.sed.commons.exception.HashException;
 
 /**

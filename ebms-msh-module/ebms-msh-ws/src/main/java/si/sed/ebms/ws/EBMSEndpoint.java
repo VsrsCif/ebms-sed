@@ -16,12 +16,8 @@
  */
 package si.sed.ebms.ws;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
-import javax.activation.DataHandler;
 import javax.annotation.Resource;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -48,14 +44,11 @@ import org.apache.cxf.message.Exchange;
 import org.apache.cxf.message.Message;
 import org.msh.ebms.inbox.event.MSHInEvent;
 import org.msh.ebms.inbox.mail.MSHInMail;
-import org.msh.ebms.inbox.payload.MSHInPart;
 import org.msh.svev.pmode.PMode;
 import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.SignalMessage;
 import si.jrc.msh.utils.EBMSUtils;
 import si.sed.commons.SEDInboxMailStatus;
 
-import si.sed.commons.exception.HashException;
-import si.sed.commons.exception.StorageException;
 import si.sed.commons.utils.HashUtils;
 import si.sed.commons.utils.StorageUtils;
 import si.sed.commons.utils.Utils;
@@ -65,13 +58,15 @@ import si.sed.commons.utils.Utils;
 @BindingType(SOAPBinding.SOAP12HTTP_BINDING)
 @org.apache.cxf.interceptor.InInterceptors(interceptors
         = {
-            //"si.jrc.msh.interceptor.EBMSLogInInterceptor",
-            "si.jrc.msh.interceptor.EBMSInInterceptor"
+            "si.jrc.msh.interceptor.EBMSLogInInterceptor",
+            "si.jrc.msh.interceptor.EBMSInInterceptor",
+            "si.sed.msh.plugin.MSHPluginInInterceptor"
         })
 @org.apache.cxf.interceptor.OutInterceptors(interceptors
         = {
-            //"si.jrc.msh.interceptor.EBMSLogOutInterceptor",
-            "si.jrc.msh.interceptor.EBMSOutInterceptor"
+            "si.jrc.msh.interceptor.EBMSLogOutInterceptor",
+            "si.jrc.msh.interceptor.EBMSOutInterceptor",
+            "si.sed.msh.plugin.MSHPluginOutInterceptor"
         })
 public class EBMSEndpoint implements Provider<SOAPMessage> {
 
@@ -105,8 +100,8 @@ public class EBMSEndpoint implements Provider<SOAPMessage> {
             Message msg = wmc.getWrappedMessage();
             Exchange ex = msg.getExchange();
 
-            PMode pmd = (PMode) ex.get(PMode.class.getName());
-            MSHInMail inmail = (MSHInMail) ex.get(MSHInMail.class.getName());
+            PMode pmd = (PMode) ex.get(PMode.class);
+            MSHInMail inmail = (MSHInMail) ex.get(MSHInMail.class);
 
             serializeMail(inmail, msg.getAttachments());
 
@@ -149,7 +144,8 @@ public class EBMSEndpoint implements Provider<SOAPMessage> {
         mail.setStatus(SEDInboxMailStatus.RECEIVED.getValue());
         mail.setStatusDate(dt);
         mail.setReceivedDate(dt);
-        
+
+        /*
         // --------------------
         // serialize payload
         try {
@@ -189,19 +185,21 @@ public class EBMSEndpoint implements Provider<SOAPMessage> {
             SEDException msherr = new SEDException();
             msherr.setErrorCode(SEDExceptionCode.SERVER_ERROR);
             msherr.setMessage(ex.getMessage());
-            throw new SEDException_Exception("Error occured while storing payload", msherr, ex);*/
+            throw new SEDException_Exception("Error occured while storing payload", msherr, ex);* /
         } catch (StorageException ex) {
             /*
             SEDException msherr = new SEDException();
             msherr.setErrorCode(SEDExceptionCode.SERVER_ERROR);
             msherr.setMessage(ex.getMessage());
-            throw new SEDException_Exception("Error occured while storing payload", msherr, ex);*/
+            throw new SEDException_Exception("Error occured while storing payload", msherr, ex);* /
         } catch (HashException ex) {
             /*SEDException msherr = new SEDException();
             msherr.setErrorCode(SEDExceptionCode.SERVER_ERROR);
             msherr.setMessage(ex.getMessage());
-            throw new SEDException_Exception("Error occured while calculating payload hash (MD5)", msherr, ex);*/
+            throw new SEDException_Exception("Error occured while calculating payload hash (MD5)", msherr, ex);* /
         }
+    
+         */
         // --------------------
         // serialize data to db
         try {

@@ -493,8 +493,8 @@ public class SEDMailBox implements SEDMailBoxWS {
     private SEDException vaildateMail(OutMail mail) {
 
         List<String> merrLst = new ArrayList<>();
-
-        if (mail.getSenderMessageId() == null || mail.getSenderMessageId().isEmpty()) {
+        
+        if (Utils.isEmptyString(mail.getSenderMessageId())) {
             merrLst.add("Missing mail id!");
         }
 
@@ -505,30 +505,45 @@ public class SEDMailBox implements SEDMailBoxWS {
         int iMP = 0;
         for (OutPart mp : mail.getOutPayload().getOutParts()) {
             iMP++;
-            if (mp.getMimeType() == null || mp.getMimeType().isEmpty()) {
+            if (Utils.isEmptyString(mp.getMimeType())) {
                 merrLst.add("Missing payload mimetype (index:'" + iMP + "')!");
             }
             if (mp.getValue() == null || Utils.isEmptyString(mp.getFilepath())) {
                 merrLst.add("Missing payload data (index:'" + iMP + "')!");
             }
         }
+        if (Utils.isEmptyString(mail.getReceiverName())) {
+            merrLst.add("Missing Receiver name!");
+        }
 
-        if (mail.getReceiverEBox() == null || mail.getReceiverEBox().trim().isEmpty()) {
+        if (Utils.isEmptyString(mail.getReceiverEBox())) {
             merrLst.add("Missing ReceiverEBox!");
         }
-        if (mail.getService() == null || mail.getService().trim().isEmpty()) {
-            merrLst.add("Missing service (DeliveryType)!");
+        
+        if (Utils.isEmptyString(mail.getSenderName())) {
+            merrLst.add("Missing sender name!");
         }
-        if (mail.getAction() == null || mail.getAction().trim().isEmpty()) {
-            merrLst.add("Missing action!");
-        }
-
-        if (mail.getReceiverEBox() == null || mail.getReceiverEBox().trim().isEmpty()) {
-            merrLst.add("Missing receiver EBox!");
-        }
-        if (mail.getSenderEBox() == null || mail.getSenderEBox().trim().isEmpty()) {
+        
+        if (Utils.isEmptyString(mail.getSenderEBox())) {
             merrLst.add("Missing sender EBox!");
         }
+
+        
+        
+        
+        if (Utils.isEmptyString(mail.getService())) {
+            merrLst.add("Missing service (DeliveryType)!");
+        }
+        if (Utils.isEmptyString(mail.getAction())) {
+            merrLst.add("Missing action!");
+        }
+        
+        if (Utils.isEmptyString(mail.getConversationId())) {
+            merrLst.add("Conversation id!");
+        }
+
+        
+        
 
         if (!merrLst.isEmpty()) {
             SEDException msherr = new SEDException();

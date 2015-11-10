@@ -73,6 +73,11 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>ebms-msh-plugin</artifactId>
+            <version>${project.version}</version>		
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>ebms-sed-wsdl</artifactId>
             <version>${project.version}</version>		
         </dependency>
