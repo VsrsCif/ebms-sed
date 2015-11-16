@@ -40,12 +40,12 @@ Copyright 2015, Supreme Court Republic of Slovenia
         </xs:sequence>
     </xs:complexType>
     <xs:simpleType name="SEDExceptionCode">
-        <xs:restriction base="xs:string">
-            <xs:enumeration value="MailWithIdAlreadySent"/>
+        <xs:restriction base="xs:string">            
             <xs:enumeration value="PModeNotExists"/>
+            <xs:enumeration value="RequiredDataNotExists"/>
             <xs:enumeration value="InvalidPMode"/>
             <xs:enumeration value="InvalidData"/>
-            <xs:enumeration value="MissingData"/>
+            <xs:enumeration value="MissingData"/>            
             <xs:enumeration value="ServerError"/>
         </xs:restriction>
     </xs:simpleType>

@@ -26,8 +26,7 @@ import javax.xml.ws.Service;
 import javax.xml.ws.soap.MTOMFeature;
 import javax.xml.ws.soap.SOAPBinding;
 import org.apache.cxf.endpoint.Client;
-import org.apache.cxf.interceptor.LoggingInInterceptor;
-import org.apache.cxf.interceptor.LoggingOutInterceptor;
+
 import org.apache.cxf.jaxws.DispatchImpl;
 import org.msh.ebms.outbox.mail.MSHOutMail;
 import org.msh.svev.pmode.PMode;
@@ -46,7 +45,7 @@ import si.sed.msh.plugin.MSHPluginOutInterceptor;
 
 /**
  *
- * @author sluzba
+ * @author Jože Rihtaršič
  */
 public class MshClient {
 

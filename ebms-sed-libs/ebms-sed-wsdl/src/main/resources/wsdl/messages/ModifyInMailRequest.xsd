@@ -25,53 +25,56 @@ Copyright 2015, Supreme Court Republic of Slovenia
  See the Licence for the specific language governing permissions and  
  limitations under the Licence.
 -->
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://ebms.sed.org/" xmlns:con="http://ebms.sed.org/Control" targetNamespace="http://ebms.sed.org/">
-	<xs:import namespace="http://ebms.sed.org/Control" schemaLocation="./Control.xsd"/>
-	<xs:element name="ModifyInMailRequest">
-		<xs:complexType>
-			<xs:annotation>
-				<xs:documentation xml:lang="sl"> 
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns="http://ebms.sed.org/" 
+           xmlns:con="http://ebms.sed.org/Control" 
+           targetNamespace="http://ebms.sed.org/">
+    <xs:import namespace="http://ebms.sed.org/Control" schemaLocation="./Control.xsd"/>
+    <xs:element name="ModifyInMailRequest">
+        <xs:complexType>
+            <xs:annotation>
+                <xs:documentation xml:lang="sl"> 
                     Potrjevanje prejema dohodne pošte. Pošta je ob potrditvi prestavljena v status "Processed"
                 </xs:documentation>
-			</xs:annotation>
-			<xs:sequence>
-				<xs:element name="Control" type="con:Control"/>
-				<xs:element name="Data">
-					<xs:complexType>
-						<xs:attribute name="receiverEBox" use="optional">
-							<xs:annotation>
-								<xs:documentation xml:lang="sl">Naslovnikov elektronski naslov.</xs:documentation>
-							</xs:annotation>
-							<xs:simpleType>
-								<xs:restriction base="xs:token">
-									<xs:maxLength value="64"/>
-									<xs:pattern value="[_\-a-zA-Z0-9\.\+]+@[a-zA-Z0-9](\.?[\-a-zA-Z0-9]*[a-zA-Z0-9])*"/>
-								</xs:restriction>
-							</xs:simpleType>
-						</xs:attribute>
-						<xs:attribute name="mailId" type="xs:integer" use="required">
-							<xs:annotation>
-								<xs:documentation xml:lang="sl">Id vhodne pošiljke</xs:documentation>
-							</xs:annotation>
-						</xs:attribute>
-						<xs:attribute name="action" use="required">
-							<xs:annotation>
-								<xs:documentation>Akcije:                         
+            </xs:annotation>
+            <xs:sequence>
+                <xs:element name="Control" type="con:Control"/>
+                <xs:element name="Data">
+                    <xs:complexType>
+                        <xs:attribute name="receiverEBox" use="optional">
+                            <xs:annotation>
+                                <xs:documentation xml:lang="sl">Naslovnikov elektronski naslov.</xs:documentation>
+                            </xs:annotation>
+                            <xs:simpleType>
+                                <xs:restriction base="xs:token">
+                                    <xs:maxLength value="64"/>
+                                    <xs:pattern value="[_\-a-zA-Z0-9\.\+]+@[a-zA-Z0-9](\.?[\-a-zA-Z0-9]*[a-zA-Z0-9])*"/>
+                                </xs:restriction>
+                            </xs:simpleType>
+                        </xs:attribute>
+                        <xs:attribute name="mailId" type="xs:integer" use="required">
+                            <xs:annotation>
+                                <xs:documentation xml:lang="sl">Id vhodne pošiljke</xs:documentation>
+                            </xs:annotation>
+                        </xs:attribute>
+                        <xs:attribute name="action" type="ModifyActionCode" use="required">
+                            <xs:annotation>
+                                <xs:documentation>Akcije:                         
                                     - ACCEPT: pošiljka se označi kot uspešno prevzeta -> status pošiljke se spremni v 'Processed'
                                     - LOCK:     akcija pošiljko, ki še niso prevzete se nastavi v status  "Locked" Takšne pošiljke se ne prikazujejo več v seznamu dohodne pošte. 
                                 </xs:documentation>
-							</xs:annotation>
-							<xs:simpleType>
-								<xs:restriction base="xs:token">
-									<xs:maxLength value="20"/>
-									<xs:enumeration value="ACCEPT"/>
-									<xs:enumeration value="LOCK"/>
-								</xs:restriction>
-							</xs:simpleType>
-						</xs:attribute>
-					</xs:complexType>
-				</xs:element>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
+                            </xs:annotation>                            
+                        </xs:attribute>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:simpleType name="ModifyActionCode">
+        <xs:restriction base="xs:token">
+            <xs:maxLength value="20"/>
+            <xs:enumeration value="ACCEPT"/>
+            <xs:enumeration value="LOCK"/>
+        </xs:restriction>
+    </xs:simpleType>
 </xs:schema>

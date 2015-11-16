@@ -35,6 +35,10 @@ public class MSHPluginOutInterceptor extends AbstractSoapInterceptor {
         long l = mlog.logStart();
         PMode pmd = msg.getExchange().get(PMode.class);
         MSHOutMail outMail = msg.getExchange().get(MSHOutMail.class);
+        MSHInMail inMail = msg.getExchange().get(MSHInMail.class);
+         System.out.println("MSHPluginInInterceptor Pmode:;  " + pmd );
+        System.out.println("MSHPluginInInterceptor inMail:;  " + inMail );
+        System.out.println("MSHPluginInInterceptor outMail:;  " + outMail );
         if (pmd != null && outMail != null) {
             // todo
             String str = pmd.getLegs().get(0).getBusinessInfo().getService().getOutPlugin();
@@ -43,7 +47,7 @@ public class MSHPluginOutInterceptor extends AbstractSoapInterceptor {
                 String filenamePlugin = lst[0];
                 String classNamePlugin = lst[1];
                 System.out.println("****************************************************************");
-                System.out.println("INVOKE: get pmode: :  " + pmd);
+                System.out.println("INVOKE: interceptor: " + str);
                 AbstractPluginInterceptor ii = PluginManager.getInterceptor(System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR) + File.separator + PLUGIN_FOLDER + File.separator + filenamePlugin, classNamePlugin);
                 ii.handleMessage(msg);
             }

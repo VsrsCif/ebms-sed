@@ -237,9 +237,9 @@ public class EBMSUtils {
 
         }
         // add submit date
-        if (mo.getSubmitedDate() != null) {
+        if (mo.getSubmittedDate() != null) {
             Calendar cal = new GregorianCalendar();
-            cal.setTime(mo.getSubmitedDate());
+            cal.setTime(mo.getSubmittedDate());
             Property p = new Property();
             p.setName(EbMSConstants.EBMS_PROPERTY_SUBMIT_DATE);
             p.setValue(DatatypeConverter.printDateTime(cal));
@@ -351,7 +351,7 @@ public class EBMSUtils {
                             break;
                         case EbMSConstants.EBMS_PROPERTY_SUBMIT_DATE:
                             Date dt = DatatypeConverter.parseDateTime(p.getValue()).getTime();
-                            mshmail.setSubmitedDate(dt);
+                            mshmail.setSubmittedDate(dt);
                             break;
                         default:
                             MSHInProperty mp = new MSHInProperty();

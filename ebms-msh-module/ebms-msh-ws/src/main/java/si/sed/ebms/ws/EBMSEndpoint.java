@@ -18,7 +18,12 @@ package si.sed.ebms.ws;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.Resource;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.HeuristicMixedException;
@@ -47,21 +52,24 @@ import org.msh.ebms.inbox.mail.MSHInMail;
 import org.msh.svev.pmode.PMode;
 import si.jrc.msh.utils.EBMSUtils;
 import si.sed.commons.SEDInboxMailStatus;
+import si.sed.commons.SEDSystemProperties;
 
 import si.sed.commons.utils.HashUtils;
 import si.sed.commons.utils.StorageUtils;
 
-@WebServiceProvider(serviceName = "ebms")
+@WebServiceProvider(serviceName = "ebms-msh")
 @ServiceMode(value = Service.Mode.MESSAGE)
 @BindingType(SOAPBinding.SOAP12HTTP_BINDING)
 @org.apache.cxf.interceptor.InInterceptors(interceptors
         = {
+            "org.apache.cxf.interceptor.LoggingInInterceptor",
             "si.jrc.msh.interceptor.EBMSLogInInterceptor",
             "si.jrc.msh.interceptor.EBMSInInterceptor",
             "si.sed.msh.plugin.MSHPluginInInterceptor"
         })
 @org.apache.cxf.interceptor.OutInterceptors(interceptors
         = {
+            "org.apache.cxf.interceptor.LoggingOutInterceptor",
             "si.jrc.msh.interceptor.EBMSLogOutInterceptor",
             "si.jrc.msh.interceptor.EBMSOutInterceptor",
             "si.sed.msh.plugin.MSHPluginOutInterceptor"
@@ -72,10 +80,10 @@ public class EBMSEndpoint implements Provider<SOAPMessage> {
     WebServiceContext wsContext;
 
     @Resource
-    private UserTransaction userTransaction;
+    private UserTransaction mutUTransaction;
 
     @PersistenceContext(unitName = "ebMS_MSH_PU")
-    private EntityManager entityManager;
+    private EntityManager memEManager;
 
     StorageUtils msuStorageUtils = new StorageUtils();
     HashUtils mpHU = new HashUtils();
@@ -202,22 +210,22 @@ public class EBMSEndpoint implements Provider<SOAPMessage> {
         // serialize data to db
         try {
 
-            userTransaction.begin();
+            getUserTransaction().begin();
 
             // persist mail    
-            entityManager.persist(mail);
+            getEntityManager().persist(mail);
 
             // persist mail event
             MSHInEvent me = new MSHInEvent();
             me.setMailId(mail.getId());
             me.setStatus(mail.getStatus());
             me.setDate(mail.getStatusDate());
-            entityManager.persist(me);
-            userTransaction.commit();
+            getEntityManager().persist(me);
+            getUserTransaction().commit();
         } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
             {
                 try {
-                    userTransaction.rollback();
+                    getUserTransaction().rollback();
                 } catch (IllegalStateException | SecurityException | SystemException ex1) {
                     // ignore 
                 }
@@ -228,5 +236,39 @@ public class EBMSEndpoint implements Provider<SOAPMessage> {
             }
         }
 
+    }
+    private UserTransaction getUserTransaction() {
+        // for jetty 
+        if (mutUTransaction == null) {
+            try {
+                InitialContext ic = new InitialContext();
+                
+                mutUTransaction = (UserTransaction) ic.lookup(getJNDIPrefix() +"UserTransaction");
+
+            } catch (NamingException ex) {
+                Logger.getLogger(EBMSEndpoint.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+        }
+        return mutUTransaction;
+    }
+     private String getJNDIPrefix(){
+         
+        return System.getProperty(SEDSystemProperties.SYS_PROP_JNDI_PREFIX, "java:/");
+    }
+       private EntityManager getEntityManager() {
+        // for jetty 
+        if (memEManager == null) {
+            try {
+                InitialContext ic = new InitialContext();
+                Context t = (Context) ic.lookup("java:comp");               
+                memEManager = (EntityManager) ic.lookup(getJNDIPrefix() +"ebMS_PU");
+
+            } catch (NamingException ex) {
+                Logger.getLogger(EBMSEndpoint.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+        }
+        return memEManager;
     }
 }

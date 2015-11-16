@@ -51,7 +51,7 @@ public class PModeManagerTest {
         fa.setAppend(true);
         fa.activateOptions();
         //add appender to any Logger (here is root)
-        Logger.getRootLogger().addAppender(fa);
+        Logger.getRootLogger().addAppender(fa);        
     }
 
     @After

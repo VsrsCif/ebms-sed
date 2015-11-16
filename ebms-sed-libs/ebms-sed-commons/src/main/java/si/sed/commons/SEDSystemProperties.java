@@ -98,6 +98,20 @@ public class SEDSystemProperties {
      * </p>
      */
     public static final String SYS_PROP_DB_HBM2DLL = "org.sed.msh.hibernate.hbm2ddl";
+    
+     /**
+     * System property for JNID prefix:
+     *  wildfly: java:/jms/
+     *  jetty: java:comp/env/
+     *  junit test:  ''
+     * 
+     * <p>
+     * If system property is not given, max 5 outgoing workers are initiated. Workers handle outbox messages. 
+     * </p>
+     */
+    public static final String SYS_PROP_JNDI_PREFIX = "org.sed.jndi.prefix";
+    public static final String SYS_PROP_JNDI_JMS_PREFIX = "org.sed.jndi.jms.prefix";
+
 
 
    

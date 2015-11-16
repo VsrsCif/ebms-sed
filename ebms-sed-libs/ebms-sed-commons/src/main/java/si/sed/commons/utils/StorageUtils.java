@@ -147,7 +147,16 @@ public class StorageUtils {
     }
 
     public static String getRelativePath( File path){
+        File hdir = new File(System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR));
+        if (path.getAbsolutePath().startsWith(hdir.getAbsolutePath())){
+            String rp = path.getAbsolutePath().substring(hdir.getAbsolutePath().length());
+            rp = rp.startsWith(File.separator)? rp.substring(1): rp;
+            return rp;
+        }
+        
+        
         String base = System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR);
+        
         String[] basePaths = base.split(File.separator);
         String[] otherPaths = path.getParent().split(File.separator);
         int n = 0;
@@ -168,6 +177,7 @@ public class StorageUtils {
         }
         // add filename
         tmp.append(path.getName());
+        System.out.println("GET relative path:" + tmp.toString());
         return tmp.toString();
     }
     

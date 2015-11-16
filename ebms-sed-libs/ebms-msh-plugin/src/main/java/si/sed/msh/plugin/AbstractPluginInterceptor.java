@@ -13,18 +13,14 @@
 * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the Licence for the specific language governing permissions and  
 * limitations under the Licence.
-*/
+ */
 package si.sed.msh.plugin;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+
 import java.math.BigInteger;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.Arrays;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.Resource;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
@@ -32,24 +28,37 @@ import javax.jms.Message;
 import javax.jms.MessageProducer;
 import javax.jms.Queue;
 import javax.jms.Session;
+import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import javax.persistence.PersistenceContext;
+import javax.transaction.UserTransaction;
 import org.apache.cxf.binding.soap.SoapMessage;
 import org.apache.cxf.binding.soap.interceptor.AbstractSoapInterceptor;
 import org.apache.cxf.interceptor.Fault;
 import org.msh.ebms.outbox.event.MSHOutEvent;
 import org.msh.ebms.outbox.mail.MSHOutMail;
+import si.sed.commons.SEDSystemProperties;
 import si.sed.commons.SEDValues;
+
 /**
  *
  * @author Joze Rihtarsic <joze.rihtarsic@sodisce.si>
  */
 public abstract class AbstractPluginInterceptor extends AbstractSoapInterceptor {
-    private static String EBMS_MSH_PLUGIN_PU = "EBMS_MSH_PLUGIN_PU";
-     String LOADED_CLASSES = "hibernate.ejb.loaded.classes";
+
+    private static String EBMS_MSH_PLUGIN_PU = "ebMS_PU";
+    String LOADED_CLASSES = "hibernate.ejb.loaded.classes";
+    protected Queue mqMSHQueue = null;
+
+    @Resource
+    private UserTransaction mutUTransaction;
+
+    @PersistenceContext(unitName = "ebMS_MSH_PU")
+    private EntityManager memEManager;
 
     public AbstractPluginInterceptor(String p) {
         super(p);
@@ -57,20 +66,64 @@ public abstract class AbstractPluginInterceptor extends AbstractSoapInterceptor 
 
     public AbstractPluginInterceptor(String i, String p) {
         super(i, p);
- 
+
     }
- 
-    public EntityManagerFactory getSEDEntityManagerFactory(){ 
-        
-        /*if (entCls!= null){
+
+    public UserTransaction getUserTransaction() {
+        // for jetty 
+        if (mutUTransaction == null) {
+            try {
+                InitialContext ic = new InitialContext();
+
+                mutUTransaction = (UserTransaction) ic.lookup(getJNDIPrefix() + "UserTransaction");
+
+            } catch (NamingException ex) {
+                Logger.getLogger(AbstractPluginInterceptor.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+        }
+        return mutUTransaction;
+    }
+
+    private String getJNDIPrefix() {
+
+        return System.getProperty(SEDSystemProperties.SYS_PROP_JNDI_PREFIX, "java:/");
+    }
+
+    private String getJNDI_JMSPrefix() {
+        return System.getProperty(SEDSystemProperties.SYS_PROP_JNDI_JMS_PREFIX, "java:/jms/");
+    }
+
+    public EntityManager getEntityManager() {
+        // for jetty 
+        if (memEManager == null) {
+            try {
+                InitialContext ic = new InitialContext();
+                Context t = (Context) ic.lookup("java:comp");
+                memEManager = (EntityManager) ic.lookup(getJNDIPrefix() + "ebMS_PU");
+
+            } catch (NamingException ex) {
+                Logger.getLogger(AbstractPluginInterceptor.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+        }
+        return memEManager;
+    }
+
+    /*
+    public EntityManagerFactory getSEDEntityManagerFactory() {
+
+        if (entCls!= null){
             Properties mp = new Properties();
             mp.put(LOADED_CLASSES,  Arrays.asList(entCls));
             return Persistence.createEntityManagerFactory(EBMS_MSH_PLUGIN_PU, mp);
-        }*/
-        return Persistence.createEntityManagerFactory(EBMS_MSH_PLUGIN_PU);
+        }
+        // return Persistence.createEntityManagerFactory(EBMS_MSH_PLUGIN_PU);
+        Properties properties = new Properties();
+        return Persistence.createEntityManagerFactory("ebMS_PU", properties);* /
     }
-    
-      /*public EntityManagerFactory getSEDEntityManagerFactory(Class ... entCls){ 
+
+    /*public EntityManagerFactory getSEDEntityManagerFactory(Class ... entCls){ 
         FileWriter fw = null;
         try {
             //File fl  =File.createTempFile("persistence", ".xml");
@@ -109,27 +162,26 @@ public abstract class AbstractPluginInterceptor extends AbstractSoapInterceptor 
                 Logger.getLogger(AbstractPluginInterceptor.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-*/
-
+     */
     @Override
     public abstract void handleMessage(SoapMessage t) throws Fault;
-    
+
     public void serializeMail(MSHOutMail mail, String userID, String applicationId, String pmodeId) {
-        EntityManagerFactory emf = null;
+        //  EntityManagerFactory emf = null;
         EntityManager em = null;
 
         // --------------------
         // serialize data to db
         try {
-            emf = getSEDEntityManagerFactory();
-            em = emf.createEntityManager();
-         
-
-            em.getTransaction().begin();
+            //emf = getSEDEntityManagerFactory();
+            //em = emf.createEntityManager();
+            //em.getTransaction().begin();
+            em = getEntityManager();
+            getUserTransaction().begin();
 
             // persist mail    
             em.persist(mail);
-               // persist mail event
+            // persist mail event
             MSHOutEvent me = new MSHOutEvent();
             me.setMailId(mail.getId());
             me.setStatus(mail.getStatus());
@@ -139,23 +191,23 @@ public abstract class AbstractPluginInterceptor extends AbstractSoapInterceptor 
             me.setApplicationId(applicationId);
             em.persist(me);
 
-            em.getTransaction().commit();
+            //em.getTransaction().commit();
+            getUserTransaction().commit();
 
             sendMessage(mail.getId(), pmodeId);
-        } catch (Exception  ex) {
-            if (em!= null){
+        } catch (Exception ex) {
+            if (em != null) {
                 em.getTransaction().rollback();
             }
             ex.printStackTrace();
-        }finally {
-            if (em!= null){
+        } finally {
+            /* if (em != null) {
                 em.close();
             }
-            if (emf!= null){
+            if (emf != null) {
                 emf.close();
-            }
+            }*/
         }
-        
 
     }
 
@@ -165,9 +217,12 @@ public abstract class AbstractPluginInterceptor extends AbstractSoapInterceptor 
         InitialContext ic = null;
         Connection connection = null;
         try {
+            Queue queue = getMSHQueue();
+
             ic = new InitialContext();
-            ConnectionFactory cf = (ConnectionFactory) ic.lookup("/ConnectionFactory");
-            Queue queue = (Queue) ic.lookup("java:/jms/" + SEDValues.EBMS_QUEUE_JNDI);
+            String jndiName = getJNDIPrefix() + SEDValues.EBMS_JMS_CONNECTION_FACTORY_JNDI;
+            ConnectionFactory cf = (ConnectionFactory) ic.lookup(jndiName);
+
             connection = cf.createConnection();
             Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
             MessageProducer sender = session.createProducer(queue);
@@ -180,6 +235,7 @@ public abstract class AbstractPluginInterceptor extends AbstractSoapInterceptor 
             suc = true;
         } catch (NamingException | JMSException ex) {
             ex.printStackTrace();
+
         } finally {
             if (ic != null) {
                 try {
@@ -193,6 +249,16 @@ public abstract class AbstractPluginInterceptor extends AbstractSoapInterceptor 
         return suc;
     }
 
+    private Queue getMSHQueue() throws NamingException {
+        if (mqMSHQueue == null) {
+            String jndiName = getJNDI_JMSPrefix() + SEDValues.EBMS_QUEUE_JNDI;
+            InitialContext ic = new InitialContext();
+            mqMSHQueue = (Queue) ic.lookup(jndiName);
+
+        }
+        return mqMSHQueue;
+    }
+
     protected void closeConnection(Connection con) {
         try {
             if (con != null) {
@@ -202,5 +268,5 @@ public abstract class AbstractPluginInterceptor extends AbstractSoapInterceptor 
             // ignore
         }
     }
-    
+
 }

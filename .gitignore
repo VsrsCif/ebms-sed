@@ -1,0 +1,30 @@
+/ebms-sed-libs/ebms-msh-xsd/target/
+/ebms-sed-libs/ebms-sed-wsdl/target/
+/ebms-sed-libs/ebms-sed-commons/target/
+/ebms-sed-module/ebms-sed-ws/target/
+/ebms-msh-module/ebms-msh-cxf/target/
+/ebms-msh-module/ebms-msh-ejb/target/
+/ebms-msh-module/ebms-msh-ws/target/
+/ebms-msh-module/ebms-msh-ear/target/
+/ebms-sed-libs (kopija)/ebms-msh-xsd/target/
+/ebms-sed-libs (kopija)/ebms-sed-commons/target/
+/ebms-sed-libs (kopija)/ebms-sed-wsdl/target/
+/ebms-msh-plugins/ebms-msh-xsd/target/
+/ebms-msh-plugins/ebms-sed-commons/target/
+/ebms-msh-plugins/ebms-sed-wsdl/target/
+/ebms-plugins/ebms-msh-xsd/target/
+/ebms-plugins/ebms-sed-commons/target/
+/ebms-plugins/ebms-sed-wsdl/target/
+/ebms-sed-plugins/ebms-msh-xsd/target/
+/ebms-sed-plugins/ebms-sed-commons/target/
+/ebms-sed-plugins/ebms-sed-wsdl/target/
+/ebms-sed-plugins/ebms-msh-xsd/ebms-sed-wsdl/target/
+/ebms-sed-plugins/ebms-sed-zpp-plugin/target/
+/ebms-sed-libs/ebms-msh-cxf/target/
+/ebms-sed-libs/ebms-msh-plugin/target/
+/ebms-sed-libs/ebms-sed-commons/nbproject/
+/ebms-sed-libs/ebms-sed-commons/test.html
+/ebms-sed-libs/ebms-sed-commons/test.txt
+/ebms-sed-libs/ebms-sed-commons/test.pdf
+/ebms-sed-module/ebms-sed-ws/nbproject/
+/ebms-sed-standalone/target/

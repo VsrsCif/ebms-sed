@@ -9,7 +9,7 @@ drop index IDX_SED_OUTBOX_DATE_DELIVERED;
 drop index IDX_SED_OUTBOX_DATE_RECEIVED;
 drop index IDX_SED_OUTBOX_DATE_SENT;
 drop index IDX_SED_OUTBOX_DATE_STATUS;
-drop index IDX_SED_OUTBOX_DATE_SUBMITED;
+drop index IDX_SED_OUTBOX_DATE_submitted;
 drop index IDX_SED_OUTBOX_EVENT_MAIL_ID;
 drop index IDX_SED_OUTBOX_MSG_ID;
 drop index IDX_SED_OUTBOX_SENDER_MSG_ID;
@@ -49,7 +49,7 @@ CREATE TABLE sed_inbox (
     sender_name VARCHAR2(128 BYTE) NOT NULL ENABLE,
     status VARCHAR2(32 BYTE) NOT NULL ENABLE,
     date_status DATE NOT NULL ENABLE,
-    date_submited DATE NOT NULL ENABLE,
+    date_submitted DATE NOT NULL ENABLE,
     date_sent DATE,
     date_received DATE,
     date_delivered DATE,
@@ -63,7 +63,8 @@ CREATE TABLE sed_inbox (
 
 CREATE TABLE sed_inbox_event (
     id NUMBER(*,0) NOT NULL ENABLE,
-    mail_id NUMBER(*,0),
+    mail_id NUMBER(*,0) NOT NULL ENABLE,
+    receiver_ebox VARCHAR2(64 BYTE) NOT NULL ENABLE,
     status VARCHAR2(32 BYTE) NOT NULL ENABLE,
     "date" DATE NOT NULL ENABLE,
     description VARCHAR2(512 BYTE),
@@ -124,7 +125,7 @@ CREATE TABLE sed_outbox (
     sender_name VARCHAR2(128 BYTE) NOT NULL ENABLE,
     status VARCHAR2(32 BYTE) NOT NULL ENABLE,
     date_status DATE NOT NULL ENABLE,
-    date_submited DATE NOT NULL ENABLE,
+    date_submitted DATE NOT NULL ENABLE,
     date_sent DATE,
     date_received DATE,
     date_delivered DATE,
@@ -140,6 +141,7 @@ CREATE TABLE sed_outbox_event (
     id NUMBER(*,0) NOT NULL ENABLE,
     mail_id NUMBER(*,0) NOT NULL ENABLE,
     sender_msg_id VARCHAR2(64 BYTE),
+    sender_ebox VARCHAR2(64 BYTE) NOT NULL ENABLE,
     status VARCHAR2(32 BYTE) NOT NULL ENABLE,
     "date" DATE NOT NULL ENABLE,
     description VARCHAR2(512 BYTE),
@@ -273,7 +275,7 @@ CREATE INDEX idx_sed_inbox_status ON sed_inbox (status);
 -- Name: idx_date_submit; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
-CREATE INDEX idx_sed_inbox_date_submited ON sed_inbox (date_submited);
+CREATE INDEX idx_sed_inbox_date_submitted ON sed_inbox (date_submitted);
 
 
 --
@@ -324,7 +326,7 @@ CREATE INDEX idx_sed_outbox_date_status ON sed_outbox (date_status);
 -- Name: idx_out_date_submit; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
-CREATE INDEX idx_sed_outbox_date_submited ON sed_outbox (date_submited);
+CREATE INDEX idx_sed_outbox_date_submitted ON sed_outbox (date_submitted);
 
 --
 -- Name: idx_out_even_send_msg_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
@@ -372,7 +374,7 @@ drop index IDX_SED_OUTBOX_DATE_DELIVERED;
 drop index IDX_SED_OUTBOX_DATE_RECEIVED;
 drop index IDX_SED_OUTBOX_DATE_SENT;
 drop index IDX_SED_OUTBOX_DATE_STATUS;
-drop index IDX_SED_OUTBOX_DATE_SUBMITED;
+drop index IDX_SED_OUTBOX_DATE_submitted;
 drop index IDX_SED_OUTBOX_EVENT_MAIL_ID;
 drop index IDX_SED_OUTBOX_MSG_ID;
 drop index IDX_SED_OUTBOX_SENDER_MSG_ID;
@@ -412,7 +414,7 @@ CREATE TABLE sed_inbox (
     sender_name VARCHAR2(128 BYTE) NOT NULL ENABLE,
     status VARCHAR2(32 BYTE) NOT NULL ENABLE,
     date_status DATE NOT NULL ENABLE,
-    date_submited DATE NOT NULL ENABLE,
+    date_submitted DATE NOT NULL ENABLE,
     date_sent DATE,
     date_received DATE,
     date_delivered DATE,
@@ -487,7 +489,7 @@ CREATE TABLE sed_outbox (
     sender_name VARCHAR2(128 BYTE) NOT NULL ENABLE,
     status VARCHAR2(32 BYTE) NOT NULL ENABLE,
     date_status DATE NOT NULL ENABLE,
-    date_submited DATE NOT NULL ENABLE,
+    date_submitted DATE NOT NULL ENABLE,
     date_sent DATE,
     date_received DATE,
     date_delivered DATE,
@@ -636,7 +638,7 @@ CREATE INDEX idx_sed_inbox_status ON sed_inbox (status);
 -- Name: idx_date_submit; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
-CREATE INDEX idx_sed_inbox_date_submited ON sed_inbox (date_submited);
+CREATE INDEX idx_sed_inbox_date_submitted ON sed_inbox (date_submitted);
 
 
 --
@@ -687,7 +689,7 @@ CREATE INDEX idx_sed_outbox_date_status ON sed_outbox (date_status);
 -- Name: idx_out_date_submit; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
-CREATE INDEX idx_sed_outbox_date_submited ON sed_outbox (date_submited);
+CREATE INDEX idx_sed_outbox_date_submitted ON sed_outbox (date_submitted);
 
 --
 -- Name: idx_out_even_send_msg_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 

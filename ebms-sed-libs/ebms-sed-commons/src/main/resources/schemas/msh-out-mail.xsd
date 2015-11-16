@@ -124,7 +124,7 @@ Copyright 2015, Supreme Court Republic of Slovenia
 				</xs:restriction>
 			</xs:simpleType>
 		</xs:attribute>
-		<xs:attribute name="submitedDate" type="xs:dateTime" use="optional">
+		<xs:attribute name="submittedDate" type="xs:dateTime" use="optional">
 			<xs:annotation>
 				<xs:documentation xml:lang="sl">Datum oddaje pošiljke v vročanje. Datum določi MSH ob prevem uspešnem prejemu pošiljke</xs:documentation>
 			</xs:annotation>

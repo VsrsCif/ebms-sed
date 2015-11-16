@@ -17,6 +17,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.activation.DataHandler;
 import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
@@ -99,7 +100,9 @@ public class EBMSInInterceptor extends AbstractSoapInterceptor {
     WSS4JInInterceptor wssInterceptor = new WSS4JInInterceptor();
 
     public EBMSInInterceptor() {
-        super(Phase.USER_PROTOCOL);
+        //super(Phase.USER_PROTOCOL);
+        super(Phase.PRE_PROTOCOL); // user preprotocol for generating receipt
+        // in user_protocol wss in removed!
         getAfter().add(WSS4JInInterceptor.class.getName());
     }
 
@@ -197,7 +200,11 @@ public class EBMSInInterceptor extends AbstractSoapInterceptor {
 
                 msg.getExchange().put(MSHInMail.class, mMail);
 
+                
+                
+                
                 SOAPMessage request = msg.getContent(SOAPMessage.class);
+              
                 SignalMessage as4Receipt = mebmsUtils.generateAS4ReceiptSignal(mMail.getMessageId(), Utils.getDomainFromAddress(mMail.getReceiverEBox()), request.getSOAPPart().getDocumentElement());
                 msg.getExchange().put(SignalMessage.class, as4Receipt);
             } else {

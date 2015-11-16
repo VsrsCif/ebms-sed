@@ -7,6 +7,7 @@ package si.jrc.msh.utils;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import si.jrc.msh.interceptor.EBMSOutInterceptor;
@@ -24,11 +25,11 @@ public class EBMSLogUtils {
     
     private static final String S_ROOT_FOLDER = "ebms_log";
 
-    public static final String S_PREFIX = "ebms_";
-    public static final String S_OUT_PREFIX = "_out-";
-    public static final String S_IN_PREFIX = "_in-";
-    public static final String S_REQUEST_SUFFIX = "request.soap";
-    public static final String S_RESPONSE_SUFFIX = "response.soap";
+    public static final String S_PREFIX = "ebms";
+    public static final String S_OUT_PREFIX = "-out_";
+    public static final String S_IN_PREFIX = "-in_";
+    public static final String S_REQUEST_SUFFIX = "_request.soap";
+    public static final String S_RESPONSE_SUFFIX = "_response.soap";
     
     
     public static String getBaseFileName(File f) {
@@ -36,9 +37,9 @@ public class EBMSLogUtils {
         return fn.substring(fn.indexOf("_")+1, fn.lastIndexOf("_"));
     }
     
-    public static File getOutboundFileName(boolean isRequestor, String  baseName) {
+    public static File getOutboundFileName(boolean isRequestor, BigInteger id,  String  baseName) {
         try {
-            return getBaseFile(S_PREFIX, baseName,S_OUT_PREFIX+ (isRequestor?S_REQUEST_SUFFIX:S_RESPONSE_SUFFIX));
+            return getBaseFile(S_PREFIX+S_OUT_PREFIX+(id!=null?id.toString():"")+"-", baseName, (isRequestor?S_REQUEST_SUFFIX:S_RESPONSE_SUFFIX));
         } catch (StorageException ex) {
             mlog.logError(0, ex);
         }
@@ -47,7 +48,7 @@ public class EBMSLogUtils {
     
      public static File getInboundFileName(boolean isRequestor, String  baseName) {
         try {
-            return getBaseFile(S_PREFIX, baseName,S_IN_PREFIX +( isRequestor?S_RESPONSE_SUFFIX:S_REQUEST_SUFFIX));
+            return getBaseFile(S_PREFIX+(isRequestor?S_OUT_PREFIX:S_IN_PREFIX), baseName,( isRequestor?S_RESPONSE_SUFFIX:S_REQUEST_SUFFIX));
         } catch (StorageException ex) {
             mlog.logError(0, ex);
         }

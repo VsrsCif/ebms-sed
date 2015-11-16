@@ -13,7 +13,7 @@ CREATE TABLE sed_inbox (
     sender_name character varying(128),
     status character varying(32),
     date_status timestamp without time zone,
-    date_submited timestamp without time zone,
+    date_submitted timestamp without time zone,
     date_sent timestamp without time zone,
     date_received timestamp without time zone,
     date_delivered timestamp without time zone
@@ -27,6 +27,7 @@ CREATE TABLE sed_inbox (
 CREATE TABLE sed_inbox_event (
     id numeric(19,0) NOT NULL,
     mail_id numeric(19,0),
+    receiver_ebox character varying(64),
     status character varying(32),
     date timestamp without time zone,
     description character varying(512),
@@ -84,7 +85,7 @@ CREATE TABLE sed_outbox (
     sender_name character varying(128),
     status character varying(32),
     date_status timestamp without time zone,
-    date_submited timestamp without time zone,
+    date_submitted timestamp without time zone,
     date_sent timestamp without time zone,
     date_received timestamp without time zone,
     date_delivered timestamp without time zone
@@ -99,6 +100,7 @@ CREATE TABLE sed_outbox_event (
     id numeric(19,0) NOT NULL,
     mail_id numeric(19,0),
     sender_msg_id character varying(64),
+    sender_ebox character varying(64),
     status character varying(32),
     date timestamp without time zone,
     description character varying(512),
@@ -337,7 +339,7 @@ CREATE INDEX idx_date_status ON sed_inbox USING btree (date_status);
 -- Name: idx_date_submit; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
-CREATE INDEX idx_date_submit ON sed_inbox USING btree (date_submited);
+CREATE INDEX idx_date_submit ON sed_inbox USING btree (date_submitted);
 
 
 --
@@ -393,7 +395,7 @@ CREATE INDEX idx_out_date_status ON sed_outbox USING btree (date_status);
 -- Name: idx_out_date_submit; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
-CREATE INDEX idx_out_date_submit ON sed_outbox USING btree (date_submited);
+CREATE INDEX idx_out_date_submit ON sed_outbox USING btree (date_submitted);
 
 
 --

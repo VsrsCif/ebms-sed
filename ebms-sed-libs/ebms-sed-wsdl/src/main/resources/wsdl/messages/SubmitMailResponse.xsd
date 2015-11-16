@@ -50,7 +50,7 @@ Copyright 2015, Supreme Court Republic of Slovenia
                                 </xs:restriction>
                             </xs:simpleType>
                         </xs:attribute>
-                        <xs:attribute name="submitDate" type="xs:dateTime" use="required">
+                        <xs:attribute name="submittedDate" type="xs:dateTime" use="required">
                             <xs:annotation>
                                 <xs:documentation xml:lang="sl">Datum oddaje pošiljke v vročanje. V primeru, da se senderBox in senderMessageId že nahaja v tabeli za transport. Servis vrne čas prve uspešne oddaje sporočila v vročanje</xs:documentation>
                             </xs:annotation>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app
+    xmlns="http://java.sun.com/xml/ns/javaee"
+    xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+    version="3.0">
+    <display-name>ebms-sed-standalone</display-name>
+
+    <resource-ref>
+        <res-ref-name>ebMS_PU</res-ref-name>
+        <res-type>javax.persistence.EntityManager</res-type>        
+    </resource-ref>
+        
+    <resource-ref>
+        <res-ref-name>UserTransaction</res-ref-name>
+        <res-type>javax.transaction.UserTransaction</res-type>        
+    </resource-ref>
+    <resource-ref>
+        <res-ref-name>queue/MSHQueue</res-ref-name>
+        <res-type>javax.jms.Queue</res-type>        
+    </resource-ref>
+    
+    <resource-ref>
+        <res-ref-name>ConnectionFactory</res-ref-name>
+        <res-type>javax.jms.ConnectionFactory</res-type>        
+    </resource-ref>
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>classpath:META-INF/spring/context-provider.xml</param-value>
+    </context-param>
+    
+
+    <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
+   
+    <servlet>
+        <servlet-name>SEDMailBox</servlet-name>
+        <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet>
+        <servlet-name>EBMSEndpoint</servlet-name>
+        <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+  
+    <servlet-mapping>
+        <servlet-name>SEDMailBox</servlet-name>
+        <url-pattern>/ebms-sed-ws/*</url-pattern>
+    </servlet-mapping>
+    
+
+  
+    <servlet-mapping>
+        <servlet-name>EBMSEndpoint</servlet-name>
+        <url-pattern>/ebms-sed/*</url-pattern>
+    </servlet-mapping>
+  
+    <session-config>
+        <session-timeout>60</session-timeout>
+    </session-config>
+</web-app>

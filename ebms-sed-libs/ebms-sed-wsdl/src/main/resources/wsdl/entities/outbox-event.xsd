@@ -28,66 +28,77 @@ Copyright 2015, Supreme Court Republic of Slovenia
            xmlns:ns1="http://ebms.sed.org/outbox/event" 
            targetNamespace="http://ebms.sed.org/outbox/event" 
            elementFormDefault="qualified" attributeFormDefault="unqualified">
-	<xs:element name="OutEvent" type="ns1:OutEvent"/>
-	<xs:complexType name="OutEvent">
-		<xs:annotation>
-			<xs:documentation xml:lang="sl">Status pošiljke</xs:documentation>
-		</xs:annotation>
-		<xs:attribute name="id" type="xs:integer">
-			<xs:annotation>
-				<xs:documentation>Event id</xs:documentation>
-			</xs:annotation>
-		</xs:attribute>
-                <xs:attribute name="mailId" type="xs:integer">
-			<xs:annotation>
-				<xs:documentation xml:lang="sl">Id izhodne pošiljke</xs:documentation>
-			</xs:annotation>			
-		</xs:attribute>
-		<xs:attribute name="senderMessageId" use="optional">
-			<xs:annotation>
-				<xs:documentation xml:lang="sl">Enolična oznaka pošiljke pošiljatelja</xs:documentation>
-			</xs:annotation>
-			<xs:simpleType>
-				<xs:restriction base="xs:string">
-					<xs:maxLength value="64"/>
-				</xs:restriction>
-			</xs:simpleType>
-		</xs:attribute>
-		<xs:attribute name="date" type="xs:dateTime" use="required">
-			<xs:annotation>
-				<xs:documentation xml:lang="sl">Datum/čas statusa</xs:documentation>
-			</xs:annotation>
-		</xs:attribute>
-		<xs:attribute name="status" use="required">
-			<xs:annotation>
-				<xs:documentation xml:lang="sl">Koda statusa</xs:documentation>
-			</xs:annotation>
-			<xs:simpleType>
-				<xs:restriction base="xs:token">
-					<xs:maxLength value="10"/>
-				</xs:restriction>
-			</xs:simpleType>
-		</xs:attribute>
-		<xs:attribute name="description">
-			<xs:annotation>
-				<xs:documentation xml:lang="sl"> Opis dogodka</xs:documentation>
-			</xs:annotation>
-			<xs:simpleType>
-				<xs:restriction base="xs:string">
-					<xs:maxLength value="4000"/>
-				</xs:restriction>
-			</xs:simpleType>
-		</xs:attribute>
-		<xs:attribute name="userId" use="required">
-			<xs:annotation>
-				<xs:documentation xml:lang="sl">ID uporabnika, ki je sporožila spremembo statusa</xs:documentation>
-			</xs:annotation>
-			<xs:simpleType>
-				<xs:restriction base="xs:token">
-					<xs:maxLength value="64"/>
-				</xs:restriction>
-			</xs:simpleType>
-		</xs:attribute>
-		<xs:attribute name="applicationId"/>
-	</xs:complexType>
+    <xs:element name="OutEvent" type="ns1:OutEvent"/>
+    <xs:complexType name="OutEvent">
+        <xs:annotation>
+            <xs:documentation xml:lang="sl">Status pošiljke</xs:documentation>
+        </xs:annotation>
+        <xs:attribute name="id" type="xs:integer">
+            <xs:annotation>
+                <xs:documentation>Event id</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="mailId" type="xs:integer">
+            <xs:annotation>
+                <xs:documentation xml:lang="sl">Id izhodne pošiljke</xs:documentation>
+            </xs:annotation>			
+        </xs:attribute>
+        <xs:attribute name="senderMessageId" use="optional">
+            <xs:annotation>
+                <xs:documentation xml:lang="sl">Enolična oznaka pošiljke pošiljatelja</xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:maxLength value="64"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+        <xs:attribute name="senderEBox" use="required">
+            <xs:annotation>
+                <xs:documentation xml:lang="sl">Naslovnikov elektronski naslov.</xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+                <xs:restriction base="xs:token">
+                    <xs:maxLength value="64"/>
+                    <xs:pattern value="[_\-a-zA-Z0-9\.\+]+@[a-zA-Z0-9](\.?[\-a-zA-Z0-9]*[a-zA-Z0-9])*"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+        <xs:attribute name="date" type="xs:dateTime" use="required">
+            <xs:annotation>
+                <xs:documentation xml:lang="sl">Datum/čas statusa</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="status" use="required">
+            <xs:annotation>
+                <xs:documentation xml:lang="sl">Koda statusa</xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+                <xs:restriction base="xs:token">
+                    <xs:maxLength value="10"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+        <xs:attribute name="description">
+            <xs:annotation>
+                <xs:documentation xml:lang="sl"> Opis dogodka</xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:maxLength value="4000"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+        <xs:attribute name="userId" use="required">
+            <xs:annotation>
+                <xs:documentation xml:lang="sl">ID uporabnika, ki je sporožila spremembo statusa</xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+                <xs:restriction base="xs:token">
+                    <xs:maxLength value="64"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+        <xs:attribute name="applicationId"/>
+    </xs:complexType>
 </xs:schema>
