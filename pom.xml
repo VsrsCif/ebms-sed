@@ -32,7 +32,7 @@
         <org.hibernate.version>4.2.6.Final</org.hibernate.version>
         <org.apache.xmlgraphics.fop.version>2.0</org.apache.xmlgraphics.fop.version>
         <org.apache.santuario.xmlsec.version>2.0.4</org.apache.santuario.xmlsec.version>
-	<!-- unit testing-->
+        <!-- unit testing-->
         <org.apache.derby.version>10.10.2.0</org.apache.derby.version>
         <junit.version>4.12</junit.version>                
     </properties>
@@ -108,11 +108,11 @@
                         </includeSchemas>
                     </configuration>
                 </plugin>
-                  <plugin> 
-                      <groupId>org.apache.maven.plugins</groupId>
-                      <artifactId>maven-ear-plugin</artifactId>
-                      <version>2.10.1</version>
-                  </plugin>
+                <plugin> 
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-ear-plugin</artifactId>
+                    <version>2.10.1</version>
+                </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
@@ -137,7 +137,7 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>  
                     <version>2.6</version>
-	        </plugin>   
+                </plugin>   
        
                
                 <plugin>
@@ -196,20 +196,78 @@
                     </executions>
                     <configuration>
                         <bindingDirectory>${basedir}/src/main/resources/bindings</bindingDirectory>
-                        <wsdlDirectory>${basedir}/src/main/resources/wsdl</wsdlDirectory>
-                        <wsdlFiles>
-                            <wsdlFile>svev-msh-interface.wsdl</wsdlFile>
-                        </wsdlFiles>
-                        <!-- generate to src only because of netbeans to help code completion -->
-                        <sourceDestDir>${basedir}/src/main/java/</sourceDestDir>
-                    
+                        <wsdlDirectory>${basedir}/src/main/resources/wsdl</wsdlDirectory>                       
                     </configuration>
                 </plugin>
             </plugins>
             
         </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-pmd-plugin</artifactId>
+                <version>3.5</version>
+                <executions>
+                    <execution>
+                        <id>cverify-pmd</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>pmd</goal>
+                        </goals>
+                        <configuration>
+                            <excludes>
+                             <exclude>**/generated/*.java</exclude>
+                             </excludes>
+                        </configuration>
+                        
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>2.17</version>
+                <executions>
+                    <execution>
+                        <id>verify-style</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>checkstyle</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <sourceDirectory>${project.build.sourceDirectory}</sourceDirectory>
+                    <!-- excludes>**/generated/**/*, **/generated-sources/**/*</excludes -->
+          
+                        
+                    <logViolationsToConsole>true</logViolationsToConsole>
+                    <checkstyleRules>
+                        <module name="Checker">
+ 
+                            <!-- Checks for Size Violations.                    -->
+                            <!-- See http://checkstyle.sf.net/config_sizes.html -->
+                            <module name="FileLength">
+                                <property name="max" value="3500" />
+                                <property name="fileExtensions" value="java"/>
+                            </module>
+ 
+                            <!-- Checks for whitespace                               -->
+                            <!-- See http://checkstyle.sf.net/config_whitespace.html -->
+                            <module name="FileTabCharacter"/>
+ 
+                            <module name="TreeWalker">
+                                <module name="StaticVariableName"/>
+                                <module name="TypeName">
+                                    <property name="format" value="^_?[A-Z][a-zA-Z0-9]*$"/>
+                                </module>
+                            </module>
+                        </module>
+                    </checkstyleRules>
+                </configuration>
+            </plugin>
 
-       
+        </plugins>
     </build>
 
     <dependencyManagement>
@@ -255,8 +313,8 @@
             </dependency>
             
             <!-- 
-		UNIT TESTING
-	    -->
+                UNIT TESTING
+            -->
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
@@ -267,7 +325,7 @@
                 <artifactId>cxf-rt-transports-http-jetty</artifactId>
                 <version>${cxf-rt.version}</version>
             </dependency>
-             <dependency>
+            <dependency>
                 <groupId>org.apache.xmlgraphics</groupId>
                 <artifactId>fop</artifactId>
                 <version>${org.apache.xmlgraphics.fop.version}</version>            
