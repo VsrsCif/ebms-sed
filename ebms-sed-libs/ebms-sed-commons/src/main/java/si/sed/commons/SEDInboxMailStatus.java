@@ -13,28 +13,25 @@
 * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the Licence for the specific language governing permissions and  
 * limitations under the Licence.
-*/
+ */
 package si.sed.commons;
 
 /**
  *
  * @author Joze Rihtarsic <joze.rihtarsic@sodisce.si>
  */
+public enum SEDInboxMailStatus {
+    RECEIVED("RECEIVED", "Message is sucessfuly received to MSH."),
+    LOCKED("LOCKED", "Message is locked by consumer"),
+    DELIVERED("DELIVERED", "Message is consumed");
 
-public enum SEDInboxMailStatus { 
-    RECEIVED ("RECEIVED", "Message is sucessfuly received to MSH."),
-    LOCKED ("LOCKED", "Message is locked by consumer"),
-    DELIVERED ("DELIVERED", "Message is consumed")
+    String mstrVal;
+    String mstrDesc;
 
-    
-    ; 
-    
-   String mstrVal;
-   String mstrDesc;
-   private SEDInboxMailStatus(String val, String strDesc){
-       mstrVal = val;
-       mstrDesc = strDesc;
-   }
+    private SEDInboxMailStatus(String val, String strDesc) {
+        mstrVal = val;
+        mstrDesc = strDesc;
+    }
 
     public String getValue() {
         return mstrVal;
@@ -43,5 +40,5 @@ public enum SEDInboxMailStatus {
     public String getDesc() {
         return mstrDesc;
     }
-    
+
 }

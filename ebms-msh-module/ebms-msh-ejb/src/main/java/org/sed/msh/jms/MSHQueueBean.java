@@ -40,7 +40,6 @@ import javax.transaction.UserTransaction;
 import org.msh.ebms.outbox.mail.MSHOutMail;
 import org.msh.ebms.outbox.event.MSHOutEvent;
 
-
 import org.msh.svev.pmode.PMode;
 import org.msh.svev.pmode.ReceptionAwareness;
 import si.jrc.msh.client.MshClient;
@@ -114,13 +113,13 @@ public class MSHQueueBean implements MessageListener {
             return;
         }
         // start sending        
-        
+
         setStatusToMail(mail, SEDOutboxMailStatus.SENDING, null);
         try {
             mmshClient.sendMessage(mail, pMode);
             mail.setSentDate(Calendar.getInstance().getTime());
             setStatusToMail(mail, SEDOutboxMailStatus.SENT, null);
-            
+
         } catch (Exception ex) {
             ex.printStackTrace();
             setStatusToMail(mail, SEDOutboxMailStatus.SEND_ERROR, ex.getMessage());
@@ -144,11 +143,11 @@ public class MSHQueueBean implements MessageListener {
                         lDelay *= rty.getMultiplyPeriod();
                     }
                     try {
-                        setStatusToMail(mail, SEDOutboxMailStatus.SEND_SHEDULE, "Resend message in '"+lDelay+"'ms");
+                        setStatusToMail(mail, SEDOutboxMailStatus.SEND_SHEDULE, "Resend message in '" + lDelay + "'ms");
                         sendMessage(idMsg, pModeID, iRet, lDelay);
                     } catch (NamingException | JMSException ex1) {
                         String errDesc = "Error resending message with id: '" + pModeID + "'!";
-                        setStatusToMail(mail, SEDOutboxMailStatus.SEND_ERROR, errDesc + " " +ex.getMessage());
+                        setStatusToMail(mail, SEDOutboxMailStatus.SEND_ERROR, errDesc + " " + ex.getMessage());
                         mlog.logError(t, errDesc, ex1);
                     }
                 } else {
@@ -165,7 +164,7 @@ public class MSHQueueBean implements MessageListener {
     public void setStatusToMail(MSHOutMail mail, SEDOutboxMailStatus status, String desc) {
         long t = mlog.logStart();
         try {
-             getUserTransaction().begin();
+            getUserTransaction().begin();
             mail.setStatusDate(Calendar.getInstance().getTime());
             mail.setStatus(status.getValue());
             // persist mail event
@@ -178,11 +177,11 @@ public class MSHQueueBean implements MessageListener {
 
             getEntityManager().merge(mail);
             getEntityManager().persist(me);
-             getUserTransaction().commit();
+            getUserTransaction().commit();
         } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
             {
                 try {
-                     getUserTransaction().rollback();
+                    getUserTransaction().rollback();
                 } catch (IllegalStateException | SecurityException | SystemException ex1) {
                     // ignore 
                 }
@@ -237,16 +236,16 @@ public class MSHQueueBean implements MessageListener {
 
         }
     }
-    
-     private EntityManager getEntityManager() {
+
+    private EntityManager getEntityManager() {
         // for jetty 
         if (memEManager == null) {
             try {
                 InitialContext ic = new InitialContext();
                 Context t = (Context) ic.lookup("__");
                 listContext(t, "");
-                System.out.println(" get em: " +getJNDIPrefix() +"ebMS_PU");
-                memEManager = (EntityManager) ic.lookup(getJNDIPrefix() +"ebMS_PU");
+                System.out.println(" get em: " + getJNDIPrefix() + "ebMS_PU");
+                memEManager = (EntityManager) ic.lookup(getJNDIPrefix() + "ebMS_PU");
 
             } catch (NamingException ex) {
                 Logger.getLogger(MSHQueueBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -261,8 +260,8 @@ public class MSHQueueBean implements MessageListener {
         if (mutUTransaction == null) {
             try {
                 InitialContext ic = new InitialContext();
-                
-                mutUTransaction = (UserTransaction) ic.lookup(getJNDIPrefix() +"UserTransaction");
+
+                mutUTransaction = (UserTransaction) ic.lookup(getJNDIPrefix() + "UserTransaction");
 
             } catch (NamingException ex) {
                 Logger.getLogger(MSHQueueBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -271,12 +270,13 @@ public class MSHQueueBean implements MessageListener {
         }
         return mutUTransaction;
     }
-    
-     private String getJNDIPrefix(){
-         return "__/";
-       // return System.getProperty(SEDSystemProperties.SYS_PROP_JNDI_PREFIX, "java:/");
+
+    private String getJNDIPrefix() {
+        return "__/";
+        // return System.getProperty(SEDSystemProperties.SYS_PROP_JNDI_PREFIX, "java:/");
     }
- private static final void listContext(Context ctx, String indent) {
+
+    private static final void listContext(Context ctx, String indent) {
         try {
             NamingEnumeration list = ctx.listBindings("");
             while (list.hasMore()) {

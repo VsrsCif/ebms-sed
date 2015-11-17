@@ -26,55 +26,55 @@ Copyright 2015, Supreme Court Republic of Slovenia
 -->
 <xs:schema xmlns:scr="http://ebms.sed.org/RControl" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://ebms.sed.org/RControl">
     <xs:complexType name="RControl">
-            <xs:attribute name="resultSize" type="xs:integer" use="optional">
-                <xs:annotation>
-                    <xs:documentation>V primeru, da je rezultat seznam, je vrednost atributa
-                        stevil vseh rezultatov, ki ustrezajo iskanim pogojem</xs:documentation>
-                </xs:annotation>
-            </xs:attribute>
-            <xs:attribute name="startIndex" type="xs:integer" use="optional">
-                <xs:annotation>
-                    <xs:documentation>V primeru, da je rezultat seznam, je vrednost atributa index prve vrstice v odgovoru  celotnega rezultata. </xs:documentation>
-                </xs:annotation>
-            </xs:attribute>
-            <xs:attribute name="responseSize" type="xs:integer" use="optional">
-                <xs:annotation>
-                    <xs:documentation>V primeru, da je rezultat seznam, je vrednost stevilo vrstic v odgovoru (responseSize je manjse ali enako resultSize)</xs:documentation>
-                </xs:annotation>
-            </xs:attribute>
+        <xs:attribute name="resultSize" type="xs:integer" use="optional">
+            <xs:annotation>
+                <xs:documentation>V primeru, da je rezultat seznam, je vrednost atributa
+                    stevil vseh rezultatov, ki ustrezajo iskanim pogojem</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="startIndex" type="xs:integer" use="optional">
+            <xs:annotation>
+                <xs:documentation>V primeru, da je rezultat seznam, je vrednost atributa index prve vrstice v odgovoru  celotnega rezultata. </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="responseSize" type="xs:integer" use="optional">
+            <xs:annotation>
+                <xs:documentation>V primeru, da je rezultat seznam, je vrednost stevilo vrstic v odgovoru (responseSize je manjse ali enako resultSize)</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
             
-            <xs:attribute name="returnValue" use="required">
-                <xs:annotation>
-                    <xs:documentation>status rezultata servisa: 1=OK   2=WARNING  </xs:documentation>
-                </xs:annotation>
-                <xs:simpleType>
-                    <xs:restriction base="xs:int">
-                        <xs:enumeration value="1"/>
-                        <xs:enumeration value="2"/>
+        <xs:attribute name="returnValue" use="required">
+            <xs:annotation>
+                <xs:documentation>status rezultata servisa: 1=OK   2=WARNING  </xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+                <xs:restriction base="xs:int">
+                    <xs:enumeration value="1"/>
+                    <xs:enumeration value="2"/>
                         
-                    </xs:restriction>
-                </xs:simpleType>
-            </xs:attribute>
-            <xs:attribute name="returnCode" type="xs:int" use="required">
-                <xs:annotation>
-                    <xs:documentation>specifična koda napake (ko je returnValue ERROR) ali (delnega) uspeha (ko je
-                        returnValue OK ali WARNING)
-                    </xs:documentation>
-                </xs:annotation>
-            </xs:attribute>
-            <xs:attribute name="returnText" type="xs:string" use="optional">
-                <xs:annotation>
-                    <xs:documentation>tekstovni opis napake (ko je returnValue ERROR) ali (delnega) uspeha (ko je
-                        returnValue OK ali WARNING)
-                    </xs:documentation>
-                </xs:annotation>
-            </xs:attribute>
-            <xs:attribute name="errorDump" type="xs:string" use="optional">
-                <xs:annotation>
-                    <xs:documentation>dodatni podatki o napaki, npr. exception stack trace, uporabno v fazi razvoja
-                        servisev in za vzdrževanje
-                    </xs:documentation>
-                </xs:annotation>
-            </xs:attribute>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+        <xs:attribute name="returnCode" type="xs:int" use="required">
+            <xs:annotation>
+                <xs:documentation>specifična koda napake (ko je returnValue ERROR) ali (delnega) uspeha (ko je
+                    returnValue OK ali WARNING)
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="returnText" type="xs:string" use="optional">
+            <xs:annotation>
+                <xs:documentation>tekstovni opis napake (ko je returnValue ERROR) ali (delnega) uspeha (ko je
+                    returnValue OK ali WARNING)
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="errorDump" type="xs:string" use="optional">
+            <xs:annotation>
+                <xs:documentation>dodatni podatki o napaki, npr. exception stack trace, uporabno v fazi razvoja
+                    servisev in za vzdrževanje
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
     </xs:complexType>
 </xs:schema>

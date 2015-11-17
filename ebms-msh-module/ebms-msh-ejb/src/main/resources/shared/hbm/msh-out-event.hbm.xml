@@ -2,7 +2,7 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd" >
 <hibernate-mapping>    
     <class name="org.msh.ebms.outbox.event.MSHOutEvent"
-               table="SED_OUTBOX_EVENT">
+           table="SED_OUTBOX_EVENT">
         <id name="Id" type="java.math.BigInteger" >
             <column name="ID" scale="0" />
             <generator class="sequence">

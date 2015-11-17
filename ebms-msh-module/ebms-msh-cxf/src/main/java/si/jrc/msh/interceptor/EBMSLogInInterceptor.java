@@ -13,7 +13,7 @@
 * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the Licence for the specific language governing permissions and  
 * limitations under the Licence.
-*/
+ */
 package si.jrc.msh.interceptor;
 
 import java.io.File;
@@ -52,16 +52,16 @@ public class EBMSLogInInterceptor extends AbstractSoapInterceptor {
     public void handleMessage(SoapMessage msg) throws Fault {
         long l = mlog.logStart();
         SoapVersion version = msg.getVersion();
-        
+
         boolean isRequestor = MessageUtils.isRequestor(msg);
-        String base = (String)msg.getExchange().get(EbMSConstants.EBMS_CP_BASE_LOG_SOAP_MESSAGE_FILE);
+        String base = (String) msg.getExchange().get(EbMSConstants.EBMS_CP_BASE_LOG_SOAP_MESSAGE_FILE);
         File f = EBMSLogUtils.getInboundFileName(isRequestor, base);
         base = EBMSLogUtils.getBaseFileName(f);
         msg.getExchange().put(EbMSConstants.EBMS_CP_BASE_LOG_SOAP_MESSAGE_FILE, base);
         msg.getExchange().put(EbMSConstants.EBMS_CP_IN_LOG_SOAP_MESSAGE_FILE, f);
-        
+
         try {
-         
+
             InputStream is = msg.getContent(InputStream.class);
             if (is != null) {
                 try (FileOutputStream fos = new FileOutputStream(f)) {
@@ -89,7 +89,5 @@ public class EBMSLogInInterceptor extends AbstractSoapInterceptor {
         }
         mlog.logEnd(l);
     }
-
-   
 
 }

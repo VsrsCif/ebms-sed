@@ -36,9 +36,9 @@ public class MSHPluginOutInterceptor extends AbstractSoapInterceptor {
         PMode pmd = msg.getExchange().get(PMode.class);
         MSHOutMail outMail = msg.getExchange().get(MSHOutMail.class);
         MSHInMail inMail = msg.getExchange().get(MSHInMail.class);
-         System.out.println("MSHPluginInInterceptor Pmode:;  " + pmd );
-        System.out.println("MSHPluginInInterceptor inMail:;  " + inMail );
-        System.out.println("MSHPluginInInterceptor outMail:;  " + outMail );
+        System.out.println("MSHPluginInInterceptor Pmode:;  " + pmd);
+        System.out.println("MSHPluginInInterceptor inMail:;  " + inMail);
+        System.out.println("MSHPluginInInterceptor outMail:;  " + outMail);
         if (pmd != null && outMail != null) {
             // todo
             String str = pmd.getLegs().get(0).getBusinessInfo().getService().getOutPlugin();

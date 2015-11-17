@@ -86,15 +86,15 @@ public class EBMSOutInterceptor extends AbstractSoapInterceptor {
             throw ExceptionUtils.createSoapFault(SOAPExceptionCode.InternalFailure, sv, errmsg);
         }
 
-        PMode pmd = msg.getExchange().get(PMode.class) == null? (PMode)msg.getExchange().get(PMode.class.getName()):msg.getExchange().get(PMode.class);
-        
+        PMode pmd = msg.getExchange().get(PMode.class) == null ? (PMode) msg.getExchange().get(PMode.class.getName()) : msg.getExchange().get(PMode.class);
+
         if (pmd == null) {
-            String errmsg =  "Missing PMode configuration for: " + (isRequest?"Request":"Response");
+            String errmsg = "Missing PMode configuration for: " + (isRequest ? "Request" : "Response");
             mlog.logError(l, errmsg, null);
             throw ExceptionUtils.createSoapFault(SOAPExceptionCode.ConfigurationFailure, sv, errmsg);
         }
 
-        MSHOutMail outMail = msg.getExchange().get(MSHOutMail.class) == null? (MSHOutMail)msg.getExchange().get(MSHOutMail.class.getName()):msg.getExchange().get(MSHOutMail.class);
+        MSHOutMail outMail = msg.getExchange().get(MSHOutMail.class) == null ? (MSHOutMail) msg.getExchange().get(MSHOutMail.class.getName()) : msg.getExchange().get(MSHOutMail.class);
         SignalMessage signal = msg.getExchange().get(SignalMessage.class);
         try {
             // set attachment fpr wss signature!
@@ -157,9 +157,10 @@ public class EBMSOutInterceptor extends AbstractSoapInterceptor {
     }
 
     /**
-     * Method sets security configuration to WSS4JOutInterceptor inteceptor 
+     * Method sets security configuration to WSS4JOutInterceptor inteceptor
+     *
      * @param sc
-     * @return 
+     * @return
      */
     public WSS4JOutInterceptor configureSecurityInterceptors(Security sc) {
         long l = mlog.logStart();
@@ -235,11 +236,11 @@ public class EBMSOutInterceptor extends AbstractSoapInterceptor {
 
     /**
      * Method sets attachments to outgoing ebmsUserMessage.
-     * @param msg - SAOP message 
-     * @param mail  - MSH out mail 
-     * @throws StorageException 
+     *
+     * @param msg - SAOP message
+     * @param mail - MSH out mail
+     * @throws StorageException
      */
-    
     private void setAttachments(SoapMessage msg, MSHOutMail mail) throws StorageException {
         if (mail != null && mail.getMSHOutPayload() != null && !mail.getMSHOutPayload().getMSHOutParts().isEmpty()) {
 

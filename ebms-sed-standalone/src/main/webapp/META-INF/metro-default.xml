@@ -48,8 +48,8 @@
 -->
 
 <metro  xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
-   xmlns='http://java.sun.com/xml/ns/metro/config'
-   version="1.0">
+        xmlns='http://java.sun.com/xml/ns/metro/config'
+        version="1.0">
     <tubelines default="#default-metro-tubeline">
         <tubeline name="default-metro-tubeline">
             <client-side>

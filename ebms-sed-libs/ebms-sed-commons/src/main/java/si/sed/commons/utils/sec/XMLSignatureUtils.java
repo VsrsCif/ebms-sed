@@ -19,7 +19,6 @@ import java.security.cert.X509Certificate;
 import java.util.*;
 import java.util.logging.Level;
 
-
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -53,8 +52,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import si.sed.commons.exception.SEDSecurityException;
-
-
 
 public class XMLSignatureUtils {
 
@@ -183,7 +180,7 @@ public class XMLSignatureUtils {
         long t = getTime();
         List<Reference> lstRef = new ArrayList<Reference>();
         try {
-           
+
             DigestMethod dm = fac.newDigestMethod(DigestMethod.SHA1, null);
             for (String[] s : lst) {
                 lstRef.add(fac.newReference("#" + s[0],
@@ -219,12 +216,10 @@ public class XMLSignatureUtils {
             m.marshal(qt, el);
             setIdnessToElemetns(el);
 
-
-
             content = new DOMStructure(el.getFirstChild());
         } catch (JAXBException ex) {
             logError("SvevSignatureUtils.createReferenceList", ex.getMessage(), t, ex);
-            throw new SEDSecurityException(SEDSecurityException.SEDSecurityExceptionCode.CreateSignatureException,ex,  ex.getMessage());
+            throw new SEDSecurityException(SEDSecurityException.SEDSecurityExceptionCode.CreateSignatureException, ex, ex.getMessage());
         }
         return content;
     }
@@ -255,7 +250,6 @@ public class XMLSignatureUtils {
         // Create the DOMSignContext 
         DOMSignContext dsc = new DOMSignContext(certPrivateKey.getPrivateKey(), sigParentElement);
 
-
         try {
             // Marshal, generate (and sign) the enveloped signature
             setIdnessToElemetns(doc.getDocumentElement());
@@ -263,7 +257,6 @@ public class XMLSignatureUtils {
             setIdnessToElemetns(doc.getDocumentElement());
             //String strVal = calculateSignedValueDigest(strSigValId, fac, ki, certPrivateKey, sigParentElement.getOwnerDocument());
             String strVal = calculateSignedValueDigest(strSigValId, sigParentElement.getOwnerDocument());
-
 
             NodeList l = sigParentElement.getElementsByTagName("HashDataInfo");
             Element nTS = doc.createElementNS(XADES_NS, "XMLTimeStamp");
@@ -291,7 +284,6 @@ public class XMLSignatureUtils {
         logEnd("SvevSignatureUtils.singDocument", t);
     }
 
-    
     public Element getTimeStamp(String hash) throws SEDSecurityException {
         String reg = String.format(TIMESTAMP_REQUEST, hash, Calendar.getInstance().getTimeInMillis());
         Document d = callTimestampService(reg, getTimeStampServerUrl(), null, null);
@@ -345,7 +337,6 @@ public class XMLSignatureUtils {
 
         try {
 
-
             // todo calculate signature direct!! this si bad :>
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             dbf.setNamespaceAware(true);
@@ -361,16 +352,11 @@ public class XMLSignatureUtils {
             List<Reference> lstRef1 = new ArrayList<Reference>();
             lstRef1.add(ref_TS);
 
-
             // Create the SignedInfo
             SignedInfo si = fac.newSignedInfo(fac.newCanonicalizationMethod(CanonicalizationMethod.INCLUSIVE,
                     (C14NMethodParameterSpec) null),
                     fac.newSignatureMethod(SignatureMethod.RSA_SHA1, null),
                     lstRef1, "SignedInfo1-39EB3E08-97ED-48AF-969B-ABFD697FC5FA");
-
-
-
-
 
             XMLSignature sig2 = fac.newXMLSignature(si, ki);
 
@@ -378,7 +364,6 @@ public class XMLSignatureUtils {
             dsc.setProperty("javax.xml.crypto.dsig.cacheReference", Boolean.TRUE);
 
             try {
-
 
                 // Marshal, generate (and sign) the enveloped signature
                 sig2.sign(dsc);
@@ -395,7 +380,6 @@ public class XMLSignatureUtils {
                 mlgLogger.error("SvevSignatureUtils.", ex);
             }
 
-
         } catch (ParserConfigurationException ex) {
             mlgLogger.error("SvevSignatureUtils.", ex);
         } catch (NoSuchAlgorithmException ex) {
@@ -411,7 +395,6 @@ public class XMLSignatureUtils {
         String strDigest = null;
         try {
             Element el = oDoc.getElementById(strSigValId);
-
 
             Canonicalizer c = Canonicalizer.getInstance(CanonicalizationMethod.INCLUSIVE);
             byte[] buff = c.canonicalizeSubtree(el);
@@ -483,9 +466,9 @@ public class XMLSignatureUtils {
             dbf.setNamespaceAware(true);
             respDoc = dbf.newDocumentBuilder().parse(httpIS);
 
-        } catch (SAXException | ParserConfigurationException  ex) {
+        } catch (SAXException | ParserConfigurationException ex) {
             logError("SvevSignatureUtils.callTimestampService", ex.getMessage(), t, ex);
-            throw new SEDSecurityException(SEDSecurityException.SEDSecurityExceptionCode.CreateTimestampException, ex, ex.getMessage());       
+            throw new SEDSecurityException(SEDSecurityException.SEDSecurityExceptionCode.CreateTimestampException, ex, ex.getMessage());
         } catch (IOException ex) {
             File fout = null;
             if (conn != null && conn.getErrorStream() != null) {
@@ -504,11 +487,11 @@ public class XMLSignatureUtils {
                 sb.append("\n\tmsg");
                 sb.append(ex.getMessage());
                 sb.append("SvevSignatureUtils.callTimestampService: ERROR\n");
-                for (StackTraceElement st:  ex.getStackTrace()){
+                for (StackTraceElement st : ex.getStackTrace()) {
                     sb.append("\n\t\t");
-                    sb.append(st.toString());                                        
+                    sb.append(st.toString());
                 }
-                fout = writeToFile(new ByteArrayInputStream(sb.toString().getBytes()), getResultLogFolder(), "TS_ERROR", ".html");            
+                fout = writeToFile(new ByteArrayInputStream(sb.toString().getBytes()), getResultLogFolder(), "TS_ERROR", ".html");
             }
 
             StringWriter sw = new StringWriter();
@@ -529,7 +512,7 @@ public class XMLSignatureUtils {
                 sw.append(s + " : " + mp.get(s));
             }
             mlgLogger.error(sw.toString(), ex);
-            throw new SEDSecurityException(SEDSecurityException.SEDSecurityExceptionCode.CreateSignatureException, ex, ex.getMessage());       
+            throw new SEDSecurityException(SEDSecurityException.SEDSecurityExceptionCode.CreateSignatureException, ex, ex.getMessage());
         } finally {
             if (conn != null) {
                 try {
@@ -574,7 +557,7 @@ public class XMLSignatureUtils {
             if (fis != null) {
                 try {
                     fis.close();
-                } catch (IOException ingore) {                    
+                } catch (IOException ingore) {
                 }
             }
         }
@@ -605,13 +588,12 @@ public class XMLSignatureUtils {
         NodeList nl = doc.getElementsByTagNameNS(XMLSignature.XMLNS, "Signature");
         if (nl.getLength() == 0) {
             logError("SvevSignatureUtils.validateXmlDSigSignature", "No signature found", t, null);
-            throw new SEDSecurityException(SEDSecurityException.SEDSecurityExceptionCode.SignatureNotFound,"No signature found");
+            throw new SEDSecurityException(SEDSecurityException.SEDSecurityExceptionCode.SignatureNotFound, "No signature found");
         }
         for (int index = 0; index < nl.getLength(); index++) {
 
             validateSignature(nl.item(index));
         }
-
 
     }
 
@@ -639,14 +621,12 @@ public class XMLSignatureUtils {
 
         }
 
-
         // Create a DOM XMLSignatureFactory that will be used to unmarshal the 
         // document containing the XMLSignature 
         XMLSignatureFactory fac = getXMLSignatureFactory();
 
         // Create a DOMValidateContext and specify a KeyValue KeySelector
         // and document context
-
         DOMValidateContext valContext = new DOMValidateContext(new XMLSignatureX509KeySelector(), ndVal);
         //DOMValidateContext valContext = new DOMValidateContext(new X509KeySelector(ks), nl.item(0));
         // unmarshal the XMLSignature
@@ -688,7 +668,6 @@ public class XMLSignatureUtils {
         FileOutputStream out = null;
         File f = null;
         try {
-
 
             f = File.createTempFile(fileNamePrefix, fileNameSuffix, new File(logFolder));
             out = new FileOutputStream(f);

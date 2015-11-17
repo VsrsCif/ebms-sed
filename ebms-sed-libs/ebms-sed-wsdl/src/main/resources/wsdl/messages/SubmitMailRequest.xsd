@@ -29,20 +29,20 @@ Copyright 2015, Supreme Court Republic of Slovenia
            xmlns:con="http://ebms.sed.org/Control" 
            xmlns:ns1="http://ebms.sed.org/outbox/mail" 
            targetNamespace="http://ebms.sed.org/" >
-	<xs:import namespace="http://ebms.sed.org/Control" schemaLocation="./Control.xsd"/>
-	<xs:import namespace="http://ebms.sed.org/outbox/mail" schemaLocation="../entities/outbox-mail.xsd"/>
-	<xs:element name="SubmitMailRequest">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element name="Control" type="con:Control" />
-				<xs:element name="Data">
-					<xs:complexType>
-						<xs:sequence>
-							<xs:element ref="ns1:OutMail"/>
-						</xs:sequence>
-					</xs:complexType>
-				</xs:element>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
+    <xs:import namespace="http://ebms.sed.org/Control" schemaLocation="./Control.xsd"/>
+    <xs:import namespace="http://ebms.sed.org/outbox/mail" schemaLocation="../entities/outbox-mail.xsd"/>
+    <xs:element name="SubmitMailRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="Control" type="con:Control" />
+                <xs:element name="Data">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element ref="ns1:OutMail"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
 </xs:schema>

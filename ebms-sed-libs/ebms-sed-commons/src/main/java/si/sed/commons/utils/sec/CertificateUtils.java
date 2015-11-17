@@ -158,21 +158,21 @@ public class CertificateUtils {
             e = getKeyStore().aliases();
             while (e.hasMoreElements()) {
                 String as = e.nextElement();
-                X509Certificate rsaCert = (X509Certificate) getKeyStore().getCertificate(as);                
+                X509Certificate rsaCert = (X509Certificate) getKeyStore().getCertificate(as);
                 if (cert.equals(rsaCert)) {
                     alias = as;
                     break;
                 }
             }
-            
+
         } catch (KeyStoreException ex) {
             throw new SEDSecurityException(SEDSecurityException.SEDSecurityExceptionCode.CertificateException, ex, ex.getMessage());
         }
         return getPrivateKeyForAlias(alias);
-        
-    }
-    public Key getPrivateKeyForAlias(String alias) throws SEDSecurityException {
 
+    }
+
+    public Key getPrivateKeyForAlias(String alias) throws SEDSecurityException {
 
         if (alias == null) {
             throw new SEDSecurityException(SEDSecurityException.SEDSecurityExceptionCode.CertificateException, "x.509 cert not found in keystore");
@@ -181,15 +181,14 @@ public class CertificateUtils {
         String passwd = KeyPasswordManager.getInstance().getPasswordForAlias(alias);
         Key rsaKey;
         try {
-            rsaKey = getKeyStore().getKey(alias, passwd.toCharArray());            
+            rsaKey = getKeyStore().getKey(alias, passwd.toCharArray());
         } catch (KeyStoreException | NoSuchAlgorithmException | UnrecoverableKeyException ex) {
             throw new SEDSecurityException(SEDSecurityException.SEDSecurityExceptionCode.KeyStoreException, ex, ex.getMessage());
         }
         return rsaKey;
     }
-    
-    public KeyStore.PrivateKeyEntry getPrivateKeyEntryForAlias(String alias) throws SEDSecurityException {
 
+    public KeyStore.PrivateKeyEntry getPrivateKeyEntryForAlias(String alias) throws SEDSecurityException {
 
         if (alias == null) {
             throw new SEDSecurityException(SEDSecurityException.SEDSecurityExceptionCode.CertificateException, "x.509 cert not found in keystore");

@@ -95,7 +95,6 @@ public class FOPUtils {
             ex.printStackTrace();
         }
      */
-
     public void generateVisualization(Object outMail, File f, FopTransformations xslt, String mime) throws FOPException {
 
         File fxslt = getTransformatinoFile(xslt);

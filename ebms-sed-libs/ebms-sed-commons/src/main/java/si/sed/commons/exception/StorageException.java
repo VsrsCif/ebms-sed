@@ -34,6 +34,4 @@ public class StorageException extends Exception {
         super(cause);
     }
 
- 
-    
 }

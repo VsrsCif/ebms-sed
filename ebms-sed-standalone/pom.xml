@@ -299,8 +299,8 @@
             <optional>true</optional>   
         </dependency>
         
-       <!--FOP -->
-       <dependency>
+        <!--FOP -->
+        <dependency>
             <groupId>org.apache.xmlgraphics</groupId>
             <artifactId>fop</artifactId>
             <version>2.0</version>

@@ -21,8 +21,9 @@ import static si.sed.commons.utils.StorageUtils.currentStorageFolderName;
  * @author Joze Rihtarsic <joze.rihtarsic@sodisce.si>
  */
 public class EBMSLogUtils {
+
     protected static final SEDLogger mlog = new SEDLogger(EBMSOutInterceptor.class);
-    
+
     private static final String S_ROOT_FOLDER = "ebms_log";
 
     public static final String S_PREFIX = "ebms";
@@ -30,25 +31,24 @@ public class EBMSLogUtils {
     public static final String S_IN_PREFIX = "-in_";
     public static final String S_REQUEST_SUFFIX = "_request.soap";
     public static final String S_RESPONSE_SUFFIX = "_response.soap";
-    
-    
+
     public static String getBaseFileName(File f) {
         String fn = f.getName();
-        return fn.substring(fn.indexOf("_")+1, fn.lastIndexOf("_"));
+        return fn.substring(fn.indexOf("_") + 1, fn.lastIndexOf("_"));
     }
-    
-    public static File getOutboundFileName(boolean isRequestor, BigInteger id,  String  baseName) {
+
+    public static File getOutboundFileName(boolean isRequestor, BigInteger id, String baseName) {
         try {
-            return getBaseFile(S_PREFIX+S_OUT_PREFIX+(id!=null?id.toString():"")+"-", baseName, (isRequestor?S_REQUEST_SUFFIX:S_RESPONSE_SUFFIX));
+            return getBaseFile(S_PREFIX + S_OUT_PREFIX + (id != null ? id.toString() : "") + "-", baseName, (isRequestor ? S_REQUEST_SUFFIX : S_RESPONSE_SUFFIX));
         } catch (StorageException ex) {
             mlog.logError(0, ex);
         }
         return null;
     }
-    
-     public static File getInboundFileName(boolean isRequestor, String  baseName) {
+
+    public static File getInboundFileName(boolean isRequestor, String baseName) {
         try {
-            return getBaseFile(S_PREFIX+(isRequestor?S_OUT_PREFIX:S_IN_PREFIX), baseName,( isRequestor?S_RESPONSE_SUFFIX:S_REQUEST_SUFFIX));
+            return getBaseFile(S_PREFIX + (isRequestor ? S_OUT_PREFIX : S_IN_PREFIX), baseName, (isRequestor ? S_RESPONSE_SUFFIX : S_REQUEST_SUFFIX));
         } catch (StorageException ex) {
             mlog.logError(0, ex);
         }
@@ -64,13 +64,13 @@ public class EBMSLogUtils {
         }
         return fStore;
     }
-    
-    public static File getBaseFile(String prefix,String base, String suffix) throws StorageException {
+
+    public static File getBaseFile(String prefix, String base, String suffix) throws StorageException {
         File fStore = null;
-        if (base!= null) {
+        if (base != null) {
             fStore = new File(currentStorageFolder(), prefix + base + suffix);
         }
-        if (fStore == null || fStore.exists()){
+        if (fStore == null || fStore.exists()) {
             fStore = getNewFile(prefix, suffix);
         }
         return fStore;

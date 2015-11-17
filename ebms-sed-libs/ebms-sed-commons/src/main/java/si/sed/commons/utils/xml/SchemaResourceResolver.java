@@ -13,7 +13,7 @@
 * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the Licence for the specific language governing permissions and  
 * limitations under the Licence.
-*/
+ */
 package si.sed.commons.utils.xml;
 
 import java.io.BufferedInputStream;
@@ -34,8 +34,8 @@ import org.w3c.dom.ls.LSResourceResolver;
 public class SchemaResourceResolver implements LSResourceResolver {
 
     private static final String XSD_NAMESPACE = "http://www.w3.org/2001/XMLSchema";
-        private static final String XML_NAMESPACE = "http://www.w3.org/TR/REC-xml";
-    
+    private static final String XML_NAMESPACE = "http://www.w3.org/TR/REC-xml";
+
     private final String contextFolder;
 
     public SchemaResourceResolver(String contextFolder) {
@@ -44,9 +44,9 @@ public class SchemaResourceResolver implements LSResourceResolver {
 
     @Override
     public LSInput resolveResource(String type, String namespaceURI, String publicId, String systemId, String baseURI) {
-        if (!XSD_NAMESPACE.equals(type)&& !XML_NAMESPACE.equals(type)) {
+        if (!XSD_NAMESPACE.equals(type) && !XML_NAMESPACE.equals(type)) {
             throw new IllegalArgumentException(
-                    "Unexpected resource type [" + type + "], expected is [" + XSD_NAMESPACE + " or "+XML_NAMESPACE+" ]."
+                    "Unexpected resource type [" + type + "], expected is [" + XSD_NAMESPACE + " or " + XML_NAMESPACE + " ]."
             );
         }
         if (systemId == null) {
@@ -84,6 +84,7 @@ public class SchemaResourceResolver implements LSResourceResolver {
 }
 
 class SchemaInput implements LSInput {
+
     Logger mlog = Logger.getLogger(SchemaInput.class);
 
     private final BufferedInputStream inputStream;
@@ -140,7 +141,7 @@ class SchemaInput implements LSInput {
             try {
                 return IOUtils.toString(inputStream);
             } catch (IOException e) {
-                mlog.error("Error reading resource: '"+baseURI+"'. Error: " + e.getMessage() , e);
+                mlog.error("Error reading resource: '" + baseURI + "'. Error: " + e.getMessage(), e);
                 return null;
             }
         }

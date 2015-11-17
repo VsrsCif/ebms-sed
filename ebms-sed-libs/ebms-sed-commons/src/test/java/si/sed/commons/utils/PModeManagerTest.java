@@ -13,7 +13,7 @@
 * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the Licence for the specific language governing permissions and  
 * limitations under the Licence.
-*/
+ */
 package si.sed.commons.utils;
 
 import java.io.FileNotFoundException;
@@ -51,13 +51,12 @@ public class PModeManagerTest {
         fa.setAppend(true);
         fa.activateOptions();
         //add appender to any Logger (here is root)
-        Logger.getRootLogger().addAppender(fa);        
+        Logger.getRootLogger().addAppender(fa);
     }
 
     @After
     public void tearDown() {
     }
-
 
     @org.junit.Test
     public void testReloadPModes() {
@@ -69,7 +68,7 @@ public class PModeManagerTest {
         try {
             XMLUtils.serialize(pm, "test-pmode.xml");
         } catch (JAXBException | FileNotFoundException ex) {
-            
+
         }
 
     }

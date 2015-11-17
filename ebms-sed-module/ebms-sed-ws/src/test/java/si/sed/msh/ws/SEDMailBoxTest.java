@@ -5,7 +5,6 @@
  */
 package si.sed.msh.ws;
 
-
 import java.io.File;
 import java.math.BigInteger;
 import java.nio.file.Files;
@@ -87,7 +86,7 @@ public class SEDMailBoxTest extends TestUtils {
             //---------------------------------            
             //set logger
             setLogger(SEDMailBoxTest.class.getSimpleName());
-            
+
             //---------------------------------
             // set system variables
             // create home dir in target
@@ -96,7 +95,7 @@ public class SEDMailBoxTest extends TestUtils {
             System.getProperties().put(SEDSystemProperties.SYS_PROP_HOME_DIR, SED_HOME);
             System.setProperty(SEDSystemProperties.SYS_PROP_JNDI_PREFIX, "");
             System.setProperty(SEDSystemProperties.SYS_PROP_JNDI_JMS_PREFIX, "");
-         
+
             //---------------------------------            
             // set jms environment
             Queue mshueue = setJMSEnvironment();
@@ -108,7 +107,6 @@ public class SEDMailBoxTest extends TestUtils {
             memfFactory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
             mTestInstance.memEManager = memfFactory.createEntityManager();
             mTestInstance.mutUTransaction = new MockUserTransaction(mTestInstance.memEManager.getTransaction());
-            
 
         } catch (NamingException | JMSException ex) {
             Logger.getLogger(SEDMailBoxTest.class.getName()).log(Level.SEVERE, null, ex);
@@ -626,7 +624,7 @@ public class SEDMailBoxTest extends TestUtils {
         //store mail
         InMail im = createInMail();
         storeInMail(im);
-        
+
         //  retrieve in mail 
         GetInMailRequest gimr = new GetInMailRequest();
         gimr.setControl(createControl());
@@ -634,16 +632,15 @@ public class SEDMailBoxTest extends TestUtils {
         gimr.getData().setMailId(im.getId());
         gimr.getData().setReceiverEBox(im.getReceiverEBox());
         GetInMailResponse mer = mTestInstance.getInMail(gimr);
-        
+
         assertNotNull("Response", mer);
         assertNotNull("Response/RControl", mer.getRControl());
         assertNotNull("Response/RControl/@returnValue", mer.getRControl().getReturnValue());
         assertEquals("Response/RControl/@returnValue", mer.getRControl().getReturnValue().intValue(), SVEVReturnValue.OK.getValue());
         assertNotNull("Response/RData", mer.getRData());
         assertNotNull("Response/RData/InMail", mer.getRData().getInMail());
-        assertEquals("Response/RData/InMail",im.getId(), mer.getRData().getInMail().getId());
-        assertArrayEquals("Response/RData/getPyloadPart",im.getInPayload().getInParts().get(0).getValue(),mer.getRData().getInMail().getInPayload().getInParts().get(0).getValue());
-        
+        assertEquals("Response/RData/InMail", im.getId(), mer.getRData().getInMail().getId());
+        assertArrayEquals("Response/RData/getPyloadPart", im.getInPayload().getInParts().get(0).getValue(), mer.getRData().getInMail().getInPayload().getInParts().get(0).getValue());
 
     }
 
@@ -651,13 +648,13 @@ public class SEDMailBoxTest extends TestUtils {
      * Test of modifyInMail method, of class SEDMailBox.
      */
     @Test
-    public void test_I_ModifyInMail() throws Exception {        
+    public void test_I_ModifyInMail() throws Exception {
         System.out.println("test_I_ModifyInMail");
 
         //store mail
         InMail im = createInMail();
         storeInMail(im);
-                  
+
         ModifyInMailRequest mimr = new ModifyInMailRequest();
         mimr.setControl(createControl());
         mimr.setData(new ModifyInMailRequest.Data());
@@ -671,12 +668,11 @@ public class SEDMailBoxTest extends TestUtils {
         assertEquals("Response/RControl/@returnValue", mer.getRControl().getReturnValue().intValue(), SVEVReturnValue.OK.getValue());
         assertNotNull("Response/RData", mer.getRData());
         assertNotNull("Response/RData/InEvent", mer.getRData().getInEvent());
-        assertEquals("Mail id",im.getId(), mer.getRData().getInEvent().getMailId());
-        assertEquals("Receiver box",im.getReceiverEBox(), mer.getRData().getInEvent().getReceiverEBox());
-        
-        
+        assertEquals("Mail id", im.getId(), mer.getRData().getInEvent().getMailId());
+        assertEquals("Receiver box", im.getReceiverEBox(), mer.getRData().getInEvent().getReceiverEBox());
+
         // get inmail and check status
-         GetInMailRequest gimr = new GetInMailRequest();
+        GetInMailRequest gimr = new GetInMailRequest();
         gimr.setControl(createControl());
         gimr.setData(new GetInMailRequest.Data());
         gimr.getData().setMailId(im.getId());
@@ -685,7 +681,7 @@ public class SEDMailBoxTest extends TestUtils {
         assertEquals("Response/RControl/@returnValue", mrs.getRControl().getReturnValue().intValue(), SVEVReturnValue.OK.getValue());
         assertEquals("Status", SEDInboxMailStatus.DELIVERED.getValue(), mrs.getRData().getInMail().getStatus());
         assertEquals("Date", mer.getRData().getInEvent().getDate(), mrs.getRData().getInMail().getStatusDate());
-        
+
     }
 
     private void assertThrowErrorOnSubmit(SubmitMailRequest smr, String assertMessage, SEDExceptionCode ecExpected) {

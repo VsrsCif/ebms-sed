@@ -1,19 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-    xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl" exclude-result-prefixes="xd xsi" version="1.0"
-    xmlns:S12="http://www.w3.org/2003/05/soap-envelope"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:wsa="http://www.w3.org/2005/08/addressing"
-    xmlns:ebint="http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/multihop/200902/"
-    xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"
-    xmlns:eb3="http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/"
-    xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
-    xmlns:ebbp="http://docs.oasis-open.org/ebxml-bp/ebbp-signals-2.0"
-    xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">
+                xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl" exclude-result-prefixes="xd xsi" version="1.0"
+                xmlns:S12="http://www.w3.org/2003/05/soap-envelope"
+                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xmlns:wsa="http://www.w3.org/2005/08/addressing"
+                xmlns:ebint="http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/multihop/200902/"
+                xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"
+                xmlns:eb3="http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/"
+                xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
+                xmlns:ebbp="http://docs.oasis-open.org/ebxml-bp/ebbp-signals-2.0"
+                xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">
     <xd:doc scope="stylesheet">
         <xd:desc>
-            <xd:p><xd:b>Created on:</xd:b> Feb 5, 2012</xd:p>
-            <xd:p><xd:b>Author:</xd:b> pvde</xd:p>
+            <xd:p>
+                <xd:b>Created on:</xd:b> Feb 5, 2012</xd:p>
+            <xd:p>
+                <xd:b>Author:</xd:b> pvde</xd:p>
             <xd:p>This XSLT stylesheet is a non-normative part of the OASIS AS4 specification. It
                 shows how AS4 receipt messages can be derived from AS4 user messages.</xd:p>
         </xd:desc>
@@ -77,14 +79,14 @@
             </xsl:choose>
         </xsl:variable>
         <wsa:To wsu:Id="{concat('_wsato_',generate-id())}"
-            S12:role="http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/part2/200811/nextmsh"
-            S12:mustUnderstand="true"
-            >http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/part2/200811/icloud</wsa:To>
+                S12:role="http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/part2/200811/nextmsh"
+                S12:mustUnderstand="true"
+        >http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/part2/200811/icloud</wsa:To>
         <wsa:Action wsu:Id="{concat('_wsaaction_',generate-id())}"
-            >http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/oneWay.receipt</wsa:Action>
+        >http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/oneWay.receipt</wsa:Action>
         <ebint:RoutingInput wsa:IsReferenceParameter="true"
-            id="{concat('_ebroutinginput_',generate-id())}" S12:mustUnderstand="true"
-            S12:role="http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/part2/200811/nextmsh">
+                            id="{concat('_ebroutinginput_',generate-id())}" S12:mustUnderstand="true"
+                            S12:role="http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/part2/200811/nextmsh">
             <ebint:UserMessage mpc="{concat($mpc,'.receipt')}">
                 <eb3:PartyInfo>
                     <eb3:From>
@@ -127,12 +129,12 @@
     <xd:doc>
         <xd:desc>
             <xd:p>The AS4 receipt is generated based on <xd:i>eb3:UserMessage</xd:i> and
-                    <xd:i>ds:Signature</xd:i>content.</xd:p>
+                <xd:i>ds:Signature</xd:i>content.</xd:p>
             <xd:ul>
                 <xd:li>A receipt for a signed AS4 message references the message parts using
-                        <xd:i>ds:Reference</xd:i>s in the WS-Security header of that message</xd:li>
+                    <xd:i>ds:Reference</xd:i>s in the WS-Security header of that message</xd:li>
                 <xd:li>A receipt for an unsigned AS4 message references the message using the
-                        <xd:i>eb3:UserMessage</xd:i> structure of the AS4 message.
+                    <xd:i>eb3:UserMessage</xd:i> structure of the AS4 message.
                 </xd:li>
             </xd:ul>
         </xd:desc>

@@ -13,7 +13,7 @@
 * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the Licence for the specific language governing permissions and  
 * limitations under the Licence.
-*/
+ */
 package si.jrc.msh.exception;
 
 /**
@@ -61,10 +61,10 @@ public enum EBMSErrorCode {
         return code;
     }
 
-   
     public String getName() {
         return name;
     }
+
     public String getSeverity() {
         return severity;
     }
@@ -76,10 +76,9 @@ public enum EBMSErrorCode {
     public String getDescription() {
         return description;
     }
+
     public String getOrigin() {
         return origin;
     }
 
-  
-    
 }

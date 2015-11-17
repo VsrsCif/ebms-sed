@@ -19,7 +19,7 @@
         <mapping-file>shared/hbm/outbox-mail.hbm.xml</mapping-file>
         <mapping-file>shared/hbm/outbox-payload.hbm.xml</mapping-file -->
         
-         <mapping-file>shared/hbm/msh-in-event.hbm.xml</mapping-file>
+        <mapping-file>shared/hbm/msh-in-event.hbm.xml</mapping-file>
         <mapping-file>shared/hbm/msh-in-mail.hbm.xml</mapping-file>
         <mapping-file>shared/hbm/msh-in-payload.hbm.xml</mapping-file>
         <mapping-file>shared/hbm/msh-out-event.hbm.xml</mapping-file>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">  
-       <parent>
+    <parent>
         <groupId>si.vsrs.cif.sed</groupId>
         <artifactId>ebms-sed</artifactId>
         <version>1.0</version>
@@ -13,7 +13,7 @@
     <name>ebms-sed-module</name>
     <url>www.sodisce.si</url>        
 
-<licenses>
+    <licenses>
         <license>
             <name>European Union Public Licence (EUPL)</name>
             <url>https://joinup.ec.europa.eu/software/page/eupl</url>

@@ -39,23 +39,23 @@ Copyright 2015, Supreme Court Republic of Slovenia
                 <xs:element name="Control" type="con:Control"/>
                 <xs:element name="Data">
                     <xs:complexType>
-						<xs:attribute name="receiverEBox" use="required">
-							<xs:annotation>
-								<xs:documentation xml:lang="sl">Naslovnikov elektronski naslov.</xs:documentation>
-							</xs:annotation>
-							<xs:simpleType>
-								<xs:restriction base="xs:token">
-									<xs:maxLength value="64"/>
-									<xs:pattern value="[_\-a-zA-Z0-9\.\+]+@[a-zA-Z0-9](\.?[\-a-zA-Z0-9]*[a-zA-Z0-9])*"/>
-								</xs:restriction>
-							</xs:simpleType>
-						</xs:attribute>
-                                                <xs:attribute name="mailId" type="xs:integer" use="required">
-                                                    <xs:annotation>
-                                                        <xs:documentation xml:lang="sl">Id vhodne pošiljke</xs:documentation>
-                                                    </xs:annotation>			
-                                                </xs:attribute>						
-					</xs:complexType>
+                        <xs:attribute name="receiverEBox" use="required">
+                            <xs:annotation>
+                                <xs:documentation xml:lang="sl">Naslovnikov elektronski naslov.</xs:documentation>
+                            </xs:annotation>
+                            <xs:simpleType>
+                                <xs:restriction base="xs:token">
+                                    <xs:maxLength value="64"/>
+                                    <xs:pattern value="[_\-a-zA-Z0-9\.\+]+@[a-zA-Z0-9](\.?[\-a-zA-Z0-9]*[a-zA-Z0-9])*"/>
+                                </xs:restriction>
+                            </xs:simpleType>
+                        </xs:attribute>
+                        <xs:attribute name="mailId" type="xs:integer" use="required">
+                            <xs:annotation>
+                                <xs:documentation xml:lang="sl">Id vhodne pošiljke</xs:documentation>
+                            </xs:annotation>			
+                        </xs:attribute>						
+                    </xs:complexType>
                 </xs:element>
             </xs:sequence>
         </xs:complexType>

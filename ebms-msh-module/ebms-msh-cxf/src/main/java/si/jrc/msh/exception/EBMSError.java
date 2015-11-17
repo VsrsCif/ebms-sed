@@ -3,46 +3,43 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package si.jrc.msh.exception;
-
-
 
 /**
  *
  * @author sluzba
  */
-public class EBMSError extends Exception{
-    
+public class EBMSError extends Exception {
+
     EBMSErrorCode ebmsErrorCode;
     String subMessage;
     String refToMessage;
-    
+
     public EBMSError(EBMSErrorCode ec, String refToMsg) {
         ebmsErrorCode = ec;
-        refToMessage =  refToMsg;
+        refToMessage = refToMsg;
     }
 
-    public EBMSError(EBMSErrorCode ec, String refToMsg,  String message) {
+    public EBMSError(EBMSErrorCode ec, String refToMsg, String message) {
         super(ec.getName());
         ebmsErrorCode = ec;
-        refToMessage =  refToMsg;
-        subMessage =  message;
-        
+        refToMessage = refToMsg;
+        subMessage = message;
+
     }
 
-    public EBMSError(EBMSErrorCode ec,String refToMsg, String message, Throwable cause) {
+    public EBMSError(EBMSErrorCode ec, String refToMsg, String message, Throwable cause) {
         super(ec.getName(), cause);
         ebmsErrorCode = ec;
-        refToMessage =  refToMsg;
-        subMessage =  message;
+        refToMessage = refToMsg;
+        subMessage = message;
     }
 
-    public EBMSError(EBMSErrorCode ec,String refToMsg, Throwable cause) {
+    public EBMSError(EBMSErrorCode ec, String refToMsg, Throwable cause) {
         super(ec.getName(), cause);
         ebmsErrorCode = ec;
-        refToMessage =  refToMsg;
-        
+        refToMessage = refToMsg;
+
     }
 
     public String getSubMessage() {
@@ -56,8 +53,5 @@ public class EBMSError extends Exception{
     public String getRefToMessage() {
         return refToMessage;
     }
-    
 
-    
-    
 }

@@ -13,14 +13,14 @@
 * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the Licence for the specific language governing permissions and  
 * limitations under the Licence.
-*/
+ */
 package si.sed.commons.exception;
 
 /**
  *
-  * @author Joze Rihtarsic <joze.rihtarsic@sodisce.si>
+ * @author Joze Rihtarsic <joze.rihtarsic@sodisce.si>
  */
-public class FOPException extends Exception{
+public class FOPException extends Exception {
 
     public FOPException(String message) {
         super(message);
@@ -37,5 +37,5 @@ public class FOPException extends Exception{
     public FOPException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
-    
+
 }

@@ -48,9 +48,9 @@ public class MSHPluginInInterceptor extends AbstractSoapInterceptor {
         PMode pmd = msg.getExchange().get(PMode.class);
         MSHInMail inMail = msg.getExchange().get(MSHInMail.class);
         MSHOutMail outMail = msg.getExchange().get(MSHOutMail.class);
-        System.out.println("MSHPluginInInterceptor Pmode:;  " + pmd );
-        System.out.println("MSHPluginInInterceptor inMail:;  " + inMail );
-        System.out.println("MSHPluginInInterceptor outMail:;  " + outMail );
+        System.out.println("MSHPluginInInterceptor Pmode:;  " + pmd);
+        System.out.println("MSHPluginInInterceptor inMail:;  " + inMail);
+        System.out.println("MSHPluginInInterceptor outMail:;  " + outMail);
         if (pmd != null && inMail != null) {
             // todo
             String str = pmd.getLegs().get(0).getBusinessInfo().getService().getInPlugin();
@@ -63,9 +63,9 @@ public class MSHPluginInInterceptor extends AbstractSoapInterceptor {
                 AbstractPluginInterceptor ii = PluginManager.getInterceptor(System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR) + File.separator + PLUGIN_FOLDER + File.separator + filenamePlugin, classNamePlugin);
                 ii.handleMessage(msg);
             }
-        } else if (pmd != null) { 
+        } else if (pmd != null) {
             System.out.println("GOT SIGNAL");
-             // todo
+            // todo
             String str = pmd.getLegs().get(0).getBusinessInfo().getService().getInPlugin();
             if (str != null) {
                 String[] lst = str.split("!");

@@ -13,7 +13,7 @@
 * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the Licence for the specific language governing permissions and  
 * limitations under the Licence.
-*/
+ */
 package si.jrc.msh.exception;
 
 /**
@@ -21,19 +21,16 @@ package si.jrc.msh.exception;
  * @author Jože Rihtaršič
  */
 public enum MSHExceptionCode {
-    
+
     EmptyMail("MSH:0001", "EmptyMail", "Empty Mail", 0),
     InvalidMail("MSH:0002", "InvalidMail", "Invalid mail! Errors: %s", 1),
     InvalidPModeId("MSH:0101", "InvalidPModeId", "PMode with id: %s not exists", 1),
-    InvalidPMode("MSH:0102", "InvalidPModeId", "Invalid PMode: %s. Error: %s", 2)
-    ;
-    
+    InvalidPMode("MSH:0102", "InvalidPModeId", "Invalid PMode: %s. Error: %s", 2);
 
     String code;
     String name;
     String description;
     int paramCount;
-
 
     MSHExceptionCode(String cd, String nm, String desc, int pc) {
         code = cd;
@@ -46,22 +43,16 @@ public enum MSHExceptionCode {
         return code;
     }
 
- 
     public String getName() {
         return name;
     }
-
-
 
     public String getDescriptionFormat() {
         return description;
     }
 
- 
-    public int getDescParamCount(){
+    public int getDescParamCount() {
         return paramCount;
     }
-   
-    
-    
+
 }

@@ -31,24 +31,24 @@ import si.sed.commons.exception.FOPException;
  * @author sluzba
  */
 public class FOPUtilsTest {
-    
+
     public FOPUtilsTest() {
     }
-    
+
     @Before
     public void setUp() {
     }
-    
+
     @After
     public void tearDown() {
     }
 
-   /**
+    /**
      * Test of generateVisualization method, of class FOPUtils.
      */
     @Test
-    public void testGenerateVisualizationFromMSHOutMail() throws JAXBException, FileNotFoundException, FOPException, IOException  {
-     /*   
+    public void testGenerateVisualizationFromMSHOutMail() throws JAXBException, FileNotFoundException, FOPException, IOException {
+        /*   
         String fopConfigFile = "src/test/resources/fop/fop.xconf";
         String xsltFolder = "src/test/resources/fop/xslt/LegalDelivery_ZPP-DeliveryNotification.fo";
         
@@ -74,11 +74,8 @@ public class FOPUtilsTest {
         try (FileOutputStream fos = new FileOutputStream("test.pdf")){
             instance.generateVisualization(source, fos,  new StreamSource(xsltFolder), MimeConstants.MIME_PDF);
         }
-       */
-        
-        
-        
+         */
+
     }
 
-    
 }

@@ -66,13 +66,10 @@ public class MshClient {
         Dispatch<SOAPMessage> client = getClient(pmode);
 
         DispatchImpl dimpl = (org.apache.cxf.jaxws.DispatchImpl) client;
-        
-        
 
-        
         // configure svev-msh transport
-        System.out.println("MshClient  SET PMODE:" + pmode );
-        System.out.println("MshClient  MSHOutMail:" + mail );
+        System.out.println("MshClient  SET PMODE:" + pmode);
+        System.out.println("MshClient  MSHOutMail:" + mail);
         client.getRequestContext().put(PMode.class.getName(), pmode);
         client.getRequestContext().put(MSHOutMail.class.getName(), mail);
 
@@ -82,11 +79,11 @@ public class MshClient {
         try {
             mf = MessageFactory.newInstance(SOAPConstants.SOAP_1_2_PROTOCOL);
             soapReq = mf.createMessage();
-            
+
         } catch (SOAPException ex) {
             throw new MSHException(MSHExceptionCode.EmptyMail, ex);
         }
-/*
+        /*
         try {
             for (MSHOutPart p : mail.getMSHOutPayload().getMSHOutParts()) {
                 String id = UUID.randomUUID().toString();
@@ -137,14 +134,14 @@ public class MshClient {
         // create interceptpr
         // install inteceptor
         try {
-            
+
             Client cxfClient = dimpl.getClient();
-            
+
             //cxfClient.getInInterceptors().add(new LoggingInInterceptor());
             cxfClient.getInInterceptors().add(new EBMSLogInInterceptor());
             cxfClient.getInInterceptors().add(new EBMSInInterceptor());
             cxfClient.getInInterceptors().add(new MSHPluginInInterceptor());
-            
+
             cxfClient.getOutInterceptors().add(new MSHPluginOutInterceptor());
             cxfClient.getOutInterceptors().add(new EBMSOutInterceptor());
             cxfClient.getOutInterceptors().add(new EBMSLogOutInterceptor());

@@ -41,9 +41,8 @@ public class StorageUtils {
     public static final String S_OUT_PREFIX = "out_";
     public static final String S_IN_PREFIX = "in_";
 
-    
-     public File storeInFile(String mimeType, byte[] buffer) throws StorageException {
-        return storeFile(S_IN_PREFIX,  MimeValues.getSuffixBYMimeType(mimeType), buffer);
+    public File storeInFile(String mimeType, byte[] buffer) throws StorageException {
+        return storeFile(S_IN_PREFIX, MimeValues.getSuffixBYMimeType(mimeType), buffer);
     }
 
     public File storeInFile(String mimeType, File fIn) throws StorageException {
@@ -60,13 +59,13 @@ public class StorageUtils {
 
         return fStore;
     }
-    
-     public File storeInFile(String mimeType, InputStream is) throws StorageException {
-        return storeFile(S_IN_PREFIX,  MimeValues.getSuffixBYMimeType(mimeType), is);
+
+    public File storeInFile(String mimeType, InputStream is) throws StorageException {
+        return storeFile(S_IN_PREFIX, MimeValues.getSuffixBYMimeType(mimeType), is);
     }
-    
+
     public File storeOutFile(String mimeType, byte[] buffer) throws StorageException {
-        return storeFile(S_OUT_PREFIX,  MimeValues.getSuffixBYMimeType(mimeType), buffer);
+        return storeFile(S_OUT_PREFIX, MimeValues.getSuffixBYMimeType(mimeType), buffer);
     }
 
     public File storeOutFile(String mimeType, File fIn) throws StorageException {
@@ -96,7 +95,7 @@ public class StorageUtils {
             byte[] buffer = new byte[1024];
             int len = inStream.read(buffer);
             while (len != -1) {
-                fos.write(buffer, 0,len );
+                fos.write(buffer, 0, len);
                 len = inStream.read(buffer);
             }
 
@@ -134,29 +133,26 @@ public class StorageUtils {
         }
         return f;
     }
-    
+
     public static synchronized File getFile(String storagePath) throws StorageException {
         File f = new File(System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR) + File.separator + storagePath);
         return f;
     }
-    
-    
 
     public static synchronized String currentStorageFolderName() {
         return msdfFolderDateFormat.format(Calendar.getInstance().getTime());
     }
 
-    public static String getRelativePath( File path){
+    public static String getRelativePath(File path) {
         File hdir = new File(System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR));
-        if (path.getAbsolutePath().startsWith(hdir.getAbsolutePath())){
+        if (path.getAbsolutePath().startsWith(hdir.getAbsolutePath())) {
             String rp = path.getAbsolutePath().substring(hdir.getAbsolutePath().length());
-            rp = rp.startsWith(File.separator)? rp.substring(1): rp;
+            rp = rp.startsWith(File.separator) ? rp.substring(1) : rp;
             return rp;
         }
-        
-        
+
         String base = System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR);
-        
+
         String[] basePaths = base.split(File.separator);
         String[] otherPaths = path.getParent().split(File.separator);
         int n = 0;
@@ -165,12 +161,12 @@ public class StorageUtils {
                 break;
             }
         }
-        StringBuilder tmp = new StringBuilder();        
+        StringBuilder tmp = new StringBuilder();
         for (int m = n; m < basePaths.length - 1; m++) {
             tmp.append("..");
             tmp.append(File.separator);
         }
-        
+
         for (int m = n; m < otherPaths.length; m++) {
             tmp.append(otherPaths[m]);
             tmp.append(File.separator);
@@ -180,20 +176,20 @@ public class StorageUtils {
         System.out.println("GET relative path:" + tmp.toString());
         return tmp.toString();
     }
-    
-    public byte[] getByteArray(String storagePath) throws StorageException{
-            byte[] bin = null;
-            File f =  getFile(storagePath);
-            
-            if (f.exists()){
-                try (FileInputStream fis = new FileInputStream(f)){
-                    bin = new byte[fis.available()];
-                    fis.read(bin);
-                } catch (IOException ex) {
-                    throw new StorageException("Error occurred while creating storage file", ex);
-                }
+
+    public byte[] getByteArray(String storagePath) throws StorageException {
+        byte[] bin = null;
+        File f = getFile(storagePath);
+
+        if (f.exists()) {
+            try (FileInputStream fis = new FileInputStream(f)) {
+                bin = new byte[fis.available()];
+                fis.read(bin);
+            } catch (IOException ex) {
+                throw new StorageException("Error occurred while creating storage file", ex);
             }
-            return bin;
+        }
+        return bin;
     }
 
 }

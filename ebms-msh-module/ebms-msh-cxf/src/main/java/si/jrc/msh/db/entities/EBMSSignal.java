@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package si.jrc.msh.db.entities;
 
 import si.jrc.msh.exception.EBMSError;
@@ -11,23 +10,23 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-
 /**
  *
  * @author sluzba
  */
 public class EBMSSignal {
-    enum SignalType{
+
+    enum SignalType {
         SvevKeySignal,
         ErrorSignal,
         AS4ResponseSignal
     }
-    
+
     Date signalReceivedDate;
     Date signalDate;
     String refToMessageId;
     boolean AS4ResponseValid;
-    
+
     List<EBMSError> errors = new ArrayList<>();
 
     public Date getSignalReceivedDate() {
@@ -65,6 +64,5 @@ public class EBMSSignal {
     public List<EBMSError> getErrors() {
         return errors;
     }
-    
-    
+
 }

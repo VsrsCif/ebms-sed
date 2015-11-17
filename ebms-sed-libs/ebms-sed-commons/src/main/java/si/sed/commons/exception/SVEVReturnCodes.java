@@ -13,24 +13,23 @@
 * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the Licence for the specific language governing permissions and  
 * limitations under the Licence.
-*/
-
+ */
 package si.sed.commons.exception;
 
 /**
  *
-  * @author Joze Rihtarsic <joze.rihtarsic@sodisce.si>
+ * @author Joze Rihtarsic <joze.rihtarsic@sodisce.si>
  */
+public enum SVEVReturnCodes {
+    OK(1, "OK"),
+    RESOURCE_READING_ERROR(2, "Resource reading error");
+    int miVal;
+    String mstrDesc;
 
-public enum SVEVReturnCodes {    
-   OK (1, "OK"),
-   RESOURCE_READING_ERROR (2, "Resource reading error");   
-   int miVal;
-   String mstrDesc;
-   private SVEVReturnCodes(int iVal, String strDesc){
-       miVal = iVal;
-       mstrDesc = strDesc;
-   }
+    private SVEVReturnCodes(int iVal, String strDesc) {
+        miVal = iVal;
+        mstrDesc = strDesc;
+    }
 
     public int getValue() {
         return miVal;
@@ -39,6 +38,5 @@ public enum SVEVReturnCodes {
     public String getDesc() {
         return mstrDesc;
     }
-   
 
 }

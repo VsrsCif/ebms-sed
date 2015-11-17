@@ -28,44 +28,44 @@ Copyright 2015, Supreme Court Republic of Slovenia
            xmlns:ns1="http://ebms.sed.org/inbox/property"
            targetNamespace="http://ebms.sed.org/inbox/property" 
            elementFormDefault="qualified" attributeFormDefault="unqualified">
-	<xs:element name="InProperties">
-		<xs:annotation>
-			<xs:documentation>MSH parametri, ki so določeni v pmode konfiguraciji</xs:documentation>
-		</xs:annotation>
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element name="InProperty" type="ns1:InProperty" minOccurs="0" maxOccurs="unbounded"/>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
-	<xs:complexType name="InProperty">
-		<xs:annotation>
-			<xs:documentation>MSH lastnosi sporočila, določeni v p-mode konfiguraciji</xs:documentation>
-		</xs:annotation>
-		<xs:simpleContent>
-			<xs:extension base="ns1:propertyValue">
-				<xs:attribute name="id" use="optional" type="xs:integer">
-					<xs:annotation>
-						<xs:documentation xml:lang="sl">Enolična oznaka lastnosti</xs:documentation>
-					</xs:annotation>
-				</xs:attribute>
-				<xs:attribute name="name" use="optional">
-					<xs:annotation>
-						<xs:documentation xml:lang="sl">Naziv lastnosti </xs:documentation>
-					</xs:annotation>
-					<xs:simpleType>
-						<xs:restriction base="xs:string">
-							<xs:minLength value="1"/>
-							<xs:maxLength value="64"/>
-						</xs:restriction>
-					</xs:simpleType>
-				</xs:attribute>
-			</xs:extension>
-		</xs:simpleContent>
-	</xs:complexType>
-	<xs:simpleType name="propertyValue">
-		<xs:restriction base="xs:string">
-			<xs:maxLength value="512"/>
-		</xs:restriction>
-	</xs:simpleType>
+    <xs:element name="InProperties">
+        <xs:annotation>
+            <xs:documentation>MSH parametri, ki so določeni v pmode konfiguraciji</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="InProperty" type="ns1:InProperty" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:complexType name="InProperty">
+        <xs:annotation>
+            <xs:documentation>MSH lastnosi sporočila, določeni v p-mode konfiguraciji</xs:documentation>
+        </xs:annotation>
+        <xs:simpleContent>
+            <xs:extension base="ns1:propertyValue">
+                <xs:attribute name="id" use="optional" type="xs:integer">
+                    <xs:annotation>
+                        <xs:documentation xml:lang="sl">Enolična oznaka lastnosti</xs:documentation>
+                    </xs:annotation>
+                </xs:attribute>
+                <xs:attribute name="name" use="optional">
+                    <xs:annotation>
+                        <xs:documentation xml:lang="sl">Naziv lastnosti </xs:documentation>
+                    </xs:annotation>
+                    <xs:simpleType>
+                        <xs:restriction base="xs:string">
+                            <xs:minLength value="1"/>
+                            <xs:maxLength value="64"/>
+                        </xs:restriction>
+                    </xs:simpleType>
+                </xs:attribute>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    <xs:simpleType name="propertyValue">
+        <xs:restriction base="xs:string">
+            <xs:maxLength value="512"/>
+        </xs:restriction>
+    </xs:simpleType>
 </xs:schema>

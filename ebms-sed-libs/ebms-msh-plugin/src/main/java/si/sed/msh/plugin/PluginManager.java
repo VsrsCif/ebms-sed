@@ -42,6 +42,6 @@ public class PluginManager {
             Logger.getLogger(PluginManager.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
- 
+
     }
 }

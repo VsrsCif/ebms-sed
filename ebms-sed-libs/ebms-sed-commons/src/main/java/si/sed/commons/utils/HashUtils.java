@@ -34,24 +34,24 @@ public class HashUtils {
 
     MessageDigest mdMD5 = null;
 
-    
-     public String getMD5Hash(File file) throws HashException {
-        try (FileInputStream fis = new FileInputStream(file)){
+    public String getMD5Hash(File file) throws HashException {
+        try (FileInputStream fis = new FileInputStream(file)) {
             return getMD5Hash(fis);
         } catch (IOException ex) {
-            throw new HashException("Error reading file '"+file.getAbsolutePath()+"'.", ex);
+            throw new HashException("Error reading file '" + file.getAbsolutePath() + "'.", ex);
         }
     }
-     
+
     public String getMD5Hash(String filePath) throws HashException {
-        try (FileInputStream fis = new FileInputStream(filePath)){
+        try (FileInputStream fis = new FileInputStream(filePath)) {
             return getMD5Hash(fis);
         } catch (IOException ex) {
-            throw new HashException("Error reading file '"+filePath+"'.", ex);
+            throw new HashException("Error reading file '" + filePath + "'.", ex);
         }
     }
+
     public String getMD5Hash(InputStream is) throws HashException {
-        String strHash=null;
+        String strHash = null;
         try {
             MessageDigest md5 = getMD5MessageDigest();
             md5.reset();
@@ -62,16 +62,16 @@ public class HashUtils {
                 len = is.read(buffer);
             }
             byte[] hash = md5.digest();
-            
+
             //converting byte array to Hexadecimal String
             StringBuilder sb = new StringBuilder(2 * hash.length);
             for (byte b : hash) {
                 sb.append(String.format("%02x", b & 0xff));
             }
-            strHash =  sb.toString();
-        } catch (NoSuchAlgorithmException  ex) {
+            strHash = sb.toString();
+        } catch (NoSuchAlgorithmException ex) {
             throw new HashException("System error. Check deployment, missing MD5 (MessageDigest) algoritem.", ex);
-        } catch (IOException  ex) {
+        } catch (IOException ex) {
             throw new HashException("Error reading inputstream", ex);
         }
         return strHash;

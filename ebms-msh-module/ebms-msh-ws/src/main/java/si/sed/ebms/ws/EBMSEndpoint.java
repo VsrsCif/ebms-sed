@@ -111,8 +111,8 @@ public class EBMSEndpoint implements Provider<SOAPMessage> {
 
             serializeMail(inmail, msg.getAttachments());
 
-           // SignalMessage as4Receipt = mebmsUtils.generateAS4ReceiptSignal(inmail.getMessageId(), Utils.getDomainFromAddress(inmail.getReceiverEBox()), request.getSOAPPart().getDocumentElement());
-           // msg.getExchange().put(SignalMessage.class, as4Receipt);
+            // SignalMessage as4Receipt = mebmsUtils.generateAS4ReceiptSignal(inmail.getMessageId(), Utils.getDomainFromAddress(inmail.getReceiverEBox()), request.getSOAPPart().getDocumentElement());
+            // msg.getExchange().put(SignalMessage.class, as4Receipt);
 
             /*   EBMSError err = ex.get(EBMSError.class);
                 Messaging mgsInboundMessage = ex.get(Messaging.class);
@@ -237,13 +237,14 @@ public class EBMSEndpoint implements Provider<SOAPMessage> {
         }
 
     }
+
     private UserTransaction getUserTransaction() {
         // for jetty 
         if (mutUTransaction == null) {
             try {
                 InitialContext ic = new InitialContext();
-                
-                mutUTransaction = (UserTransaction) ic.lookup(getJNDIPrefix() +"UserTransaction");
+
+                mutUTransaction = (UserTransaction) ic.lookup(getJNDIPrefix() + "UserTransaction");
 
             } catch (NamingException ex) {
                 Logger.getLogger(EBMSEndpoint.class.getName()).log(Level.SEVERE, null, ex);
@@ -252,17 +253,19 @@ public class EBMSEndpoint implements Provider<SOAPMessage> {
         }
         return mutUTransaction;
     }
-     private String getJNDIPrefix(){
-         
+
+    private String getJNDIPrefix() {
+
         return System.getProperty(SEDSystemProperties.SYS_PROP_JNDI_PREFIX, "java:/");
     }
-       private EntityManager getEntityManager() {
+
+    private EntityManager getEntityManager() {
         // for jetty 
         if (memEManager == null) {
             try {
                 InitialContext ic = new InitialContext();
-                Context t = (Context) ic.lookup("java:comp");               
-                memEManager = (EntityManager) ic.lookup(getJNDIPrefix() +"ebMS_PU");
+                Context t = (Context) ic.lookup("java:comp");
+                memEManager = (EntityManager) ic.lookup(getJNDIPrefix() + "ebMS_PU");
 
             } catch (NamingException ex) {
                 Logger.getLogger(EBMSEndpoint.class.getName()).log(Level.SEVERE, null, ex);

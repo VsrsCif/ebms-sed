@@ -101,7 +101,7 @@ public class XMLUtils {
         StringWriter sw = new StringWriter();
         StreamResult result = new StreamResult(sw);
         transformer.transform(new StreamSource(source), result);
-        return  sw.toString();
+        return sw.toString();
     }
 
     public static Document deserializeToDom(InputStream xmlIS) throws IOException, ParserConfigurationException, SAXException {

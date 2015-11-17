@@ -200,11 +200,8 @@ public class EBMSInInterceptor extends AbstractSoapInterceptor {
 
                 msg.getExchange().put(MSHInMail.class, mMail);
 
-                
-                
-                
                 SOAPMessage request = msg.getContent(SOAPMessage.class);
-              
+
                 SignalMessage as4Receipt = mebmsUtils.generateAS4ReceiptSignal(mMail.getMessageId(), Utils.getDomainFromAddress(mMail.getReceiverEBox()), request.getSOAPPart().getDocumentElement());
                 msg.getExchange().put(SignalMessage.class, as4Receipt);
             } else {
@@ -256,7 +253,7 @@ public class EBMSInInterceptor extends AbstractSoapInterceptor {
     // receive 
     private void processResponseSignals(List<SignalMessage> lstSignals, PMode pm, SoapMessage msg) throws EBMSError {
         SoapVersion version = msg.getVersion();
-             long l = mlog.logStart();
+        long l = mlog.logStart();
 
         for (SignalMessage sm : lstSignals) {
             MessageInfo mi = sm.getMessageInfo();
@@ -288,16 +285,16 @@ public class EBMSInInterceptor extends AbstractSoapInterceptor {
 
             if (sm.getReceipt() != null) {
                 //outmsg.getMmshMail().setSentDate(mi.getTimestamp());
-               // outmsg.getMmshMail().setStatus(MSHStatusType.Sent.name());
-               // outmsg.setStatusChangeDate(Calendar.getInstance().getTime());
-               // mSHDB.update(outmsg);
+                // outmsg.getMmshMail().setStatus(MSHStatusType.Sent.name());
+                // outmsg.setStatusChangeDate(Calendar.getInstance().getTime());
+                // mSHDB.update(outmsg);
             }
-            
+
             msg.getExchange().put("SIGNAL_ELEMENTS", sm.getAnies());
 
             for (Element e : sm.getAnies()) {
                 System.out.println("Got elements in signal: " + e.getLocalName());
-              /* if (e.getLocalName().equals("SVEVEncryptionKey")) {
+                /* if (e.getLocalName().equals("SVEVEncryptionKey")) {
                     System.out.println("********************** got encryptionKey");
                     try {
                         SVEVEncryptionKey se = (SVEVEncryptionKey) XMLUtils.deserialize(e, SVEVEncryptionKey.class);
@@ -322,7 +319,7 @@ public class EBMSInInterceptor extends AbstractSoapInterceptor {
                     mlog.logError(l, errmsg);
                     throw new EBMSError(EBMSErrorCode.ProcessingModeMismatch, null, errmsg);
                 }
-*/
+                 */
             }
 
         }

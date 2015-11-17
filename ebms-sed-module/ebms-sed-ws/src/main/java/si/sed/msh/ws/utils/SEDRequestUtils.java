@@ -49,8 +49,9 @@ public class SEDRequestUtils {
 
     /**
      * Method checks input control parameters
+     *
      * @param c
-     * @throws SEDException_Exception 
+     * @throws SEDException_Exception
      */
     public static void validateControl(Control c) throws SEDException_Exception {
 
@@ -66,9 +67,10 @@ public class SEDRequestUtils {
     }
 
     /**
-     *  Method checks format of ebox address
+     * Method checks format of ebox address
+     *
      * @param address
-     * @return 
+     * @return
      */
     public static boolean isValidMailAddress(String address) {
         return address != null && EMAIL_PATTEREN.matcher(address).matches();
@@ -77,6 +79,7 @@ public class SEDRequestUtils {
 
     /**
      * Methods validate OutMail for missing data
+     *
      * @param mail
      * @throws SEDException_Exception
      */
@@ -95,10 +98,10 @@ public class SEDRequestUtils {
                 errLst.add("Mimetype (index:'" + iMP + "')!");
             }
             // check payload
-            if (mp.getValue() == null && (Utils.isEmptyString(mp.getFilepath()) || !(new File(mp.getFilepath()).exists())) ) {
+            if (mp.getValue() == null && (Utils.isEmptyString(mp.getFilepath()) || !(new File(mp.getFilepath()).exists()))) {
                 errLst.add("No payload content. Add value or existing file (index:'" + iMP + "')!");
             }
-        }      
+        }
         if (Utils.isEmptyString(mail.getReceiverName())) {
             errLst.add("ReceiverName");
         }
@@ -121,9 +124,8 @@ public class SEDRequestUtils {
             errLst.add("ConversationId!");
         }
         if (!errLst.isEmpty()) {
-            throw createSEDException("Missing data ("+errLst.size()+"):" + String.join(", ",errLst) , SEDExceptionCode.MISSING_DATA);
+            throw createSEDException("Missing data (" + errLst.size() + "):" + String.join(", ", errLst), SEDExceptionCode.MISSING_DATA);
         }
-        
-     
+
     }
 }

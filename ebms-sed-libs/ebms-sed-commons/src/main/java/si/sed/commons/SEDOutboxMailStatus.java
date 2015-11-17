@@ -13,29 +13,27 @@
 * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the Licence for the specific language governing permissions and  
 * limitations under the Licence.
-*/
+ */
 package si.sed.commons;
 
 /**
  *
  * @author Joze Rihtarsic <joze.rihtarsic@sodisce.si>
  */
+public enum SEDOutboxMailStatus {
+    SUBMITED("SUBMITED", "Message is sucessfuly added to SED for transmition."),
+    SENDING("SENDING", "Message is pushing/pulling to receiving MSH"),
+    SEND_SHEDULE("SEND_SHEDULE", "Shedule for resend"),
+    SENT("SENT", "Message is  sent receiving MSH"),
+    SEND_ERROR("SEND_ERROR", "Error occured pushing/pulling to receiving MSH"),;
 
-public enum SEDOutboxMailStatus { 
-    SUBMITED ("SUBMITED", "Message is sucessfuly added to SED for transmition."),
-    SENDING ("SENDING", "Message is pushing/pulling to receiving MSH"),
-    SEND_SHEDULE ("SEND_SHEDULE", "Shedule for resend"),
-    SENT ("SENT", "Message is  sent receiving MSH"),
-    SEND_ERROR ("SEND_ERROR", "Error occured pushing/pulling to receiving MSH"),
-    
-    ; 
-    
-   String mstrVal;
-   String mstrDesc;
-   private SEDOutboxMailStatus(String val, String strDesc){
-       mstrVal = val;
-       mstrDesc = strDesc;
-   }
+    String mstrVal;
+    String mstrDesc;
+
+    private SEDOutboxMailStatus(String val, String strDesc) {
+        mstrVal = val;
+        mstrDesc = strDesc;
+    }
 
     public String getValue() {
         return mstrVal;
@@ -44,5 +42,5 @@ public enum SEDOutboxMailStatus {
     public String getDesc() {
         return mstrDesc;
     }
-    
+
 }

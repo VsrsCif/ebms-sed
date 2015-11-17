@@ -359,7 +359,7 @@ public class EBMSUtils {
                             mp.setValue(p.getValue());
                             lstProp.add(mp);
                     }
-                }else {
+                } else {
                     MSHInProperty mp = new MSHInProperty();
                     mp.setName(p.getName());
                     mp.setValue(p.getValue());
@@ -441,12 +441,12 @@ public class EBMSUtils {
             for (PartInfo pi : um.getPayloadInfo().getPartInfos()) {
                 MSHInPart part = new MSHInPart();
                 String href = pi.getHref();
-                if (href!= null){
-                    if (href.startsWith("cid:")){
+                if (href != null) {
+                    if (href.startsWith("cid:")) {
                         part.setEbmsId(pi.getHref().substring(4)); // remove cid
-                    }else if (href.startsWith("#")){
+                    } else if (href.startsWith("#")) {
                         part.setEbmsId(pi.getHref().substring(1)); // remove hash
-                    }else {
+                    } else {
                         part.setEbmsId(pi.getHref());
                     }
                 }
@@ -476,7 +476,7 @@ public class EBMSUtils {
                         }
                     }
                 }
-                
+
                 lstParts.add(part);
             }
             if (!lstParts.isEmpty()) {
@@ -487,8 +487,7 @@ public class EBMSUtils {
 
         return mshmail;
     }
-    
-    
+
     /*
     public static File createSoapLogFile(MSHMail mm, boolean isRequest, boolean isOutgoingMail) throws IOException {
         File f;
@@ -499,5 +498,4 @@ public class EBMSUtils {
 
         return f;
     }*/
-
 }

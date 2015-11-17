@@ -216,8 +216,8 @@
                         </goals>
                         <configuration>
                             <excludes>
-                             <exclude>**/generated/*.java</exclude>
-                             </excludes>
+                                <exclude>**/generated/*.java</exclude>
+                            </excludes>
                         </configuration>
                         
                     </execution>

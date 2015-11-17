@@ -117,9 +117,6 @@ public class SEDMailBox implements SEDMailBoxWS {
     @PersistenceContext(unitName = "ebMS_PU", name = "ebMS_PU")
     protected EntityManager memEManager;
 
-    
-    
-
     protected Queue mqMSHQueue = null;
 
     PModeManager mpModeManager = new PModeManager();
@@ -681,7 +678,7 @@ public class SEDMailBox implements SEDMailBoxWS {
             Queue queue = getMSHQueue();
 
             ic = new InitialContext();
-            String jndiName = getJNDIPrefix()+ SEDValues.EBMS_JMS_CONNECTION_FACTORY_JNDI;
+            String jndiName = getJNDIPrefix() + SEDValues.EBMS_JMS_CONNECTION_FACTORY_JNDI;
             ConnectionFactory cf = (ConnectionFactory) ic.lookup(jndiName);
 
             connection = cf.createConnection();
@@ -728,7 +725,6 @@ public class SEDMailBox implements SEDMailBoxWS {
             String jndiName = getJNDI_JMSPrefix() + SEDValues.EBMS_QUEUE_JNDI;
             InitialContext ic = new InitialContext();
             mqMSHQueue = (Queue) ic.lookup(jndiName);
-            
 
         }
         return mqMSHQueue;
@@ -832,7 +828,7 @@ public class SEDMailBox implements SEDMailBoxWS {
                 InitialContext ic = new InitialContext();
                 Context t = (Context) ic.lookup("java:comp");
                 listContext(t, "");
-                memEManager = (EntityManager) ic.lookup(getJNDIPrefix() +"ebMS_PU");
+                memEManager = (EntityManager) ic.lookup(getJNDIPrefix() + "ebMS_PU");
 
             } catch (NamingException ex) {
                 Logger.getLogger(SEDMailBox.class.getName()).log(Level.SEVERE, null, ex);
@@ -847,8 +843,8 @@ public class SEDMailBox implements SEDMailBoxWS {
         if (mutUTransaction == null) {
             try {
                 InitialContext ic = new InitialContext();
-                
-                mutUTransaction = (UserTransaction) ic.lookup(getJNDIPrefix() +"UserTransaction");
+
+                mutUTransaction = (UserTransaction) ic.lookup(getJNDIPrefix() + "UserTransaction");
 
             } catch (NamingException ex) {
                 Logger.getLogger(SEDMailBox.class.getName()).log(Level.SEVERE, null, ex);
@@ -875,12 +871,13 @@ public class SEDMailBox implements SEDMailBoxWS {
             System.out.println(ex);
         }
     }
-    
-    private String getJNDI_JMSPrefix(){
+
+    private String getJNDI_JMSPrefix() {
         return System.getProperty(SEDSystemProperties.SYS_PROP_JNDI_JMS_PREFIX, "java:/jms/");
     }
-     private String getJNDIPrefix(){
-         
+
+    private String getJNDIPrefix() {
+
         return System.getProperty(SEDSystemProperties.SYS_PROP_JNDI_PREFIX, "java:/");
     }
 

@@ -13,24 +13,24 @@
 * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the Licence for the specific language governing permissions and  
 * limitations under the Licence.
-*/
+ */
 package si.sed.commons.exception;
 
 /**
  *
-  * @author Joze Rihtarsic <joze.rihtarsic@sodisce.si>
+ * @author Joze Rihtarsic <joze.rihtarsic@sodisce.si>
  */
+public enum SVEVReturnValue {
+    OK(1, "OK"),
+    WARNING(2, "WARNING"),
+    FAILURE(3, "FAILURE");
+    int miVal;
+    String mstrDesc;
 
-public enum SVEVReturnValue {    
-   OK (1, "OK"),
-   WARNING (2, "WARNING"),
-   FAILURE (3, "FAILURE");
-   int miVal;
-   String mstrDesc;
-   private SVEVReturnValue(int iVal, String strDesc){
-       miVal = iVal;
-       mstrDesc = strDesc;
-   }
+    private SVEVReturnValue(int iVal, String strDesc) {
+        miVal = iVal;
+        mstrDesc = strDesc;
+    }
 
     public int getValue() {
         return miVal;
@@ -39,6 +39,5 @@ public enum SVEVReturnValue {
     public String getDesc() {
         return mstrDesc;
     }
-   
 
 }

@@ -24,7 +24,6 @@ import si.sed.commons.SEDSystemProperties;
 import si.sed.commons.exception.SEDSecurityException;
 import si.sed.commons.utils.SEDLogger;
 
-
 /**
  *
  * @author Joze Rihtarsic <joze.rihtarsic@sodisce.si>
@@ -33,19 +32,20 @@ public class KeyPasswordManager {
 
     private final Properties passwords = new Properties();
     protected final SEDLogger mlog = new SEDLogger(KeyPasswordManager.class);
-   
-    private static KeyPasswordManager mInstance=null;
-    private KeyPasswordManager(){}
-    
-    public static KeyPasswordManager getInstance() throws SEDSecurityException{
-        if (mInstance == null){
+
+    private static KeyPasswordManager mInstance = null;
+
+    private KeyPasswordManager() {
+    }
+
+    public static KeyPasswordManager getInstance() throws SEDSecurityException {
+        if (mInstance == null) {
             mInstance = new KeyPasswordManager();
             mInstance.init();
-            
+
         }
         return mInstance;
     }
-   
 
     private void init() throws SEDSecurityException {
         String fileProperty = System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR, "") + File.separator + SEDSystemProperties.SYS_KEY_PASSWD_DEF;
@@ -53,13 +53,12 @@ public class KeyPasswordManager {
             passwords.load(fis);
         } catch (IOException ex) {
             throw new SEDSecurityException(SEDSecurityException.SEDSecurityExceptionCode.PasswordFileError, ex, ex.getMessage());
-            
+
         }
     }
 
-    
     public String getPasswordForAlias(String alias) {
-        
+
         return passwords.getProperty(alias);
     }
 }

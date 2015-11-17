@@ -26,37 +26,37 @@ Copyright 2015, Supreme Court Republic of Slovenia
  limitations under the Licence.
 -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://ebms.sed.org/" xmlns:con="http://ebms.sed.org/Control" targetNamespace="http://ebms.sed.org/">
-	<xs:import namespace="http://ebms.sed.org/Control" schemaLocation="./Control.xsd"/>
-	<xs:element name="InMailEventListRequest">
-		<xs:complexType>
-			<xs:annotation>
-				<xs:documentation xml:lang="sl"> 
+    <xs:import namespace="http://ebms.sed.org/Control" schemaLocation="./Control.xsd"/>
+    <xs:element name="InMailEventListRequest">
+        <xs:complexType>
+            <xs:annotation>
+                <xs:documentation xml:lang="sl"> 
                     Poizvedba za pridobivanje dogodkov/statusov na izhodni pošiljki. Dogodki so sortirani od najnovejšega do najstarejšega dogodka.
                 </xs:documentation>
-			</xs:annotation>
-			<xs:sequence>
-				<xs:element name="Control" type="con:Control" />
-				<xs:element name="Data">
-					<xs:complexType>
-						<xs:attribute name="receiverEBox" use="required">
-							<xs:annotation>
-								<xs:documentation xml:lang="sl">Naslovnikov elektronski naslov.</xs:documentation>
-							</xs:annotation>
-							<xs:simpleType>
-								<xs:restriction base="xs:token">
-									<xs:maxLength value="64"/>
-									<xs:pattern value="[_\-a-zA-Z0-9\.\+]+@[a-zA-Z0-9](\.?[\-a-zA-Z0-9]*[a-zA-Z0-9])*"/>
-								</xs:restriction>
-							</xs:simpleType>
-						</xs:attribute>
-                                                <xs:attribute name="mailId" type="xs:integer" use="required">
-                                                    <xs:annotation>
-                                                        <xs:documentation xml:lang="sl">Id vhodne pošiljke</xs:documentation>
-                                                    </xs:annotation>			
-                                                </xs:attribute>						
-					</xs:complexType>
-				</xs:element>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
+            </xs:annotation>
+            <xs:sequence>
+                <xs:element name="Control" type="con:Control" />
+                <xs:element name="Data">
+                    <xs:complexType>
+                        <xs:attribute name="receiverEBox" use="required">
+                            <xs:annotation>
+                                <xs:documentation xml:lang="sl">Naslovnikov elektronski naslov.</xs:documentation>
+                            </xs:annotation>
+                            <xs:simpleType>
+                                <xs:restriction base="xs:token">
+                                    <xs:maxLength value="64"/>
+                                    <xs:pattern value="[_\-a-zA-Z0-9\.\+]+@[a-zA-Z0-9](\.?[\-a-zA-Z0-9]*[a-zA-Z0-9])*"/>
+                                </xs:restriction>
+                            </xs:simpleType>
+                        </xs:attribute>
+                        <xs:attribute name="mailId" type="xs:integer" use="required">
+                            <xs:annotation>
+                                <xs:documentation xml:lang="sl">Id vhodne pošiljke</xs:documentation>
+                            </xs:annotation>			
+                        </xs:attribute>						
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
 </xs:schema>

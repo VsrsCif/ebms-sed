@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <uberwar>
-  <wars>
-    <war>si.vsrs.cif.sed:ebms-sed-ws</war>
-    <war>si.vsrs.cif.sed:ebms-msh-ws</war>
-  </wars>
-   <merges>
-    <merge>
-      <document>WEB-INF/classes/properties.xml</document>
-      <classname>org.codehaus.cargo.module.webapp.DocumentMerger</classname>
-    </merge>
-  </merges>
+    <wars>
+        <war>si.vsrs.cif.sed:ebms-sed-ws</war>
+        <war>si.vsrs.cif.sed:ebms-msh-ws</war>
+    </wars>
+    <merges>
+        <merge>
+            <document>WEB-INF/classes/properties.xml</document>
+            <classname>org.codehaus.cargo.module.webapp.DocumentMerger</classname>
+        </merge>
+    </merges>
 </uberwar>

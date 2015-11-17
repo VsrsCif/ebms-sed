@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<con:soapui-project id="d55e8025-6873-40bf-9490-778240e87fd0" activeEnvironment="Default" name="SEDMailBoxWS" resourceRoot="" soapui-version="5.2.1" abortOnError="false" runType="SEQUENTIAL" xmlns:con="http://eviware.com/soapui/config"><con:settings/><con:interface xsi:type="con:WsdlInterface" id="07b351d6-95c8-4773-ab6b-0db9c9b6f966" wsaVersion="NONE" name="SEDMailBoxPortBinding" type="wsdl" bindingName="{http://ebms.sed.org/}SEDMailBoxPortBinding" soapVersion="1_1" anonymous="optional" definition="http://localhost:8080/ebms-sed-ws/sed-mailbox?wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="http://localhost:8080/ebms-sed-ws/sed-mailbox?wsdl"><con:part><con:url>http://localhost:8080/ebms-sed-ws/sed-mailbox?wsdl</con:url><con:content><![CDATA[<definitions name="SEDMailBoxWS" targetNamespace="http://ebms.sed.org/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://ebms.sed.org/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ns="http://schemas.xmlsoap.org/soap/encoding/" xmlns="http://schemas.xmlsoap.org/wsdl/">
+<con:soapui-project id="d55e8025-6873-40bf-9490-778240e87fd0" activeEnvironment="Default" name="SEDMailBoxWS" resourceRoot="" soapui-version="5.2.1" abortOnError="false" runType="SEQUENTIAL" xmlns:con="http://eviware.com/soapui/config">
+    <con:settings/>
+    <con:interface xsi:type="con:WsdlInterface" id="07b351d6-95c8-4773-ab6b-0db9c9b6f966" wsaVersion="NONE" name="SEDMailBoxPortBinding" type="wsdl" bindingName="{http://ebms.sed.org/}SEDMailBoxPortBinding" soapVersion="1_1" anonymous="optional" definition="http://localhost:8080/ebms-sed-ws/sed-mailbox?wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <con:settings/>
+        <con:definitionCache type="TEXT" rootPart="http://localhost:8080/ebms-sed-ws/sed-mailbox?wsdl">
+            <con:part>
+                <con:url>http://localhost:8080/ebms-sed-ws/sed-mailbox?wsdl</con:url>
+                <con:content><![CDATA[<definitions name="SEDMailBoxWS" targetNamespace="http://ebms.sed.org/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://ebms.sed.org/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ns="http://schemas.xmlsoap.org/soap/encoding/" xmlns="http://schemas.xmlsoap.org/wsdl/">
   <documentation>WSDL določa servise za integracijo s SVEV-MSH modulom
         * za odpremo pošiljke preko MSH modula
         * prevzemanje statusov izhodnih pošiljk
@@ -212,7 +219,12 @@
       <soap:address location="http://localhost:8080/ebms-sed-ws/sed-mailbox"/>
     </port>
   </service>
-</definitions>]]></con:content><con:type>http://schemas.xmlsoap.org/wsdl/</con:type></con:part><con:part><con:url>http://localhost:8080/ebms-sed-ws/sed-mailbox?xsd=exception/sedexception.xsd</con:url><con:content><![CDATA[<!--Metadata: 
+</definitions>]]></con:content>
+                <con:type>http://schemas.xmlsoap.org/wsdl/</con:type>
+            </con:part>
+            <con:part>
+                <con:url>http://localhost:8080/ebms-sed-ws/sed-mailbox?xsd=exception/sedexception.xsd</con:url>
+                <con:content><![CDATA[<!--Metadata: 
 Owner: Supreme Court Republic of Slovenia 
 Product: SVEV-MSH
 Product Version: 1.0.0
@@ -258,7 +270,12 @@ Author: Joze Rihtarsic-->
       <xs:enumeration value="ServerError"/>
     </xs:restriction>
   </xs:simpleType>
-</xs:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part><con:part><con:url>http://localhost:8080/ebms-sed-ws/sed-mailbox?xsd=messages/SubmitMailRequest.xsd</con:url><con:content><![CDATA[<!--Metadata: 
+</xs:schema>]]></con:content>
+                <con:type>http://www.w3.org/2001/XMLSchema</con:type>
+            </con:part>
+            <con:part>
+                <con:url>http://localhost:8080/ebms-sed-ws/sed-mailbox?xsd=messages/SubmitMailRequest.xsd</con:url>
+                <con:content><![CDATA[<!--Metadata: 
 Owner: Supreme Court Republic of Slovenia 
 Product: SVEV-MSH
 Product Version: 1.0.0
@@ -297,7 +314,12 @@ Author: Joze Rihtarsic-->
       </xs:sequence>
     </xs:complexType>
   </xs:element>
-</xs:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part><con:part><con:url>http://localhost:8080/ebms-sed-ws/sed-mailbox?xsd=messages/Control.xsd</con:url><con:content><![CDATA[<!--Metadata: 
+</xs:schema>]]></con:content>
+                <con:type>http://www.w3.org/2001/XMLSchema</con:type>
+            </con:part>
+            <con:part>
+                <con:url>http://localhost:8080/ebms-sed-ws/sed-mailbox?xsd=messages/Control.xsd</con:url>
+                <con:content><![CDATA[<!--Metadata: 
 Owner: Supreme Court Republic of Slovenia 
 Product: SVEV-MSH
 Product Version: 1.0.0
@@ -363,7 +385,12 @@ Author: Joze Rihtarsic-->
       </xs:annotation>
     </xs:attribute>
   </xs:complexType>
-</xs:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part><con:part><con:url>http://localhost:8080/ebms-sed-ws/sed-mailbox?xsd=entities/outbox-mail.xsd</con:url><con:content><![CDATA[<!--Metadata: 
+</xs:schema>]]></con:content>
+                <con:type>http://www.w3.org/2001/XMLSchema</con:type>
+            </con:part>
+            <con:part>
+                <con:url>http://localhost:8080/ebms-sed-ws/sed-mailbox?xsd=entities/outbox-mail.xsd</con:url>
+                <con:content><![CDATA[<!--Metadata: 
 Owner: Supreme Court Republic of Slovenia 
 Product: SVEV-MSH
 Product Version: 1.0.0
@@ -540,7 +567,12 @@ Author: Joze Rihtarsic-->
     </xs:attribute>
     <xs:attribute name="statusDate" type="xs:dateTime"/>
   </xs:complexType>
-</xs:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part><con:part><con:url>http://localhost:8080/ebms-sed-ws/sed-mailbox?xsd=entities/outbox-property.xsd</con:url><con:content><![CDATA[<!--Metadata: 
+</xs:schema>]]></con:content>
+                <con:type>http://www.w3.org/2001/XMLSchema</con:type>
+            </con:part>
+            <con:part>
+                <con:url>http://localhost:8080/ebms-sed-ws/sed-mailbox?xsd=entities/outbox-property.xsd</con:url>
+                <con:content><![CDATA[<!--Metadata: 
 Owner: Supreme Court Republic of Slovenia 
 Product: SVEV-MSH
 Product Version: 1.0.0
@@ -603,7 +635,12 @@ Author: Joze Rihtarsic-->
       <xs:maxLength value="512"/>
     </xs:restriction>
   </xs:simpleType>
-</xs:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part><con:part><con:url>http://localhost:8080/ebms-sed-ws/sed-mailbox?xsd=entities/outbox-payload.xsd</con:url><con:content><![CDATA[<!--Metadata: 
+</xs:schema>]]></con:content>
+                <con:type>http://www.w3.org/2001/XMLSchema</con:type>
+            </con:part>
+            <con:part>
+                <con:url>http://localhost:8080/ebms-sed-ws/sed-mailbox?xsd=entities/outbox-payload.xsd</con:url>
+                <con:content><![CDATA[<!--Metadata: 
 Owner: Supreme Court Republic of Slovenia 
 Product: SVEV-MSH
 Product Version: 1.0.0
@@ -727,7 +764,12 @@ Author: Joze Rihtarsic-->
       </xs:extension>
     </xs:simpleContent>
   </xs:complexType>
-</xs:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part><con:part><con:url>http://localhost:8080/ebms-sed-ws/sed-mailbox?xsd=messages/SubmitMailResponse.xsd</con:url><con:content><![CDATA[<!--edited with XMLSpy v2008 (http://www.altova.com) by XMLSpy 2007 Professional Ed., Installed for 5 users (with SMP from 2007-02-06 to 2008-02-07) (CIF VSRS)-->
+</xs:schema>]]></con:content>
+                <con:type>http://www.w3.org/2001/XMLSchema</con:type>
+            </con:part>
+            <con:part>
+                <con:url>http://localhost:8080/ebms-sed-ws/sed-mailbox?xsd=messages/SubmitMailResponse.xsd</con:url>
+                <con:content><![CDATA[<!--edited with XMLSpy v2008 (http://www.altova.com) by XMLSpy 2007 Professional Ed., Installed for 5 users (with SMP from 2007-02-06 to 2008-02-07) (CIF VSRS)-->
 <!--Metadata: 
 Owner: Supreme Court Republic of Slovenia 
 Product: SVEV-MSH
@@ -784,7 +826,12 @@ Author: Joze Rihtarsic-->
       </xs:sequence>
     </xs:complexType>
   </xs:element>
-</xs:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part><con:part><con:url>http://localhost:8080/ebms-sed-ws/sed-mailbox?xsd=messages/RControl.xsd</con:url><con:content><![CDATA[<!--Metadata: 
+</xs:schema>]]></con:content>
+                <con:type>http://www.w3.org/2001/XMLSchema</con:type>
+            </con:part>
+            <con:part>
+                <con:url>http://localhost:8080/ebms-sed-ws/sed-mailbox?xsd=messages/RControl.xsd</con:url>
+                <con:content><![CDATA[<!--Metadata: 
 Owner: Supreme Court Republic of Slovenia 
 Product: SVEV-MSH
 Product Version: 1.0.0
@@ -854,7 +901,12 @@ Author: Joze Rihtarsic-->
       </xs:annotation>
     </xs:attribute>
   </xs:complexType>
-</xs:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part><con:part><con:url>http://localhost:8080/ebms-sed-ws/sed-mailbox?xsd=messages/OutMailListRequest.xsd</con:url><con:content><![CDATA[<!--edited with XMLSpy v2008 (http://www.altova.com) by XMLSpy 2007 Professional Ed., Installed for 5 users (with SMP from 2007-02-06 to 2008-02-07) (CIF VSRS)-->
+</xs:schema>]]></con:content>
+                <con:type>http://www.w3.org/2001/XMLSchema</con:type>
+            </con:part>
+            <con:part>
+                <con:url>http://localhost:8080/ebms-sed-ws/sed-mailbox?xsd=messages/OutMailListRequest.xsd</con:url>
+                <con:content><![CDATA[<!--edited with XMLSpy v2008 (http://www.altova.com) by XMLSpy 2007 Professional Ed., Installed for 5 users (with SMP from 2007-02-06 to 2008-02-07) (CIF VSRS)-->
 <!--Metadata: 
 Owner: Supreme Court Republic of Slovenia 
 Product: SVEV-MSH
@@ -967,7 +1019,12 @@ Author: Joze Rihtarsic-->
       </xs:sequence>
     </xs:complexType>
   </xs:element>
-</xs:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part><con:part><con:url>http://localhost:8080/ebms-sed-ws/sed-mailbox?xsd=messages/OutMailListResponse.xsd</con:url><con:content><![CDATA[<!--edited with XMLSpy v2008 (http://www.altova.com) by XMLSpy 2007 Professional Ed., Installed for 5 users (with SMP from 2007-02-06 to 2008-02-07) (CIF VSRS)-->
+</xs:schema>]]></con:content>
+                <con:type>http://www.w3.org/2001/XMLSchema</con:type>
+            </con:part>
+            <con:part>
+                <con:url>http://localhost:8080/ebms-sed-ws/sed-mailbox?xsd=messages/OutMailListResponse.xsd</con:url>
+                <con:content><![CDATA[<!--edited with XMLSpy v2008 (http://www.altova.com) by XMLSpy 2007 Professional Ed., Installed for 5 users (with SMP from 2007-02-06 to 2008-02-07) (CIF VSRS)-->
 <!--Metadata: 
 Owner: Supreme Court Republic of Slovenia 
 Product: SVEV-MSH
@@ -1010,7 +1067,12 @@ Author: Joze Rihtarsic-->
       </xs:sequence>
     </xs:complexType>
   </xs:element>
-</xs:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part><con:part><con:url>http://localhost:8080/ebms-sed-ws/sed-mailbox?xsd=messages/OutMailEventListRequest.xsd</con:url><con:content><![CDATA[<!--edited with XMLSpy v2008 (http://www.altova.com) by XMLSpy 2007 Professional Ed., Installed for 5 users (with SMP from 2007-02-06 to 2008-02-07) (CIF VSRS)-->
+</xs:schema>]]></con:content>
+                <con:type>http://www.w3.org/2001/XMLSchema</con:type>
+            </con:part>
+            <con:part>
+                <con:url>http://localhost:8080/ebms-sed-ws/sed-mailbox?xsd=messages/OutMailEventListRequest.xsd</con:url>
+                <con:content><![CDATA[<!--edited with XMLSpy v2008 (http://www.altova.com) by XMLSpy 2007 Professional Ed., Installed for 5 users (with SMP from 2007-02-06 to 2008-02-07) (CIF VSRS)-->
 <!--Metadata: 
 Owner: Supreme Court Republic of Slovenia 
 Product: SVEV-MSH
@@ -1075,7 +1137,12 @@ Author: Joze Rihtarsic-->
       </xs:sequence>
     </xs:complexType>
   </xs:element>
-</xs:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part><con:part><con:url>http://localhost:8080/ebms-sed-ws/sed-mailbox?xsd=messages/OutMailEventListResponse.xsd</con:url><con:content><![CDATA[<!--edited with XMLSpy v2008 (http://www.altova.com) by XMLSpy 2007 Professional Ed., Installed for 5 users (with SMP from 2007-02-06 to 2008-02-07) (CIF VSRS)-->
+</xs:schema>]]></con:content>
+                <con:type>http://www.w3.org/2001/XMLSchema</con:type>
+            </con:part>
+            <con:part>
+                <con:url>http://localhost:8080/ebms-sed-ws/sed-mailbox?xsd=messages/OutMailEventListResponse.xsd</con:url>
+                <con:content><![CDATA[<!--edited with XMLSpy v2008 (http://www.altova.com) by XMLSpy 2007 Professional Ed., Installed for 5 users (with SMP from 2007-02-06 to 2008-02-07) (CIF VSRS)-->
 <!--Metadata: 
 Owner: Supreme Court Republic of Slovenia 
 Product: SVEV-MSH
@@ -1118,7 +1185,12 @@ Author: Joze Rihtarsic-->
       </xs:sequence>
     </xs:complexType>
   </xs:element>
-</xs:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part><con:part><con:url>http://localhost:8080/ebms-sed-ws/sed-mailbox?xsd=entities/outbox-event.xsd</con:url><con:content><![CDATA[<!--Metadata: 
+</xs:schema>]]></con:content>
+                <con:type>http://www.w3.org/2001/XMLSchema</con:type>
+            </con:part>
+            <con:part>
+                <con:url>http://localhost:8080/ebms-sed-ws/sed-mailbox?xsd=entities/outbox-event.xsd</con:url>
+                <con:content><![CDATA[<!--Metadata: 
 Owner: Supreme Court Republic of Slovenia 
 Product: SVEV-MSH
 Product Version: 1.0.0
@@ -1214,7 +1286,12 @@ Author: Joze Rihtarsic-->
     </xs:attribute>
     <xs:attribute name="applicationId"/>
   </xs:complexType>
-</xs:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part><con:part><con:url>http://localhost:8080/ebms-sed-ws/sed-mailbox?xsd=messages/InMailListRequest.xsd</con:url><con:content><![CDATA[<!--edited with XMLSpy v2008 (http://www.altova.com) by XMLSpy 2007 Professional Ed., Installed for 5 users (with SMP from 2007-02-06 to 2008-02-07) (CIF VSRS)-->
+</xs:schema>]]></con:content>
+                <con:type>http://www.w3.org/2001/XMLSchema</con:type>
+            </con:part>
+            <con:part>
+                <con:url>http://localhost:8080/ebms-sed-ws/sed-mailbox?xsd=messages/InMailListRequest.xsd</con:url>
+                <con:content><![CDATA[<!--edited with XMLSpy v2008 (http://www.altova.com) by XMLSpy 2007 Professional Ed., Installed for 5 users (with SMP from 2007-02-06 to 2008-02-07) (CIF VSRS)-->
 <!--Metadata: 
 Owner: Supreme Court Republic of Slovenia 
 Product: SVEV-MSH
@@ -1327,7 +1404,12 @@ Author: Joze Rihtarsic-->
       </xs:sequence>
     </xs:complexType>
   </xs:element>
-</xs:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part><con:part><con:url>http://localhost:8080/ebms-sed-ws/sed-mailbox?xsd=messages/InMailListResponse.xsd</con:url><con:content><![CDATA[<!--edited with XMLSpy v2008 (http://www.altova.com) by XMLSpy 2007 Professional Ed., Installed for 5 users (with SMP from 2007-02-06 to 2008-02-07) (CIF VSRS)-->
+</xs:schema>]]></con:content>
+                <con:type>http://www.w3.org/2001/XMLSchema</con:type>
+            </con:part>
+            <con:part>
+                <con:url>http://localhost:8080/ebms-sed-ws/sed-mailbox?xsd=messages/InMailListResponse.xsd</con:url>
+                <con:content><![CDATA[<!--edited with XMLSpy v2008 (http://www.altova.com) by XMLSpy 2007 Professional Ed., Installed for 5 users (with SMP from 2007-02-06 to 2008-02-07) (CIF VSRS)-->
 <!--Metadata: 
 Owner: Supreme Court Republic of Slovenia 
 Product: SVEV-MSH
@@ -1370,7 +1452,12 @@ Author: Joze Rihtarsic-->
       </xs:sequence>
     </xs:complexType>
   </xs:element>
-</xs:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part><con:part><con:url>http://localhost:8080/ebms-sed-ws/sed-mailbox?xsd=entities/inbox-mail.xsd</con:url><con:content><![CDATA[<!--Metadata: 
+</xs:schema>]]></con:content>
+                <con:type>http://www.w3.org/2001/XMLSchema</con:type>
+            </con:part>
+            <con:part>
+                <con:url>http://localhost:8080/ebms-sed-ws/sed-mailbox?xsd=entities/inbox-mail.xsd</con:url>
+                <con:content><![CDATA[<!--Metadata: 
 Owner: Supreme Court Republic of Slovenia 
 Product: SVEV-MSH
 Product Version: 1.0.0
@@ -1547,7 +1634,12 @@ Author: Joze Rihtarsic-->
     </xs:attribute>
     <xs:attribute name="statusDate" type="xs:dateTime"/>
   </xs:complexType>
-</xs:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part><con:part><con:url>http://localhost:8080/ebms-sed-ws/sed-mailbox?xsd=entities/inbox-property.xsd</con:url><con:content><![CDATA[<!--Metadata: 
+</xs:schema>]]></con:content>
+                <con:type>http://www.w3.org/2001/XMLSchema</con:type>
+            </con:part>
+            <con:part>
+                <con:url>http://localhost:8080/ebms-sed-ws/sed-mailbox?xsd=entities/inbox-property.xsd</con:url>
+                <con:content><![CDATA[<!--Metadata: 
 Owner: Supreme Court Republic of Slovenia 
 Product: SVEV-MSH
 Product Version: 1.0.0
@@ -1610,7 +1702,12 @@ Author: Joze Rihtarsic-->
       <xs:maxLength value="512"/>
     </xs:restriction>
   </xs:simpleType>
-</xs:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part><con:part><con:url>http://localhost:8080/ebms-sed-ws/sed-mailbox?xsd=entities/inbox-payload.xsd</con:url><con:content><![CDATA[<!--Metadata: 
+</xs:schema>]]></con:content>
+                <con:type>http://www.w3.org/2001/XMLSchema</con:type>
+            </con:part>
+            <con:part>
+                <con:url>http://localhost:8080/ebms-sed-ws/sed-mailbox?xsd=entities/inbox-payload.xsd</con:url>
+                <con:content><![CDATA[<!--Metadata: 
 Owner: Supreme Court Republic of Slovenia 
 Product: SVEV-MSH
 Product Version: 1.0.0
@@ -1734,7 +1831,12 @@ Author: Joze Rihtarsic-->
       </xs:extension>
     </xs:simpleContent>
   </xs:complexType>
-</xs:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part><con:part><con:url>http://localhost:8080/ebms-sed-ws/sed-mailbox?xsd=messages/ModifyInMailRequest.xsd</con:url><con:content><![CDATA[<!--edited with XMLSpy v2008 (http://www.altova.com) by XMLSpy 2007 Professional Ed., Installed for 5 users (with SMP from 2007-02-06 to 2008-02-07) (CIF VSRS)-->
+</xs:schema>]]></con:content>
+                <con:type>http://www.w3.org/2001/XMLSchema</con:type>
+            </con:part>
+            <con:part>
+                <con:url>http://localhost:8080/ebms-sed-ws/sed-mailbox?xsd=messages/ModifyInMailRequest.xsd</con:url>
+                <con:content><![CDATA[<!--edited with XMLSpy v2008 (http://www.altova.com) by XMLSpy 2007 Professional Ed., Installed for 5 users (with SMP from 2007-02-06 to 2008-02-07) (CIF VSRS)-->
 <!--Metadata: 
 Owner: Supreme Court Republic of Slovenia 
 Product: SVEV-MSH
@@ -1803,7 +1905,12 @@ Author: Joze Rihtarsic-->
       <xs:enumeration value="LOCK"/>
     </xs:restriction>
   </xs:simpleType>
-</xs:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part><con:part><con:url>http://localhost:8080/ebms-sed-ws/sed-mailbox?xsd=messages/ModifyInMailResponse.xsd</con:url><con:content><![CDATA[<!--edited with XMLSpy v2008 (http://www.altova.com) by XMLSpy 2007 Professional Ed., Installed for 5 users (with SMP from 2007-02-06 to 2008-02-07) (CIF VSRS)-->
+</xs:schema>]]></con:content>
+                <con:type>http://www.w3.org/2001/XMLSchema</con:type>
+            </con:part>
+            <con:part>
+                <con:url>http://localhost:8080/ebms-sed-ws/sed-mailbox?xsd=messages/ModifyInMailResponse.xsd</con:url>
+                <con:content><![CDATA[<!--edited with XMLSpy v2008 (http://www.altova.com) by XMLSpy 2007 Professional Ed., Installed for 5 users (with SMP from 2007-02-06 to 2008-02-07) (CIF VSRS)-->
 <!--Metadata: 
 Owner: Supreme Court Republic of Slovenia 
 Product: SVEV-MSH
@@ -1849,7 +1956,12 @@ Author: Joze Rihtarsic-->
       </xs:sequence>
     </xs:complexType>
   </xs:element>
-</xs:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part><con:part><con:url>http://localhost:8080/ebms-sed-ws/sed-mailbox?xsd=entities/inbox-event.xsd</con:url><con:content><![CDATA[<!--Metadata: 
+</xs:schema>]]></con:content>
+                <con:type>http://www.w3.org/2001/XMLSchema</con:type>
+            </con:part>
+            <con:part>
+                <con:url>http://localhost:8080/ebms-sed-ws/sed-mailbox?xsd=entities/inbox-event.xsd</con:url>
+                <con:content><![CDATA[<!--Metadata: 
 Owner: Supreme Court Republic of Slovenia 
 Product: SVEV-MSH
 Product Version: 1.0.0
@@ -1935,7 +2047,12 @@ Author: Joze Rihtarsic-->
     </xs:attribute>
     <xs:attribute name="applicationId"/>
   </xs:complexType>
-</xs:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part><con:part><con:url>http://localhost:8080/ebms-sed-ws/sed-mailbox?xsd=messages/InMailEventListRequest.xsd</con:url><con:content><![CDATA[<!--edited with XMLSpy v2008 (http://www.altova.com) by XMLSpy 2007 Professional Ed., Installed for 5 users (with SMP from 2007-02-06 to 2008-02-07) (CIF VSRS)-->
+</xs:schema>]]></con:content>
+                <con:type>http://www.w3.org/2001/XMLSchema</con:type>
+            </con:part>
+            <con:part>
+                <con:url>http://localhost:8080/ebms-sed-ws/sed-mailbox?xsd=messages/InMailEventListRequest.xsd</con:url>
+                <con:content><![CDATA[<!--edited with XMLSpy v2008 (http://www.altova.com) by XMLSpy 2007 Professional Ed., Installed for 5 users (with SMP from 2007-02-06 to 2008-02-07) (CIF VSRS)-->
 <!--Metadata: 
 Owner: Supreme Court Republic of Slovenia 
 Product: SVEV-MSH
@@ -1990,7 +2107,12 @@ Author: Joze Rihtarsic-->
       </xs:sequence>
     </xs:complexType>
   </xs:element>
-</xs:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part><con:part><con:url>http://localhost:8080/ebms-sed-ws/sed-mailbox?xsd=messages/InMailEventListResponse.xsd</con:url><con:content><![CDATA[<!--edited with XMLSpy v2008 (http://www.altova.com) by XMLSpy 2007 Professional Ed., Installed for 5 users (with SMP from 2007-02-06 to 2008-02-07) (CIF VSRS)-->
+</xs:schema>]]></con:content>
+                <con:type>http://www.w3.org/2001/XMLSchema</con:type>
+            </con:part>
+            <con:part>
+                <con:url>http://localhost:8080/ebms-sed-ws/sed-mailbox?xsd=messages/InMailEventListResponse.xsd</con:url>
+                <con:content><![CDATA[<!--edited with XMLSpy v2008 (http://www.altova.com) by XMLSpy 2007 Professional Ed., Installed for 5 users (with SMP from 2007-02-06 to 2008-02-07) (CIF VSRS)-->
 <!--Metadata: 
 Owner: Supreme Court Republic of Slovenia 
 Product: SVEV-MSH
@@ -2033,7 +2155,12 @@ Author: Joze Rihtarsic-->
       </xs:sequence>
     </xs:complexType>
   </xs:element>
-</xs:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part><con:part><con:url>http://localhost:8080/ebms-sed-ws/sed-mailbox?xsd=messages/GetInMailRequest.xsd</con:url><con:content><![CDATA[<!--edited with XMLSpy v2008 (http://www.altova.com) by XMLSpy 2007 Professional Ed., Installed for 5 users (with SMP from 2007-02-06 to 2008-02-07) (CIF VSRS)-->
+</xs:schema>]]></con:content>
+                <con:type>http://www.w3.org/2001/XMLSchema</con:type>
+            </con:part>
+            <con:part>
+                <con:url>http://localhost:8080/ebms-sed-ws/sed-mailbox?xsd=messages/GetInMailRequest.xsd</con:url>
+                <con:content><![CDATA[<!--edited with XMLSpy v2008 (http://www.altova.com) by XMLSpy 2007 Professional Ed., Installed for 5 users (with SMP from 2007-02-06 to 2008-02-07) (CIF VSRS)-->
 <!--Metadata: 
 Owner: Supreme Court Republic of Slovenia 
 Product: SVEV-MSH
@@ -2089,7 +2216,12 @@ Author: Joze Rihtarsic-->
       </xs:sequence>
     </xs:complexType>
   </xs:element>
-</xs:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part><con:part><con:url>http://localhost:8080/ebms-sed-ws/sed-mailbox?xsd=messages/GetInMailResponse.xsd</con:url><con:content><![CDATA[<!--edited with XMLSpy v2008 (http://www.altova.com) by XMLSpy 2007 Professional Ed., Installed for 5 users (with SMP from 2007-02-06 to 2008-02-07) (CIF VSRS)-->
+</xs:schema>]]></con:content>
+                <con:type>http://www.w3.org/2001/XMLSchema</con:type>
+            </con:part>
+            <con:part>
+                <con:url>http://localhost:8080/ebms-sed-ws/sed-mailbox?xsd=messages/GetInMailResponse.xsd</con:url>
+                <con:content><![CDATA[<!--edited with XMLSpy v2008 (http://www.altova.com) by XMLSpy 2007 Professional Ed., Installed for 5 users (with SMP from 2007-02-06 to 2008-02-07) (CIF VSRS)-->
 <!--Metadata: 
 Owner: Supreme Court Republic of Slovenia 
 Product: SVEV-MSH
@@ -2132,7 +2264,22 @@ Author: Joze Rihtarsic-->
       </xs:sequence>
     </xs:complexType>
   </xs:element>
-</xs:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>http://localhost:8080/ebms-sed-ws/sed-mailbox</con:endpoint></con:endpoints><con:operation id="c663fa59-7d11-4dbb-a4f2-78e74d0a92cb" isOneWay="false" action="http://ebms.sed.org/submitMail" name="submitMail" bindingOperationName="submitMail" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="a7762ad3-2009-417c-8d7d-a4a9254a9658" name="simple-request"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/ebms-sed-ws/sed-mailbox</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" 
+</xs:schema>]]></con:content>
+                <con:type>http://www.w3.org/2001/XMLSchema</con:type>
+            </con:part>
+        </con:definitionCache>
+        <con:endpoints>
+            <con:endpoint>http://localhost:8080/ebms-sed-ws/sed-mailbox</con:endpoint>
+        </con:endpoints>
+        <con:operation id="c663fa59-7d11-4dbb-a4f2-78e74d0a92cb" isOneWay="false" action="http://ebms.sed.org/submitMail" name="submitMail" bindingOperationName="submitMail" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional">
+            <con:settings/>
+            <con:call id="a7762ad3-2009-417c-8d7d-a4a9254a9658" name="simple-request">
+                <con:settings>
+                    <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+                </con:settings>
+                <con:encoding>UTF-8</con:encoding>
+                <con:endpoint>http://localhost:8080/ebms-sed-ws/sed-mailbox</con:endpoint>
+                <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" 
 xmlns:ebms="http://ebms.sed.org/" 
 xmlns:mail="http://ebms.sed.org/outbox/mail" 
 xmlns:prop="http://ebms.sed.org/outbox/property"
@@ -2168,7 +2315,25 @@ xmlns:pay="http://ebms.sed.org/outbox/payload">
          </Data>
       </ebms:SubmitMailRequest>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://sed.msh.org/submitMail"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation id="41903b1f-49f2-4428-99b2-f0a681887787" isOneWay="false" action="http://ebms.sed.org/getOutMailList" name="getOutMailList" bindingOperationName="getOutMailList" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="d0f4d274-8c14-4387-bb47-530059dd71f7" name="simple-request"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/ebms-sed-ws/sed-mailbox</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ebms="http://ebms.sed.org/">
+</soapenv:Envelope>]]></con:request>
+                <con:credentials>
+                    <con:authType>No Authorization</con:authType>
+                </con:credentials>
+                <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+                <con:jmsPropertyConfig/>
+                <con:wsaConfig mustUnderstand="NONE" version="200508" action="http://sed.msh.org/submitMail"/>
+                <con:wsrmConfig version="1.2"/>
+            </con:call>
+        </con:operation>
+        <con:operation id="41903b1f-49f2-4428-99b2-f0a681887787" isOneWay="false" action="http://ebms.sed.org/getOutMailList" name="getOutMailList" bindingOperationName="getOutMailList" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional">
+            <con:settings/>
+            <con:call id="d0f4d274-8c14-4387-bb47-530059dd71f7" name="simple-request">
+                <con:settings>
+                    <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+                </con:settings>
+                <con:encoding>UTF-8</con:encoding>
+                <con:endpoint>http://localhost:8080/ebms-sed-ws/sed-mailbox</con:endpoint>
+                <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ebms="http://ebms.sed.org/">
    <soapenv:Header/>
    <soapenv:Body>
       <ebms:OutMailListRequest>
@@ -2176,7 +2341,25 @@ xmlns:pay="http://ebms.sed.org/outbox/payload">
          <Data />
       </ebms:OutMailListRequest>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://ebms.sed.org/getOutMailList"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation id="88c38561-7994-467b-bf27-7812e4f2239c" isOneWay="false" action="http://ebms.sed.org/getInMailList" name="getInMailList" bindingOperationName="getInMailList" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="4cc2a689-1929-4b6d-bbcb-affd7b8c93f5" name="simple-request"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/ebms-sed-ws/sed-mailbox</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ebms="http://ebms.sed.org/">
+</soapenv:Envelope>]]></con:request>
+                <con:credentials>
+                    <con:authType>No Authorization</con:authType>
+                </con:credentials>
+                <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+                <con:jmsPropertyConfig/>
+                <con:wsaConfig mustUnderstand="NONE" version="200508" action="http://ebms.sed.org/getOutMailList"/>
+                <con:wsrmConfig version="1.2"/>
+            </con:call>
+        </con:operation>
+        <con:operation id="88c38561-7994-467b-bf27-7812e4f2239c" isOneWay="false" action="http://ebms.sed.org/getInMailList" name="getInMailList" bindingOperationName="getInMailList" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional">
+            <con:settings/>
+            <con:call id="4cc2a689-1929-4b6d-bbcb-affd7b8c93f5" name="simple-request">
+                <con:settings>
+                    <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+                </con:settings>
+                <con:encoding>UTF-8</con:encoding>
+                <con:endpoint>http://localhost:8080/ebms-sed-ws/sed-mailbox</con:endpoint>
+                <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ebms="http://ebms.sed.org/">
    <soapenv:Header/>
    <soapenv:Body>
       <ebms:InMailListRequest>
@@ -2184,7 +2367,25 @@ xmlns:pay="http://ebms.sed.org/outbox/payload">
          <Data />
       </ebms:InMailListRequest>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://ebms.sed.org/getInMailList"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation id="705e3676-3573-4ed4-9e67-634f00af4de1" isOneWay="false" action="http://ebms.sed.org/getInMailList" name="getInMailEventList" bindingOperationName="getInMailEventList" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="c0f7d699-9dc8-4fe8-b10d-82933bbcb5b0" name="simple-request"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/ebms-sed-ws/sed-mailbox</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ebms="http://ebms.sed.org/">
+</soapenv:Envelope>]]></con:request>
+                <con:credentials>
+                    <con:authType>No Authorization</con:authType>
+                </con:credentials>
+                <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+                <con:jmsPropertyConfig/>
+                <con:wsaConfig mustUnderstand="NONE" version="200508" action="http://ebms.sed.org/getInMailList"/>
+                <con:wsrmConfig version="1.2"/>
+            </con:call>
+        </con:operation>
+        <con:operation id="705e3676-3573-4ed4-9e67-634f00af4de1" isOneWay="false" action="http://ebms.sed.org/getInMailList" name="getInMailEventList" bindingOperationName="getInMailEventList" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional">
+            <con:settings/>
+            <con:call id="c0f7d699-9dc8-4fe8-b10d-82933bbcb5b0" name="simple-request">
+                <con:settings>
+                    <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+                </con:settings>
+                <con:encoding>UTF-8</con:encoding>
+                <con:endpoint>http://localhost:8080/ebms-sed-ws/sed-mailbox</con:endpoint>
+                <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ebms="http://ebms.sed.org/">
    <soapenv:Header/>
    <soapenv:Body>
       <ebms:InMailEventListRequest>
@@ -2193,7 +2394,25 @@ xmlns:pay="http://ebms.sed.org/outbox/payload">
          <Data receiverEBox="receiver.ebox@sed-box.si" mailId="38"/>
       </ebms:InMailEventListRequest>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://ebms.sed.org/getInMailList"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation id="abfa76bc-7af4-4805-b49a-f0d864f2e064" isOneWay="false" action="http://ebms.sed.org/getInMailList" name="getOutMailEventList" bindingOperationName="getOutMailEventList" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="3d000350-b97c-405f-af18-025701a3c8f6" name="simple-request"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/ebms-sed-ws/sed-mailbox</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ebms="http://ebms.sed.org/">
+</soapenv:Envelope>]]></con:request>
+                <con:credentials>
+                    <con:authType>No Authorization</con:authType>
+                </con:credentials>
+                <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+                <con:jmsPropertyConfig/>
+                <con:wsaConfig mustUnderstand="NONE" version="200508" action="http://ebms.sed.org/getInMailList"/>
+                <con:wsrmConfig version="1.2"/>
+            </con:call>
+        </con:operation>
+        <con:operation id="abfa76bc-7af4-4805-b49a-f0d864f2e064" isOneWay="false" action="http://ebms.sed.org/getInMailList" name="getOutMailEventList" bindingOperationName="getOutMailEventList" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional">
+            <con:settings/>
+            <con:call id="3d000350-b97c-405f-af18-025701a3c8f6" name="simple-request">
+                <con:settings>
+                    <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+                </con:settings>
+                <con:encoding>UTF-8</con:encoding>
+                <con:endpoint>http://localhost:8080/ebms-sed-ws/sed-mailbox</con:endpoint>
+                <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ebms="http://ebms.sed.org/">
    <soapenv:Header/>
    <soapenv:Body>
       <ebms:OutMailEventListRequest>
@@ -2201,7 +2420,25 @@ xmlns:pay="http://ebms.sed.org/outbox/payload">
          <Data senderEBox="sender.ebox@sed-box.si" mailId="1" />
       </ebms:OutMailEventListRequest>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://ebms.sed.org/getInMailList"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation id="375b1aaf-461b-4048-84fe-fb5e7b456ae0" isOneWay="false" action="http://ebms.sed.org/getInMailList" name="modifyInMail" bindingOperationName="modifyInMail" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="35021448-907e-4b0f-880c-21e7215a6c52" name="simple-request"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/ebms-sed-ws/sed-mailbox</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ebms="http://ebms.sed.org/">
+</soapenv:Envelope>]]></con:request>
+                <con:credentials>
+                    <con:authType>No Authorization</con:authType>
+                </con:credentials>
+                <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+                <con:jmsPropertyConfig/>
+                <con:wsaConfig mustUnderstand="NONE" version="200508" action="http://ebms.sed.org/getInMailList"/>
+                <con:wsrmConfig version="1.2"/>
+            </con:call>
+        </con:operation>
+        <con:operation id="375b1aaf-461b-4048-84fe-fb5e7b456ae0" isOneWay="false" action="http://ebms.sed.org/getInMailList" name="modifyInMail" bindingOperationName="modifyInMail" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional">
+            <con:settings/>
+            <con:call id="35021448-907e-4b0f-880c-21e7215a6c52" name="simple-request">
+                <con:settings>
+                    <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+                </con:settings>
+                <con:encoding>UTF-8</con:encoding>
+                <con:endpoint>http://localhost:8080/ebms-sed-ws/sed-mailbox</con:endpoint>
+                <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ebms="http://ebms.sed.org/">
    <soapenv:Header/>
    <soapenv:Body>
       <ebms:ModifyInMailRequest>
@@ -2209,7 +2446,25 @@ xmlns:pay="http://ebms.sed.org/outbox/payload">
          <Data receiverEBox="receiver.ebox@sed-box.si" mailId="38" action="ACCEPT"/>
       </ebms:ModifyInMailRequest>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://ebms.sed.org/getInMailList"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation id="37ff081a-fc3f-49c8-9e7b-25c24e8463cc" isOneWay="false" action="http://ebms.sed.org/getInMailList" name="getInMail" bindingOperationName="getInMail" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="9ec3efb1-f772-4af8-9da3-dea032c4d3c2" name="simple-request"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/ebms-sed-ws/sed-mailbox</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ebms="http://ebms.sed.org/">
+</soapenv:Envelope>]]></con:request>
+                <con:credentials>
+                    <con:authType>No Authorization</con:authType>
+                </con:credentials>
+                <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+                <con:jmsPropertyConfig/>
+                <con:wsaConfig mustUnderstand="NONE" version="200508" action="http://ebms.sed.org/getInMailList"/>
+                <con:wsrmConfig version="1.2"/>
+            </con:call>
+        </con:operation>
+        <con:operation id="37ff081a-fc3f-49c8-9e7b-25c24e8463cc" isOneWay="false" action="http://ebms.sed.org/getInMailList" name="getInMail" bindingOperationName="getInMail" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional">
+            <con:settings/>
+            <con:call id="9ec3efb1-f772-4af8-9da3-dea032c4d3c2" name="simple-request">
+                <con:settings>
+                    <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+                </con:settings>
+                <con:encoding>UTF-8</con:encoding>
+                <con:endpoint>http://localhost:8080/ebms-sed-ws/sed-mailbox</con:endpoint>
+                <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ebms="http://ebms.sed.org/">
    <soapenv:Header/>
    <soapenv:Body>
       <ebms:GetInMailRequest>
@@ -2217,4 +2472,18 @@ xmlns:pay="http://ebms.sed.org/outbox/payload">
          <Data receiverEBox="receiver.ebox@sed-box.si" mailId="38" />
       </ebms:GetInMailRequest>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://ebms.sed.org/getInMailList"/><con:wsrmConfig version="1.2"/></con:call></con:operation></con:interface><con:properties/><con:wssContainer/><con:oAuth2ProfileContainer/></con:soapui-project>
+</soapenv:Envelope>]]></con:request>
+                <con:credentials>
+                    <con:authType>No Authorization</con:authType>
+                </con:credentials>
+                <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+                <con:jmsPropertyConfig/>
+                <con:wsaConfig mustUnderstand="NONE" version="200508" action="http://ebms.sed.org/getInMailList"/>
+                <con:wsrmConfig version="1.2"/>
+            </con:call>
+        </con:operation>
+    </con:interface>
+    <con:properties/>
+    <con:wssContainer/>
+    <con:oAuth2ProfileContainer/>
+</con:soapui-project>

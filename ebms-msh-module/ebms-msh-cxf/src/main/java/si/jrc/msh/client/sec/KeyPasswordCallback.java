@@ -16,7 +16,6 @@
  */
 package si.jrc.msh.client.sec;
 
-
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.callback.UnsupportedCallbackException;
@@ -36,24 +35,24 @@ public class KeyPasswordCallback implements CallbackHandler {
     protected final SEDLogger mlog = new SEDLogger(KeyPasswordCallback.class);
 
     @Override
-    public void handle(Callback[] callbacks) throws  UnsupportedCallbackException {
+    public void handle(Callback[] callbacks) throws UnsupportedCallbackException {
         long l = mlog.logStart();
         for (Callback callback : callbacks) {
             WSPasswordCallback pc = (WSPasswordCallback) callback;
             String pass;
             String identifier = pc.getIdentifier();
             try {
-                pass = KeyPasswordManager.getInstance().getPasswordForAlias(identifier);                
+                pass = KeyPasswordManager.getInstance().getPasswordForAlias(identifier);
             } catch (SEDSecurityException ex) {
-                throw  new UnsupportedCallbackException(callback, ex.getMessage()); 
+                throw new UnsupportedCallbackException(callback, ex.getMessage());
             }
             if (pass != null) {
                 pc.setPassword(pass);
                 return;
             } else {
                 String msg = String.format("Missing password for key with alias '%s'.", identifier);
-                mlog.logError(l,msg ,null);
-                throw  new UnsupportedCallbackException(callback, msg); 
+                mlog.logError(l, msg, null);
+                throw new UnsupportedCallbackException(callback, msg);
             }
         }
     }

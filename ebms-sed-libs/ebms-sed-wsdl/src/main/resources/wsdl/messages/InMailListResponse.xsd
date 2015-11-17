@@ -26,30 +26,30 @@ Copyright 2015, Supreme Court Republic of Slovenia
  limitations under the Licence.
 -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
-	xmlns="http://ebms.sed.org/"
-		 xmlns:con="http://ebms.sed.org/RControl"
-		  xmlns:ns1="http://ebms.sed.org/inbox/mail" 
-		  targetNamespace="http://ebms.sed.org/"
-	>	
-<xs:import namespace="http://ebms.sed.org/RControl" schemaLocation="./RControl.xsd"/>
-	<xs:import namespace="http://ebms.sed.org/inbox/mail" schemaLocation="../entities/inbox-mail.xsd"/>
-	<xs:element name="InMailListResponse">
-		<xs:complexType>
-			<xs:annotation>
-				<xs:documentation xml:lang="sl"> 
+           xmlns="http://ebms.sed.org/"
+           xmlns:con="http://ebms.sed.org/RControl"
+           xmlns:ns1="http://ebms.sed.org/inbox/mail" 
+           targetNamespace="http://ebms.sed.org/"
+>	
+    <xs:import namespace="http://ebms.sed.org/RControl" schemaLocation="./RControl.xsd"/>
+    <xs:import namespace="http://ebms.sed.org/inbox/mail" schemaLocation="../entities/inbox-mail.xsd"/>
+    <xs:element name="InMailListResponse">
+        <xs:complexType>
+            <xs:annotation>
+                <xs:documentation xml:lang="sl"> 
                     Poizvedba za pridobivanje statusov izhodnih pošiljkah. Dogodki so sortirani od  najnovejšega do najstarejšega!
                 </xs:documentation>
-			</xs:annotation>
-			<xs:sequence>
-				<xs:element name="RControl" type="con:RControl"/>
-				<xs:element name="RData">
-					<xs:complexType>
-						<xs:sequence>
-							<xs:element ref="ns1:InMail" minOccurs="0" maxOccurs="unbounded"/>
-						</xs:sequence>
-					</xs:complexType>
-				</xs:element>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
+            </xs:annotation>
+            <xs:sequence>
+                <xs:element name="RControl" type="con:RControl"/>
+                <xs:element name="RData">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element ref="ns1:InMail" minOccurs="0" maxOccurs="unbounded"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
 </xs:schema>

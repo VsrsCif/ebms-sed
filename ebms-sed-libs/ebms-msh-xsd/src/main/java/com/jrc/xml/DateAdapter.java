@@ -17,29 +17,30 @@ import javax.xml.bind.DatatypeConverter;
 public class DateAdapter {
 
     public static Date parseDate(String s) {
-        if (s!=null && !s.trim().isEmpty()){
+        if (s != null && !s.trim().isEmpty()) {
             return DatatypeConverter.parseDate(s).getTime();
-        } 
+        }
         return null;
     }
 
     public static String printDate(Date dt) {
-        if (dt!= null ) {
+        if (dt != null) {
             Calendar cal = new GregorianCalendar();
             cal.setTime(dt);
             return DatatypeConverter.printDate(cal);
         }
         return null;
     }
-     public static Date parseDateTime(String s) {
-        if (s!=null && !s.trim().isEmpty()){
+
+    public static Date parseDateTime(String s) {
+        if (s != null && !s.trim().isEmpty()) {
             return DatatypeConverter.parseDateTime(s).getTime();
-        } 
+        }
         return null;
     }
 
     public static String printDateTime(Date dt) {
-        if (dt!= null ) {
+        if (dt != null) {
             Calendar cal = new GregorianCalendar();
             cal.setTime(dt);
             return DatatypeConverter.printDateTime(cal);

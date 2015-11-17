@@ -170,7 +170,6 @@ public class Main {
         // create home dir in target
 
         copyFromJar(SED_HOME_TEMPLATE, SP_HOME_DIR);
-    
 
         // set system prioperties
         System.setProperty(SEDSystemProperties.SYS_PROP_HOME_DIR, SED_HOME);
@@ -194,8 +193,8 @@ public class Main {
         try {
             Path target = Paths.get(SED_HOME + path.toString().substring(SED_HOME_TEMPLATE.length()));
             if (!Files.exists(target, LinkOption.NOFOLLOW_LINKS)) {
-                if (Files.isDirectory(path)){
-                    Files.createDirectories(target );
+                if (Files.isDirectory(path)) {
+                    Files.createDirectories(target);
                 } else {
                     Files.copy(Main.class.getResourceAsStream(path.toString()), target, StandardCopyOption.REPLACE_EXISTING);
                 }
@@ -204,9 +203,6 @@ public class Main {
             ex.printStackTrace();
         }
 
-      
     }
-
-   
 
 }

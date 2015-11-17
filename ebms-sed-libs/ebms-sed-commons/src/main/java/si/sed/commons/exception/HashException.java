@@ -34,6 +34,4 @@ public class HashException extends Exception {
         super(cause);
     }
 
- 
-    
 }

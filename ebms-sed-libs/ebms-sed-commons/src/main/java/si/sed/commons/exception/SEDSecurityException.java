@@ -5,7 +5,6 @@
  */
 package si.sed.commons.exception;
 
-
 /**
  *
  * @author sluzba
@@ -26,13 +25,7 @@ public class SEDSecurityException extends Exception {
         CreateSignatureException("SEC:0010", "CreateSignatureException", "Create Signature exception %s", 1),
         CreateTimestampException("SEC:0011", "CreateTimestampException", "Create Timestamp exception %s", 1),
         XMLParseException("SEC:0012", "XMLParseException", "XMLParse exception %s", 1),
-        SignatureNotFound("SEC:0013", "SignatureNotFound", "Signature Not Found exception %s", 1),
-        
-        
-        
-        
-        ;
-        
+        SignatureNotFound("SEC:0013", "SignatureNotFound", "Signature Not Found exception %s", 1),;
 
         String code;
         String name;
@@ -49,6 +42,7 @@ public class SEDSecurityException extends Exception {
         public String getCode() {
             return code;
         }
+
         public String getName() {
             return name;
         }

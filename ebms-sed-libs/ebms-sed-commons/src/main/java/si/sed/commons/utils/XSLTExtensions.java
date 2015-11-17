@@ -13,7 +13,7 @@
 * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the Licence for the specific language governing permissions and  
 * limitations under the Licence.
-*/
+ */
 package si.sed.commons.utils;
 
 import java.text.SimpleDateFormat;
@@ -31,16 +31,16 @@ public class XSLTExtensions {
     private static final SimpleDateFormat S_DATE_TIME_FORMAT = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
 
     public static Object formatDate(String str) {
-        if (str == null  || str.trim().isEmpty()){
+        if (str == null || str.trim().isEmpty()) {
             return null;
         }
 
         Date dt = com.jrc.xml.DateAdapter.parseDateTime(str);
         return S_DATE_FORMAT.format(dt);
     }
-                         
+
     public static Object getZPPFictionDate(String str) {
-        if (str == null  || str.trim().isEmpty()){
+        if (str == null || str.trim().isEmpty()) {
             return null;
         }
         Date dt = com.jrc.xml.DateAdapter.parseDateTime(str);
@@ -48,13 +48,13 @@ public class XSLTExtensions {
         c.setTime(dt);
         c.add(Calendar.DAY_OF_MONTH, 15);
         return S_DATE_FORMAT.format(c.getTime());
-        
+
     }
-    
+
     public static Object currentDate() {
         return S_DATE_FORMAT.format(Calendar.getInstance().getTime());
     }
-    
+
     public static Object currentDateTime() {
         return S_DATE_TIME_FORMAT.format(Calendar.getInstance().getTime());
     }

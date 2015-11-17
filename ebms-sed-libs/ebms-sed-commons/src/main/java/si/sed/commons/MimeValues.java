@@ -13,10 +13,11 @@
 * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the Licence for the specific language governing permissions and  
 * limitations under the Licence.
-*/
+ */
 package si.sed.commons;
 
 import java.util.HashMap;
+
 /**
  *
  * @author Joze Rihtarsic <joze.rihtarsic@sodisce.si>
@@ -574,20 +575,20 @@ public enum MimeValues {
     public String getSuffix() {
         return mstrSuffix;
     }
-    
-   public static String getSuffixBYMimeType(String strMimeType){
-       String res ="bin";
-       if (hmp == null){
-           hmp = new HashMap();
-           for (MimeValues vm: values()){
-               hmp.put(vm.getMimeType(), vm.getSuffix());
-           }
-       }
-       if (strMimeType!= null && hmp.containsKey(strMimeType)){
-           res = hmp.get(strMimeType);
-       }
-       return res;
-       
-   }
+
+    public static String getSuffixBYMimeType(String strMimeType) {
+        String res = "bin";
+        if (hmp == null) {
+            hmp = new HashMap();
+            for (MimeValues vm : values()) {
+                hmp.put(vm.getMimeType(), vm.getSuffix());
+            }
+        }
+        if (strMimeType != null && hmp.containsKey(strMimeType)) {
+            res = hmp.get(strMimeType);
+        }
+        return res;
+
+    }
 
 }

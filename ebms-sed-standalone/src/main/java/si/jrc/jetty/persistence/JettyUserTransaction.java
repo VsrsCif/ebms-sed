@@ -21,8 +21,9 @@ import javax.transaction.UserTransaction;
 public class JettyUserTransaction implements UserTransaction {
 
     EntityTransaction met;
-    public JettyUserTransaction(EntityTransaction et) {  
-        met =et;
+
+    public JettyUserTransaction(EntityTransaction et) {
+        met = et;
     }
 
     @Override
@@ -47,8 +48,8 @@ public class JettyUserTransaction implements UserTransaction {
 
     @Override
     public int getStatus() throws SystemException {
-        
-        return  met.isActive()?Status.STATUS_ACTIVE:Status.STATUS_NO_TRANSACTION;
+
+        return met.isActive() ? Status.STATUS_ACTIVE : Status.STATUS_NO_TRANSACTION;
     }
 
     @Override

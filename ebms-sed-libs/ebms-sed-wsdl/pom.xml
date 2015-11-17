@@ -12,10 +12,10 @@
     <artifactId>ebms-sed-wsdl</artifactId>
     <name>ebms-sed-wsdl</name>
     <description>ebms-sed-wsdl (interface)
-	Modul generates java client and jax-ws interface objects from WSDL interface defined in resources/wsdl. 
+        Modul generates java client and jax-ws interface objects from WSDL interface defined in resources/wsdl. 
     </description>
 
-  <licenses>
+    <licenses>
         <license>
             <name>European Union Public Licence (EUPL)</name>
             <url>https://joinup.ec.europa.eu/software/page/eupl</url>
@@ -58,7 +58,7 @@
                     </filesets>
                 </configuration>
             </plugin>
-             <plugin>
+            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>jaxws-maven-plugin</artifactId>
                 <executions>

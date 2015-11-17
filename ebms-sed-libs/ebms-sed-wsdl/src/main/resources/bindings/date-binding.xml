@@ -9,7 +9,7 @@
                             xmlns:xs="http://www.w3.org/2001/XMLSchema"
                             enableFailFastCheck="true">
 
-             <jxb:javaType name="java.util.Date" xmlType="xs:date"
+            <jxb:javaType name="java.util.Date" xmlType="xs:date"
                           parseMethod="com.jrc.xml.DateAdapter.parseDate"
                           printMethod="com.jrc.xml.DateAdapter.printDate"/>
             

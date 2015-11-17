@@ -13,7 +13,7 @@
 * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the Licence for the specific language governing permissions and  
 * limitations under the Licence.
-*/
+ */
 package si.sed.commons.utils;
 
 import java.io.ByteArrayInputStream;
@@ -30,13 +30,11 @@ import org.apache.log4j.Logger;
 
 /**
  *
-  * @author Joze Rihtarsic <joze.rihtarsic@sodisce.si>
+ * @author Joze Rihtarsic <joze.rihtarsic@sodisce.si>
  */
 abstract public class ASettings {
 
     protected final static Logger mlog = Logger.getLogger(ASettings.class);
-    
-    
 
     protected Properties mprpProperties = null;
     private long mlLastChagedTime = 0;
@@ -67,7 +65,7 @@ abstract public class ASettings {
         }
         // initialize def values if key not exists!
         createIniFile();
-        
+
         mlLastChagedTime = fPropFile.lastModified();
         initialize();
         // create folders
@@ -103,7 +101,7 @@ abstract public class ASettings {
     public void initData(String key, String value) {
 
         if (!mprpProperties.containsKey(key)) {
-            System.out.println("Key: " +  key + " not exists: set value" + value);
+            System.out.println("Key: " + key + " not exists: set value" + value);
             mprpProperties.setProperty(key, value);
         }
 
@@ -167,13 +165,12 @@ abstract public class ASettings {
     }
 
     public File getAbsoluteFolder(String prop, String defVal) {
-        
 
         File f = new File(System.getProperty(prop, getData(prop, defVal)));
         if (!f.exists()) {
             f.mkdirs();
         }
-        return f;        
+        return f;
     }
 
     public String propertiesToString() {
