@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Secure e-delivery with ebMS 3.0</title>
+        <meta name="description" content="Secure e-delivery with ebMS 3.0" />
+        <meta name="keywords" content="b2b, open source, e-delivery, ebMS 3.0" />
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+        <link rel="stylesheet" href="css/style.css" media="screen" />
+        <script src="js/jquery-2.2.0.min.js"></script>
+        
+        <script type="text/javascript">
+            function show(which) {
+                $('#entryPage').load(which + '.html');
+
+                return false;
+            }
+            function showHome() {
+                show('home');
+                return false;
+            } // for onload
+        </script>
+
+    </head>
+    <body  onload="show('home')">
+        <!-- Start header, logo,  top menu , main menu-->
+        <header role="banner">
+            <div class="inner">
+                <a href="index.html" rel="home"><div  class="page-header-logo">
+                        <div class="logo">
+                            <img src ="img/sed-logo.png" alt="LOGO" />
+                            <h1> Secure e-delivery over ebMS 3.0</h1>
+                        </div>
+                    </div>
+                </a>
+                <!-- Start top menu -->
+                <ul class="menu-top-nav">
+                    <li><a href="http://www.sodisce.si">Vrhovno sodisce RS</a></li>
+                    <li><a href="http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/core/ebms_core-3.0-spec.html">ebMS 3.0</a></li>
+                </ul><!-- End top menu -->
+
+                <!-- end #top-nav -->
+
+                <nav class="menu-top-nav">
+                    <ul  >
+                        <li ><a href="javascript:void(0)" onclick="show('home')">O projektu</a></li>
+                        <li ><a href="javascript:void(0)" onclick="show('ebms')" >eMS 3.0</a></li>
+                        <li ><a href="javascript:void(0)" onclick="show('arhitecture')">Arihtektura</a></li>
+                        <li ><a href="javascript:void(0)" onclick="show('documentation')" >Dokumentacija</a></li>
+                    </ul>    	<!-- end ul -->
+
+                    <!-- end ul -->	
+                </nav>
+                <!-- end nav -->
+            </div>
+            <!-- end .inner -->
+        </header>
+        <!-- END  header, logo,  top menu -->
+        <!-- end header -->
+        <main id="content" class="group" role="main">
+            <div  id="entryPage" class="main">
+        
+            </div>
+            <!-- end .main -->	
+
+
+
+
+        </main>
+        <!-- end #content -->
+
+        <footer role="contentinfo">
+            <div class="inner">                
+                <p>Copyright &copy; 2016 VSRS</p>
+            </div>
+            <!-- end .inner -->
+        </footer>
+        <!-- end footer -->
+
+    </body>
+</html>
