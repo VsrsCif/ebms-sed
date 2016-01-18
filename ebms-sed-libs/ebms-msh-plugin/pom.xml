@@ -77,11 +77,11 @@
             <artifactId>cxf-rt-frontend-jaxws</artifactId>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>javax</groupId>
-            <artifactId>javaee-api</artifactId>            
-            <scope>provided</scope>
-        </dependency>
+            <dependency>
+                <groupId>javax</groupId>
+                <artifactId>javaee-api</artifactId>            
+                <scope>provided</scope>
+            </dependency>
 
         <dependency>
             <groupId>junit</groupId>

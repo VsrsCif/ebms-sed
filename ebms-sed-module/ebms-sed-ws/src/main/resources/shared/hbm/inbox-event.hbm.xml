@@ -30,12 +30,21 @@
   ev.user_id, 
   ev.application_id
 FROM 
-  public.sed_inbox_event ev, 
-  public.sed_inbox im
+  sed_inbox_event ev, 
+  sed_inbox im
 WHERE 
   ev.mail_id = im.id
   and im.receiver_ebox = :receiverEBox
   and (ev.mail_id = :mailId or :mailId is null)  
   order by id asc]]>
-    </sql-query>                  
+    </sql-query>     
+    <sql-query name="org.sed.ebms.inbox.event.InEvent.getMailEventList">
+        <return class="org.sed.ebms.inbox.event.InEvent" />	
+   <![CDATA[SELECT 
+  ev.*
+FROM 
+  sed_inbox_event ev
+WHERE ev.mail_id = :mailId  
+  order by id desc]]>
+    </sql-query>              
 </hibernate-mapping>

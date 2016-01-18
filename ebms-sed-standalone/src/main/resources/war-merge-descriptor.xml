@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <uberwar>
     <wars>
+        <war>si.vsrs.cif.sed:ebms-sed-web</war>
         <war>si.vsrs.cif.sed:ebms-sed-ws</war>
         <war>si.vsrs.cif.sed:ebms-msh-ws</war>
     </wars>

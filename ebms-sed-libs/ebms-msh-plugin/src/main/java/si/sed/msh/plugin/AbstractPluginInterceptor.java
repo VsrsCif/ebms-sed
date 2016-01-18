@@ -17,7 +17,6 @@
 package si.sed.msh.plugin;
 
 import java.math.BigInteger;
-import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.Resource;
@@ -32,13 +31,18 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import javax.persistence.PersistenceContext;
+import javax.transaction.HeuristicMixedException;
+import javax.transaction.HeuristicRollbackException;
+import javax.transaction.NotSupportedException;
+import javax.transaction.RollbackException;
+import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 import org.apache.cxf.binding.soap.SoapMessage;
 import org.apache.cxf.binding.soap.interceptor.AbstractSoapInterceptor;
 import org.apache.cxf.interceptor.Fault;
+import org.msh.ebms.inbox.event.MSHInEvent;
+import org.msh.ebms.inbox.mail.MSHInMail;
 import org.msh.ebms.outbox.event.MSHOutEvent;
 import org.msh.ebms.outbox.mail.MSHOutMail;
 import si.sed.commons.SEDSystemProperties;
@@ -110,59 +114,7 @@ public abstract class AbstractPluginInterceptor extends AbstractSoapInterceptor 
         return memEManager;
     }
 
-    /*
-    public EntityManagerFactory getSEDEntityManagerFactory() {
-
-        if (entCls!= null){
-            Properties mp = new Properties();
-            mp.put(LOADED_CLASSES,  Arrays.asList(entCls));
-            return Persistence.createEntityManagerFactory(EBMS_MSH_PLUGIN_PU, mp);
-        }
-        // return Persistence.createEntityManagerFactory(EBMS_MSH_PLUGIN_PU);
-        Properties properties = new Properties();
-        return Persistence.createEntityManagerFactory("ebMS_PU", properties);* /
-    }
-
-    /*public EntityManagerFactory getSEDEntityManagerFactory(Class ... entCls){ 
-        FileWriter fw = null;
-        try {
-            //File fl  =File.createTempFile("persistence", ".xml");
-            File fl  = new File("persistence.xml");
-            fw = new FileWriter(fl);
-            fw.append("<persistence>");
-            fw.append("<persistence-unit name=\""+EBMS_MSH_PLUGIN_PU+"\" transaction-type=\"RESOURCE_LOCAL\">");
-            fw.append("<provider>org.hibernate.ejb.HibernatePersistence</provider>");
-            fw.append("<jta-data-source>java:/dsEBMS_SED</jta-data-source>");
-            for (Class cls: entCls) {
-                fw.append("<class>"+cls.getName()+"</class>");
-            }
-            fw.append("<mapping-file>shared/hbm/msh-in-event.hbm.xml</mapping-file>");
-            fw.append("<mapping-file>shared/hbm/msh-in-mail.hbm.xml</mapping-file>");
-            fw.append("<mapping-file>shared/hbm/msh-in-payload.hbm.xml</mapping-file>");
-            fw.append("<mapping-file>shared/hbm/msh-out-event.hbm.xml</mapping-file>");
-            fw.append("<mapping-file>shared/hbm/msh-out-mail.hbm.xml</mapping-file>");
-            fw.append("<mapping-file>shared/hbm/msh-out-payload.hbm.xml</mapping-file>");
-            fw.append("<properties>");
-            fw.append("<property name=\"hibernate.dialect\" value=\"org.hibernate.dialect.PostgreSQLDialect\" />");
-            fw.append("</properties>");
-            fw.append("</persistence-unit>");
-            fw.append("</persistence>");
-            
-            URL[] urls = {new URL("jar:" + fl.toURI().toURL() + "!/")};
-            URLClassLoader cl = new URLClassLoader(urls, Thread.currentThread().getContextClassLoader());
-            
-
-            return Persistence.createEntityManagerFactory(EBMS_MSH_PLUGIN_PU);
-        } catch (IOException ex) {
-            Logger.getLogger(AbstractPluginInterceptor.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            try {
-                fw.close();
-            } catch (IOException ex) {
-                Logger.getLogger(AbstractPluginInterceptor.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-     */
+   
     @Override
     public abstract void handleMessage(SoapMessage t) throws Fault;
 
@@ -207,6 +159,45 @@ public abstract class AbstractPluginInterceptor extends AbstractSoapInterceptor 
             if (emf != null) {
                 emf.close();
             }*/
+        }
+
+    }
+    
+     public void updateInMail(MSHInMail mail, String statusDesc) {
+
+      
+
+       
+        // --------------------
+        // serialize data to db
+        try {
+
+            getUserTransaction().begin();
+
+            // persist mail    
+            getEntityManager().merge(mail);
+
+            // persist mail event
+            MSHInEvent me = new MSHInEvent();
+            me.setDescription(LOADED_CLASSES);
+            me.setMailId(mail.getId());            
+            me.setStatus(mail.getStatus());
+            me.setDescription(statusDesc);
+            me.setDate(mail.getStatusDate());
+            getEntityManager().persist(me);
+            getUserTransaction().commit();
+        } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
+            {
+                try {
+                    getUserTransaction().rollback();
+                } catch (IllegalStateException | SecurityException | SystemException ex1) {
+                    // ignore 
+                }
+                /*  SEDException msherr = new SEDException();
+                msherr.setErrorCode(SEDExceptionCode.SERVER_ERROR);
+                msherr.setMessage(ex.getMessage());
+                throw new SEDException_Exception("Error occured while storing to DB", msherr, ex);*/
+            }
         }
 
     }

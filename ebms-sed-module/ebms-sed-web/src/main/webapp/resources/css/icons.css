@@ -1,0 +1,54 @@
+.ui-icon-sed-showHidePanel {
+    width: 22px;
+    height: 22px;    
+    background-image: url('../images/dataPanelShow.png') !important;
+    background-position: 0 0 !important;
+    border-radius:0;
+}
+
+.ui-icon-sed-flag-red {
+    width: 22px;
+    height: 22px;    
+    background-image: url('../images/flag-red.png') !important;
+    background-position: 0 0 !important;
+    border-radius:0;
+}
+
+.ui-icon-sed-flag-gray {
+    width: 22px;
+    height: 22px;    
+    background-image: url('../images/flag-gray.png') !important;
+    background-position: 0 0 !important;
+    border-radius:0;
+}
+
+.ui-icon-sed-flag-green {
+    width: 22px;
+    height: 22px;    
+    background-image: url('../images/flag-green.png') !important;
+    background-position: 0 0 !important;
+    border-radius:0;
+}
+
+.ui-icon-sed-flag-blue {
+    width: 22px;
+    height: 22px;    
+    background-image: url('../images/flag-blue.png') !important;
+    background-position: 0 0 !important;
+    border-radius:0;
+}
+
+.ui-icon-sed-flag-all {
+    width: 22px;
+    height: 22px;    
+    background-image: url('../images/flag-all.png') !important;
+    background-position: 0 0 !important;
+    border-radius:0;
+}
+.ui-icon-sed-flag-yellow {
+    width: 22px;
+    height: 22px;    
+    background-image: url('../images/flag-yellow.png') !important;
+    background-position: 0 0 !important;
+    border-radius:0;
+}

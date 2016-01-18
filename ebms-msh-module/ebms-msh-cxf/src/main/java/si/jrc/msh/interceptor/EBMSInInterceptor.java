@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -16,8 +17,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.activation.DataHandler;
 import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
@@ -44,7 +43,6 @@ import org.apache.cxf.ws.security.wss4j.WSS4JInInterceptor;
 import org.apache.wss4j.dom.handler.WSHandlerConstants;
 import org.msh.ebms.inbox.mail.MSHInMail;
 import org.msh.ebms.inbox.payload.MSHInPart;
-import org.msh.ebms.outbox.mail.MSHOutMail;
 
 import org.msh.svev.pmode.Certificate;
 import org.msh.svev.pmode.PMode;
@@ -66,6 +64,7 @@ import si.jrc.msh.exception.SOAPExceptionCode;
 import si.jrc.msh.utils.EBMSUtils;
 import si.sed.commons.utils.PModeManager;
 import si.jrc.msh.utils.EbMSConstants;
+import si.sed.commons.SEDInboxMailStatus;
 import si.sed.commons.exception.HashException;
 import si.sed.commons.exception.StorageException;
 import si.sed.commons.utils.HashUtils;
@@ -79,7 +78,7 @@ import si.sed.commons.utils.xml.XMLUtils;
  *
  * @author sluzba
  */
-public class EBMSInInterceptor extends AbstractSoapInterceptor {
+public class EBMSInInterceptor extends AbstractEBMSInterceptor {
 
     private static final Set<QName> HEADERS = new HashSet<>();
 
@@ -198,6 +197,15 @@ public class EBMSInInterceptor extends AbstractSoapInterceptor {
 
                 }
 
+                // serializa data  DB
+                // prepare mail to persist 
+                Date dt = new Date();
+                // set current status
+                mMail.setStatus(SEDInboxMailStatus.RECEIVE.getValue());
+                mMail.setStatusDate(dt);
+                mMail.setReceivedDate(dt);
+                serializeInMail(mMail);
+
                 msg.getExchange().put(MSHInMail.class, mMail);
 
                 SOAPMessage request = msg.getContent(SOAPMessage.class);
@@ -237,7 +245,7 @@ public class EBMSInInterceptor extends AbstractSoapInterceptor {
                                 SoapPreProtocolOutInterceptor.class.getName());
                     }
 
-                    // abport message
+                    // abort message
                     InterceptorChain chain = msg.getInterceptorChain();
                     chain.abort();
                 } catch (SOAPException ex1) {

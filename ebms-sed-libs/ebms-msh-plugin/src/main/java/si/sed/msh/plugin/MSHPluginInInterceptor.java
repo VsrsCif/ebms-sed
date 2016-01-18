@@ -34,7 +34,7 @@ import si.sed.commons.utils.SEDLogger;
  */
 public class MSHPluginInInterceptor extends AbstractSoapInterceptor {
 
-    private static final String PLUGIN_FOLDER = "plugins";
+
 
     protected final SEDLogger mlog = new SEDLogger(MSHPluginInInterceptor.class);
 
@@ -48,9 +48,7 @@ public class MSHPluginInInterceptor extends AbstractSoapInterceptor {
         PMode pmd = msg.getExchange().get(PMode.class);
         MSHInMail inMail = msg.getExchange().get(MSHInMail.class);
         MSHOutMail outMail = msg.getExchange().get(MSHOutMail.class);
-        System.out.println("MSHPluginInInterceptor Pmode:;  " + pmd);
-        System.out.println("MSHPluginInInterceptor inMail:;  " + inMail);
-        System.out.println("MSHPluginInInterceptor outMail:;  " + outMail);
+
         if (pmd != null && inMail != null) {
             // todo
             String str = pmd.getLegs().get(0).getBusinessInfo().getService().getInPlugin();
@@ -58,9 +56,8 @@ public class MSHPluginInInterceptor extends AbstractSoapInterceptor {
                 String[] lst = str.split("!");
                 String filenamePlugin = lst[0];
                 String classNamePlugin = lst[1];
-                System.out.println("****************************************************************");
-                System.out.println("INVOKE: interceptor: " + str);
-                AbstractPluginInterceptor ii = PluginManager.getInterceptor(System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR) + File.separator + PLUGIN_FOLDER + File.separator + filenamePlugin, classNamePlugin);
+
+                AbstractPluginInterceptor ii = PluginManager.getInterceptor(System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR) + File.separator + SEDSystemProperties.SYS_PROP_FOLDER_PLUGINS_DEF + File.separator + filenamePlugin, classNamePlugin);
                 ii.handleMessage(msg);
             }
         } else if (pmd != null) {
@@ -73,7 +70,7 @@ public class MSHPluginInInterceptor extends AbstractSoapInterceptor {
                 String classNamePlugin = lst[1];
                 System.out.println("****************************************************************");
                 System.out.println("INVOKE: plugin :  " + str);
-                AbstractPluginInterceptor ii = PluginManager.getInterceptor(System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR) + File.separator + PLUGIN_FOLDER + File.separator + filenamePlugin, classNamePlugin);
+                AbstractPluginInterceptor ii = PluginManager.getInterceptor(System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR) + File.separator + SEDSystemProperties.SYS_PROP_FOLDER_PLUGINS_DEF + File.separator + filenamePlugin, classNamePlugin);
                 ii.handleMessage(msg);
             }
         }

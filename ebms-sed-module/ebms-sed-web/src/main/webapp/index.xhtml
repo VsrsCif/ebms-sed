@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:sui="http://java.sun.com/jsf/composite/sed-ui"
+      >
+
+    <h:head>
+        <title>SED User GUI</title>
+        <link href="resources/css/main.css" rel="stylesheet" />
+        <link href="resources/css/icons.css" rel="stylesheet" />
+
+    </h:head>
+
+    <h:body>
+        <h:form id="forms" >
+            <p:growl id="messages" showDetail="true" />
+            <!-- main window -->    
+            <p:layout style="min-width:400px;min-height:400px;"  fullPage="true"  >
+                <!-- toolbar -->    
+                <!-- p:layoutUnit position="north" resizable="false" gutter="0" style="padding: 0px; margin: 0px" >
+                    
+                    <p:toolbar style="padding: 0px; margin: 0px">
+                        <f:facet name="left">
+                            <p:commandButton type="button" value="Izhod" icon="ui-icon-sed-exit"  />
+                            <span class="ui-separator">
+                                <span class="ui-icon ui-icon-grip-dotted-vertical " />
+                            </span>
+
+                            <p:commandButton onclick="PF('OutMailDataMain').toggle('south')" value="Show/Hide Panel" 
+                                             type="button"
+                                             icon="ui-icon-sed-showHidePanel" 
+                                             />
+
+                        </f:facet>
+
+                        <f:facet name="right">
+                            <p:menuButton value="Options">
+                                <p:menuitem value="Save" actionListener="#{mainWindow.save}" update="messages" icon="ui-icon-disk" />
+                                <p:menuitem value="Update" actionListener="#{mainWindow.update}" update="messages" icon="ui-icon-arrowrefresh-1-w" />
+                                <p:menuitem value="Delete" actionListener="#{mainWindow.delete}" ajax="false" icon="ui-icon-close" />
+                                <p:menuitem value="Homepage" url="http://www.primefaces.org" icon="ui-icon-extlink" />
+                            </p:menuButton>
+                        </f:facet>
+
+                    </p:toolbar>
+                </p:layoutUnit-->
+                <p:layoutUnit  position="center"  gutter="0" >
+                    <h:panelGroup id="MainPanel">
+                        
+                        <sui:mail-table-in id="InMailPanel" rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_INBOX)  }"  />
+                        <sui:mail-table-out id="OutMailPanel" rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_OUTBOX)}"  />
+                        <sui:settings-keystore id="SettingsCustomPanel" rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_SETT_CERTS)}"  />
+                        <sui:settings-custom id="SettingsCertPanel" rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_SETT_CUSTOM)}"  />
+                        <sui:settings-pmode id="SettingsPModes" rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_SETT_PMODE)}"  />
+                    </h:panelGroup>
+                </p:layoutUnit>
+                <p:layoutUnit position="south" resizable="false" size="50" minSize="50" maxSize="200">
+                    Status panel
+                </p:layoutUnit>
+                <p:layoutUnit position="west" resizable="false" size="250" minSize="250" maxSize="250">
+                    <p:accordionPanel  >
+                        <p:ajax event="tabChange" listener="#{MainWindow.onToolbarTabChange}" update="forms:MainPanel" />
+                        <p:tab id="PANEL_INBOX" >
+                            <f:facet name="title">
+                                <h:graphicImage value="resources/images/inbox32.png" width="22" height="22" />
+                                <h:outputText value="Inbox" />                                 
+                            </f:facet>
+
+                            <p:menu class="ui-accordion-button">
+                                <p:menuitem value="All mail"  actionListener="#{InMailDataView.search}"  update="forms:InMailPanel" icon="ui-icon-sed-flag-all">
+                                    <f:attribute name="status" value="" />
+                                </p:menuitem>
+                                <p:menuitem value="Received mail" actionListener="#{InMailDataView.search}" update="forms:InMailPanel" icon="ui-icon-sed-flag-green">
+                                    <f:attribute name="status" value="RECEIVED" />
+                                </p:menuitem>
+                                <p:menuitem value="Locked mail" actionListener="#{InMailDataView.search}"  update="forms:InMailPanel" icon="ui-icon-sed-flag-gray">
+                                    <f:attribute name="status" value="LOCKED" />
+                                </p:menuitem>
+                                <p:menuitem value="Error mail" actionListener="#{InMailDataView.search}" update="forms:InMailPanel" icon="ui-icon-sed-flag-red">
+                                    <f:attribute name="status" value="ERROR" />
+                                </p:menuitem>
+                                <p:menuitem value="Delivered" actionListener="#{InMailDataView.search}"  update="forms:InMailPanel" icon="ui-icon-sed-flag-blue">
+                                    <f:attribute name="status" value="DELIVERED" />
+                                </p:menuitem>
+                            </p:menu>
+
+
+                        </p:tab>
+                        <p:tab id="PANEL_OUTBOX">
+                            <f:facet name="title">
+                                <h:graphicImage value="resources/images/outbox32.png" width="22" height="22" />
+                                <h:outputText value="Outbox" />                                 
+                            </f:facet>
+                            <p:menu class="ui-accordion-button">
+                                <p:menuitem value="All mail"  actionListener="#{OutMailDataView.search}"  update="forms:InMailPanel" icon="ui-icon-sed-flag-all">
+                                    <f:attribute name="status" value="" />
+                                </p:menuitem>
+                                <p:menuitem value="Submited" actionListener="#{OutMailDataView.search}" update="forms:InMailPanel" icon="ui-icon-sed-flag-green">
+                                    <f:attribute name="status" value="RECEIVED" />
+                                </p:menuitem>
+                                <p:menuitem value="In delivery" actionListener="#{OutMailDataView.search}"  update="forms:InMailPanel"  icon="ui-icon-sed-flag-gray">
+                                    <f:attribute name="status" value="LOCKED" />
+                                </p:menuitem>
+                                <p:menuitem value="Error" actionListener="#{OutMailDataView.search}" update="forms:InMailPanel"  icon="ui-icon-sed-flag-red">
+                                    <f:attribute name="status" value="ERROR" />
+                                </p:menuitem>
+                                <p:menuitem value="Delivered" actionListener="#{OutMailDataView.search}"  update="forms:InMailPanel" icon="ui-icon-sed-flag-blue">
+                                    <f:attribute name="status" value="DELIVERED" />
+                                </p:menuitem>
+                            </p:menu>
+
+                        </p:tab>
+                        <p:tab id="PANEL_SETT_CUSTOM">
+                            <f:facet name="title">
+                                <h:graphicImage value="resources/images/settings32.png" width="22" height="22" />
+                                <h:outputText value="Settings" />                                 
+                            </f:facet>
+                            <p:menu class="ui-accordion-button">
+                                <p:menuitem value="Custom"  actionListener="#{MainWindow.onToolbarButtonAction}"  update="forms:MainPanel">
+                                    <f:attribute name="panel" value="PANEL_SETT_CUSTOM" />
+                                </p:menuitem>
+                                <p:menuitem value="Certificates"  actionListener="#{MainWindow.onToolbarButtonAction}"  update="forms:MainPanel">
+                                    <f:attribute name="panel" value="PANEL_SETT_CERTS" />
+                                </p:menuitem>
+                                <p:menuitem value="P-Modes" actionListener="#{MainWindow.onToolbarButtonAction}" update="forms:MainPanel">
+                                    <f:attribute name="panel" value="PANEL_SETT_PMODE" />
+                                </p:menuitem>
+                                
+                                
+                            </p:menu>
+
+                        </p:tab>
+
+                    </p:accordionPanel>
+                </p:layoutUnit>
+            </p:layout>
+
+        </h:form>
+    </h:body>
+</html>

@@ -36,7 +36,7 @@ import si.sed.commons.exception.StorageException;
 public class StorageUtils {
 
     private static final SimpleDateFormat msdfFolderDateFormat = new SimpleDateFormat("yyyyMMdd");
-    private static final String S_ROOT_FOLDER = "storage";
+    
 
     public static final String S_OUT_PREFIX = "out_";
     public static final String S_IN_PREFIX = "in_";
@@ -127,7 +127,7 @@ public class StorageUtils {
 
     public static synchronized File currentStorageFolder() throws StorageException {
 
-        File f = new File(System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR) + File.separator + S_ROOT_FOLDER + File.separator + currentStorageFolderName());
+        File f = new File(System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR) + File.separator + SEDSystemProperties.SYS_PROP_FOLDER_STORAGE_DEF + File.separator + currentStorageFolderName());
         if (!f.exists() && !f.mkdirs()) {
             throw new StorageException(String.format("Error occurred while creating storage folder: '%s'", f.getAbsolutePath()));
         }

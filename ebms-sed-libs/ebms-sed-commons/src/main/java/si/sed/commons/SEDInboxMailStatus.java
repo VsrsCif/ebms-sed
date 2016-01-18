@@ -21,16 +21,22 @@ package si.sed.commons;
  * @author Joze Rihtarsic <joze.rihtarsic@sodisce.si>
  */
 public enum SEDInboxMailStatus {
-    RECEIVED("RECEIVED", "Message is sucessfuly received to MSH."),
-    LOCKED("LOCKED", "Message is locked by consumer"),
-    DELIVERED("DELIVERED", "Message is consumed");
+    RECEIVE("RECEIVE", "Receive message in process.", "orange"),
+    RECEIVED("RECEIVED", "Message is sucessfuly received to MSH.", "green"),
+    PROCESS("PROCESS", "Message is locked by plugin", "gray"),
+    LOCKED("LOCKED", "Message is locked by consumer", "lightgray"),
+    DELIVERED("DELIVERED", "Message is consumed", "Blue"),
+    ERROR("ERROR", "Error occured receiving, processing MSH", "red"),
+    DELETED("DELETED", "Pošiljka je izbrisana", "black");
 
     String mstrVal;
     String mstrDesc;
+    String mstrColor;
 
-    private SEDInboxMailStatus(String val, String strDesc) {
+    private SEDInboxMailStatus(String val, String strDesc, String strColor) {
         mstrVal = val;
         mstrDesc = strDesc;
+        mstrColor = strColor;
     }
 
     public String getValue() {
@@ -39,6 +45,24 @@ public enum SEDInboxMailStatus {
 
     public String getDesc() {
         return mstrDesc;
+    }
+
+    public String getColor() {
+        return mstrColor;
+    }
+
+    public static String getColor(String strName) {
+
+        for (SEDInboxMailStatus st : values()) {
+            if (st.getValue().equals(strName)) {
+                return st.getColor();
+            }
+        }
+        /*SEDOutboxMailStatus st = SEDOutboxMailStatus.valueOf(strName);
+        if (st!=null){
+            return st.getColor();
+        }*/
+        return strName;
     }
 
 }

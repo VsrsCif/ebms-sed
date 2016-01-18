@@ -109,7 +109,7 @@ public class MSHQueueBean implements MessageListener {
         if (pMode == null) {
             String errDesc = "PMode with id: '" + pModeID + "' not exists! Message with id '" + idMsg + "' is not procesed!";
             mlog.logError(t, errDesc, null);
-            setStatusToMail(mail, SEDOutboxMailStatus.SEND_ERROR, errDesc);
+            setStatusToMail(mail, SEDOutboxMailStatus.ERROR, errDesc);
             return;
         }
         // start sending        
@@ -122,7 +122,7 @@ public class MSHQueueBean implements MessageListener {
 
         } catch (Exception ex) {
             ex.printStackTrace();
-            setStatusToMail(mail, SEDOutboxMailStatus.SEND_ERROR, ex.getMessage());
+            setStatusToMail(mail, SEDOutboxMailStatus.ERROR, ex.getMessage());
             if (pMode.getReceptionAwareness() != null && pMode.getReceptionAwareness().getRetry() != null) {
                 ReceptionAwareness.Retry rty = pMode.getReceptionAwareness().getRetry();
                 int iRet = 0;
@@ -143,18 +143,18 @@ public class MSHQueueBean implements MessageListener {
                         lDelay *= rty.getMultiplyPeriod();
                     }
                     try {
-                        setStatusToMail(mail, SEDOutboxMailStatus.SEND_SHEDULE, "Resend message in '" + lDelay + "'ms");
+                        setStatusToMail(mail, SEDOutboxMailStatus.SCHEDULE, "Resend message in '" + lDelay + "'ms");
                         sendMessage(idMsg, pModeID, iRet, lDelay);
                     } catch (NamingException | JMSException ex1) {
                         String errDesc = "Error resending message with id: '" + pModeID + "'!";
-                        setStatusToMail(mail, SEDOutboxMailStatus.SEND_ERROR, errDesc + " " + ex.getMessage());
+                        setStatusToMail(mail, SEDOutboxMailStatus.ERROR, errDesc + " " + ex.getMessage());
                         mlog.logError(t, errDesc, ex1);
                     }
                 } else {
-                    setStatusToMail(mail, SEDOutboxMailStatus.SEND_ERROR, ex.getMessage());
+                    setStatusToMail(mail, SEDOutboxMailStatus.ERROR, ex.getMessage());
                 }
             } else {
-                setStatusToMail(mail, SEDOutboxMailStatus.SEND_ERROR, ex.getMessage());
+                setStatusToMail(mail, SEDOutboxMailStatus.ERROR, ex.getMessage());
             }
 
         }

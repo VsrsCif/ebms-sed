@@ -74,7 +74,7 @@
                     <wsdlFiles>
                         <wsdlFile>sed-mailbox.wsdl</wsdlFile>
                     </wsdlFiles>                    
-                    <!-- sourceDestDir>${basedir}/src/main/java/</sourceDestDir -->
+                    <sourceDestDir>${basedir}/src/main/java/</sourceDestDir>
                 </configuration>
             </plugin>
             <plugin>

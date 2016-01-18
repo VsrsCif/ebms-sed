@@ -6,6 +6,8 @@
     xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
     version="3.0">
     <display-name>ebms-sed-standalone</display-name>
+    
+  
 
     <resource-ref>
         <res-ref-name>ebMS_PU</res-ref-name>
@@ -57,6 +59,33 @@
         <servlet-name>EBMSEndpoint</servlet-name>
         <url-pattern>/ebms-sed/*</url-pattern>
     </servlet-mapping>
+  
+    <!-- Define the JSF listener class when using the Jetty Maven Plugin 
+    with Jetty8 -->
+    <listener>
+        <listener-class>com.sun.faces.config.ConfigureListener</listener-class>
+    </listener>
+
+    <!-- File(s) appended to a request for a URL that is not mapped to a 
+    web component -->
+    <welcome-file-list>
+        <welcome-file>index.xhtml</welcome-file>
+    </welcome-file-list>
+
+    <!-- Define the JSF servlet (manages the request processing lifecycle 
+    forJavaServer) -->
+    <servlet>
+        <servlet-name>faces</servlet-name>
+        <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <!-- Map following files to the JSF servlet -->
+    <servlet-mapping>
+        <servlet-name>faces</servlet-name>
+        <url-pattern>*.xhtml</url-pattern>
+    </servlet-mapping>
+  
   
     <session-config>
         <session-timeout>60</session-timeout>

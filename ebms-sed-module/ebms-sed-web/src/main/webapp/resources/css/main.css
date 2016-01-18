@@ -1,0 +1,103 @@
+.ui-widget .ui-layout-unit, 
+.ui-widget .ui-layout-unit-content,
+.ui-tabs .ui-tabs-panel
+ {
+    padding: 0em 0em !important;
+    margin:  0em 0em !important;
+    border: 0px none !important;
+    overflow: hidden !important;
+}
+
+
+
+
+.ui-accordion-content {
+    height: 500px;
+     padding: 10px 10px !important;
+    margin:  0em 0em !important;
+}
+
+.ui-accordion-button {
+    width:  100%;
+    padding: 0px 0px !important;
+    background-color: darkgray  !important;
+    border: 1px solid gray;
+    color: black!important;
+}
+
+.ui-accordion-button {
+    width:  100%;
+    padding: 0px 0px !important;
+    background-color: darkgray  !important;
+    border: 1px solid gray;
+    color: black!important;
+}
+
+.ui-tabs-panels {
+    height: 100%;
+}
+
+
+/************************************************************************/
+/*Toolbar                                                               */
+/************************************************************************/
+.ui-toolbar, ui-accordion-header {
+    padding: 0em 0em !important; 
+    border: 0px none !important;
+    margin:  0em 0em !important;
+    overflow: hidden !important;   
+    font-size: 80% !important;   
+}
+
+.ui-tabs .ui-tabs-nav li a {
+    float: left;
+    padding: 0.1em 0.5em;
+    text-decoration: none;
+}
+
+.ui-icon {
+   font-size: 85% !important;    
+}
+
+.ui-icon-sed-exit {
+    width: 22px;
+    height: 22px;    
+    background-image: url('../images/exit22.png') !important;
+    background-position: 0 0 !important;
+    border-radius:0;
+}
+
+
+/************************************************************************/
+/* Data table                                                                */
+/************************************************************************/
+
+.ui-datatable .ui-datatable-header,
+.ui-datatable .ui-datatable-footer, 
+.ui-datatable tbody td {
+    text-align:left;
+    padding: 1px 2px;    
+    margin: 0;
+    font-size: 85% !important;
+}
+
+
+
+
+.ui-datatable-odd {
+    background: #ffffff;
+    font-size: 85% !important;
+    padding:1px 1px;  
+}
+
+.ui-datatable-even {
+    background: #D2D5F9;
+    font-size: 85% !important;
+    padding:1px 1px;  
+}
+
+
+
+.ui-datatable-cell-red {
+    background-color: red;
+}

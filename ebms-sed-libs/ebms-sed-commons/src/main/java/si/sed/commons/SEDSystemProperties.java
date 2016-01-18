@@ -49,6 +49,27 @@ public class SEDSystemProperties {
      * </p>
      */
     public static final String SYS_PROP_PMODE_DEF = "pmode-conf.xml";
+    
+    
+    /**
+     * Default value for plugin folder name.
+     *
+     * <p>
+     * Def plugin folder name form plugins;
+     * ${SYS_PROP_HOME_DIR}/plugins
+     * </p>
+     */
+    public static final String SYS_PROP_FOLDER_PLUGINS_DEF = "plugins";
+    
+    /**
+     * Default value for plugin folder name.
+     *
+     * <p>
+     * Def plugin folder name form plugins;
+     * ${SYS_PROP_HOME_DIR}/plugins
+     * </p>
+     */
+    public static final String SYS_PROP_FOLDER_STORAGE_DEF = "storage";
 
     /**
      * Default value for keystore and trustore configuration file name.

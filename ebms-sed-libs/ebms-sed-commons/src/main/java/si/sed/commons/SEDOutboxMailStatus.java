@@ -21,18 +21,21 @@ package si.sed.commons;
  * @author Joze Rihtarsic <joze.rihtarsic@sodisce.si>
  */
 public enum SEDOutboxMailStatus {
-    SUBMITED("SUBMITED", "Message is sucessfuly added to SED for transmition."),
-    SENDING("SENDING", "Message is pushing/pulling to receiving MSH"),
-    SEND_SHEDULE("SEND_SHEDULE", "Shedule for resend"),
-    SENT("SENT", "Message is  sent receiving MSH"),
-    SEND_ERROR("SEND_ERROR", "Error occured pushing/pulling to receiving MSH"),;
+    SUBMITTED("SUBMITTED", "Message is sucessfuly added to SED for transmition.", "orange"),
+    SENDING("SENDING", "Message is pushing/pulling to receiving MSH", "gray"),
+    SCHEDULE("SCHEDULE", "Shedule for resend", "green"),
+    SENT("SENT", "Message is  sent to receiving MSH", "blue"),
+    ERROR("ERROR", "Error occured pushing/pulling to receiving MSH", "red"),
+    DELETED("DELETED", "Pošiljka je izbrisana", "black");
 
     String mstrVal;
     String mstrDesc;
+    String mstrColor;
 
-    private SEDOutboxMailStatus(String val, String strDesc) {
+    private SEDOutboxMailStatus(String val, String strDesc, String strColor) {
         mstrVal = val;
         mstrDesc = strDesc;
+        mstrColor = strColor;
     }
 
     public String getValue() {
@@ -42,5 +45,21 @@ public enum SEDOutboxMailStatus {
     public String getDesc() {
         return mstrDesc;
     }
+    public String getColor(){
+        return mstrColor;
+    }
 
+    public static String getColor(String strName ) {
+        
+        for (SEDOutboxMailStatus st: values()){
+            if (st.getValue().equals(strName)){
+                return st.getColor();
+            }
+        }
+        /*SEDOutboxMailStatus st = SEDOutboxMailStatus.valueOf(strName);
+        if (st!=null){
+            return st.getColor();
+        }*/
+        return strName;
+    }
 }

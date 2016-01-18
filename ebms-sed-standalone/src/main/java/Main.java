@@ -184,6 +184,7 @@ public class Main {
         );
 
         final Path jarPath = fileSystem.getPath(source);
+        
         try (Stream<Path> paths = Files.walk(jarPath)) {
             paths.forEach(Main::copyPath);
         }

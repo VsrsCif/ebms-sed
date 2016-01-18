@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"   
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:composite="http://java.sun.com/jsf/composite"
+      >
+    <composite:interface>
+    </composite:interface>
+
+    <composite:implementation >
+        <p:layout   widgetVar="OutMailDataMain" style="min-width:400px;min-height:400px;height: 100%;width: 100%"  >
+            <p:layoutUnit position="center" style="width:100%;height:100%;padding: 0px; margin: 0px" gutter="0" >
+                <p:scrollPanel mode="native" style="width:100%;height:100%"> <!-- p:dataTable scrollable does not resize when toogled suth panel -->
+                    <p:dataTable id="OutMailTable" var="outMail" value="#{OutMailDataView.mailList}" 
+                                 selectionMode="single" 
+                                 selection="#{OutMailDataView.outMail}" 
+                                 rowKey="#{outMail.id}"
+                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 rowsPerPageTemplate="25,50,100,200" 
+                                 paginator="true" 
+                                 rows="50" 
+                                 lazy="true"
+                                 style="padding: 0px; margin: 0px"
+                                 scrollable="false" scrollHeight="100%"
+                                 >
+                        <p:ajax event="rowSelect" listener="#{OutMailDataView.onRowSelect}" 
+                                update="forms:OutMailPanel:OutMailTab" />
+
+                        <p:column width="60" >
+                            <f:facet name="header">
+                                <h:outputText value="No." />
+                            </f:facet>
+                            <h:outputText value="#{OutMailDataView.rowIndex(outMail) + 1}" />
+                        </p:column>
+
+
+                        <p:column width="60" >
+                            <f:facet name="header">
+                                <h:outputText value="Id" />
+                            </f:facet>
+                            <h:outputText value="#{outMail.id}" />
+                        </p:column>
+
+                        <p:column width="15" style="background-color:#{OutMailDataView.getColor(outMail.status)}" >
+                            <f:facet name="header">
+                                <h:outputText value="status"/>
+                            </f:facet>
+                            
+                            
+                            <h:outputText value=" " />
+                        </p:column>
+
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="senderName" />
+                            </f:facet>
+                            <h:outputText value="#{outMail.senderName}" />
+                        </p:column>
+
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="receiverName" />
+                            </f:facet>
+                            <h:outputText value="#{outMail.receiverName}" />
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="service" />
+                            </f:facet>
+                            <h:outputText value="#{outMail.service}" />
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="action" />
+                            </f:facet>
+                            <h:outputText value="#{outMail.action}" />
+                        </p:column>
+                    </p:dataTable>
+                </p:scrollPanel>
+            </p:layoutUnit>
+            <p:layoutUnit  position="south" resizable="true" closable="true" collapsible="true" size="200" minSize="40" maxSize="400" style="width:100%;height:100%;padding: 0px; margin: 0px" gutter="0">
+                <p:tabView id="OutMailTab" style="height: 100%" activeIndex="#{OutMailDataView.tabActiveIndex}" >
+                     <p:ajax event="tabChange" listener="#{OutMailDataView.onTabChange}"/> 
+                    <p:tab   id="OutMailDataTab" title="Podatki">
+                        <f:facet name="title">
+                            <h:graphicImage value="resources/images/mail32.png" width="22" height="22" />
+                            <h:outputText value="Podatki" />
+                           
+                        </f:facet>
+
+                        <p:outputPanel id="OutMailData" >
+                            <table style=" width: 100%" >
+                                <tr>
+                                    <td align="right" width="120">Mail id:</td> 
+                                    <td align="left"><h:inputText value="#{OutMailDataView.outMail.id}"  style="width:100%;"  readonly='true' /></td>
+                                    <td align="right" width="180">Receiver name:</td> 
+                                    <td align="left"><h:inputText value="#{OutMailDataView.outMail.receiverName}"  style="width:100%;"  readonly='true' /></td>
+                                    <td align="right" width="180">Receiver e-box:</td> 
+                                    <td align="left"><h:inputText value="#{OutMailDataView.outMail.receiverEBox}"  style="width:100%;"  readonly='true' /></td>
+                                    <td align="right" width="180">Submit date:</td> 
+                                    <td align="left"><h:inputText value="#{OutMailDataView.outMail.submittedDate}"  style="width:100%;"  readonly='true' /></td>
+                                </tr>
+                                <tr>
+                                    <td align="right">Sender mail id:</td> 
+                                    <td align="left"><h:inputText value="#{OutMailDataView.outMail.senderMessageId}"  style="width:100%;"  readonly='true' /></td>
+                                    <td align="right">Sender name:</td> 
+                                    <td align="left"><h:inputText value="#{OutMailDataView.outMail.senderName}"  style="width:100%;"  readonly='true' /></td>
+                                    <td align="right">Sender e-box:</td> 
+                                    <td align="left"><h:inputText value="#{OutMailDataView.outMail.senderEBox}"  style="width:100%;"  readonly='true' /></td>
+                                    <td align="right">Sent date:</td> 
+                                    <td align="left"><h:inputText value="#{OutMailDataView.outMail.sentDate}"  style="width:100%;"  readonly='true' /></td>
+                                </tr>
+                                <tr>
+                                    <td align="right">Service:</td> 
+                                    <td align="left"><h:inputText value="#{OutMailDataView.outMail.service}" style="width:100%;"  readonly='true' /></td>
+                                    <td align="right">Action:</td> 
+                                    <td align="left"><h:inputText value="#{OutMailDataView.outMail.action}"  style="width:100%;"  readonly='true' /></td>
+                                    <td align="right">Transaction:</td> 
+                                    <td align="left"><h:inputText value="#{OutMailDataView.outMail.conversationId}"  style="width:100%;"  readonly='true' /></td>
+                                    <td align="right">Receive date:</td> 
+                                    <td align="left"><h:inputText value="#{OutMailDataView.outMail.receivedDate}"  style="width:100%;"  readonly='true' /></td>
+                                </tr>
+                                <tr>
+                                    <td align="right">Subject:</td> 
+                                    <td align="left" colspan="5"><h:inputText value="#{OutMailDataView.outMail.subject}"  style="width:100%;"  readonly='true' /></td>                                    
+                                    <td align="right">Delivered date:</td> 
+                                    <td align="left"><h:inputText value="#{OutMailDataView.outMail.deliveredDate}" style="width:100%;"  readonly='true' /></td>
+                                </tr>
+                            </table>
+                        </p:outputPanel>
+                    </p:tab>
+                    <p:tab >
+                        <f:facet name="title">
+                            <h:graphicImage value="resources/images/document22.png" width="22" height="22" />
+                            <h:outputText value="Payloads" />
+                        </f:facet>
+                            <p:outputPanel id="OutMailDocuments" style="text-align:center;">
+                                <p:dataTable var="plpart" value="#{OutMailDataView.outMail.outPayload.outParts}">
+                                    <p:column headerText="Id">
+                                        <h:outputText value="#{plpart.id}" />
+                                    </p:column>
+                                    <p:column headerText="Filename">
+                                        <h:outputText value="#{plpart.filename}" />
+                                    </p:column>
+                                    <p:column headerText="Description">
+                                        <h:outputText value="#{plpart.description}" />
+                                    </p:column>
+                                    <p:column headerText="MimeType">
+                                        <h:outputText value="#{plpart.mimeType}" />
+                                    </p:column>
+                                    
+                                </p:dataTable>
+                            </p:outputPanel>
+                        </p:tab>
+                    <p:tab >
+                        <f:facet name="title">
+                            <h:graphicImage value="resources/images/events22.png" width="22" height="22" />
+                            <h:outputText value="Events" />                                 
+                        </f:facet>
+                    <p:outputPanel id="OutMailEvents" style="text-align:center;">
+                        <p:dataTable var="mailEvents" value="#{OutMailDataView.curretntOutMailEvents}">
+                                    <p:column headerText="Id">
+                                        <h:outputText value="#{mailEvents.id}" />
+                                    </p:column>
+                                    <p:column headerText="Status" width="15" style="background-color:#{OutMailDataView.getColor(mailEvents.status)}" >
+                                        <h:outputText value=" " />
+                                    </p:column>
+                                    <p:column headerText="Date">
+                                        <h:outputText value="#{mailEvents.date}" />
+                                    </p:column>
+                                    <p:column headerText="Description">
+                                        <h:outputText value="#{mailEvents.description}" />
+                                    </p:column>
+                                    <p:column headerText="UsersId">
+                                        <h:outputText value="#{mailEvents.userId}" />
+                                    </p:column>
+                                    
+                                </p:dataTable>
+
+                            </p:outputPanel>
+                    </p:tab>
+                </p:tabView>
+            </p:layoutUnit>
+        </p:layout>
+
+
+    </composite:implementation>
+
+</html>

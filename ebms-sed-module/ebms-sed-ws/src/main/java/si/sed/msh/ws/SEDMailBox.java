@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.Resource;
@@ -553,9 +554,9 @@ public class SEDMailBox implements SEDMailBoxWS {
     private void serializeMail(OutMail mail, String userID, String applicationId, String pmodeId) throws SEDException_Exception {
 
         // prepare mail to persist 
-        Date dt = new Date();
+        Date dt = Calendar.getInstance().getTime();
         // set current status
-        mail.setStatus(SEDOutboxMailStatus.SUBMITED.getValue());
+        mail.setStatus(SEDOutboxMailStatus.SUBMITTED.getValue());
         mail.setSubmittedDate(dt);
         mail.setStatusDate(dt);
         // --------------------
@@ -619,6 +620,7 @@ public class SEDMailBox implements SEDMailBoxWS {
             me.setSenderEBox(mail.getSenderEBox());
             me.setSenderMessageId(mail.getSenderMessageId());
             me.setStatus(mail.getStatus());
+            me.setDescription(SEDOutboxMailStatus.SUBMITTED.getDesc());
             me.setDate(mail.getStatusDate());
             me.setUserId(userID);
             me.setApplicationId(applicationId);
@@ -854,7 +856,7 @@ public class SEDMailBox implements SEDMailBoxWS {
         return mutUTransaction;
     }
 
-    private static final void listContext(Context ctx, String indent) {
+    private static void listContext(Context ctx, String indent) {
         try {
             NamingEnumeration list = ctx.listBindings("");
             while (list.hasMore()) {
@@ -878,7 +880,7 @@ public class SEDMailBox implements SEDMailBoxWS {
 
     private String getJNDIPrefix() {
 
-        return System.getProperty(SEDSystemProperties.SYS_PROP_JNDI_PREFIX, "java:/");
+        return System.getProperty(SEDSystemProperties.SYS_PROP_JNDI_PREFIX, "java:/jboss/");
     }
 
 }

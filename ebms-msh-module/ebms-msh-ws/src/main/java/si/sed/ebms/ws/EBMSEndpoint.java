@@ -1,18 +1,18 @@
-/**
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements. See the NOTICE file distributed with this
- * work for additional information regarding copyright ownership. The ASF
- * licenses this file to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
+/*
+* Copyright 2015, Supreme Court Republic of Slovenia 
+*
+* Licensed under the EUPL, Version 1.1 or – as soon they will be approved by 
+* the European Commission - subsequent versions of the EUPL (the "Licence");
+* You may not use this work except in compliance with the Licence.
+* You may obtain a copy of the Licence at:
+*
+* https://joinup.ec.europa.eu/software/page/eupl
+*
+* Unless required by applicable law or agreed to in writing, software 
+* distributed under the Licence is distributed on an "AS IS" basis, WITHOUT 
+* WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the Licence for the specific language governing permissions and  
+* limitations under the Licence.
  */
 package si.sed.ebms.ws;
 
@@ -21,7 +21,6 @@ import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.Resource;
-import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.persistence.EntityManager;
@@ -109,34 +108,13 @@ public class EBMSEndpoint implements Provider<SOAPMessage> {
             PMode pmd = (PMode) ex.get(PMode.class);
             MSHInMail inmail = (MSHInMail) ex.get(MSHInMail.class);
 
-            serializeMail(inmail, msg.getAttachments());
+            // othervise in ERROR or plugin_locked
+            if (inmail.getStatus().equals(SEDInboxMailStatus.RECEIVE.getValue())) {
+                serializeMail(inmail, msg.getAttachments());
+            }
 
-            // SignalMessage as4Receipt = mebmsUtils.generateAS4ReceiptSignal(inmail.getMessageId(), Utils.getDomainFromAddress(inmail.getReceiverEBox()), request.getSOAPPart().getDocumentElement());
-            // msg.getExchange().put(SignalMessage.class, as4Receipt);
-
-            /*   EBMSError err = ex.get(EBMSError.class);
-                Messaging mgsInboundMessage = ex.get(Messaging.class);
-                PMode pmd = ex.get(PMode.class);
-                
-                if (inMail != null) {
-                MSHMail mm = inMail.getMshMail();
-                //if (mm.getService())                
-                mDB.persist(inMail);
-
-                if (SVEVConstants.SVEV_ACTION_DeliveryOfAdvice.equals(mm.getAction())) {
-                MSHMail outMail = mDB.getMSHIngoingMailByMessageId(mm.getConversationId());
-                // ex.put(SVEVEncryptionKey.class, outMail.getSVEVEncryptionKey());
-                }
-                }
-                
-                File fInMessageRequest = (File) ex.get(EbMSConstants.ContextProperty_In_SOAP_Message_File);
-                System.out.println("Got File: " + fInMessageRequest);
-                // check if receiver exists
-                // check payloads
-                     } catch (SEDException_Exception ex1) {
-                Logger.getLogger(EBMSEndpoint.class.getName()).log(Level.SEVERE, null, ex1);
-            }*/
         } catch (SOAPException ex) {
+            // todo:
             ex.printStackTrace();
         }
         return response;
@@ -151,61 +129,7 @@ public class EBMSEndpoint implements Provider<SOAPMessage> {
         mail.setStatusDate(dt);
         mail.setReceivedDate(dt);
 
-        /*
-        // --------------------
-        // serialize payload
-        try {
-
-            if (mail.getMSHInPayload() != null && !mail.getMSHInPayload().getMSHInParts().isEmpty()) {
-                for (MSHInPart p : mail.getMSHInPayload().getMSHInParts()) {
-                    DataHandler dh = null;
-                    for (Attachment a : lstAttch) {
-                        if (a.getId().equals(p.getEbmsId())) {
-                            dh = a.getDataHandler();
-                            break;
-                        }
-                    }
-
-                    File fout = null;
-                    if (dh != null) {
-                        fout = msuStorageUtils.storeInFile(p.getMimeType(), dh.getInputStream());
-                    }
-                    // set MD5 and relative path;
-                    if (fout != null) {
-                        String strMD5 = mpHU.getMD5Hash(fout);
-                        String relPath = StorageUtils.getRelativePath(fout);
-                        p.setFilepath(relPath);
-                        p.setMd5(strMD5);
-
-                        if (Utils.isEmptyString(p.getFilename())) {
-                            p.setFilename(fout.getName());
-                        }
-                        if (Utils.isEmptyString(p.getName())) {
-                            p.setName(p.getFilename().substring(p.getFilename().lastIndexOf(".")));
-                        }
-                    }
-                }
-            }
-        } catch (IOException ex) {
-            /*
-            SEDException msherr = new SEDException();
-            msherr.setErrorCode(SEDExceptionCode.SERVER_ERROR);
-            msherr.setMessage(ex.getMessage());
-            throw new SEDException_Exception("Error occured while storing payload", msherr, ex);* /
-        } catch (StorageException ex) {
-            /*
-            SEDException msherr = new SEDException();
-            msherr.setErrorCode(SEDExceptionCode.SERVER_ERROR);
-            msherr.setMessage(ex.getMessage());
-            throw new SEDException_Exception("Error occured while storing payload", msherr, ex);* /
-        } catch (HashException ex) {
-            /*SEDException msherr = new SEDException();
-            msherr.setErrorCode(SEDExceptionCode.SERVER_ERROR);
-            msherr.setMessage(ex.getMessage());
-            throw new SEDException_Exception("Error occured while calculating payload hash (MD5)", msherr, ex);* /
-        }
-    
-         */
+       
         // --------------------
         // serialize data to db
         try {
@@ -213,7 +137,7 @@ public class EBMSEndpoint implements Provider<SOAPMessage> {
             getUserTransaction().begin();
 
             // persist mail    
-            getEntityManager().persist(mail);
+            getEntityManager().merge(mail);
 
             // persist mail event
             MSHInEvent me = new MSHInEvent();
@@ -254,6 +178,7 @@ public class EBMSEndpoint implements Provider<SOAPMessage> {
         return mutUTransaction;
     }
 
+    
     private String getJNDIPrefix() {
 
         return System.getProperty(SEDSystemProperties.SYS_PROP_JNDI_PREFIX, "java:/");
@@ -264,13 +189,10 @@ public class EBMSEndpoint implements Provider<SOAPMessage> {
         if (memEManager == null) {
             try {
                 InitialContext ic = new InitialContext();
-                Context t = (Context) ic.lookup("java:comp");
                 memEManager = (EntityManager) ic.lookup(getJNDIPrefix() + "ebMS_PU");
-
             } catch (NamingException ex) {
                 Logger.getLogger(EBMSEndpoint.class.getName()).log(Level.SEVERE, null, ex);
             }
-
         }
         return memEManager;
     }
