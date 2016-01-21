@@ -46,7 +46,7 @@
 
                         <p:column width="15" style="background-color:#{OutMailDataView.getColor(outMail.status)}" >
                             <f:facet name="header">
-                                <h:outputText value="status"/>
+                                <h:outputText value="St."/>
                             </f:facet>
                             
                             
@@ -55,26 +55,26 @@
 
                         <p:column>
                             <f:facet name="header">
-                                <h:outputText value="senderName" />
+                                <h:outputText value="Sender name" />
                             </f:facet>
                             <h:outputText value="#{outMail.senderName}" />
                         </p:column>
 
                         <p:column>
                             <f:facet name="header">
-                                <h:outputText value="receiverName" />
+                                <h:outputText value="Receiver name" />
                             </f:facet>
                             <h:outputText value="#{outMail.receiverName}" />
                         </p:column>
                         <p:column>
                             <f:facet name="header">
-                                <h:outputText value="service" />
+                                <h:outputText value="Service" />
                             </f:facet>
                             <h:outputText value="#{outMail.service}" />
                         </p:column>
                         <p:column>
                             <f:facet name="header">
-                                <h:outputText value="action" />
+                                <h:outputText value="Action" />
                             </f:facet>
                             <h:outputText value="#{outMail.action}" />
                         </p:column>

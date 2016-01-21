@@ -40,7 +40,7 @@
                 and (ev.sender_msg_id = :senderMessageId or :senderMessageId='')
                 order by id asc]]>
     </sql-query>    
-     <sql-query name="org.sed.ebms.outbox.event.OutEvent.getMailEventList">
+    <sql-query name="org.sed.ebms.outbox.event.OutEvent.getMailEventList">
         <return class="org.sed.ebms.outbox.event.OutEvent" />	
    <![CDATA[SELECT 
   ev.*

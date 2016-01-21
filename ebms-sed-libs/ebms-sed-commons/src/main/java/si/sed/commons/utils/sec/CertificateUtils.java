@@ -75,7 +75,12 @@ public class CertificateUtils {
             mSecProp.stringPropertyNames().stream().filter((key)
                     -> (mSecProp.getProperty(key) != null)).forEach((key)
                     -> {
-                mSecProp.put(key, mSecProp.getProperty(key).trim());
+                        String strValue = mSecProp.getProperty(key).trim();
+                        if (strValue.contains("${"+SEDSystemProperties.SYS_PROP_HOME_DIR+"}")){
+                            strValue = strValue.replace("${"+SEDSystemProperties.SYS_PROP_HOME_DIR+"}", 
+                                    System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR,""));
+                        }
+                mSecProp.put(key,strValue);
             }
             );
         } catch (IOException ex) {

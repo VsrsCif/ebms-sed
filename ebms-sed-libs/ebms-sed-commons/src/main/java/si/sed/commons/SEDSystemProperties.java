@@ -29,7 +29,7 @@ public class SEDSystemProperties {
      * System property define home directory which contains pmode.configuration
      * </p>
      */
-    public static final String SYS_PROP_HOME_DIR = "sed.home.dir";
+    public static final String SYS_PROP_HOME_DIR = "sed.home";
 
     /**
      * System property for pmode configuration file.

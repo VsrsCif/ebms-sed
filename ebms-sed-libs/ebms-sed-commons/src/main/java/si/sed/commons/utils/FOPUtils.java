@@ -105,7 +105,7 @@ public class FOPUtils {
             generateVisualization(source, fos, ssXslt, mime);
 
         } catch (IOException | JAXBException ex) {
-            String msg = "Error generating visualization" + ex.getMessage();
+            String msg = "Error generating visualization:" + ex.getMessage();
             throw new FOPException(msg, ex);
         }
     }

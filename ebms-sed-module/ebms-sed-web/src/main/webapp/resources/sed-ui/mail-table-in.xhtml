@@ -47,35 +47,35 @@
 
                         <p:column width="15" style="background-color:#{InMailDataView.getColor(InMail.status)}" >
                             <f:facet name="header">
-                                <h:outputText value="status"/>
+                                <h:outputText value="St."/>
                             </f:facet>
-                            
-                            
+
+
                             <h:outputText value=" " />
                         </p:column>
 
                         <p:column>
                             <f:facet name="header">
-                                <h:outputText value="senderName" />
+                                <h:outputText value="Sender name" />
                             </f:facet>
                             <h:outputText value="#{InMail.senderName}" />
                         </p:column>
 
                         <p:column>
                             <f:facet name="header">
-                                <h:outputText value="receiverName" />
+                                <h:outputText value="Receiver name" />
                             </f:facet>
                             <h:outputText value="#{InMail.receiverName}" />
                         </p:column>
                         <p:column>
                             <f:facet name="header">
-                                <h:outputText value="service" />
+                                <h:outputText value="Service" />
                             </f:facet>
                             <h:outputText value="#{InMail.service}" />
                         </p:column>
                         <p:column>
                             <f:facet name="header">
-                                <h:outputText value="action" />
+                                <h:outputText value="Action" />
                             </f:facet>
                             <h:outputText value="#{InMail.action}" />
                         </p:column>
@@ -129,9 +129,6 @@
                                     <td align="left"><h:inputText value="#{InMailDataView.inMail.deliveredDate}" style="width:100%;"  readonly='true' /></td>
                                 </tr>
                             </table>
-
-
-
                         </p:outputPanel>
                     </p:tab>
                     <p:tab >
@@ -139,56 +136,62 @@
                             <h:graphicImage value="resources/images/document22.png" width="22" height="22" />
                             <h:outputText value="Payloads" />
                         </f:facet>
- 
-                            <p:outputPanel id="InMailDocuments" style="text-align:center;">
+
+                        <p:outputPanel id="InMailDocuments" style="text-align:center;">
 
 
-                                <p:dataTable var="plpart" value="#{InMailDataView.inMail.inPayload.inParts}">
-                                    <p:column headerText="Id">
-                                        <h:outputText value="#{plpart.id}" />
-                                    </p:column>
-                                    <p:column headerText="Filename">
-                                        <h:outputText value="#{plpart.filename}" />
-                                    </p:column>
-                                    <p:column headerText="Description">
-                                        <h:outputText value="#{plpart.description}" />
-                                    </p:column>
-                                    <p:column headerText="MimeType">
-                                        <h:outputText value="#{plpart.mimeType}" />
-                                    </p:column>
-                                    
-                                </p:dataTable>
+                            <p:dataTable var="plpart" value="#{InMailDataView.inMail.inPayload.inParts}">
+                                <p:column headerText="Id">
+                                    <h:outputText value="#{plpart.id}" />
+                                </p:column>
+                                <p:column headerText="Download">
+                                    <p:commandButton ajax="false" value="Download"
+                                            onclick="PrimeFaces.monitorDownload(start, stop);" icon="ui-icon-arrowthick-1-s">
+                                        <p:fileDownload value="#{InMailDataView.getFile(plpart.id)}" />
+                                    </p:commandButton>
+                                </p:column>
+                                <p:column headerText="Filename">
+                                    <h:outputText value="#{plpart.filename}" />
+                                </p:column>
+                                <p:column headerText="Description">
+                                    <h:outputText value="#{plpart.description}" />
+                                </p:column>
+                                <p:column headerText="MimeType">
+                                    <h:outputText value="#{plpart.mimeType}" />
+                                </p:column>
 
-                            </p:outputPanel>
-                        </p:tab>
+                            </p:dataTable>
+
+                        </p:outputPanel>
+                    </p:tab>
                     <p:tab >
                         <f:facet name="title">
                             <h:graphicImage value="resources/images/events22.png" width="22" height="22" />
                             <h:outputText value="Events" />                                 
                         </f:facet>
-                    <p:outputPanel id="InMailEvents" style="text-align:center;">
+                        <p:outputPanel id="InMailEvents" style="text-align:center;">
 
 
-                        <p:dataTable var="mailEvents" value="#{InMailDataView.currentInMailEvents}">
-                                    <p:column headerText="Id">
-                                        <h:outputText value="#{mailEvents.id}" />
-                                    </p:column>
-                                    <p:column headerText="Status" width="15" style="background-color:#{InMailDataView.getColor(mailEvents.status)}" >
-                                        <h:outputText value=" " />
-                                    </p:column>
-                                    <p:column headerText="Date">
-                                        <h:outputText value="#{mailEvents.date}" />
-                                    </p:column>
-                                    <p:column headerText="Description">
-                                        <h:outputText value="#{mailEvents.description}" />
-                                    </p:column>
-                                    <p:column headerText="UsersId">
-                                        <h:outputText value="#{mailEvents.userId}" />
-                                    </p:column>
-                                    
-                                </p:dataTable>
+                            <p:dataTable var="mailEvents" value="#{InMailDataView.currentInMailEvents}">
+                                <p:column headerText="Id">
+                                    <h:outputText value="#{mailEvents.id}" />
+                                </p:column>
+                                <p:column headerText="Status" width="15" style="background-color:#{InMailDataView.getColor(mailEvents.status)}" >
+                                    <h:outputText value=" " />
+                                </p:column>
+                                <p:column headerText="Date">
+                                    <h:outputText value="#{mailEvents.date}" />
+                                </p:column>
+                                <p:column headerText="Description">
+                                    <h:outputText value="#{mailEvents.description}" />
+                                </p:column>
+                                <p:column headerText="UsersId">
+                                    <h:outputText value="#{mailEvents.userId}" />
+                                </p:column>
 
-                            </p:outputPanel>
+                            </p:dataTable>
+
+                        </p:outputPanel>
                     </p:tab>
                 </p:tabView>
             </p:layoutUnit>

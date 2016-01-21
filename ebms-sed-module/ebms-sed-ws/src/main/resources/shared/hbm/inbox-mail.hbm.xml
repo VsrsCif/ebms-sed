@@ -3,7 +3,9 @@
 <hibernate-mapping>
     
     <class name="org.sed.ebms.inbox.mail.InMail"
-           table="SED_INBOX">
+           table="SED_INBOX" 
+           
+    >
         <id name="Id" type="java.math.BigInteger" >
             <column name="ID" scale="0" />
             <generator class="sequence">

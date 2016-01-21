@@ -1,3 +1,4 @@
+package si.sed;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,9 +31,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.transaction.UserTransaction;
 import org.apache.activemq.ActiveMQConnectionFactory;
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.FileAppender;
-import org.apache.log4j.PatternLayout;
+import org.apache.log4j.PropertyConfigurator;
 import org.eclipse.jetty.plus.jndi.Resource;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
@@ -41,28 +40,33 @@ import org.eclipse.jetty.webapp.Configuration.ClassList;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.sed.msh.jms.MSHQueueBean;
 import si.jrc.jetty.persistence.JettyUserTransaction;
-import si.sed.commons.SEDSystemProperties;
+import si.sed.commons.utils.SEDLogger;
 
 public class Main {
 
     protected static final String SED_HOME_TEMPLATE = "/home_dir_template";
-    protected static final String SED_HOME = "sed-home";
-    protected static final String PMODE_FILE = "/pmode-conf.xml";
-    protected static final String KEY_PASSWD_FILE = "/key-passwords.properties";
-    protected static final String SEC_CONF_FILE = "/security-conf.properties";
-
     protected static final String JNDI_CONNECTION_FACTORY = "ConnectionFactory";
     protected static final String JNDI_PREFIX_VALUE = "java:comp/env";
+    protected static final String PU_NAME = "ebMS_PU";
 
-    static Path SP_HOME_DIR = Paths.get(SED_HOME);
+    protected static final StandaloneSettings S_CONF;
+
+    static {
+        S_CONF = StandaloneSettings.getInstance();
+        System.out.println("INIT HOME_FOLDER:" + S_CONF.getHome().getAbsolutePath());
+        // init home folder
+        copyFromJar(SED_HOME_TEMPLATE, S_CONF.getHome().toPath());
+        // inizialize log4j
+        System.out.println("INIT LOG4J");
+        PropertyConfigurator.configure(S_CONF.getLogPropertiesFile().getAbsolutePath());
+    }
+
+    protected final SEDLogger mlog = new SEDLogger(Main.class);
 
     public static void main(String[] args) throws Exception {
 
-        setLogger("ebms-sed");
-
-        initialize();
-
-        Server server = new Server(8080);
+        // start server
+        Server server = new Server(S_CONF.getPort());
 
         ClassList classList = ClassList.setServerDefault(server);
         classList.addBefore(
@@ -74,9 +78,6 @@ public class Main {
 
         WebAppContext webapp = new WebAppContext();
         webapp.setContextPath("/");
-        /*SEDMailBoxWS ms = new SEDMailBox();
-        String address = "http://127.0.0.1:8080/SimpleWebService";
-        Endpoint.publish(address, implementor);*/
 
         ProtectionDomain domain = Main.class.getProtectionDomain();
         URL location = domain.getCodeSource().getLocation();
@@ -98,12 +99,23 @@ public class Main {
     private static void configureResources(WebAppContext webapp, MSHQueueBean mb) {
 
         try {
-
+            // create derby database
+            String strDBPath = S_CONF.getHome().getAbsolutePath() + File.separator + "db" + File.separator + "ebms-sed";
             Properties properties = new Properties();
-            EntityManagerFactory emf = Persistence.createEntityManagerFactory("ebMS_PU", properties);
+            properties.put("javax.persistence.jdbc.url", "jdbc:derby:" + strDBPath + ";create=true");
+            properties.put("javax.persistence.jdbc.driver", "org.apache.derby.jdbc.EmbeddedDriver");
+            properties.put("hibernate.cache.provider_class", "org.hibernate.cache.NoCacheProvider");
+            properties.put("hibernate.dialect", "org.hibernate.dialect.DerbyTenSevenDialect");
+            properties.put("hibernate.archive.autodetection", "class");
+            properties.put("hibernate.connection.autocommit", "false");
+            if (Files.notExists(Paths.get(strDBPath))) {
+                properties.put("hibernate.hbm2ddl.auto", "create"); // overide properties
+            }
+
+            EntityManagerFactory emf = Persistence.createEntityManagerFactory(PU_NAME, properties);
             EntityManager em = emf.createEntityManager();
             UserTransaction ut = new JettyUserTransaction(em.getTransaction());
-            org.eclipse.jetty.plus.jndi.Resource myEntityManage = new org.eclipse.jetty.plus.jndi.Resource(webapp, "ebMS_PU",
+            org.eclipse.jetty.plus.jndi.Resource myEntityManage = new org.eclipse.jetty.plus.jndi.Resource(webapp, PU_NAME,
                     em);
 
             org.eclipse.jetty.plus.jndi.Transaction transactionMgr = new org.eclipse.jetty.plus.jndi.Transaction(ut);
@@ -115,27 +127,6 @@ public class Main {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-    }
-
-    public static void setLogger(String fileName) {
-        // set logger
-        ConsoleAppender console = new ConsoleAppender(); //create appender
-        //configure the appender
-        String PATTERN = "%d [%p|%c|%C{1}] %m%n";
-        console.setLayout(new PatternLayout(PATTERN));
-        console.setThreshold(org.apache.log4j.Level.WARN);
-        console.activateOptions();
-        //add appender to any Logger (here is root)
-        org.apache.log4j.Logger.getRootLogger().addAppender(console);
-        FileAppender fa = new FileAppender();
-        fa.setName("FileLogger-" + fileName);
-        fa.setFile("target" + File.separator + fileName + ".log");
-        fa.setLayout(new PatternLayout("%d %-5p [%c{1}] %m%n"));
-        fa.setThreshold(org.apache.log4j.Level.DEBUG);
-        fa.setAppend(true);
-        fa.activateOptions();
-        //add appender to any Logger (here is root)
-        org.apache.log4j.Logger.getRootLogger().addAppender(fa);
     }
 
     public static MSHQueueBean setJMSEnvironment(WebAppContext webapp) throws NamingException, JMSException {
@@ -164,35 +155,28 @@ public class Main {
         return mshConsumer;
     }
 
-    public static void initialize() throws IOException, URISyntaxException {
-        //---------------------------------
-        // set system variables
-        // create home dir in target
+    public static void copyFromJar(String source, final Path target) {
+        try {
+            URI resource = Main.class.getResource(SED_HOME_TEMPLATE).toURI();
+            FileSystem fileSystem = FileSystems.newFileSystem(resource,
+                    Collections.<String, String>emptyMap()
+            );
 
-        copyFromJar(SED_HOME_TEMPLATE, SP_HOME_DIR);
+            final Path jarPath = fileSystem.getPath(source);
 
-        // set system prioperties
-        System.setProperty(SEDSystemProperties.SYS_PROP_HOME_DIR, SED_HOME);
-        System.setProperty(SEDSystemProperties.SYS_PROP_JNDI_PREFIX, "java:comp/env/");
-        System.setProperty(SEDSystemProperties.SYS_PROP_JNDI_JMS_PREFIX, "java:comp/env/");
-    }
-
-    public static void copyFromJar(String source, final Path target) throws URISyntaxException, IOException {
-        URI resource = Main.class.getResource(SED_HOME_TEMPLATE).toURI();
-        FileSystem fileSystem = FileSystems.newFileSystem(resource,
-                Collections.<String, String>emptyMap()
-        );
-
-        final Path jarPath = fileSystem.getPath(source);
-        
-        try (Stream<Path> paths = Files.walk(jarPath)) {
-            paths.forEach(Main::copyPath);
+            try (Stream<Path> paths = Files.walk(jarPath)) {
+                paths.forEach(Main::copyPath);
+            }
+        } catch (URISyntaxException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
     public static void copyPath(Path path) {
         try {
-            Path target = Paths.get(SED_HOME + path.toString().substring(SED_HOME_TEMPLATE.length()));
+            Path target = Paths.get(S_CONF.getHome().getAbsolutePath() + path.toString().substring(SED_HOME_TEMPLATE.length()));
             if (!Files.exists(target, LinkOption.NOFOLLOW_LINKS)) {
                 if (Files.isDirectory(path)) {
                     Files.createDirectories(target);
@@ -205,5 +189,6 @@ public class Main {
         }
 
     }
+
 
 }

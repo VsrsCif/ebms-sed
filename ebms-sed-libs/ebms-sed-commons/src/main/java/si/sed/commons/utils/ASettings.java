@@ -26,7 +26,7 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Properties;
 import java.util.TreeSet;
-import org.apache.log4j.Logger;
+
 
 /**
  *
@@ -34,7 +34,7 @@ import org.apache.log4j.Logger;
  */
 abstract public class ASettings {
 
-    protected final static Logger mlog = Logger.getLogger(ASettings.class);
+    SEDLogger mlog = new SEDLogger(ASettings.class);
 
     protected Properties mprpProperties = null;
     private long mlLastChagedTime = 0;
@@ -50,8 +50,8 @@ abstract public class ASettings {
     public abstract void createIniFile();
 
     private void init() {
+        long l = mlog.logStart();
         File fPropFile = getConfigFile();
-        System.out.println("INIT getConfigFile " + fPropFile.getAbsolutePath());
         if (mprpProperties != null && fPropFile.lastModified() == mlLastChagedTime) {
             return; // initialization is done..
         }
@@ -60,12 +60,12 @@ abstract public class ASettings {
             try (final FileInputStream fis = new FileInputStream(fPropFile)) {
                 mprpProperties.load(fis);
             } catch (IOException ex) {
-                mlog.error("Error init file: '" + fPropFile.getAbsolutePath() + "'", ex);
+                mlog.logError(l, "Error init file: '" + fPropFile.getAbsolutePath() + "'", ex);
             }
         }
         // initialize def values if key not exists!
+        mlLastChagedTime = fPropFile.lastModified(); // prevent cycling (reinit in createIniFile)
         createIniFile();
-
         mlLastChagedTime = fPropFile.lastModified();
         initialize();
         // create folders
@@ -82,7 +82,7 @@ abstract public class ASettings {
 
     public String getData(String strKey) {
         String strVal = null;
-        init();
+        init();       
         if (mprpProperties != null) {
             strVal = mprpProperties.getProperty(strKey);
         }
@@ -90,21 +90,23 @@ abstract public class ASettings {
     }
 
     public String getData(String strKey, String defVal) {
-        String strVal = null;
+        
         init();
-        if (mprpProperties != null) {
-            strVal = mprpProperties.getProperty(strKey, defVal);
+        // check if system property exists 
+        if (System.getProperties().containsKey(strKey)){
+            return System.getProperty(strKey);
         }
-        return strVal;
+        // check if properties 
+        if (mprpProperties != null) {
+            return  mprpProperties.getProperty(strKey, defVal);
+        } 
+        return defVal;
     }
 
     public void initData(String key, String value) {
-
         if (!mprpProperties.containsKey(key)) {
-            System.out.println("Key: " + key + " not exists: set value" + value);
             mprpProperties.setProperty(key, value);
         }
-
     }
 
     public void setData(String key, String value) {
@@ -120,7 +122,7 @@ abstract public class ASettings {
             if (strValue == null) {
                 mprpProperties.remove(strValue);
                 storeProperties();
-            } else if (!mprpProperties.get(strKey).equals(strValue)) {
+            } else if (mprpProperties.get(strKey)==null ||  !mprpProperties.get(strKey).equals(strValue)) {
                 mprpProperties.setProperty(strKey, strValue);
                 storeProperties();
             }
@@ -141,11 +143,12 @@ abstract public class ASettings {
     }
 
     public void storeProperties() {
+        long l = mlog.logStart();
         if (mprpProperties != null) {
             try (final FileOutputStream fos = new FileOutputStream(getConfigFile())) {
-                mprpProperties.store(fos, "SVEV - msh f");
+                mprpProperties.store(fos, "standalone properties");
             } catch (IOException ex) {
-                mlog.error("Error saving priperties to file: '" + getConfigFile().getAbsolutePath() + "'", ex);
+                mlog.logError(l, "Error saving priperties to file: '" + getConfigFile().getAbsolutePath() + "'", ex);
             }
         }
     }
@@ -164,7 +167,7 @@ abstract public class ASettings {
         return new File((f.getAbsolutePath().endsWith(File.separator) ? f.getPath() : f.getPath() + File.separator) + strFileName);
     }
 
-    public File getAbsoluteFolder(String prop, String defVal) {
+    public File getFolder(String prop, String defVal) {
 
         File f = new File(System.getProperty(prop, getData(prop, defVal)));
         if (!f.exists()) {

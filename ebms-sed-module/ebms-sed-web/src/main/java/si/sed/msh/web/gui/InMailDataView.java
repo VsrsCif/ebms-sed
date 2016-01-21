@@ -5,7 +5,11 @@
  */
 package si.sed.msh.web.gui;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -24,11 +28,16 @@ import javax.persistence.TypedQuery;
 import javax.transaction.UserTransaction;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.event.UnselectEvent;
+import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.LazyDataModel;
+import org.primefaces.model.StreamedContent;
 import org.sed.ebms.inbox.event.InEvent;
 import org.sed.ebms.inbox.mail.InMail;
+import org.sed.ebms.inbox.payload.InPart;
 import si.sed.commons.SEDInboxMailStatus;
 import si.sed.commons.SEDSystemProperties;
+import si.sed.commons.exception.StorageException;
+import si.sed.commons.utils.StorageUtils;
 
 @ViewScoped
 @ManagedBean(name = "InMailDataView")
@@ -128,6 +137,31 @@ public class InMailDataView implements Serializable {
 
     public int getTabActiveIndex() {
         return mTabActiveIndex;
+    }
+    
+    public StreamedContent getFile(BigInteger bi) {
+        InPart inpart = null;
+        System.out.println("get File for: " + bi);
+        for (InPart ip: mInMail.getInPayload().getInParts()){
+            System.out.println("Part id: " + ip.getId());
+            if (ip.getId().equals(bi)){
+                inpart = ip;
+                
+                break;
+            }
+        }
+        if (inpart!= null){
+            try {
+                
+                File f = StorageUtils.getFile(inpart.getFilepath());
+                return new DefaultStreamedContent(new FileInputStream(f), inpart.getMimeType(), inpart.getFilename());
+            } catch (StorageException ex) {
+                Logger.getLogger(InMailDataView.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (FileNotFoundException ex) {
+                Logger.getLogger(InMailDataView.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+       return null;
     }
     
     
