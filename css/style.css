@@ -221,13 +221,21 @@ header .inner nav ul li a:hover{
     font-weight: bold;
     font-style: italic;
     vertical-align: central;
-    padding: 10px 10px 0 20px ;    
+    padding: 10px 10px 0 20px ;   
 }
 .content h2{
     font-size: 22px;
     font-weight: bold;    
     vertical-align: central;
     padding: 5px 5px 0 20px ;    
+}
+.content h4{
+    font-size: 12px;
+    font-weight: normal;    
+    font-style: italic;
+    vertical-align: central;
+    margin: -20px 0 0 0;    
+    padding: 0 0 0 40px ;   
 }
 
 

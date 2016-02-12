@@ -1,4 +1,68 @@
 <article class='content'>
+     <a href="#documentation:standalone">Standalone aplikacija</a><br  />
+    <a href="#documentation:webservices">Spletne storitve</a><br  />
+    <a href="#project">Zgradna projekta</a><br  />
+    
+    
+    <h1 id="documentation:standalone">Standalone aplikacija</h1>
+    <h4>Jože Rihtaršič, 12.2.2016</h4><br/>
+    Namen standalone aplikacije je spoznavanje in testiranje funkcionalnosti aplikacijo. Aplikacija je izgrajena tako, da za prvi zagon
+    ne potrebuje nobenih nastavitev. Demo nastavitve se ob prvem zagonu zgenerirajo v 
+    <b>home-sed</b> mapo in jih je kasneje mogoče spreminjati.<br /><br />
+    
+    Aplikacija uporablja naslednje tehnologije in aplikacije:
+    <ul>
+        <li><a href="">java 1.8</a></li>
+        <li><a href="">jetty http strežnik</a></li>
+        <li><a href="">ActiveMQ za JMS</a></li>
+        <li><a href="">apache-cxf</a> za spletne storitve in podporo ebMS  standardu</li>
+        <li><a href="">hibernate (JPA)</a></li>
+        <li><a href="">derby relacijska baza</a></li>
+        </ul>
+
+------------------------------------------------
+Kratka navodila za izgradnjo in uporabo "standalone" aplikacije:
+Za izgradnjo aplikacije je potrebno imeti nameščeno java 1.8x in maven 3.x
+<br />
+Na strani
+https://github.com/VsrsCif/ebms-sed
+prenesi aplikacijo (najležje je  z klikom na DownloadZip)
+Odpakiraj<br />
+ebms-sed-master.zip 
+ter v mapi<br />
+ebms-sed-master<br />
+poženi:<br />
+mvn clean install
+
+
+
+nato naredi novo mapo v katero se bo namestilo "standalone" aplikacijo npr: ebms-sed
+in v mapo kopiraj datoteko:<br />
+ebms-sed-master/ebms-sed-standalone/target/ebms-sed.war
+ter mapo (z vsebino)<br />
+ebms-sed-master/ebms-sed-standalone/target/lib
+<br /><br />
+postavi se v mapo:ebms-sed
+ter zaženi aplikacijo
+<br />
+java -jar  ebms-sed.war
+
+
+Ob prvem zagonu se izgradi  "sed-home" mapa z nastavitvami, ki jih lahko kasneje spreminjajo. Po uspešnem zagonu aplikacija nudi dva nabora storitev
+- SED - EBOX storitve: http://localhost:8080/ebms-sed-ws/sed-mailbox?wsdl So spletne storitve za integracijo z zalednimi sistemi.
+- ebMS 3.0 storitve (http://localhost:8080/ebms-sed/ebms?wsdl) je naslov preko katerega ebms-sed pošilja ebMS 3.0 sporočila, ki so podpisana/kriptirana skladno z p-mode konfiguracijo na drugi MSH.
+
+Obstoječa konfiguracija je narejena tako, da "ebms-sed" pošlje sporočilo samemu sebi, ter tako deluje kot kot pošiljatelj  in prejemnik ebMS sporočila.
+
+
+Pripravili smo tudi SOAP-UI projekt (https://github.com/VsrsCif/ebms-sed/blob/master/documentation/samples/sed-mailbox-soapui-project.xml), s katerim lahko preizkusite delovanje "standalone" aplikacije.
+
+
+SoapUI je aplikacija za testiranje spletnih storitev in jo lahko pridobite na naslovu:
+(http://www.soapui.org/downloads/latest-release.html)
+
+    
+   <h1 id="documentation:webservices">Spletni servisi</h1>
    
 Metode omogočajo pošiljanje izhodne, prevzemanje dohodne pošte ter poizvedovanju po statusih posameznih pošiljk. 
 <br />

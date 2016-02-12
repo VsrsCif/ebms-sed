@@ -1,10 +1,11 @@
 <article class='content'>
-    <a href="#logicalModel">Logični model</a><br  />
-    <a href="#status">Statusi izhodne in dohodne pošte</a><br  />
-    <a href="#project">Zgradna projekta</a><br  />
+    <a href="#arhitecture:logicalModel">Logični model</a><br  />
+    <a href="#arhitecture:status">Statusi izhodne in dohodne pošte</a><br  />
+
     
 
-    <h1 id="logicalModel">Logični model</h1>
+    <h1 id="arhitecture:logicalModel">Logični model</h1>
+    <h4>Jože Rihtaršič, 12.2.2016</h4><br/>
 
     Aplikacija ebms-sed je sestavljena iz modulov:
     <ul><li>modul SED-WS: spletni servisi (WSDL) namenjeni integraciji z zalednimi sistemi;</li>
@@ -32,7 +33,7 @@
     Grafični vmesnik je namenjen za administracijo ebms-sed aplikacije ter za pregled izhodne in dohodne pošte za posamezne predale.  Administracija ebms-sed vsebuje izdelavo in urejanje posameznih p-mode nastavitev., dodajanje novih predalov ter nastavitev za spremljanje delovanja aplikacije ebms-sed.  V primeru pregleda izhodno dohodne pošte za posamezne e-predale omogoča pregled in iskanje izhodne in dohodne pošte ter pregled vseh dogodkov pri vročanju oz. prejemu  pošte.
 
 
-    <h1 id="status">Statusi izhodne in dohodne pošte</h1>
+    <h1 id="arhitecture:status">Statusi izhodne in dohodne pošte</h1>
     Pošiljka pri odpremi in sprejemu gre skozi različne statuse. Statuse pošiljke spreminjajo dogodki na pošiljki ti. "eventi". Ni pa nujno,
     da vsak dogodek na pošiljki spremeni status pošiljke. Npr. V statusu pošiljanje se lahko izvede več dogodkov: kriptiranje, podpisovanje, "plugin obdelava" itd.
     Pri vseh dogodkih (posledično sprembah statusa) se beleži čas dogodka, aplikacijo, ki je prožila dogodek,ter v primeru človeškega posega: id uporabnika, ki je sprožil dogodek.
@@ -165,7 +166,7 @@
     Statusi pošiljke od pričetka pošiljanja do prevzema v končni sistem.
     <img src="img/statuses.png" alt="Statuses"/>
     
-    <h1 id="project"> Projekt ebms-sed</h1>
+    <h1 id="arhitecture:project"> Projekt ebms-sed</h1>
     Projekt ebms-sed je izdelan z maven tehnologijo, kar omogoča CI (Continuous integration) razvoj ter uporabo različnih IDE, ki podpirajo maven projekte. Aplikacija je sestavljena modularno in sledi logičnemu modelu predstavljenem na začetku tega dokumenta. 
 
     Sestava embs-sed projekta:
