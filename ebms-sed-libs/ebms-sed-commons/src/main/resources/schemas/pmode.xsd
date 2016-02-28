@@ -94,7 +94,7 @@
 	</xs:complexType>
 	<xs:complexType name="Party">
 		<xs:sequence>
-			<xs:element name="PartyId" maxOccurs="unbounded">
+			<xs:element name="PartyId" minOccurs="0" maxOccurs="unbounded">
 				<xs:complexType>
 					<xs:simpleContent>
 						<xs:extension base="xs:string">
@@ -200,7 +200,7 @@
 	</xs:complexType>
 	<xs:complexType name="Protocol">
 		<xs:sequence>
-			<xs:element name="Address" type="xs:anyURI" minOccurs="0">
+			<xs:element name="Address" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>The value of this parameter represents the address (endpoint
                         URL) of the Receiver MSH (or Receiver Party) to which Messages under this P-Mode leg are to
@@ -208,6 +208,26 @@
                         endpoint is an email address, then the transport protocol must be SMTP; if the address scheme
                         is "http", then the transport protocol must be HTTP).</xs:documentation>
 				</xs:annotation>
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="xs:anyURI">
+							<xs:attribute name="connectionTimeout" type="xs:int" default="120000"/>
+							<xs:attribute name="receiveTimeout" type="xs:int" default="120000"/>
+							<xs:attribute name="chunked" type="xs:boolean" default="true"/>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="TLS" minOccurs="0">
+				<xs:complexType>
+					<xs:attribute name="keyStorePath" use="required"/>
+					<xs:attribute name="keyStoreType" use="optional" default="JKS"/>
+					<xs:attribute name="keyStorePassword" use="required"/>
+					<xs:attribute name="keyPassword" use="required"/>
+					<xs:attribute name="trustStorePath" use="required"/>
+					<xs:attribute name="trustStoreType" use="optional" default="JKS"/>
+					<xs:attribute name="trustStorePassword" use="required"/>
+				</xs:complexType>
 			</xs:element>
 			<xs:element name="SOAPVersion" minOccurs="0">
 				<xs:annotation>

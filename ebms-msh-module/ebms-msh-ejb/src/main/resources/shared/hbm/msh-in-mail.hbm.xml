@@ -6,7 +6,7 @@
            table="SED_INBOX">
         <id name="Id" type="java.math.BigInteger" >
             <column name="ID" scale="0" />
-            <generator class="sequence">
+            <generator class="increment">
                 <param name="sequence">SEQ_SED_INBOX</param>
             </generator>
         </id>
@@ -49,7 +49,7 @@
     <class name="org.msh.ebms.inbox.property.MSHInProperty" table="SED_INBOX_PROPERTY">
         <id name="Id" type="java.math.BigInteger">
             <column name="ID" scale="0" />
-            <generator class="sequence">
+            <generator class="increment">
                 <param name="sequence">SEQ_SED_INBOX_PROP</param>
             </generator>
         </id>		

@@ -5,7 +5,7 @@
            table="SED_INBOX_PAYLOAD">
         <id name="Id" type="java.math.BigInteger" >
             <column name="ID" scale="0" />
-            <generator class="sequence">
+            <generator class="increment">
                 <param name="sequence">SEQ_SED_INBOX_PAYLOAD</param>
             </generator>
         </id>

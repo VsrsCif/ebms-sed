@@ -45,6 +45,7 @@ import org.apache.cxf.transport.http.HTTPConduit;
 import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
 import org.msh.ebms.outbox.mail.MSHOutMail;
 import org.msh.svev.pmode.PMode;
+import org.msh.svev.pmode.Protocol;
 import si.jrc.msh.exception.MSHException;
 import si.jrc.msh.exception.MSHExceptionCode;
 
@@ -121,12 +122,12 @@ public class MshClient {
 
         if (pmode.getLegs().isEmpty() || pmode.getLegs().get(0).getProtocol() == null
                 || pmode.getLegs().get(0).getProtocol().getAddress() == null
-                || pmode.getLegs().get(0).getProtocol().getAddress().trim().isEmpty()) {
+                || pmode.getLegs().get(0).getProtocol().getAddress().getValue().trim().isEmpty()) {
             throw new MSHException(MSHExceptionCode.InvalidPMode, pmode.getId(), "Missing Protocol/Address value");
         }
-
+        Protocol prt = pmode.getLegs().get(0).getProtocol();
         // get sending leg!
-        String url = pmode.getLegs().get(0).getProtocol().getAddress();
+        String url = prt.getAddress().getValue();
 
         QName serviceName1 = new QName("", "");
         QName portName1 = new QName("", "");
@@ -158,13 +159,15 @@ public class MshClient {
             cxfClient.getOutInterceptors().add(new MSHPluginOutInterceptor());
             cxfClient.getOutInterceptors().add(new EBMSOutInterceptor());
             cxfClient.getOutInterceptors().add(new EBMSLogOutInterceptor());
-            setupTLS(cxfClient);
+            if(prt.getTLS()!=null) {
+                setupTLS(cxfClient , prt.getTLS());
+            }
 
             HTTPClientPolicy httpClientPolicy = new HTTPClientPolicy();
 
-            httpClientPolicy.setConnectionTimeout(36000);
-            httpClientPolicy.setAllowChunking(false);
-            httpClientPolicy.setReceiveTimeout(32000);
+            httpClientPolicy.setConnectionTimeout(prt.getAddress().getConnectionTimeout());
+            httpClientPolicy.setAllowChunking(prt.getAddress().getChunked());
+            httpClientPolicy.setReceiveTimeout(prt.getAddress().getReceiveTimeout());
 
             HTTPConduit http = (HTTPConduit) cxfClient.getConduit();
             http.setClient(httpClientPolicy);
@@ -178,22 +181,20 @@ public class MshClient {
         return dispSOAPMsg;
     }
 
-    private static void setupTLS(Client client)
+    private static void setupTLS(Client client, Protocol.TLS tls)
             throws FileNotFoundException, IOException, GeneralSecurityException {
-        String keyStoreLoc = "sed-home/security/ssl-keystore.jks";
-        String trustStoreLoc = "sed-home/security/sed-truststore.jks";
-        // HTTPConduit httpConduit = (HTTPConduit) ClientProxy.getClient(port).getConduit();
+        
         HTTPConduit httpConduit = (HTTPConduit) client.getConduit();
 
         TLSClientParameters tlsCP = new TLSClientParameters();
-        String keyPassword = "cifadmin";
-        KeyStore keyStore = KeyStore.getInstance("JKS");
-        keyStore.load(new FileInputStream(keyStoreLoc), "cifadmin".toCharArray());
-        KeyManager[] myKeyManagers = getKeyManagers(keyStore, keyPassword);
+
+        KeyStore keyStore = KeyStore.getInstance(tls.getKeyStoreType());
+        keyStore.load(new FileInputStream(tls.getKeyStorePath()), tls.getKeyStorePassword().toCharArray());
+        KeyManager[] myKeyManagers = getKeyManagers(keyStore, tls.getKeyPassword());
         tlsCP.setKeyManagers(myKeyManagers);
 
-        KeyStore trustStore = KeyStore.getInstance("JKS");
-        trustStore.load(new FileInputStream(trustStoreLoc), "sed1234".toCharArray());
+        KeyStore trustStore = KeyStore.getInstance(tls.getTrustStoreType());
+        trustStore.load(new FileInputStream(tls.getTrustStorePath()), tls.getTrustStorePassword().toCharArray());
         TrustManager[] myTrustStoreKeyManagers = getTrustManagers(trustStore);
         tlsCP.setTrustManagers(myTrustStoreKeyManagers);
 
