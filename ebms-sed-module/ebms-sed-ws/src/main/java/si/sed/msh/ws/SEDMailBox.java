@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.Resource;
@@ -53,12 +52,15 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.servlet.http.HttpServletRequest;
 import javax.transaction.HeuristicMixedException;
 import javax.transaction.HeuristicRollbackException;
 import javax.transaction.NotSupportedException;
 import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
+import javax.xml.ws.WebServiceContext;
+import javax.xml.ws.handler.MessageContext;
 
 import org.msh.svev.pmode.PMode;
 import org.sed.ebms.GetInMailRequest;
@@ -97,6 +99,7 @@ import si.sed.commons.exception.SVEVReturnValue;
 import si.sed.commons.exception.StorageException;
 import si.sed.commons.utils.HashUtils;
 import si.sed.commons.utils.PModeManager;
+import si.sed.commons.utils.SEDLogger;
 import si.sed.commons.utils.StorageUtils;
 import si.sed.commons.utils.Utils;
 import si.sed.msh.ws.utils.SEDRequestUtils;
@@ -106,7 +109,7 @@ import si.sed.msh.ws.utils.SEDRequestUtils;
  * @author Jože Rihtaršič
  */
 @Interceptors(JEELogInterceptor.class)
-@WebService(serviceName = "SEDMailBoxWS", portName = "SEDMailBoxWSPort",
+@WebService(serviceName = "sed-mailbox", portName = "SEDMailBoxWSPort",
         endpointInterface = "org.sed.ebms.SEDMailBoxWS",
         targetNamespace = "http://ebms.sed.org/",
         wsdlLocation = "WEB-INF/wsdl/sed-mailbox.wsdl")
@@ -114,9 +117,10 @@ public class SEDMailBox implements SEDMailBoxWS {
 
     @Resource
     protected UserTransaction mutUTransaction;
-
     @PersistenceContext(unitName = "ebMS_PU", name = "ebMS_PU")
     protected EntityManager memEManager;
+    @Resource
+    WebServiceContext mwsCtxt;
 
     protected Queue mqMSHQueue = null;
 
@@ -124,6 +128,7 @@ public class SEDMailBox implements SEDMailBoxWS {
     HashUtils mpHU = new HashUtils();
     StorageUtils msuStorageUtils = new StorageUtils();
     SimpleDateFormat msdfDDMMYYYY_HHMMSS = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+    SEDLogger mLog = new SEDLogger(SEDMailBox.class);
 
     /**
      * - validate message -> serialize message -> send message to ebms queue
@@ -134,16 +139,21 @@ public class SEDMailBox implements SEDMailBoxWS {
      */
     @Override
     public SubmitMailResponse submitMail(SubmitMailRequest submitMailRequest) throws SEDException_Exception {
+        String ip = getCurrrentRemoteIP();
+        long l = mLog.logStart(ip);
 
         // validate data
         if (submitMailRequest == null) {
-            throw SEDRequestUtils.createSEDException("Empty request: SubmitMailRequest", SEDExceptionCode.MISSING_DATA);
+            String msg = "Empty request: SubmitMailRequest send from:" + ip;
+            throw SEDRequestUtils.createSEDException(msg, SEDExceptionCode.MISSING_DATA);
         }
         if (submitMailRequest.getData() == null) {
-            throw SEDRequestUtils.createSEDException("Empty data in request: SubmitMailRequest/Data", SEDExceptionCode.MISSING_DATA);
+            String msg = "Empty data in request: SubmitMailRequest/Data" + ip;
+            throw SEDRequestUtils.createSEDException(msg, SEDExceptionCode.MISSING_DATA);
         }
         if (submitMailRequest.getData().getOutMail() == null) {
-            throw SEDRequestUtils.createSEDException("Empty OutMail in request: SubmitMailRequest/Data/OutMail", SEDExceptionCode.MISSING_DATA);
+            String msg = "Empty OutMail in request: SubmitMailRequest/Data/OutMail" + ip;
+            throw SEDRequestUtils.createSEDException(msg, SEDExceptionCode.MISSING_DATA);
         }
         // validate control data
         SEDRequestUtils.validateControl(submitMailRequest.getControl());
@@ -159,8 +169,7 @@ public class SEDMailBox implements SEDMailBoxWS {
 
             // serialize payload to cache FS and data to db
             serializeMail(mail, submitMailRequest.getControl().getUserId(), submitMailRequest.getControl().getApplicationId(), pmd.getId());
-            // submit to ebms que
-            sendMessage(mail.getId(), pmd.getId());
+
         }
         //generate response 
         SubmitMailResponse rsp = new SubmitMailResponse();
@@ -552,7 +561,7 @@ public class SEDMailBox implements SEDMailBoxWS {
     }
 
     private void serializeMail(OutMail mail, String userID, String applicationId, String pmodeId) throws SEDException_Exception {
-
+        long l = mLog.logStart(userID, applicationId, pmodeId);
         // prepare mail to persist 
         Date dt = Calendar.getInstance().getTime();
         // set current status
@@ -604,18 +613,30 @@ public class SEDMailBox implements SEDMailBoxWS {
             msherr.setMessage(ex.getMessage());
             throw new SEDException_Exception("Error occured while calculating payload hash (MD5)", msherr, ex);
         }
+
         // --------------------
-        // serialize data to db
+        // serialize data and submit message
+        String msgFactoryJndiName = getJNDIPrefix() + SEDValues.EBMS_JMS_CONNECTION_FACTORY_JNDI;
+        String msgQueueJndiName = getJNDI_JMSPrefix() + SEDValues.EBMS_QUEUE_JNDI;
+        InitialContext ic = null;
+        Connection connection = null;
+        Session session = null;
         try {
+            // create JMS session
+            ic = new InitialContext();
+            ConnectionFactory cf = (ConnectionFactory) ic.lookup(msgFactoryJndiName);
+            if (mqMSHQueue == null) {
+                mqMSHQueue = (Queue) ic.lookup(msgQueueJndiName);
+            }
+            connection = cf.createConnection();
+            session = connection.createSession(true, Session.SESSION_TRANSACTED);
 
+            // start transaction
             getUserTransaction().begin();
-
             // persist mail    
             getEntityManager().persist(mail);
-
             // persist mail event
             OutEvent me = new OutEvent();
-
             me.setMailId(mail.getId());
             me.setSenderEBox(mail.getSenderEBox());
             me.setSenderMessageId(mail.getSenderMessageId());
@@ -624,23 +645,75 @@ public class SEDMailBox implements SEDMailBoxWS {
             me.setDate(mail.getStatusDate());
             me.setUserId(userID);
             me.setApplicationId(applicationId);
-
             getEntityManager().persist(me);
+
+            // submit to ebms que
+            MessageProducer sender = session.createProducer(mqMSHQueue);
+            Message message = session.createMessage();
+            message.setLongProperty(SEDValues.EBMS_QUEUE_PARAM_MAIL_ID, mail.getId().longValue());
+            message.setStringProperty(SEDValues.EBMS_QUEUE_PARAM_PMODE_ID, pmodeId);
+            message.setIntProperty(SEDValues.EBMS_QUEUE_PARAM_RETRY, 0);
+            message.setLongProperty(SEDValues.EBMS_QUEUE_PARAM_DELAY, 0);
+            mLog.log(mail.getId(), pmodeId);
+            sender.send(message);
+
             getUserTransaction().commit();
-        } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
-            {
+            session.commit();
+            mLog.log("Tranaction commited", userID, applicationId, pmodeId);
+
+        } catch (NotSupportedException | SystemException | RollbackException 
+                | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
+            
                 try {
                     getUserTransaction().rollback();
+
                 } catch (IllegalStateException | SecurityException | SystemException ex1) {
-                    // ignore 
+                    mLog.logWarn(l, "Error rollback transaction", ex1);
+                }
+
+                try {
+                    if (session != null) {
+                        session.rollback();
+                    }
+                } catch (JMSException ex1) {
+                    mLog.logWarn(l, "Error rollback JSM session", ex1);
                 }
                 SEDException msherr = new SEDException();
                 msherr.setErrorCode(SEDExceptionCode.SERVER_ERROR);
                 msherr.setMessage(ex.getMessage());
                 throw new SEDException_Exception("Error occured while storing to DB", msherr, ex);
+            
+        } catch (NamingException | JMSException ex) {
+            try {
+                getUserTransaction().rollback();
+            } catch (IllegalStateException | SecurityException | SystemException ex1) {
+                mLog.logWarn(l, "Error rollback transaction", ex);
             }
+
+            try {
+                if (session != null) {
+                    session.rollback();
+                }
+            } catch (JMSException ex1) {
+                mLog.logWarn(l, "Error rollback JSM session", ex1);
+            }
+            SEDException msherr = new SEDException();
+            msherr.setErrorCode(SEDExceptionCode.SERVER_ERROR);
+            msherr.setMessage(ex.getMessage());
+            throw new SEDException_Exception("Error occured while submiting mail to ebms queue. Check queue configuration: factory: '"
+                    + msgFactoryJndiName + "' queue: '" + msgQueueJndiName + "'", msherr, ex);
+        } finally {
+            if (ic != null) {
+                try {
+                    ic.close();
+                } catch (Exception ignore) {
+                    mLog.logWarn(l, "Error closing InitialContext for JSM session", ignore);
+                }
+            }
+            closeConnection(connection);
         }
 
+        mLog.logEnd(l, userID, applicationId, pmodeId);
     }
 
     private InEvent setInMailStatus(InMail im, String desc, String userID, String applicationId) throws SEDException_Exception {
@@ -671,34 +744,44 @@ public class SEDMailBox implements SEDMailBoxWS {
 
     }
 
-    public boolean sendMessage(BigInteger biPosiljkaId, String strpModeId) throws SEDException_Exception {
-
+    /*
+    public Session sendMessage(BigInteger biPosiljkaId, String strpModeId) throws SEDException_Exception {
+        long l = mLog.logStart(biPosiljkaId, strpModeId);
+        sdf
         boolean suc = false;
         InitialContext ic = null;
         Connection connection = null;
+        String msgFactoryJndiName = getJNDIPrefix() + SEDValues.EBMS_JMS_CONNECTION_FACTORY_JNDI;
+        String msgQueueJndiName = getJNDI_JMSPrefix() + SEDValues.EBMS_QUEUE_JNDI;
         try {
-            Queue queue = getMSHQueue();
 
             ic = new InitialContext();
-            String jndiName = getJNDIPrefix() + SEDValues.EBMS_JMS_CONNECTION_FACTORY_JNDI;
-            ConnectionFactory cf = (ConnectionFactory) ic.lookup(jndiName);
+
+            ConnectionFactory cf = (ConnectionFactory) ic.lookup(msgFactoryJndiName);
+            if (mqMSHQueue == null) {
+                mqMSHQueue = (Queue) ic.lookup(msgQueueJndiName);
+            }
 
             connection = cf.createConnection();
-            Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-            MessageProducer sender = session.createProducer(queue);
+            Session session = connection.createSession(true, Session.SESSION_TRANSACTED);
+            MessageProducer sender = session.createProducer(mqMSHQueue);
             Message message = session.createMessage();
             message.setLongProperty(SEDValues.EBMS_QUEUE_PARAM_MAIL_ID, biPosiljkaId.longValue());
             message.setStringProperty(SEDValues.EBMS_QUEUE_PARAM_PMODE_ID, strpModeId);
             message.setIntProperty(SEDValues.EBMS_QUEUE_PARAM_RETRY, 0);
             message.setLongProperty(SEDValues.EBMS_QUEUE_PARAM_DELAY, 0);
+            mLog.log(biPosiljkaId, strpModeId);
             sender.send(message);
+            mLog.log("commit session", biPosiljkaId, strpModeId);
+            
+            
             suc = true;
         } catch (NamingException | JMSException ex) {
-            ex.printStackTrace();
             SEDException msherr = new SEDException();
             msherr.setErrorCode(SEDExceptionCode.SERVER_ERROR);
             msherr.setMessage(ex.getMessage());
-            throw new SEDException_Exception("Error occured while submiting mail to ebms queue", msherr, ex);
+            throw new SEDException_Exception("Error occured while submiting mail to ebms queue. Check queue configuration: factory: '"
+                    + msgFactoryJndiName + "' queue: '" + msgQueueJndiName + "'", msherr, ex);
         } finally {
             if (ic != null) {
                 try {
@@ -709,9 +792,9 @@ public class SEDMailBox implements SEDMailBoxWS {
             closeConnection(connection);
         }
 
+        mLog.logEnd(l, biPosiljkaId, strpModeId, suc);
         return suc;
-    }
-
+    }*/
     protected void closeConnection(Connection con) {
         try {
             if (con != null) {
@@ -720,16 +803,6 @@ public class SEDMailBox implements SEDMailBoxWS {
         } catch (JMSException jmse) {
             // ignore
         }
-    }
-
-    private Queue getMSHQueue() throws NamingException {
-        if (mqMSHQueue == null) {
-            String jndiName = getJNDI_JMSPrefix() + SEDValues.EBMS_QUEUE_JNDI;
-            InitialContext ic = new InitialContext();
-            mqMSHQueue = (Queue) ic.lookup(jndiName);
-
-        }
-        return mqMSHQueue;
     }
 
     private PMode validateOutMailData(OutMail mail) throws SEDException_Exception {
@@ -872,6 +945,18 @@ public class SEDMailBox implements SEDMailBoxWS {
         } catch (NamingException ex) {
             System.out.println(ex);
         }
+    }
+
+    protected String getCurrrentRemoteIP() {
+        String clientIP = null;
+        try {
+            MessageContext msgCtxt = mwsCtxt.getMessageContext();
+            HttpServletRequest req = (HttpServletRequest) msgCtxt.get(MessageContext.SERVLET_REQUEST);
+            clientIP = req.getRemoteAddr();
+        } catch (Exception exc) {
+            mLog.logError(0, "Error getting remote address", exc);
+        }
+        return clientIP;
     }
 
     private String getJNDI_JMSPrefix() {

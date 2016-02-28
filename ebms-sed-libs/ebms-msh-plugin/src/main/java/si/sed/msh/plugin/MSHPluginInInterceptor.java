@@ -61,15 +61,12 @@ public class MSHPluginInInterceptor extends AbstractSoapInterceptor {
                 ii.handleMessage(msg);
             }
         } else if (pmd != null) {
-            System.out.println("GOT SIGNAL");
-            // todo
             String str = pmd.getLegs().get(0).getBusinessInfo().getService().getInPlugin();
             if (str != null) {
                 String[] lst = str.split("!");
                 String filenamePlugin = lst[0];
                 String classNamePlugin = lst[1];
-                System.out.println("****************************************************************");
-                System.out.println("INVOKE: plugin :  " + str);
+                mlog.log("Invoke: plugin :  " + str);
                 AbstractPluginInterceptor ii = PluginManager.getInterceptor(System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR) + File.separator + SEDSystemProperties.SYS_PROP_FOLDER_PLUGINS_DEF + File.separator + filenamePlugin, classNamePlugin);
                 ii.handleMessage(msg);
             }

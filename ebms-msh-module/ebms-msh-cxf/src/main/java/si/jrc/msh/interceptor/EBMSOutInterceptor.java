@@ -211,7 +211,6 @@ public class EBMSOutInterceptor extends AbstractSoapInterceptor {
 
             // create signature priperties
             String cpropname = "CP." + UUID.randomUUID().toString();
-            System.out.println("SET alias****************: " + alias);
             Properties cp = CertificateUtils.getInstance().getSignProperties(alias);
             outProps.put(cpropname, cp);
             // set wss properties

@@ -23,23 +23,26 @@
 			<xs:element name="MEP" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>The type of ebMS MEP associated with this P-Mode. The value must be a URI</xs:documentation>
-					<xs:documentation>NOTE: The current version of Holodeck B2B only allows One-Way MEPs so there is just one value.</xs:documentation>
 				</xs:annotation>
 				<xs:simpleType>
 					<xs:restriction base="xs:string">
-						<xs:enumeration value="http://www.oasis-open.org/committees/ebxml-msg/one-way"/>
+						<xs:enumeration value="http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/oneWay"/>
+						<xs:enumeration value="http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/twoWay"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:element>
 			<xs:element name="MEPbinding" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>The transport channel binding assigned to the MEP (push, pull)</xs:documentation>
-					<xs:documentation>NOTE: The current version of Holodeck B2B only allows One-Way MEPs so there is just two values for Push and Pull binding.</xs:documentation>
 				</xs:annotation>
 				<xs:simpleType>
 					<xs:restriction base="xs:string">
-						<xs:enumeration value="http://www.oasis-open.org/committees/ebxml-msg/push"/>
-						<xs:enumeration value="http://www.oasis-open.org/committees/ebxml-msg/pull"/>
+						<xs:enumeration value="http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/push"/>
+						<xs:enumeration value="http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/pull"/>
+						<xs:enumeration value="http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/sync"/>
+						<xs:enumeration value="http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/pushAndPush"/>
+						<xs:enumeration value="http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/pushAndPull"/>
+						<xs:enumeration value="http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/pullAndPush"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:element>
@@ -49,7 +52,7 @@
 
                         When included the element must contain one or more party ids that identify the trading partner and the business role the partner is acting in. 
 
-                        NOTE: This element is optional in the P-Mode. When not specified the information must be specified when a user message is submitted to Holodeck B2B. Attention should be paid to the fact that the meta-data on submission is expressed in sender and receiver roles which may not be equal to initiator and responder.
+                        
 
                     </xs:documentation>
 				</xs:annotation>

@@ -7,16 +7,14 @@ package si.jrc.msh.interceptor;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.FilterWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.logging.Level;
+import static java.lang.System.out;
 import java.util.logging.Logger;
-import org.apache.cxf.common.injection.NoJSR250Annotations;
 import org.apache.cxf.common.logging.LogUtils;
 import org.apache.cxf.interceptor.AbstractLoggingInterceptor;
 import org.apache.cxf.interceptor.Fault;
@@ -31,12 +29,14 @@ import org.apache.cxf.phase.Phase;
 import org.msh.ebms.outbox.mail.MSHOutMail;
 import si.jrc.msh.utils.EBMSLogUtils;
 import si.jrc.msh.utils.EbMSConstants;
+import si.sed.commons.utils.SEDLogger;
 
 /**
  *
  */
 public class EBMSLogOutInterceptor extends AbstractLoggingInterceptor {
 
+    SEDLogger mlog = new SEDLogger(EBMSLogOutInterceptor.class);
     private static final Logger LOG = LogUtils.getLogger(EBMSLogOutInterceptor.class);
     private static final String LOG_SETUP = EBMSLogOutInterceptor.class.getName() + ".log-setup";
 
@@ -59,34 +59,46 @@ public class EBMSLogOutInterceptor extends AbstractLoggingInterceptor {
         this.writer = w;
     }
 
+    @Override
     public void handleMessage(Message message) throws Fault {
+        long l = mlog.logStart();
+
+        
+
+        
         final OutputStream os = message.getContent(OutputStream.class);
         final Writer iowriter = message.getContent(Writer.class);
+        boolean isRequestor = MessageUtils.isRequestor(message);
         if (os == null && iowriter == null) {
             System.out.println("DO NOT LOG! os == null && iowriter == null!");
             return;
         }
         File fStore = null;
-        if (MessageUtils.isRequestor(message)) {
+ 
+        if (isRequestor) {
+            
             MSHOutMail rq = message.getExchange().get(MSHOutMail.class);
             fStore = EBMSLogUtils.getOutboundFileName(true, rq.getId(), null);
         } else {
             // get base from input log file
+            
             String base = (String) message.getExchange().get(EbMSConstants.EBMS_CP_BASE_LOG_SOAP_MESSAGE_FILE);
             fStore = EBMSLogUtils.getOutboundFileName(false, null, base);
 
         }
-
+        mlog.log("Out " + (isRequestor ? "request" : "response") + " stored to:" + fStore.getName());
         message.getExchange().put(EbMSConstants.EBMS_CP_BASE_LOG_SOAP_MESSAGE_FILE, EBMSLogUtils.getBaseFileName(fStore));
         message.getExchange().put(EbMSConstants.EBMS_CP_OUT_LOG_SOAP_MESSAGE_FILE, fStore);
-        //Logger logger = getMessageLogger(message);
-        Logger logger = LOG;
+
         try {
             writer = new PrintWriter(fStore);
         } catch (FileNotFoundException ex) {
-            ex.printStackTrace();
+            String errmsg = "Application error store outbound message to file: '"+fStore.getAbsolutePath()+"'! ";
+            mlog.logError(l, errmsg, ex);
         }
 
+        
+         Logger logger = LOG;
         boolean hasLogged = message.containsKey(LOG_SETUP);
         if (!hasLogged) {
             message.put(LOG_SETUP, Boolean.TRUE);
@@ -104,9 +116,10 @@ public class EBMSLogOutInterceptor extends AbstractLoggingInterceptor {
                 message.setContent(Writer.class, new LogWriter(logger, message, iowriter));
             }
         }
-
+        mlog.logEnd(l);
     }
 
+    
     private LoggingMessage setupBuffer(Message message) {
         String id = (String) message.getExchange().get(LoggingMessage.ID_KEY);
         if (id == null) {

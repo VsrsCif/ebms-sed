@@ -16,6 +16,7 @@ public class SEDLogger {
 
     private final Logger mlgLogger;
     int miMethodStack = 3;
+    
 
     public SEDLogger(Class clzz) {
         mlgLogger = Logger.getLogger(clzz != null ? clzz.getName() : this.getClass().getName());

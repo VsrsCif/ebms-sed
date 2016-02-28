@@ -7,11 +7,11 @@ http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd">
 
     <jaxws:endpoint id="SEDMailBox"
                     implementor="si.sed.msh.ws.SEDMailBox"
-                    address="/sed-mailbox">
+                    address="/ebms-sed-ws/SEDMailBoxWS">
     </jaxws:endpoint>
     <jaxws:endpoint id="EBMSEndpoint"
                     implementor="si.sed.ebms.ws.EBMSEndpoint"
-                    address="/ebms">
+                    address="/ebms-sed/ebms">
     </jaxws:endpoint>
 
 </beans>

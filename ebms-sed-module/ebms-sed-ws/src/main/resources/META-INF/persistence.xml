@@ -6,6 +6,7 @@
         <provider>org.hibernate.ejb.HibernatePersistence</provider>
         <jta-data-source>java:/dsEBMS_SED</jta-data-source>
         <properties>
+            
             <!--property name="hibernate.dialect" value="${org.sed.msh.hibernate.dialect:org.hibernate.dialect.PostgreSQLDialect}" / -->
             <!-- property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect" / -->
         </properties>

@@ -36,29 +36,16 @@
     <listener>
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
     </listener>
-   
     <servlet>
-        <servlet-name>SEDMailBox</servlet-name>
+        <servlet-name>RootCXFServlet</servlet-name>
         <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
-    <servlet>
-        <servlet-name>EBMSEndpoint</servlet-name>
-        <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
-  
     <servlet-mapping>
-        <servlet-name>SEDMailBox</servlet-name>
-        <url-pattern>/ebms-sed-ws/*</url-pattern>
+        <servlet-name>RootCXFServlet</servlet-name>
+        <url-pattern>/*</url-pattern>
     </servlet-mapping>
-    
 
-  
-    <servlet-mapping>
-        <servlet-name>EBMSEndpoint</servlet-name>
-        <url-pattern>/ebms-sed/*</url-pattern>
-    </servlet-mapping>
   
     <!-- Define the JSF listener class when using the Jetty Maven Plugin 
     with Jetty8 -->

@@ -56,19 +56,17 @@ import si.sed.commons.SEDSystemProperties;
 import si.sed.commons.utils.HashUtils;
 import si.sed.commons.utils.StorageUtils;
 
-@WebServiceProvider(serviceName = "ebms-msh")
+@WebServiceProvider(serviceName = "ebms")
 @ServiceMode(value = Service.Mode.MESSAGE)
 @BindingType(SOAPBinding.SOAP12HTTP_BINDING)
 @org.apache.cxf.interceptor.InInterceptors(interceptors
         = {
-            "org.apache.cxf.interceptor.LoggingInInterceptor",
             "si.jrc.msh.interceptor.EBMSLogInInterceptor",
             "si.jrc.msh.interceptor.EBMSInInterceptor",
             "si.sed.msh.plugin.MSHPluginInInterceptor"
         })
 @org.apache.cxf.interceptor.OutInterceptors(interceptors
         = {
-            "org.apache.cxf.interceptor.LoggingOutInterceptor",
             "si.jrc.msh.interceptor.EBMSLogOutInterceptor",
             "si.jrc.msh.interceptor.EBMSOutInterceptor",
             "si.sed.msh.plugin.MSHPluginOutInterceptor"

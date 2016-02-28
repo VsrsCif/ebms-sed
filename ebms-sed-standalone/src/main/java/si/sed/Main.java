@@ -135,6 +135,7 @@ public class Main {
         p.put("java.naming.provider.url", "vm://localhost?broker.persistent=false");
         InitialContext context = new InitialContext(p);
         ActiveMQConnectionFactory connectionFactory = (ActiveMQConnectionFactory) context.lookup(JNDI_CONNECTION_FACTORY);
+        
 
         // Create a Connection
         Connection connection = connectionFactory.createConnection();

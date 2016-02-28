@@ -117,7 +117,6 @@ public class EBMSInInterceptor extends AbstractEBMSInterceptor {
     @Override
     public void handleMessage(SoapMessage msg) {
         long l = mlog.logStart();
-        System.out.println("EBMSInInterceptor:handleMessage 1");
         SoapVersion version = msg.getVersion();
         boolean isRequestor = MessageUtils.isRequestor(msg);
         // check for Messaging header

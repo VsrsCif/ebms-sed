@@ -6,33 +6,16 @@
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:p="http://primefaces.org/ui"
       xmlns:composite="http://java.sun.com/jsf/composite"
-      >
+      xmlns:sui="http://java.sun.com/jsf/composite/sed-ui"
+
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
     <composite:interface>
     </composite:interface>
 
     <composite:implementation >
 
-        <p:layout style="min-width:400px;min-height:400px;"   >
-
-
-            <p:layoutUnit  position="west"  gutter="0" maxSize="250" >             
-                <p:dataTable var="pmd" value="#{PModeView.PModes}" 
-                             selectionMode="single" 
-                             selection="#{PModeView.currentPMode}" 
-                             rowKey="#{pmd.id}">
-                    <p:ajax event="rowSelect" listener="#{PModeView.onRowSelect}" 
-                            update="forms:SettingsPModes:PModePanel" />  
-
-                    <p:column headerText="ID">
-                        <h:outputText value="#{pmd.id}" />
-                    </p:column>
-                    <p:column headerText="Is template ">
-                        <h:outputText value="#{pmd.isTemplate}" />
-                    </p:column>
-
-                </p:dataTable>
-            </p:layoutUnit>
-            <p:layoutUnit  position="center"  gutter="0" >
+        <p:layout style="min-width:400px;min-height:400px; height: 100%;width: 100%"   >
+            <p:layoutUnit  position="north" style="width:100%;height:100%;padding: 0px; margin: 0px" gutter="0" >
                 <p:outputPanel id="PModePanel" >
                     <p:fieldset  legend="General settings" style="margin-bottom:20px"  >
                         <table style=" width: 100%" >
@@ -48,108 +31,34 @@
                             </tr>
                             <tr>
                                 <td align="right" width="120">MEP</td> 
-                                <td align="left"><h:inputText value="#{PModeView.currentPMode.MEP}"  style="width:200px;"  readonly='true' /></td>
+                                <td align="left">
+                                    <p:selectOneMenu id="MEP" value="#{PModeView.currentPMode.MEP}" style="width:150px">
+                                        <!-- p:ajax listener="#{dropdownView.onMEPChange}" update="city" / -->
+                                        <f:selectItems value="#{PModeView.lookupMEP}" />
+                                    </p:selectOneMenu></td>
                                 <td align="right" width="180">Binding</td> 
-                                <td align="left"><h:inputText value="#{PModeView.currentPMode.MEPbinding}"  style="width:200px;"  readonly='true' /></td>                                
-                            </tr>
-                        </table>
-                    </p:fieldset>
-                    <p:fieldset legend="Protocol" style="margin-bottom:20px"  >
-
-                        <table style=" width: 100%" >
-                            <tr>
-                                <td align="right" width="120">Address:</td> 
-                                <td align="left"><h:inputText value="#{PModeView.currentPModeForeChannel.protocol.address}"  style="width:200px;"  readonly='true' /></td>
-                                <td align="right" width="120">SOAP version:</td> 
-                                <td align="left"><h:inputText value="#{PModeView.currentPModeForeChannel.protocol.SOAPVersion}"  style="width:200px;"  readonly='true' /></td>
-                            </tr>
-                        </table>
-                    </p:fieldset>
-
-                    <p:fieldset legend="BusinessInfo" style="margin-bottom:20px"  >
-                        <table style=" width: 100%" >
-                            <tr>
-                                <td align="right" width="120">MPC:</td> 
-                                <td align="left"><h:inputText value="#{PModeView.currentPModeForeChannel.businessInfo.MPC}"  style="width:200px;"  readonly='true' /></td>
-                                </tr><tr>
-                                <td align="right" width="120">Service:</td> 
-                                <td align="left"><h:inputText value="#{PModeView.currentPModeForeChannel.businessInfo.service.value}"  style="width:200px;"  readonly='true' /></td>
-                                <td align="right" width="120">In plugin:</td> 
-                                <td align="left"><h:inputText value="#{PModeView.currentPModeForeChannel.businessInfo.service.inPlugin}"  style="width:200px;"  readonly='true' /></td>
-                                <td align="right" width="120">Out plugin:</td> 
-                                <td align="left"><h:inputText value="#{PModeView.currentPModeForeChannel.businessInfo.service.inPlugin}"  style="width:200px;"  readonly='true' /></td>
-                            </tr>
-                        </table>
-                        Actions
-                        <p:dataTable var="act" value="#{PModeView.currentPModeForeChannel.businessInfo.actions}" >
-                            <p:column headerText="Action">
-                                <h:outputText value="#{act.value}" />
-                            </p:column>
-                            <p:column headerText="Direction">
-                                <h:outputText value="#{act.direction}" />
-                            </p:column>
-                            <p:column headerText="After">
-                                <h:outputText value="#{act.after}" />
-                            </p:column>
-                        </p:dataTable>
-                        
-                          Properties
-                          <p:dataTable var="prpt" value="#{PModeView.currentPModeForeChannel.businessInfo.properties.properties}" >
-                            <p:column headerText="Type">
-                                <h:outputText value="#{prpt.name}" />
-                            </p:column>
-                            <p:column headerText="Value">
-                                <h:outputText value="#{prpt.value}" />
-                            </p:column>
-                        </p:dataTable>
-
-                      
-
-                    </p:fieldset>
-
-                    <p:fieldset legend="ErrorHandling" style="margin-bottom:20px"  >
-
-                        <table style=" width: 100%" >
-                            <tr>
-                                <td align="right" width="120">Trustore path:</td> 
-                                <td align="left"><h:inputText value=""  style="width:100%;"  readonly='true' /></td>
-                                <td align="right" width="180">Type:</td> 
-                                <td align="left"><h:inputText value=""  style="width:100%;"  readonly='true' /></td>
-                                <td align="right" width="180">Password:</td> 
-                                <td align="left"><h:inputText value=""  style="width:100%;"  readonly='true' /></td>
-                            </tr>
-                        </table>
-                    </p:fieldset>
-
-                    <p:fieldset legend="Reliability" style="margin-bottom:20px"  >
-
-                        <table style=" width: 100%" >
-                            <tr>
-                                <td align="right" width="120">Trustore path:</td> 
-                                <td align="left"><h:inputText value=""  style="width:100%;"  readonly='true' /></td>
-                                <td align="right" width="180">Type:</td> 
-                                <td align="left"><h:inputText value=""  style="width:100%;"  readonly='true' /></td>
-                                <td align="right" width="180">Password:</td> 
-                                <td align="left"><h:inputText value=""  style="width:100%;"  readonly='true' /></td>
-                            </tr>
-                        </table>
-                    </p:fieldset>
-
-                    <p:fieldset legend="Security" style="margin-bottom:20px"  >
-
-                        <table style=" width: 100%" >
-                            <tr>
-                                <td align="right" width="120">Trustore path:</td> 
-                                <td align="left"><h:inputText value=""  style="width:100%;"  readonly='true' /></td>
-                                <td align="right" width="180">Type:</td> 
-                                <td align="left"><h:inputText value=""  style="width:100%;"  readonly='true' /></td>
-                                <td align="right" width="180">Password:</td> 
-                                <td align="left"><h:inputText value=""  style="width:100%;"  readonly='true' /></td>
+                                <td align="left" colspan="2">
+                                    <p:selectOneMenu id="MEPBinding" value="#{PModeView.currentPMode.MEPbinding}" style="width:150px">
+                                        <!-- p:ajax listener="#{dropdownView.onMEPBinding}}" update="city" / -->
+                                        <f:selectItems value="#{PModeView.lookupMEPBinding}" />
+                                    </p:selectOneMenu></td>
                             </tr>
                         </table>
                     </p:fieldset>
                 </p:outputPanel>
+                <p:selectOneButton value="">
+                    <f:selectItem itemLabel="Fore channel1" itemValue="fore-channel" />
+                    <f:selectItem itemLabel="Back channel" itemValue="back-channel" />
+                </p:selectOneButton>
             </p:layoutUnit>
+
+            <p:layoutUnit  position="center" style="width:100%;height:100%;padding: 0px; margin: 0px" gutter="0" >
+                
+                <p:scrollPanel mode="native"  style="width:100%;height:100%;padding: 0px; margin: 0px" >
+                    <sui:settings-pmode-leg id="PModeLeg"   />
+                </p:scrollPanel>
+            </p:layoutUnit>
+
         </p:layout>
     </composite:implementation>
 

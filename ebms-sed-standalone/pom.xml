@@ -304,6 +304,12 @@
             <version>${org.apache.activemq.version}</version>
             <optional>true</optional>   
         </dependency>
+          <dependency>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>activemq-pool</artifactId>
+            <version>5.13.1</version>
+            <optional>true</optional>   
+        </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>

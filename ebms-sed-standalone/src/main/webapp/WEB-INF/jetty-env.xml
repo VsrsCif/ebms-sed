@@ -3,18 +3,6 @@
  
 <Configure class="org.eclipse.jetty.webapp.WebAppContext">
  
-    <!-- New id="DSTest" class="org.eclipse.jetty.plus.jndi.Resource">
-        <Arg></Arg>
-        <Arg>jdbc/testDS</Arg>
-        <Arg>
-            <New class="com.mchange.v2.c3p0.ComboPooledDataSource">
-                <Set name="driverClass">org.h2.Driver</Set>
-                <Set name="jdbcUrl">jdbc:h2:/C:/data/test</Set>
-                <Set name="user">sa</Set>
-                <Set name="password"></Set>
-            </New>
-        </Arg>
-    </New -->
  
  
 </Configure>

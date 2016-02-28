@@ -16,6 +16,17 @@
  */
 package si.jrc.msh.client;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
 import javax.xml.namespace.QName;
 import javax.xml.soap.MessageFactory;
 import javax.xml.soap.SOAPConstants;
@@ -25,9 +36,13 @@ import javax.xml.ws.Dispatch;
 import javax.xml.ws.Service;
 import javax.xml.ws.soap.MTOMFeature;
 import javax.xml.ws.soap.SOAPBinding;
+import org.apache.cxf.configuration.jsse.TLSClientParameters;
 import org.apache.cxf.endpoint.Client;
+import org.apache.cxf.frontend.ClientProxy;
 
 import org.apache.cxf.jaxws.DispatchImpl;
+import org.apache.cxf.transport.http.HTTPConduit;
+import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
 import org.msh.ebms.outbox.mail.MSHOutMail;
 import org.msh.svev.pmode.PMode;
 import si.jrc.msh.exception.MSHException;
@@ -68,8 +83,6 @@ public class MshClient {
         DispatchImpl dimpl = (org.apache.cxf.jaxws.DispatchImpl) client;
 
         // configure svev-msh transport
-        System.out.println("MshClient  SET PMODE:" + pmode);
-        System.out.println("MshClient  MSHOutMail:" + mail);
         client.getRequestContext().put(PMode.class.getName(), pmode);
         client.getRequestContext().put(MSHOutMail.class.getName(), mail);
 
@@ -145,6 +158,17 @@ public class MshClient {
             cxfClient.getOutInterceptors().add(new MSHPluginOutInterceptor());
             cxfClient.getOutInterceptors().add(new EBMSOutInterceptor());
             cxfClient.getOutInterceptors().add(new EBMSLogOutInterceptor());
+            setupTLS(cxfClient);
+
+            HTTPClientPolicy httpClientPolicy = new HTTPClientPolicy();
+
+            httpClientPolicy.setConnectionTimeout(36000);
+            httpClientPolicy.setAllowChunking(false);
+            httpClientPolicy.setReceiveTimeout(32000);
+
+            HTTPConduit http = (HTTPConduit) cxfClient.getConduit();
+            http.setClient(httpClientPolicy);
+
             //cxfClient.getOutInterceptors().add(new LoggingOutInterceptor());
         } catch (Throwable th) {
             th.printStackTrace();
@@ -152,6 +176,47 @@ public class MshClient {
         }
 
         return dispSOAPMsg;
+    }
+
+    private static void setupTLS(Client client)
+            throws FileNotFoundException, IOException, GeneralSecurityException {
+        String keyStoreLoc = "sed-home/security/ssl-keystore.jks";
+        String trustStoreLoc = "sed-home/security/sed-truststore.jks";
+        // HTTPConduit httpConduit = (HTTPConduit) ClientProxy.getClient(port).getConduit();
+        HTTPConduit httpConduit = (HTTPConduit) client.getConduit();
+
+        TLSClientParameters tlsCP = new TLSClientParameters();
+        String keyPassword = "cifadmin";
+        KeyStore keyStore = KeyStore.getInstance("JKS");
+        keyStore.load(new FileInputStream(keyStoreLoc), "cifadmin".toCharArray());
+        KeyManager[] myKeyManagers = getKeyManagers(keyStore, keyPassword);
+        tlsCP.setKeyManagers(myKeyManagers);
+
+        KeyStore trustStore = KeyStore.getInstance("JKS");
+        trustStore.load(new FileInputStream(trustStoreLoc), "sed1234".toCharArray());
+        TrustManager[] myTrustStoreKeyManagers = getTrustManagers(trustStore);
+        tlsCP.setTrustManagers(myTrustStoreKeyManagers);
+
+        httpConduit.setTlsClientParameters(tlsCP);
+    }
+
+    private static TrustManager[] getTrustManagers(KeyStore trustStore)
+            throws NoSuchAlgorithmException, KeyStoreException {
+        String alg = KeyManagerFactory.getDefaultAlgorithm();
+        TrustManagerFactory fac = TrustManagerFactory.getInstance(alg);
+        fac.init(trustStore);
+        return fac.getTrustManagers();
+    }
+
+    private static KeyManager[] getKeyManagers(KeyStore keyStore, String keyPassword)
+            throws GeneralSecurityException, IOException {
+        String alg = KeyManagerFactory.getDefaultAlgorithm();
+        char[] keyPass = keyPassword != null
+                ? keyPassword.toCharArray()
+                : null;
+        KeyManagerFactory fac = KeyManagerFactory.getInstance(alg);
+        fac.init(keyStore, keyPass);
+        return fac.getKeyManagers();
     }
 
 }

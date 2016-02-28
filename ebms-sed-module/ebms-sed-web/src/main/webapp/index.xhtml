@@ -48,7 +48,7 @@
                 </p:layoutUnit-->
                 <p:layoutUnit  position="center"  gutter="0" >
                     <h:panelGroup id="MainPanel">
-                        
+
                         <sui:mail-table-in id="InMailPanel" rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_INBOX)  }"  />
                         <sui:mail-table-out id="OutMailPanel" rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_OUTBOX)}"  />
                         <sui:settings-keystore id="SettingsCustomPanel" rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_SETT_CERTS)}"  />
@@ -56,8 +56,8 @@
                         <sui:settings-pmode id="SettingsPModes" rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_SETT_PMODE)}"  />
                     </h:panelGroup>
                 </p:layoutUnit>
-                <p:layoutUnit position="south" resizable="false" size="50" minSize="50" maxSize="200">
-                    Status panel
+                <p:layoutUnit position="south" resizable="false" size="20" minSize="20" maxSize="200">
+
                 </p:layoutUnit>
                 <p:layoutUnit position="west" resizable="false" size="250" minSize="250" maxSize="250">
                     <p:accordionPanel  >
@@ -112,6 +112,29 @@
                             </p:menu>
 
                         </p:tab>
+                        <p:tab id="PANEL_SETT_PMODE">
+                            <f:facet name="title">
+                                <h:graphicImage value="resources/images/settings32.png" width="22" height="22" />
+                                <h:outputText value="P-Modes" />                                 
+                            </f:facet>
+                            <p:dataTable var="pmd" value="#{PModeView.PModes}" 
+                                         selectionMode="single" 
+                                         selection="#{PModeView.currentPMode}" 
+                                         rowKey="#{pmd.id}">
+                                <p:ajax event="rowSelect" listener="#{PModeView.onRowSelect}" 
+                                        update="forms:SettingsPModes:PModePanel" />  
+
+                                <p:column headerText="ID">
+                                    <h:outputText value="#{pmd.id}" />
+                                </p:column>
+                                <p:column headerText="Is template ">
+                                    <h:outputText value="#{pmd.isTemplate}" />
+                                </p:column>
+
+                            </p:dataTable>
+
+                        </p:tab>
+
                         <p:tab id="PANEL_SETT_CUSTOM">
                             <f:facet name="title">
                                 <h:graphicImage value="resources/images/settings32.png" width="22" height="22" />
@@ -124,11 +147,6 @@
                                 <p:menuitem value="Certificates"  actionListener="#{MainWindow.onToolbarButtonAction}"  update="forms:MainPanel">
                                     <f:attribute name="panel" value="PANEL_SETT_CERTS" />
                                 </p:menuitem>
-                                <p:menuitem value="P-Modes" actionListener="#{MainWindow.onToolbarButtonAction}" update="forms:MainPanel">
-                                    <f:attribute name="panel" value="PANEL_SETT_PMODE" />
-                                </p:menuitem>
-                                
-                                
                             </p:menu>
 
                         </p:tab>

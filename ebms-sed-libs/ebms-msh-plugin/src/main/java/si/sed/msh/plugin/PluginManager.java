@@ -6,13 +6,11 @@
 package si.sed.msh.plugin;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.jar.JarFile;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.management.IntrospectionException;
@@ -53,7 +51,7 @@ public class PluginManager {
         List<String> plLSt = new ArrayList<>();
         File fldPlugins = new File(System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR) + File.separator + SEDSystemProperties.SYS_PROP_FOLDER_PLUGINS_DEF);
         if (fldPlugins.exists() && fldPlugins.isDirectory()){
-            for (File f: fldPlugins.listFiles((File dir, String name) -> name.toLowerCase().endsWith(".pdf"))){
+            for (File f: fldPlugins.listFiles((File dir, String name) -> name.toLowerCase().endsWith(".jar"))){
                 plLSt.add(f.getName());
             }
         }

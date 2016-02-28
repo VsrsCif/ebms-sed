@@ -24,7 +24,12 @@ Copyright 2015, Supreme Court Republic of Slovenia
  See the Licence for the specific language governing permissions and  
  limitations under the Licence.
 -->
-<definitions name="SEDMailBoxWS" targetNamespace="http://ebms.sed.org/" xmlns:tns="http://ebms.sed.org/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:ns="http://schemas.xmlsoap.org/soap/encoding/">
+<definitions name="sed-mailbox" targetNamespace="http://ebms.sed.org/" 
+             xmlns:tns="http://ebms.sed.org/" 
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+             xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" 
+             xmlns="http://schemas.xmlsoap.org/wsdl/" 
+             xmlns:ns="http://schemas.xmlsoap.org/soap/encoding/">
     <documentation>
         WSDL določa servise za integracijo s SVEV-MSH modulom
         * za odpremo pošiljke preko MSH modula
@@ -249,7 +254,7 @@ Copyright 2015, Supreme Court Republic of Slovenia
             </fault>
         </operation>
     </binding>
-    <service name="SEDMailBoxWS">
+    <service name="sed-mailbox">
         <port name="SEDMailBoxWSPort" binding="tns:SEDMailBoxPortBinding">
             <soap:address location="http://127.0.0.1:8080/SEDMailBoxWS"/>
         </port>

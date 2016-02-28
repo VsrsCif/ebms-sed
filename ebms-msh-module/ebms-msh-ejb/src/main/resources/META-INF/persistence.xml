@@ -7,6 +7,7 @@
         <jta-data-source>java:/dsEBMS_SED</jta-data-source>
         <properties>
             <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect" />
+            <property name="hibernate.hbm2ddl.auto" value="${org.sed.msh.hibernate.hbm2ddl.auto}" />
         </properties>
     </persistence-unit>
     <persistence-unit name="EBMS_MSH_PLUGIN_PU" transaction-type="RESOURCE_LOCAL">

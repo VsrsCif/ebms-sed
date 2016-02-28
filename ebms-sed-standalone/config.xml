@@ -1,0 +1,4 @@
+#standalone properties
+#Thu Jan 21 11:03:58 CET 2016
+sed.home=sed-home
+sed.port=8080

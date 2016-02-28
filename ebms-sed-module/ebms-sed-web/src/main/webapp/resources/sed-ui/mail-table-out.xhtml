@@ -16,7 +16,7 @@
                 <p:scrollPanel mode="native" style="width:100%;height:100%"> <!-- p:dataTable scrollable does not resize when toogled suth panel -->
                     <p:dataTable id="OutMailTable" var="outMail" value="#{OutMailDataView.mailList}" 
                                  selectionMode="single" 
-                                 selection="#{OutMailDataView.outMail}" 
+                                 selection="#{OutMailDataView.currentMail}" 
                                  rowKey="#{outMail.id}"
                                  paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                                  rowsPerPageTemplate="25,50,100,200" 
@@ -24,7 +24,8 @@
                                  rows="50" 
                                  lazy="true"
                                  style="padding: 0px; margin: 0px"
-                                 scrollable="false" scrollHeight="100%"
+                                 scrollable="true" 
+                                 scrollHeight="100%"
                                  >
                         <p:ajax event="rowSelect" listener="#{OutMailDataView.onRowSelect}" 
                                 update="forms:OutMailPanel:OutMailTab" />
@@ -37,45 +38,30 @@
                         </p:column>
 
 
-                        <p:column width="60" >
-                            <f:facet name="header">
-                                <h:outputText value="Id" />
-                            </f:facet>
+                        <p:column width="60" headerText="Id">
                             <h:outputText value="#{outMail.id}" />
                         </p:column>
 
-                        <p:column width="15" style="background-color:#{OutMailDataView.getColor(outMail.status)}" >
-                            <f:facet name="header">
-                                <h:outputText value="St."/>
-                            </f:facet>
-                            
-                            
+                        <p:column width="15" headerText="St" 
+                                  style="background-color:#{OutMailDataView.getStatusColor(outMail.status)}" >
                             <h:outputText value=" " />
                         </p:column>
+                        
+                        <p:column width="100" headerText="Sub. date">
+                             <h:outputText value="#{OutMailDataView.formatDate(outMail.submittedDate)}" />
+                        </p:column>
 
-                        <p:column>
-                            <f:facet name="header">
-                                <h:outputText value="Sender name" />
-                            </f:facet>
+                        <p:column headerText="Sender">                        
                             <h:outputText value="#{outMail.senderName}" />
                         </p:column>
 
-                        <p:column>
-                            <f:facet name="header">
-                                <h:outputText value="Receiver name" />
-                            </f:facet>
+                        <p:column  headerText="Receiver">
                             <h:outputText value="#{outMail.receiverName}" />
                         </p:column>
-                        <p:column>
-                            <f:facet name="header">
-                                <h:outputText value="Service" />
-                            </f:facet>
+                        <p:column headerText="Service">
                             <h:outputText value="#{outMail.service}" />
                         </p:column>
-                        <p:column>
-                            <f:facet name="header">
-                                <h:outputText value="Action" />
-                            </f:facet>
+                        <p:column headerText="Action">
                             <h:outputText value="#{outMail.action}" />
                         </p:column>
                     </p:dataTable>
@@ -95,39 +81,39 @@
                             <table style=" width: 100%" >
                                 <tr>
                                     <td align="right" width="120">Mail id:</td> 
-                                    <td align="left"><h:inputText value="#{OutMailDataView.outMail.id}"  style="width:100%;"  readonly='true' /></td>
+                                    <td align="left"><h:inputText value="#{OutMailDataView.currentMail.id}"  style="width:100%;"  readonly='true' /></td>
                                     <td align="right" width="180">Receiver name:</td> 
-                                    <td align="left"><h:inputText value="#{OutMailDataView.outMail.receiverName}"  style="width:100%;"  readonly='true' /></td>
+                                    <td align="left"><h:inputText value="#{OutMailDataView.currentMail.receiverName}"  style="width:100%;"  readonly='true' /></td>
                                     <td align="right" width="180">Receiver e-box:</td> 
-                                    <td align="left"><h:inputText value="#{OutMailDataView.outMail.receiverEBox}"  style="width:100%;"  readonly='true' /></td>
+                                    <td align="left"><h:inputText value="#{OutMailDataView.currentMail.receiverEBox}"  style="width:100%;"  readonly='true' /></td>
                                     <td align="right" width="180">Submit date:</td> 
-                                    <td align="left"><h:inputText value="#{OutMailDataView.outMail.submittedDate}"  style="width:100%;"  readonly='true' /></td>
+                                    <td align="left"><h:inputText value="#{OutMailDataView.currentMail.submittedDate}"  style="width:100%;"  readonly='true' /></td>
                                 </tr>
                                 <tr>
                                     <td align="right">Sender mail id:</td> 
-                                    <td align="left"><h:inputText value="#{OutMailDataView.outMail.senderMessageId}"  style="width:100%;"  readonly='true' /></td>
+                                    <td align="left"><h:inputText value="#{OutMailDataView.currentMail.senderMessageId}"  style="width:100%;"  readonly='true' /></td>
                                     <td align="right">Sender name:</td> 
-                                    <td align="left"><h:inputText value="#{OutMailDataView.outMail.senderName}"  style="width:100%;"  readonly='true' /></td>
+                                    <td align="left"><h:inputText value="#{OutMailDataView.currentMail.senderName}"  style="width:100%;"  readonly='true' /></td>
                                     <td align="right">Sender e-box:</td> 
-                                    <td align="left"><h:inputText value="#{OutMailDataView.outMail.senderEBox}"  style="width:100%;"  readonly='true' /></td>
+                                    <td align="left"><h:inputText value="#{OutMailDataView.currentMail.senderEBox}"  style="width:100%;"  readonly='true' /></td>
                                     <td align="right">Sent date:</td> 
-                                    <td align="left"><h:inputText value="#{OutMailDataView.outMail.sentDate}"  style="width:100%;"  readonly='true' /></td>
+                                    <td align="left"><h:inputText value="#{OutMailDataView.currentMail.sentDate}"  style="width:100%;"  readonly='true' /></td>
                                 </tr>
                                 <tr>
                                     <td align="right">Service:</td> 
-                                    <td align="left"><h:inputText value="#{OutMailDataView.outMail.service}" style="width:100%;"  readonly='true' /></td>
+                                    <td align="left"><h:inputText value="#{OutMailDataView.currentMail.service}" style="width:100%;"  readonly='true' /></td>
                                     <td align="right">Action:</td> 
-                                    <td align="left"><h:inputText value="#{OutMailDataView.outMail.action}"  style="width:100%;"  readonly='true' /></td>
+                                    <td align="left"><h:inputText value="#{OutMailDataView.currentMail.action}"  style="width:100%;"  readonly='true' /></td>
                                     <td align="right">Transaction:</td> 
-                                    <td align="left"><h:inputText value="#{OutMailDataView.outMail.conversationId}"  style="width:100%;"  readonly='true' /></td>
+                                    <td align="left"><h:inputText value="#{OutMailDataView.currentMail.conversationId}"  style="width:100%;"  readonly='true' /></td>
                                     <td align="right">Receive date:</td> 
-                                    <td align="left"><h:inputText value="#{OutMailDataView.outMail.receivedDate}"  style="width:100%;"  readonly='true' /></td>
+                                    <td align="left"><h:inputText value="#{OutMailDataView.currentMail.receivedDate}"  style="width:100%;"  readonly='true' /></td>
                                 </tr>
                                 <tr>
                                     <td align="right">Subject:</td> 
-                                    <td align="left" colspan="5"><h:inputText value="#{OutMailDataView.outMail.subject}"  style="width:100%;"  readonly='true' /></td>                                    
+                                    <td align="left" colspan="5"><h:inputText value="#{OutMailDataView.currentMail.subject}"  style="width:100%;"  readonly='true' /></td>                                    
                                     <td align="right">Delivered date:</td> 
-                                    <td align="left"><h:inputText value="#{OutMailDataView.outMail.deliveredDate}" style="width:100%;"  readonly='true' /></td>
+                                    <td align="left"><h:inputText value="#{OutMailDataView.currentMail.deliveredDate}" style="width:100%;"  readonly='true' /></td>
                                 </tr>
                             </table>
                         </p:outputPanel>
@@ -138,10 +124,16 @@
                             <h:outputText value="Payloads" />
                         </f:facet>
                             <p:outputPanel id="OutMailDocuments" style="text-align:center;">
-                                <p:dataTable var="plpart" value="#{OutMailDataView.outMail.outPayload.outParts}">
-                                    <p:column headerText="Id">
-                                        <h:outputText value="#{plpart.id}" />
-                                    </p:column>
+                                <p:dataTable var="plpart" value="#{OutMailDataView.currentMail.outPayload.outParts}">
+                                      <p:column width="60" headerText="Id">
+                                    <h:outputText value="#{plpart.id}" />
+                                </p:column>
+                                <p:column width="60" headerText="Download">
+                                    <p:commandButton ajax="false" value="Download"
+                                            onclick="PrimeFaces.monitorDownload(start, stop);" icon="ui-icon-arrowthick-1-s">
+                                        <p:fileDownload value="#{OutMailDataView.getFile(plpart.id)}" />
+                                    </p:commandButton>
+                                </p:column>
                                     <p:column headerText="Filename">
                                         <h:outputText value="#{plpart.filename}" />
                                     </p:column>
@@ -161,15 +153,15 @@
                             <h:outputText value="Events" />                                 
                         </f:facet>
                     <p:outputPanel id="OutMailEvents" style="text-align:center;">
-                        <p:dataTable var="mailEvents" value="#{OutMailDataView.curretntOutMailEvents}">
-                                    <p:column headerText="Id">
+                        <p:dataTable var="mailEvents" value="#{OutMailDataView.mailEvents}">
+                                    <p:column width="60" headerText="Id">
                                         <h:outputText value="#{mailEvents.id}" />
                                     </p:column>
-                                    <p:column headerText="Status" width="15" style="background-color:#{OutMailDataView.getColor(mailEvents.status)}" >
+                                    <p:column headerText="Status" width="15" style="background-color:#{OutMailDataView.getStatusColor(mailEvents.status)}" >
                                         <h:outputText value=" " />
                                     </p:column>
                                     <p:column headerText="Date">
-                                        <h:outputText value="#{mailEvents.date}" />
+                                        <h:outputText value="#{OutMailDataView.formatDate(mailEvents.date)}" />
                                     </p:column>
                                     <p:column headerText="Description">
                                         <h:outputText value="#{mailEvents.description}" />
