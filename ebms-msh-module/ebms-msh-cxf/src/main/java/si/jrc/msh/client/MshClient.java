@@ -55,6 +55,7 @@ import si.jrc.msh.interceptor.EBMSOutInterceptor;
 import si.sed.commons.utils.SEDLogger;
 
 import si.jrc.msh.utils.SvevUtils;
+import si.sed.commons.utils.Utils;
 import si.sed.msh.plugin.MSHPluginInInterceptor;
 import si.sed.msh.plugin.MSHPluginOutInterceptor;
 
@@ -96,22 +97,7 @@ public class MshClient {
         } catch (SOAPException ex) {
             throw new MSHException(MSHExceptionCode.EmptyMail, ex);
         }
-        /*
-        try {
-            for (MSHOutPart p : mail.getMSHOutPayload().getMSHOutParts()) {
-                String id = UUID.randomUUID().toString();
-                p.setEbmsId(id);
-                AttachmentPart apr = soapReq.createAttachmentPart();
-                apr.setContentId(id);
-                apr.setMimeHeader("id", id);
-                DataHandler dh = new DataHandler(new FileDataSource(StorageUtils.getFile(p.getFilepath())));
-                apr.setDataHandler(dh);
-                soapReq.addAttachmentPart(apr);
-            }
-
-        } catch (StorageException ex) {
-            throw new MSHException(MSHExceptionCode.InvalidMail, ex);
-        }*/
+        
         dimpl.invoke(soapReq);
 
         mlog.logEnd(l);
@@ -172,9 +158,8 @@ public class MshClient {
             http.setClient(httpClientPolicy);
 
             //cxfClient.getOutInterceptors().add(new LoggingOutInterceptor());
-        } catch (Throwable th) {
-            th.printStackTrace();
-            throw new MSHException(MSHExceptionCode.InvalidPMode, pmode.getId(), "Missing Protocol/Address value");
+        } catch (IOException | GeneralSecurityException th) {
+            throw new MSHException(MSHExceptionCode.InvalidPMode, pmode.getId(), th.getMessage());
         }
 
         return dispSOAPMsg;
@@ -188,12 +173,12 @@ public class MshClient {
         TLSClientParameters tlsCP = new TLSClientParameters();
 
         KeyStore keyStore = KeyStore.getInstance(tls.getKeyStoreType());
-        keyStore.load(new FileInputStream(tls.getKeyStorePath()), tls.getKeyStorePassword().toCharArray());
+        keyStore.load(new FileInputStream(Utils.replaceProperties(tls.getKeyStorePath()) ), tls.getKeyStorePassword().toCharArray());
         KeyManager[] myKeyManagers = getKeyManagers(keyStore, tls.getKeyPassword());
         tlsCP.setKeyManagers(myKeyManagers);
 
         KeyStore trustStore = KeyStore.getInstance(tls.getTrustStoreType());
-        trustStore.load(new FileInputStream(tls.getTrustStorePath()), tls.getTrustStorePassword().toCharArray());
+        trustStore.load(new FileInputStream(Utils.replaceProperties(tls.getTrustStorePath())), tls.getTrustStorePassword().toCharArray());
         TrustManager[] myTrustStoreKeyManagers = getTrustManagers(trustStore);
         tlsCP.setTrustManagers(myTrustStoreKeyManagers);
 

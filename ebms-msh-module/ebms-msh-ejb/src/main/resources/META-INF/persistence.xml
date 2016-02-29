@@ -13,7 +13,7 @@
         <mapping-file>shared/hbm/msh-out-payload.hbm.xml</mapping-file>
         <properties>
             <property name="jboss.entity.manager.jndi.name" value="java:/ebMS_MSH_PU"/> 
-            <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect" />
+            <property name="hibernate.dialect" value="${org.sed.msh.hibernate.dialect}" />
             <property name="hibernate.hbm2ddl.auto" value="${org.sed.msh.hibernate.hbm2ddl.auto}" />
         </properties>
     </persistence-unit>
@@ -28,7 +28,7 @@
         <mapping-file>shared/hbm/msh-out-payload.hbm.xml</mapping-file>
         <properties>
             <property name="jboss.entity.manager.jndi.name" value="java:/EBMS_MSH_PLUGIN_PU"/> 
-            <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect" />
+            <property name="hibernate.dialect" value="${org.sed.msh.hibernate.dialect}" />
         </properties>
     </persistence-unit>
 </persistence>

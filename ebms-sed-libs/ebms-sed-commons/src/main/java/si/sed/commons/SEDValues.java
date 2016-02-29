@@ -31,4 +31,6 @@ public class SEDValues {
     public static String EBMS_QUEUE_PARAM_RETRY = "ebms_queue_mail_retry";
     public static String EBMS_QUEUE_PARAM_DELAY = "ebms_queue_mail_delay";
     public static String EBMS_QUEUE_DELAY_HQ = "_HQ_SCHED_DELIVERY"; // hornet value for delay!
+    public static String EBMS_QUEUE_DELAY_AMQ = "AMQ_SCHEDULED_DELAY"; // ActiveMQ value for delay!
+    
 }

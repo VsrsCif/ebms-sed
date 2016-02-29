@@ -56,6 +56,7 @@ import org.msh.svev.pmode.PMode;
 import org.msh.svev.pmode.ReceptionAwareness;
 import si.jrc.msh.client.MshClient;
 import si.sed.commons.SEDOutboxMailStatus;
+import si.sed.commons.SEDSystemProperties;
 import si.sed.commons.SEDValues;
 import si.sed.commons.utils.PModeManager;
 import si.sed.commons.utils.SEDLogger;
@@ -213,10 +214,12 @@ public class MSHQueueBean implements MessageListener {
         boolean suc = false;
         InitialContext ic = null;
         Connection connection = null;
+         String msgFactoryJndiName = getJNDIPrefix() + SEDValues.EBMS_JMS_CONNECTION_FACTORY_JNDI;
+        String msgQueueJndiName = getJNDI_JMSPrefix() + SEDValues.EBMS_QUEUE_JNDI;
         try {
             ic = new InitialContext();
-            ConnectionFactory cf = (ConnectionFactory) ic.lookup("/ConnectionFactory");
-            Queue queue = (Queue) ic.lookup("java:/jms/queue/MSHQueue");
+            ConnectionFactory cf = (ConnectionFactory) ic.lookup(msgFactoryJndiName);
+            Queue queue = (Queue) ic.lookup(msgQueueJndiName);
             connection = cf.createConnection();
             Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
             MessageProducer sender = session.createProducer(queue);
@@ -227,7 +230,8 @@ public class MSHQueueBean implements MessageListener {
 
             message.setIntProperty(SEDValues.EBMS_QUEUE_PARAM_RETRY, retry);
             message.setLongProperty(SEDValues.EBMS_QUEUE_PARAM_DELAY, delay);
-            message.setLongProperty(SEDValues.EBMS_QUEUE_DELAY_HQ, System.currentTimeMillis() + delay);
+            message.setLongProperty(SEDValues.EBMS_QUEUE_DELAY_AMQ, delay);
+            
 
             sender.send(message);
             suc = true;
@@ -259,9 +263,6 @@ public class MSHQueueBean implements MessageListener {
         if (memEManager == null) {
             try {
                 InitialContext ic = new InitialContext();
-                Context t = (Context) ic.lookup("__");
-                listContext(t, "");
-                System.out.println(" get em: " + getJNDIPrefix() + "ebMS_PU");
                 memEManager = (EntityManager) ic.lookup(getJNDIPrefix() + "ebMS_PU");
 
             } catch (NamingException ex) {
@@ -278,7 +279,7 @@ public class MSHQueueBean implements MessageListener {
             try {
                 InitialContext ic = new InitialContext();
 
-                mutUTransaction = (UserTransaction) ic.lookup(getJNDIPrefix() + "UserTransaction");
+                mutUTransaction = (UserTransaction) ic.lookup("UserTransaction");
 
             } catch (NamingException ex) {
                 Logger.getLogger(MSHQueueBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -288,9 +289,17 @@ public class MSHQueueBean implements MessageListener {
         return mutUTransaction;
     }
 
-    private String getJNDIPrefix() {
+    /*private String getJNDIPrefix() {
         return "__/";
         // return System.getProperty(SEDSystemProperties.SYS_PROP_JNDI_PREFIX, "java:/");
+    }*/
+    private String getJNDI_JMSPrefix() {
+        return System.getProperty(SEDSystemProperties.SYS_PROP_JNDI_JMS_PREFIX, "java:/jms/");
+    }
+
+    private String getJNDIPrefix() {
+
+        return System.getProperty(SEDSystemProperties.SYS_PROP_JNDI_PREFIX, "java:/jboss/");
     }
 
     private static final void listContext(Context ctx, String indent) {
