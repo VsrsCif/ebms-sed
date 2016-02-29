@@ -21,11 +21,13 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.Resource;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.transaction.HeuristicMixedException;
 import javax.transaction.HeuristicRollbackException;
 import javax.transaction.NotSupportedException;
@@ -50,12 +52,13 @@ import si.sed.commons.SEDSystemProperties;
  */
 public abstract class AbstractEBMSInterceptor extends AbstractSoapInterceptor {
 
-    private static String EBMS_MSH_PLUGIN_PU = "ebMS_PU";
+    
     String LOADED_CLASSES = "hibernate.ejb.loaded.classes";
 
-
+    @Resource
     private UserTransaction mutUTransaction;
 
+    @PersistenceContext(unitName = "ebMS_MSH_PU")
     private EntityManager memEManager;
 
     public AbstractEBMSInterceptor(String p) {
@@ -73,7 +76,7 @@ public abstract class AbstractEBMSInterceptor extends AbstractSoapInterceptor {
             try {
                 InitialContext ic = new InitialContext();
 
-                mutUTransaction = (UserTransaction) ic.lookup(getJNDIPrefix() + "UserTransaction");
+                mutUTransaction = (UserTransaction) ic.lookup(getJNDIPrefix() + "jboss/UserTransaction");
 
             } catch (NamingException ex) {
                 Logger.getLogger(AbstractEBMSInterceptor.class.getName()).log(Level.SEVERE, null, ex);
@@ -98,7 +101,7 @@ public abstract class AbstractEBMSInterceptor extends AbstractSoapInterceptor {
             try {
                 InitialContext ic = new InitialContext();
                 Context t = (Context) ic.lookup("java:comp");
-                memEManager = (EntityManager) ic.lookup(getJNDIPrefix() + "ebMS_PU");
+                memEManager = (EntityManager) ic.lookup(getJNDIPrefix() + "ebMS_MSH_PU");
 
             } catch (NamingException ex) {
                 Logger.getLogger(AbstractEBMSInterceptor.class.getName()).log(Level.SEVERE, null, ex);

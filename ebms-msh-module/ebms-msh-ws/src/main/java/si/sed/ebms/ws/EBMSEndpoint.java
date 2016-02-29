@@ -179,7 +179,7 @@ public class EBMSEndpoint implements Provider<SOAPMessage> {
     
     private String getJNDIPrefix() {
 
-        return System.getProperty(SEDSystemProperties.SYS_PROP_JNDI_PREFIX, "java:/");
+        return System.getProperty(SEDSystemProperties.SYS_PROP_JNDI_PREFIX, "java:/jboss/");
     }
 
     private EntityManager getEntityManager() {

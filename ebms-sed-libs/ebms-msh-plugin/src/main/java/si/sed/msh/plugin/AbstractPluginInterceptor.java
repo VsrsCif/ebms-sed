@@ -91,7 +91,7 @@ public abstract class AbstractPluginInterceptor extends AbstractSoapInterceptor 
 
     private String getJNDIPrefix() {
 
-        return System.getProperty(SEDSystemProperties.SYS_PROP_JNDI_PREFIX, "java:/");
+        return System.getProperty(SEDSystemProperties.SYS_PROP_JNDI_PREFIX, "java:/jboss/");
     }
 
     private String getJNDI_JMSPrefix() {
