@@ -28,6 +28,8 @@ public class StandaloneSettings extends ASettings {
     protected static final String SEC_CONF_FILE = "security-conf.properties";
     protected static final String LOG_CONF_FILE = "sed-log4j.properties";
     public static String S_PROPERTY_FILE = "config.xml";
+    
+    public static String JNDI_PREFIX = "java:comp/env/";
 
     private static StandaloneSettings S_INSTANCE = null;
 
@@ -49,8 +51,8 @@ public class StandaloneSettings extends ASettings {
     public void initialize() {
         
         // set system properties
-        System.setProperty(SEDSystemProperties.SYS_PROP_JNDI_PREFIX, "java:comp/env/");
-        System.setProperty(SEDSystemProperties.SYS_PROP_JNDI_JMS_PREFIX, "java:comp/env/");
+        System.setProperty(SEDSystemProperties.SYS_PROP_JNDI_PREFIX, JNDI_PREFIX);
+        System.setProperty(SEDSystemProperties.SYS_PROP_JNDI_JMS_PREFIX,JNDI_PREFIX);
         if (!System.getProperties().containsKey(SEDSystemProperties.SYS_PROP_HOME_DIR)) {
             System.setProperty(SEDSystemProperties.SYS_PROP_HOME_DIR, getData(S_PROP_HOME, S_PROP_HOME_DEF));
         }

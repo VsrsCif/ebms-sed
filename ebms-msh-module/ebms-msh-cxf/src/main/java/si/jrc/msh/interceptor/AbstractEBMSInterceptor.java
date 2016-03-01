@@ -16,7 +16,6 @@
  */
 package si.jrc.msh.interceptor;
 
-
 import java.util.Collection;
 import java.util.Date;
 import java.util.logging.Level;
@@ -44,7 +43,7 @@ import org.msh.ebms.outbox.event.MSHOutEvent;
 import org.msh.ebms.outbox.mail.MSHOutMail;
 import si.sed.commons.SEDInboxMailStatus;
 import si.sed.commons.SEDSystemProperties;
-
+import si.sed.commons.utils.SEDLogger;
 
 /**
  *
@@ -52,7 +51,6 @@ import si.sed.commons.SEDSystemProperties;
  */
 public abstract class AbstractEBMSInterceptor extends AbstractSoapInterceptor {
 
-    
     String LOADED_CLASSES = "hibernate.ejb.loaded.classes";
 
     @Resource
@@ -60,6 +58,8 @@ public abstract class AbstractEBMSInterceptor extends AbstractSoapInterceptor {
 
     @PersistenceContext(unitName = "ebMS_MSH_PU")
     private EntityManager memEManager;
+
+    SEDLogger mlog = new SEDLogger(AbstractEBMSInterceptor.class);
 
     public AbstractEBMSInterceptor(String p) {
         super(p);
@@ -71,15 +71,23 @@ public abstract class AbstractEBMSInterceptor extends AbstractSoapInterceptor {
     }
 
     public UserTransaction getUserTransaction() {
+        long l = mlog.logStart();
         // for jetty 
         if (mutUTransaction == null) {
-            try {
-                InitialContext ic = new InitialContext();
 
+            try {
+
+                InitialContext ic = new InitialContext();
                 mutUTransaction = (UserTransaction) ic.lookup(getJNDIPrefix() + "jboss/UserTransaction");
 
             } catch (NamingException ex) {
-                Logger.getLogger(AbstractEBMSInterceptor.class.getName()).log(Level.SEVERE, null, ex);
+                mlog.logWarn(l, "Error discovering 'jboss/UserTransaction'. Try again with 'UserTransaction'. ERROR:" + ex.getMessage(), null);
+                try {
+                    InitialContext ic = new InitialContext();
+                    mutUTransaction = (UserTransaction) ic.lookup(getJNDIPrefix() + "UserTransaction");
+                } catch (NamingException e1) {
+                    mlog.logError(l, "Error discovering 'UserTransaction'." + ex.getExplanation(), e1);
+                }
             }
 
         }
@@ -97,21 +105,30 @@ public abstract class AbstractEBMSInterceptor extends AbstractSoapInterceptor {
 
     public EntityManager getEntityManager() {
         // for jetty 
+        long l = mlog.logStart();
+        
         if (memEManager == null) {
+            String jndi = getJNDIPrefix() + "ebMS_MSH_PU";
+            String jndi2 =  "__/ebMS_MSH_PU";
             try {
                 InitialContext ic = new InitialContext();
-                Context t = (Context) ic.lookup("java:comp");
-                memEManager = (EntityManager) ic.lookup(getJNDIPrefix() + "ebMS_MSH_PU");
+                memEManager = (EntityManager) ic.lookup(jndi);
 
             } catch (NamingException ex) {
-                Logger.getLogger(AbstractEBMSInterceptor.class.getName()).log(Level.SEVERE, null, ex);
+                mlog.logWarn(l, "Error discovering '"+jndi+"'. Try again with '"+jndi2+"'.", null);
+                try {
+                    InitialContext ic = new InitialContext();
+                    memEManager = (EntityManager) ic.lookup(jndi2);
+
+                } catch (NamingException ex1) {
+                    mlog.logError(l, "Error discovering '"+jndi2+"'." + ex.getExplanation(), ex1);
+                }
             }
 
         }
         return memEManager;
     }
 
-   
     @Override
     public abstract void handleMessage(SoapMessage t) throws Fault;
 
@@ -158,12 +175,9 @@ public abstract class AbstractEBMSInterceptor extends AbstractSoapInterceptor {
         }
 
     }
-    
-     public void serializeInMail(MSHInMail mail) {
 
-      
+    public void serializeInMail(MSHInMail mail) {
 
-       
         // --------------------
         // serialize data to db
         try {

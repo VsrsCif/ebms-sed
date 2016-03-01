@@ -33,6 +33,22 @@
     </context-param>
     
 
+    <!-- Define the JSF servlet (manages the request processing lifecycle 
+    forJavaServer) -->
+    <servlet>
+        <servlet-name>faces</servlet-name>
+        <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <!-- Map following files to the JSF servlet -->
+    <servlet-mapping>
+        <servlet-name>faces</servlet-name>
+        <url-pattern>*.xhtml</url-pattern>
+    </servlet-mapping>
+  
+  
+
     <listener>
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
     </listener>
@@ -41,9 +57,22 @@
         <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
+    <!--TODO try with  CXFNonSpringServlet in Main,jata
+    for different root contexts
+        http://localhost:8080/ebms-sed/ebms?wsdl  
+        http://localhost:8080/ebms-sed-ws/sed-mailbox?wsdl    -->
     <servlet-mapping>
         <servlet-name>RootCXFServlet</servlet-name>
-        <url-pattern>/*</url-pattern>
+        <url-pattern>/ebms-sed/*</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>RootCXFServlet1</servlet-name>
+        <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>RootCXFServlet1</servlet-name>
+        <url-pattern>/ebms-sed-ws/*</url-pattern>
     </servlet-mapping>
 
   
@@ -59,20 +88,7 @@
         <welcome-file>index.xhtml</welcome-file>
     </welcome-file-list>
 
-    <!-- Define the JSF servlet (manages the request processing lifecycle 
-    forJavaServer) -->
-    <servlet>
-        <servlet-name>faces</servlet-name>
-        <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
 
-    <!-- Map following files to the JSF servlet -->
-    <servlet-mapping>
-        <servlet-name>faces</servlet-name>
-        <url-pattern>/ebms-sed-webgui/*.xhtml</url-pattern>
-    </servlet-mapping>
-  
   
     <session-config>
         <session-timeout>60</session-timeout>

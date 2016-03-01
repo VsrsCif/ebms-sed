@@ -30,14 +30,20 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.transaction.UserTransaction;
+import javax.xml.ws.Endpoint;
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.cxf.Bus;
+import org.apache.cxf.BusFactory;
+import org.apache.cxf.transport.servlet.CXFNonSpringServlet;
 import org.apache.log4j.PropertyConfigurator;
 import org.eclipse.jetty.plus.jndi.Resource;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
+import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.webapp.Configuration.ClassList;
 import org.eclipse.jetty.webapp.WebAppContext;
+
 import org.sed.msh.jms.MSHQueueBean;
 import si.jrc.jetty.persistence.JettyUserTransaction;
 import si.sed.commons.utils.SEDLogger;
@@ -48,6 +54,7 @@ public class Main {
     protected static final String JNDI_CONNECTION_FACTORY = "ConnectionFactory";
     protected static final String JNDI_PREFIX_VALUE = "java:comp/env";
     protected static final String PU_NAME = "ebMS_PU";
+    protected static final String PU_MSH_NAME = "ebMS_MSH_PU";
 
     protected static final StandaloneSettings S_CONF;
 
@@ -92,6 +99,17 @@ public class Main {
         contexts.setHandlers(new Handler[]{webapp});
 
         server.setHandler(contexts);
+ /*
+        CXFNonSpringServlet cxf = new CXFNonSpringServlet();
+        ServletHolder servlet = new ServletHolder(cxf);
+        servlet.setName("soap");
+        servlet.setForcedPath("soap");
+        webapp.addServlet(servlet, "/soap/*");
+        
+         Bus bus = cxf.getBus();
+        SEDMailBox impl = new SEDMailBox();
+        Endpoint.publish("/Greeter", impl);
+*/
         server.start();
         server.join();
     }
@@ -117,6 +135,9 @@ public class Main {
             UserTransaction ut = new JettyUserTransaction(em.getTransaction());
             org.eclipse.jetty.plus.jndi.Resource myEntityManage = new org.eclipse.jetty.plus.jndi.Resource(webapp, PU_NAME,
                     em);
+           
+            org.eclipse.jetty.plus.jndi.Resource myEntityManage2 = new org.eclipse.jetty.plus.jndi.Resource(webapp,PU_MSH_NAME,
+                    em);
 
             org.eclipse.jetty.plus.jndi.Transaction transactionMgr = new org.eclipse.jetty.plus.jndi.Transaction(ut);
 
@@ -135,7 +156,6 @@ public class Main {
         p.put("java.naming.provider.url", "vm://localhost?broker.persistent=false");
         InitialContext context = new InitialContext(p);
         ActiveMQConnectionFactory connectionFactory = (ActiveMQConnectionFactory) context.lookup(JNDI_CONNECTION_FACTORY);
-        
 
         // Create a Connection
         Connection connection = connectionFactory.createConnection();
@@ -190,6 +210,5 @@ public class Main {
         }
 
     }
-
 
 }

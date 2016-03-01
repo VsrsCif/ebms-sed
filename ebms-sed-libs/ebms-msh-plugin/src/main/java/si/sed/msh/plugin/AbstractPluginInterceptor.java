@@ -104,7 +104,7 @@ public abstract class AbstractPluginInterceptor extends AbstractSoapInterceptor 
             try {
                 InitialContext ic = new InitialContext();
                 Context t = (Context) ic.lookup("java:comp");
-                memEManager = (EntityManager) ic.lookup(getJNDIPrefix() + "ebMS_PU");
+                memEManager = (EntityManager) ic.lookup(getJNDIPrefix() + "EBMS_MSH_PLUGIN_PU");
 
             } catch (NamingException ex) {
                 Logger.getLogger(AbstractPluginInterceptor.class.getName()).log(Level.SEVERE, null, ex);
