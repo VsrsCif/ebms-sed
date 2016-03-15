@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd" >
+<hibernate-mapping>    
+    <class name="org.sed.ebms.ebox.SEDBox"
+           table="SED_BOX">
+        <id name="BoxName" type="java.lang.String" >
+            <column name="sed_box" length="512" />            
+        </id>        
+        <property column="Active_Date_From" name="ActiveFromDate"  length="1024" type="java.util.Date" />       
+        <property column="Active_Date_To" name="ActiveToDate"  length="32" type="java.util.Date" />        
+    </class>    
+    <query name="SEDBox.getAll" ><![CDATA[SELECT p FROM SEDBox p]]></query>
+    <query name="SEDBox.getByName" ><![CDATA[SELECT p FROM SEDBox p where p.BoxName=:BoxName]]></query>
+
+</hibernate-mapping>

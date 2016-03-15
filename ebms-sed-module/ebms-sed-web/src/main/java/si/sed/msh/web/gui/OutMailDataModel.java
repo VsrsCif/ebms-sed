@@ -19,28 +19,29 @@ package si.sed.msh.web.gui;
 import java.math.BigInteger;
 import javax.persistence.EntityManager;
 import javax.transaction.UserTransaction;
-import org.sed.ebms.outbox.mail.OutMail;
+import org.msh.ebms.outbox.mail.MSHOutMail;
+
 
 /**
  *
  * @author Jože Rihtaršič
  */
-public class OutMailDataModel extends AbstractMailDataModel<OutMail> {
+public class OutMailDataModel extends AbstractMailDataModel<MSHOutMail> {
 
-    public OutMailDataModel(Class<OutMail> type, UserTransaction mutUTransaction, EntityManager memEManager) {
+    public OutMailDataModel(Class<MSHOutMail> type, UserTransaction mutUTransaction, EntityManager memEManager) {
         super(type, mutUTransaction, memEManager);
     }
 
     @Override
-    public Object getRowKey(OutMail inMail) {
+    public Object getRowKey(MSHOutMail inMail) {
         return inMail.getId();
     }
 
     @Override
-    public OutMail getRowData(String inMailId) {
+    public MSHOutMail getRowData(String inMailId) {
         BigInteger id = new BigInteger(inMailId);
 
-        for (OutMail player : getCurrentData()) {
+        for (MSHOutMail player : getCurrentData()) {
             if (id.equals(player.getId())) {
                 return player;
             }

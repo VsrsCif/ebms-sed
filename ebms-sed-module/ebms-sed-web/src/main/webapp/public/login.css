@@ -1,0 +1,38 @@
+
+
+.panelGridNoBorder .ui-panelgrid-even, .panelGridNoBorder .ui-panelgrid-odd, .panelGridNoBorder .ui-panelgrid-cell {
+    border-style: none;
+}
+
+.LoginTitle {
+    background:  url("first-page.svg")  no-repeat right top ;
+    background-position: 0 0;
+    font-family: Arial;
+    color:black;
+    font-size: 35px;
+    line-height: 50px;
+    height:  250px;
+    width: 850px;
+}
+
+.LoginPage {
+
+    padding: 20px 20px;
+    color: black;
+    text-shadow: 0 4px 4px rgba(0, 0, 0, .3);
+
+    font-size: 16px;
+    line-height: 20px;
+    letter-spacing: 1px;
+
+    background: #cdcfcf;
+    background: -webkit-linear-gradient(bottom right,  #cdcfcf, #bdbfcf);
+    background:    -moz-linear-gradient(left top,#cdcfcf, #bdbfcf);
+    background:     -ms-linear-gradient(left topt,#cdcfcf, #bdbfcf);
+    background:      -o-linear-gradient(left top,#cdcfcf, #bdbfcf);
+    background:         linear-gradient(left top,#cdcfcf, #bdbfcf);
+}
+
+.ui-icon-sed-ok {
+    background-image: url('ok.png')  !important;
+}

@@ -16,46 +16,59 @@
  */
 package si.sed.msh.web.gui;
 
+import java.io.IOException;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
+import javax.servlet.http.HttpSession;
 import org.primefaces.event.TabChangeEvent;
- 
+
 /**
  *
  * @author Jože Rihtaršič
  */
-
 @ViewScoped
-@ManagedBean(name = "MainWindow" )
+@ManagedBean(name = "MainWindow")
 public class MainWindow {
-   
-     
+
     String mstrWindowShow = AppConstant.S_PANEL_INBOX;
-    
-     public void onToolbarTabChange(TabChangeEvent event) {
-         mstrWindowShow=event.getTab().getId();
-         System.out.println("SEt render: " + event.getTab().getId()) ;
+
+    public void onToolbarTabChange(TabChangeEvent event) {
+        mstrWindowShow = event.getTab().getId();
+        System.out.println("Set render: " + event.getTab().getId());
         FacesMessage msg = new FacesMessage("Tab Changed", "Active Tab: " + event.getTab().getId());
         FacesContext.getCurrentInstance().addMessage(null, msg);
     }
-     
+
     public void onToolbarButtonAction(ActionEvent event) {
-         String res = (String) event.getComponent().getAttributes().get("panel");
-         System.out.println("Res:" + res);
-          mstrWindowShow = res;
+        String res = (String) event.getComponent().getAttributes().get("panel");
+        System.out.println("Res:" + res);
+        mstrWindowShow = res;
     }
-     
-     public String currentPanel(){
+
+    public String currentPanel() {
         return mstrWindowShow;
-     }
-     
-   
-     
+    }
+
     public void addMessage(String summary, String detail) {
         FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, summary, detail);
         FacesContext.getCurrentInstance().addMessage(null, message);
+    }
+
+    public void logout() {
+        System.out.println("LOGOUT");
+        try {
+            // FacesContext.getCurrentInstance().getExternalContext().invalidateSession();
+            //this.name = null;
+            FacesContext fc = FacesContext.getCurrentInstance();
+            HttpSession session = (HttpSession) fc.getExternalContext().getSession(false);
+            session.invalidate();
+            FacesContext.getCurrentInstance().getExternalContext().redirect("https://localhost:8080/");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        System.out.println("LOGOUT");
     }
 }

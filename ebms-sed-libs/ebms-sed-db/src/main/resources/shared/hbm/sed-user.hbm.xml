@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd" >
+<hibernate-mapping>    
+    <class name="org.sed.ebms.user.SEDUser"
+           table="SED_USER">
+        <id name="UserId" type="java.lang.String" >
+            <column name="userid" length="512" />            
+        </id>        
+        <property column="Active_Date_From" name="ActiveFromDate"  length="1024" type="java.util.Date" />       
+        <property column="Active_Date_To" name="ActiveToDate"  length="32" type="java.util.Date" />        
+    </class>    
+    <query name="SEDUser.getAll" ><![CDATA[SELECT p FROM SEDUser p]]></query>
+    <query name="SEDUser.getByUserId" ><![CDATA[SELECT p FROM SEDUser p where p.UserId=:id]]></query>
+
+</hibernate-mapping>

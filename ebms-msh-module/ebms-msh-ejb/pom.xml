@@ -33,6 +33,12 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>ebms-msh-db</artifactId>
+            <version>${project.version}</version>		
+        </dependency>
+        
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>ebms-msh-cxf</artifactId>
             <version>${project.version}</version>		
         </dependency>

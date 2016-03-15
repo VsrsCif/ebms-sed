@@ -11,7 +11,42 @@
     </composite:interface>
 
     <composite:implementation >
-        <p:fieldset legend="CUSTOM" style="margin-bottom:20px" >
+        <h1>Environment Properties</h1>
+        <p:dataTable var="sp" 
+                     value="#{ApplicationData.systemPropertyKeys}"
+                     rowKey="sp"
+                     style="padding: 0px; margin: 0px"
+                     scrollable="true" 
+                     scrollHeight="150"
+
+                     >
+            <p:column headerText="Key">
+                <h:outputText value="#{sp}" />
+            </p:column>
+            <p:column headerText="Value">
+                <h:outputText value="#{ApplicationData.getSystemPropertyValue(sp)}" />
+            </p:column>
+        </p:dataTable>
+        <h1>SED Settings</h1>
+        <p:dataTable var="sp" 
+                     value="#{ApplicationData.SEDPropertyKeys}"
+                     rowKey="sp"
+                     style="padding: 0px; margin: 0px"
+                     scrollable="true" 
+                     scrollHeight="150"
+
+                     >
+            <p:column headerText="Key">
+                <h:outputText value="#{sp}" />
+            </p:column>
+            <p:column headerText="Value">
+                <h:outputText value="#{ApplicationData.getSEDPropertyValue(sp)}" />
+            </p:column>
+        </p:dataTable>
+
+
+
+        <!-- p:fieldset legend="CUSTOM" style="margin-bottom:20px" >
             <table style=" width: 100%" >
                 <tr>
                     <td align="right" width="120">Home path</td> 
@@ -33,17 +68,16 @@
                 </tr>
             </table>
 
-        </p:fieldset>
+        </p:fieldset -->
 
-        <p:fieldset legend="Plugins" style="margin-bottom:20px" >
-            <p:dataList value="#{ApplicationData.plugins}" var="plugin">
-                <f:facet name="header">
-                    Plugins
-                </f:facet>
-                #{plugin}
-            </p:dataList>
+        <h1>SED Plugins</h1>
+        <p:dataList value="#{ApplicationData.plugins}" var="plugin">
+            <f:facet name="header">
+                Plugins
+            </f:facet>
+            #{plugin}
+        </p:dataList>
 
-        </p:fieldset>
 
     </composite:implementation>
 

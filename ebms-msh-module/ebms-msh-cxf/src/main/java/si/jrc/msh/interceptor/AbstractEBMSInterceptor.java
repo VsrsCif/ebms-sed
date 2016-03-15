@@ -16,13 +16,8 @@
  */
 package si.jrc.msh.interceptor;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.annotation.Resource;
 
-import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.persistence.EntityManager;
@@ -36,12 +31,10 @@ import javax.transaction.UserTransaction;
 import org.apache.cxf.binding.soap.SoapMessage;
 import org.apache.cxf.binding.soap.interceptor.AbstractSoapInterceptor;
 import org.apache.cxf.interceptor.Fault;
-import org.apache.cxf.message.Attachment;
 import org.msh.ebms.inbox.event.MSHInEvent;
 import org.msh.ebms.inbox.mail.MSHInMail;
 import org.msh.ebms.outbox.event.MSHOutEvent;
 import org.msh.ebms.outbox.mail.MSHOutMail;
-import si.sed.commons.SEDInboxMailStatus;
 import si.sed.commons.SEDSystemProperties;
 import si.sed.commons.utils.SEDLogger;
 

@@ -30,6 +30,7 @@ public class SEDSystemProperties {
      * </p>
      */
     public static final String SYS_PROP_HOME_DIR = "sed.home";
+    public static final String SYS_PROP_HOME_DIR_DEF = "sed-home";
 
     /**
      * System property for pmode configuration file.
@@ -65,11 +66,21 @@ public class SEDSystemProperties {
      * Default value for plugin folder name.
      *
      * <p>
-     * Def plugin folder name form plugins;
+     * Def plugin folder name for plugins;
      * ${SYS_PROP_HOME_DIR}/plugins
      * </p>
      */
     public static final String SYS_PROP_FOLDER_STORAGE_DEF = "storage";
+    
+     /**
+     * Default value for plugin folder name.
+     *
+     * <p>
+     * Def security folder name for trunstore and keystore ;
+     * ${SYS_PROP_HOME_DIR}/security
+     * </p>
+     */
+    public static final String SYS_PROP_FOLDER_SECURITY_DEF = "security";
 
     /**
      * Default value for keystore and trustore configuration file name.

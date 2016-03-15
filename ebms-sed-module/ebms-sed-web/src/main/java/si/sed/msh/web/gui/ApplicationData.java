@@ -17,11 +17,19 @@
 package si.sed.msh.web.gui;
 
 import java.io.File;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.SortedSet;
+import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
+import org.sed.ebms.ebox.SEDBox;
+import org.sed.ebms.user.SEDUser;
 import si.sed.commons.SEDSystemProperties;
+import si.sed.commons.utils.DBSettings;
 
 /**
  *
@@ -31,18 +39,22 @@ import si.sed.commons.SEDSystemProperties;
 @ManagedBean(name = "ApplicationData")
 public class ApplicationData {
 
+    @EJB
+    private DBSettings mdbSettings;
+
     public String getHomeFolder() {
         return System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR);
     }
 
     public String getPModeFileName() {
-        return System.getProperty(SEDSystemProperties.SYS_PROP_PMODE, SEDSystemProperties.SYS_PROP_PMODE_DEF);
+        return mdbSettings.getPModeFileName();
     }
 
     public String getSecurityFileName() {
         return SEDSystemProperties.SYS_PROP_CERT_DEF;
     }
-     public String getKeyPasswordFilename() {
+
+    public String getKeyPasswordFilename() {
         return SEDSystemProperties.SYS_KEY_PASSWD_DEF;
     }
 
@@ -65,6 +77,40 @@ public class ApplicationData {
             }
         }
         return plLSt;
+    }
+
+    public List<String> getSystemPropertyKeys() {
+        Set<String> s = System.getProperties().stringPropertyNames();
+        List<String> lst = new ArrayList<>(s);
+        Collections.sort(lst);
+        return lst;
+
+    }
+
+    public String getSystemPropertyValue(String strVal) {
+        return System.getProperty(strVal);
+
+    }
+
+    public List<String> getSEDPropertyKeys() {
+
+        Set<String> s = mdbSettings.getProperties().stringPropertyNames();
+        List<String> lst = new ArrayList<>(s);
+        Collections.sort(lst);
+        return lst;
+
+    }
+
+    public String getSEDPropertyValue(String strVal) {
+        return mdbSettings.getProperties().getProperty(strVal);
+
+    }
+    
+    public List<SEDBox> getSEDBoxes(){
+        return mdbSettings.getSEDBoxes();
+    }
+     public List<SEDUser> getSEDUsers(){
+        return mdbSettings.getSEDUsers();
     }
 
 }

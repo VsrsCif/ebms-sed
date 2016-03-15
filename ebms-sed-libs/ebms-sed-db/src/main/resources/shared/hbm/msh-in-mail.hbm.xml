@@ -2,7 +2,7 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd" >
 <hibernate-mapping>
     
-    <class name="org.sed.ebms.inbox.mail.InMail"
+    <class name="org.msh.ebms.inbox.mail.MSHInMail"
            table="SED_INBOX">
         <id name="Id" type="java.math.BigInteger" >
             <column name="ID" scale="0" />
@@ -10,8 +10,8 @@
                 <param name="sequence">SEQ_SED_INBOX</param>
             </generator>
         </id>
-        <property column="MSG_ID" name="messageId"  length="64" type="java.lang.String" index="Idx_msg_id" />
-        <property column="SENDER_MSG_ID" name="senderMessageId"  length="64" type="java.lang.String"  index="Idx_sender_msg_id" />
+        <property column="MSG_ID" name="MessageId"  length="64" type="java.lang.String" index="Idx_msg_id" />
+        <property column="SENDER_MSG_ID" name="SenderMessageId"  length="64" type="java.lang.String"  index="Idx_sender_msg_id" />
         <property column="SERVICE" name="Service"  length="64" type="java.lang.String" />
         <property column="ACTION" name="Action"  length="64" type="java.lang.String" />
         <property column="CONV_Id" name="ConversationId"  length="64" type="java.lang.String" index="Idx_conv_id"/>
@@ -28,25 +28,25 @@
         <property column="DATE_RECEIVED" name="ReceivedDate"   type="java.util.Date" index="Idx_date_received" />
         <property column="DATE_DELIVERED" name="DeliveredDate"  type="java.util.Date" index="Idx_date_delivered" />
         
-        <component name="InProperties" class="org.sed.ebms.inbox.property.InProperties">
-            <bag name="inProperties"  access="field" cascade="all" lazy="false" order-by="Id asc" >
+        <component name="MSHInProperties" class="org.msh.ebms.inbox.property.MSHInProperties">
+            <bag name="mshInProperties"  access="field" cascade="all" lazy="false" order-by="Id asc" >
                 <key not-null="true">
                     <column name="MAIL_ID" scale="0" />
                 </key>
-                <one-to-many class="org.sed.ebms.inbox.property.InProperty" />
+                <one-to-many class="org.msh.ebms.inbox.property.MSHInProperty" />
             </bag>
         </component>
-        <component name="InPayload" class="org.sed.ebms.inbox.payload.InPayload">
-            <bag name="inParts"  access="field" cascade="all" lazy="false" order-by="Id asc" >
+        <component name="MSHInPayload" class="org.msh.ebms.inbox.payload.MSHInPayload">
+            <bag name="mshInParts"  access="field" cascade="all" lazy="false" order-by="Id asc" >
                 <key not-null="true">
                     <column name="MAIL_ID" scale="0" />
                 </key>
-                <one-to-many class="org.sed.ebms.inbox.payload.InPart" />
+                <one-to-many class="org.msh.ebms.inbox.payload.MSHInPart" />
             </bag>
         </component>
     </class>    
     
-    <class name="org.sed.ebms.inbox.property.InProperty" table="SED_INBOX_PROPERTY">
+    <class name="org.msh.ebms.inbox.property.MSHInProperty" table="SED_INBOX_PROPERTY">
         <id name="Id" type="java.math.BigInteger">
             <column name="ID" scale="0" />
             <generator class="sequence">
@@ -57,11 +57,13 @@
         <property column="VALUE" name="Value" type="java.lang.String" length="512" />         
     </class>
     
-    <query name="org.sed.ebms.inbox.mail.InMail.getList" ><![CDATA[SELECT p FROM org.sed.ebms.inbox.mail.InMail p ]]></query>
+    <query name="MSHInMail.getById" ><![CDATA[SELECT p FROM MSHInMail p WHERE p.Id = :id]]></query>
+    <query name="MSHInMail.getByConvIdAndAction" ><![CDATA[SELECT p FROM MSHInMail p WHERE p.ConversationId = :convId and p.Action = :action]]></query>
     
-    <query name="org.sed.ebms.inbox.mail.InMail.getByIdAndReceiverBox" >
-        <![CDATA[SELECT p FROM org.sed.ebms.inbox.mail.InMail p where Id=:mailId and ReceiverEBox=:receiverEBox]]>
+       <query name="org.msh.ebms.inbox.mail.MSHInMail.getList" ><![CDATA[SELECT p FROM MSHInMail p ]]></query>
+    
+    <query name="org.msh.ebms.inbox.mail.MSHInMail.getByIdAndReceiverBox" >
+        <![CDATA[SELECT p FROM MSHInMail p where Id=:mailId and ReceiverEBox=:receiverEBox]]>
     </query>
-    
     
 </hibernate-mapping>

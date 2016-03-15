@@ -75,6 +75,10 @@
                         <wsdlFile>sed-mailbox.wsdl</wsdlFile>
                     </wsdlFiles>                    
                     <sourceDestDir>${basedir}/src/main/java/</sourceDestDir>
+                    <vmArgs>
+                        <vmArg>-Djavax.xml.accessExternalDTD=all</vmArg>
+                        <vmArg>-Djavax.xml.accessExternalSchema=all</vmArg>
+                    </vmArgs>
                 </configuration>
             </plugin>
             <plugin>

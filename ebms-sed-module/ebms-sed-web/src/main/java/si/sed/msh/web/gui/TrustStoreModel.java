@@ -21,8 +21,18 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
+import javax.annotation.PostConstruct;
+import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
+import org.msh.ebms.cert.MSHCertStore;
+import org.msh.ebms.cert.MSHCertificate;
+import org.primefaces.event.SelectEvent;
+import org.primefaces.event.UnselectEvent;
+import org.primefaces.model.DefaultTreeNode;
+import org.primefaces.model.TreeNode;
+import si.sed.commons.utils.DBCertStores;
 import si.sed.commons.utils.sec.CertificateUtils;
 import si.sed.msh.web.gui.entities.SEDCertificate;
 
@@ -34,9 +44,33 @@ import si.sed.msh.web.gui.entities.SEDCertificate;
 @ViewScoped
 @ManagedBean(name = "TrustStoreModel")
 public class TrustStoreModel {
+    
+    @EJB
+    DBCertStores mCertStores; 
+    
+    MSHCertStore currentCertStore = null;
 
     CertificateUtils mce = CertificateUtils.getInstance();
 
+    
+    public List<MSHCertStore> getDBCertStores(){
+        return mCertStores.getCertStores();
+    }
+    
+    public MSHCertStore getCurrentCertStore(){
+        return currentCertStore;
+    }
+    public void setCurrentCertStore(MSHCertStore certStore){
+        currentCertStore = certStore;
+    }
+    
+     public void onRowSelect(SelectEvent event) {
+        setCurrentCertStore((MSHCertStore) event.getObject());
+    }
+
+    public void onRowUnselect(UnselectEvent event) {
+        setCurrentCertStore(null);
+    }
     
 
     Properties msecProp = null;

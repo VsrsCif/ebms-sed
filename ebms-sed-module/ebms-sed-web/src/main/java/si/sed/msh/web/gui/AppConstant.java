@@ -32,6 +32,9 @@ public class AppConstant {
     public static final String S_PANEL_SETT_CUSTOM = "PANEL_SETT_CUSTOM";
     public static final String S_PANEL_SETT_CERTS = "PANEL_SETT_CERTS";
     public static final String S_PANEL_SETT_PMODE = "PANEL_SETT_PMODE";
+    public static final String S_PANEL_ADMIN_USERS = "PANEL_ADMIN_USERS";
+    public static final String S_PANEL_ADMIN_EBOXES = "PANEL_ADMIN_EBOXES";
+    
 
     public  String getS_PANEL_INBOX() {
         return S_PANEL_INBOX;
@@ -51,6 +54,13 @@ public class AppConstant {
 
     public  String getS_PANEL_SETT_PMODE() {
         return S_PANEL_SETT_PMODE;
+    }
+    
+    public  String getS_PANEL_ADMIN_USERS() {
+        return S_PANEL_ADMIN_USERS;
+    }
+    public  String getS_PANEL_ADMIN_EBOXES() {
+        return S_PANEL_ADMIN_EBOXES;
     }
     
     

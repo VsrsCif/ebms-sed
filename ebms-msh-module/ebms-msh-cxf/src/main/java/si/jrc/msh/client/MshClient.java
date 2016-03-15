@@ -42,6 +42,7 @@ import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.jaxws.DispatchImpl;
 import org.apache.cxf.transport.http.HTTPConduit;
 import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
+import org.apache.cxf.transports.http.configuration.ProxyServerType;
 import org.msh.ebms.outbox.mail.MSHOutMail;
 import org.msh.svev.pmode.PMode;
 import org.msh.svev.pmode.Protocol;
@@ -145,6 +146,7 @@ public class MshClient {
             cxfClient.getOutInterceptors().add(new EBMSOutInterceptor());
             cxfClient.getOutInterceptors().add(new EBMSLogOutInterceptor());
             if(prt.getTLS()!=null) {
+                mlog.log("Dispatching mail using pmode: "+pmode.getId()+" Set TLS" );
                 setupTLS(cxfClient , prt.getTLS());
             }
 
@@ -153,6 +155,14 @@ public class MshClient {
             httpClientPolicy.setConnectionTimeout(prt.getAddress().getConnectionTimeout());
             httpClientPolicy.setAllowChunking(prt.getAddress().getChunked());
             httpClientPolicy.setReceiveTimeout(prt.getAddress().getReceiveTimeout());
+            
+            if (prt.getProxy()!=null) {
+                mlog.log("Dispatching mail using pmode: "+pmode.getId()+" Set proxy: " + prt.getProxy().getHost() +":" + prt.getProxy().getPort());
+                httpClientPolicy.setProxyServer(prt.getProxy().getHost());
+                httpClientPolicy.setProxyServerPort(prt.getProxy().getPort());
+                httpClientPolicy.setProxyServerType(ProxyServerType.HTTP);
+            }
+            
 
             HTTPConduit http = (HTTPConduit) cxfClient.getConduit();
             http.setClient(httpClientPolicy);
@@ -165,24 +175,38 @@ public class MshClient {
         return dispSOAPMsg;
     }
 
-    private static void setupTLS(Client client, Protocol.TLS tls)
+    private  void setupTLS(Client client, Protocol.TLS tls)
             throws FileNotFoundException, IOException, GeneralSecurityException {
         
         HTTPConduit httpConduit = (HTTPConduit) client.getConduit();
+        
 
-        TLSClientParameters tlsCP = new TLSClientParameters();
+        TLSClientParameters tlsCP = null;
 
-        KeyStore keyStore = KeyStore.getInstance(tls.getKeyStoreType());
-        keyStore.load(new FileInputStream(Utils.replaceProperties(tls.getKeyStorePath()) ), tls.getKeyStorePassword().toCharArray());
-        KeyManager[] myKeyManagers = getKeyManagers(keyStore, tls.getKeyPassword());
-        tlsCP.setKeyManagers(myKeyManagers);
+        if (tls.getKeyStorePath()!= null) {
+            mlog.log("\t Set keystore:" + tls.getKeyStorePath() );
+            tlsCP = tlsCP==null?new TLSClientParameters():tlsCP;
+            KeyStore keyStore = KeyStore.getInstance(tls.getKeyStoreType());
+            keyStore.load(new FileInputStream(Utils.replaceProperties(tls.getKeyStorePath()) ), tls.getKeyStorePassword().toCharArray());
+            KeyManager[] myKeyManagers = getKeyManagers(keyStore, tls.getKeyPassword());
+            tlsCP.setKeyManagers(myKeyManagers);
+        }
 
-        KeyStore trustStore = KeyStore.getInstance(tls.getTrustStoreType());
-        trustStore.load(new FileInputStream(Utils.replaceProperties(tls.getTrustStorePath())), tls.getTrustStorePassword().toCharArray());
-        TrustManager[] myTrustStoreKeyManagers = getTrustManagers(trustStore);
-        tlsCP.setTrustManagers(myTrustStoreKeyManagers);
+        if (tls.getTrustStoreType()!= null) {
+            mlog.log("\t Set truststore:" + tls.getTrustStoreType() );
+            tlsCP = tlsCP==null?new TLSClientParameters():tlsCP;
+            KeyStore trustStore = KeyStore.getInstance(tls.getTrustStoreType());
+            trustStore.load(new FileInputStream(Utils.replaceProperties(tls.getTrustStorePath())), tls.getTrustStorePassword().toCharArray());
+            TrustManager[] myTrustStoreKeyManagers = getTrustManagers(trustStore);
+            tlsCP.setTrustManagers(myTrustStoreKeyManagers);
+            
+            tlsCP.setDisableCNCheck(true);
+        }
 
-        httpConduit.setTlsClientParameters(tlsCP);
+        if (tlsCP!= null) {
+            mlog.log("\t TLS is setted:" );
+            httpConduit.setTlsClientParameters(tlsCP);
+        }
     }
 
     private static TrustManager[] getTrustManagers(KeyStore trustStore)

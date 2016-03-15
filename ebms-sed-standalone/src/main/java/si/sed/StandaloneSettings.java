@@ -7,13 +7,13 @@ package si.sed;
 
 import java.io.File;
 import si.sed.commons.SEDSystemProperties;
-import si.sed.commons.utils.ASettings;
+import si.sed.commons.utils.abst.AFileSettings;
 
 /**
  *
  * @author sluzba
  */
-public class StandaloneSettings extends ASettings {
+public class StandaloneSettings extends AFileSettings {
 
     private static final String S_PROP_PORT = "sed.port";
     private static final String S_PROP_HOME = "sed.home";

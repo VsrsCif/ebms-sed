@@ -124,7 +124,7 @@
                             <h:outputText value="Payloads" />
                         </f:facet>
                             <p:outputPanel id="OutMailDocuments" style="text-align:center;">
-                                <p:dataTable var="plpart" value="#{OutMailDataView.currentMail.outPayload.outParts}">
+                                <p:dataTable var="plpart" value="#{OutMailDataView.currentMail.MSHOutPayload.MSHOutParts}">
                                       <p:column width="60" headerText="Id">
                                     <h:outputText value="#{plpart.id}" />
                                 </p:column>
@@ -153,7 +153,10 @@
                             <h:outputText value="Events" />                                 
                         </f:facet>
                     <p:outputPanel id="OutMailEvents" style="text-align:center;">
-                        <p:dataTable var="mailEvents" value="#{OutMailDataView.mailEvents}">
+                        <p:dataTable var="mailEvents" 
+                                     value="#{OutMailDataView.mailEvents}"
+                                     scrollable="true"
+                                       scrollHeight="135">
                                     <p:column width="60" headerText="Id">
                                         <h:outputText value="#{mailEvents.id}" />
                                     </p:column>

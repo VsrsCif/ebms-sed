@@ -15,38 +15,52 @@
 
     <h:body>
         <h:form id="forms" >
+
             <p:growl id="messages" showDetail="true" />
             <!-- main window -->    
             <p:layout style="min-width:400px;min-height:400px;"  fullPage="true"  >
                 <!-- toolbar -->    
-                <!-- p:layoutUnit position="north" resizable="false" gutter="0" style="padding: 0px; margin: 0px" >
-                    
-                    <p:toolbar style="padding: 0px; margin: 0px">
+                <p:layoutUnit position="north" resizable="false" gutter="0" style="padding: 0px; margin: 0px" >
+
+                    <p:toolbar style="padding: 0px; margin: 0px; height: 28px; vertical-align: middle;">
                         <f:facet name="left">
-                            <p:commandButton type="button" value="Izhod" icon="ui-icon-sed-exit"  />
+                            <p:commandButton id="btnExit"  
+                                             value="Exit" 
+                                             icon="ui-icon-sed-exit"
+                                             actionListener="#{loginManager.logout()}"
+                                             styleClass="toolbar-Button"/>
+                            <p:commandButton id="btnRefresh"  
+                                             value="Refresh" 
+                                             icon="ui-icon-sed-refresh"
+                                             styleClass="toolbar-Button"
+                                             actionListener="#{loginManager.logout()}" />
+
+
                             <span class="ui-separator">
                                 <span class="ui-icon ui-icon-grip-dotted-vertical " />
                             </span>
-
-                            <p:commandButton onclick="PF('OutMailDataMain').toggle('south')" value="Show/Hide Panel" 
-                                             type="button"
-                                             icon="ui-icon-sed-showHidePanel" 
-                                             />
-
+                            <p:commandButton value="Resend" styleClass="toolbar-Button" />
+                            <p:commandButton value="Delete" styleClass="toolbar-Button" />
                         </f:facet>
 
-                        <f:facet name="right">
-                            <p:menuButton value="Options">
-                                <p:menuitem value="Save" actionListener="#{mainWindow.save}" update="messages" icon="ui-icon-disk" />
-                                <p:menuitem value="Update" actionListener="#{mainWindow.update}" update="messages" icon="ui-icon-arrowrefresh-1-w" />
-                                <p:menuitem value="Delete" actionListener="#{mainWindow.delete}" ajax="false" icon="ui-icon-close" />
-                                <p:menuitem value="Homepage" url="http://www.primefaces.org" icon="ui-icon-extlink" />
-                            </p:menuButton>
+                        <f:facet name="right"  >
+                            
+                            <p:outputLabel value="User:" /> <b>#{loginManager.user}</b>
+                             <span class="ui-separator">
+                                <span class="ui-icon ui-icon-grip-dotted-vertical " />
+                            </span>
+                            <p:outputLabel for="ebox" value="SED-Box: " />
+                            <p:selectOneMenu id="ebox" value="#{loginManager.user.currentSEDBox}" style="width:150px">
+                                <f:selectItem itemValue="" noSelectionOption="false" />
+                                <f:selectItems value="#{loginManager.user.userSedBoxes}" />
+                            </p:selectOneMenu>
+                            
                         </f:facet>
 
                     </p:toolbar>
-                </p:layoutUnit-->
+                </p:layoutUnit>
                 <p:layoutUnit  position="center"  gutter="0" >
+
                     <h:panelGroup id="MainPanel">
 
                         <sui:mail-table-in id="InMailPanel" rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_INBOX)  }"  />
@@ -54,6 +68,9 @@
                         <sui:settings-keystore id="SettingsCustomPanel" rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_SETT_CERTS)}"  />
                         <sui:settings-custom id="SettingsCertPanel" rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_SETT_CUSTOM)}"  />
                         <sui:settings-pmode id="SettingsPModes" rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_SETT_PMODE)}"  />
+                        
+                        <sui:settings-users id="SettingsUsers" rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_ADMIN_USERS)}"  />
+                        <sui:settings-eboxes id="SettingsSEDBoxes" rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_ADMIN_EBOXES)}"  />
                     </h:panelGroup>
                 </p:layoutUnit>
                 <p:layoutUnit position="south" resizable="false" size="20" minSize="20" maxSize="200">
@@ -110,9 +127,9 @@
                                     <f:attribute name="status" value="DELIVERED" />
                                 </p:menuitem>
                             </p:menu>
-
                         </p:tab>
-                        <p:tab id="PANEL_SETT_PMODE">
+                        
+                        <!-- p:tab id="PANEL_SETT_PMODE">
                             <f:facet name="title">
                                 <h:graphicImage value="resources/images/settings32.png" width="22" height="22" />
                                 <h:outputText value="P-Modes" />                                 
@@ -133,7 +150,7 @@
 
                             </p:dataTable>
 
-                        </p:tab>
+                        </p:tab -->
 
                         <p:tab id="PANEL_SETT_CUSTOM">
                             <f:facet name="title">
@@ -146,6 +163,12 @@
                                 </p:menuitem>
                                 <p:menuitem value="Certificates"  actionListener="#{MainWindow.onToolbarButtonAction}"  update="forms:MainPanel">
                                     <f:attribute name="panel" value="PANEL_SETT_CERTS" />
+                                </p:menuitem>
+                                <p:menuitem value="Users"  actionListener="#{MainWindow.onToolbarButtonAction}"  update="forms:MainPanel">
+                                    <f:attribute name="panel" value="PANEL_ADMIN_USERS" />
+                                </p:menuitem>
+                                <p:menuitem value="SED-BOXES"  actionListener="#{MainWindow.onToolbarButtonAction}"  update="forms:MainPanel">
+                                    <f:attribute name="panel" value="PANEL_ADMIN_EBOXES" />
                                 </p:menuitem>
                             </p:menu>
 

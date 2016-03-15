@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd" >
+<hibernate-mapping>    
+    <class name="org.msh.ebms.cert.MSHCertStore"
+           table="SED_CERT_STORE">
+        <id name="Id" type="java.math.BigInteger" >
+            <column name="ID" scale="0" />
+            <generator class="sequence">
+                <param name="sequence">SEQ_SED_CERT_STORE</param>
+            </generator>
+        </id>        
+        <property column="PATH" name="FilePath"  length="512" type="java.lang.String" />       
+        <property column="TYPE" name="Type"  length="10" type="java.lang.String" />
+        <property column="PASSWORD" name="Password"  length="64" type="java.lang.String" />
+        <bag name="mshCertificates"  access="field" cascade="all" lazy="false" order-by="Id asc" >
+            <key not-null="true">
+                <column name="STORE_ID" scale="0" />
+            </key>
+            <one-to-many class="org.msh.ebms.cert.MSHCertificate" />
+        </bag>
+    </class>    
+    
+  <class name="org.msh.ebms.cert.MSHCertificate" table="SED_CERTIFICATE">
+        <id name="Id" type="java.math.BigInteger">
+            <column name="ID" scale="0" />
+            <generator class="sequence">
+                <param name="sequence">SEQ_SED_CERTIFICATE</param>
+            </generator>
+        </id>		
+        <property column="ALIAS" name="Alias" type="java.lang.String"  length="128"  />
+        <property column="KEY_PASSWORD" name="KeyPassword" type="java.lang.String" length="64" />         
+    </class>
+
+    <query name="MSHCertStore.getAll" ><![CDATA[SELECT p FROM MSHCertStore p]]></query>
+</hibernate-mapping>

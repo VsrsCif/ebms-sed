@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        
+        <groupId>si.vsrs.cif.sed</groupId>
+        <artifactId>ebms-sed</artifactId>
+        <version>1.0</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>ebms-msh-db</artifactId>
+    <name>ebms-msh-db</name>
+    <description>Project contains "JPA tranformation" from jaxb - entities (ebms-sed-commons) to DB entities (hibernate hbm-s)    </description>
+
+    <licenses>
+        <license>
+            <name>European Union Public Licence (EUPL)</name>
+            <url>https://joinup.ec.europa.eu/software/page/eupl</url>
+            <distribution>repo</distribution>
+            <comments>European Free/Open Source Software (F/OSS) licence</comments>
+        </license>
+    </licenses>
+    <organization>
+        <name>Supreme Court Republic of Slovenia</name>
+        <url>http://www.sodisce.si/</url>
+    </organization>
+    
+    <developers>
+        <developer>
+            <id>jrc</id>
+            <name>Jože Rihtaršič</name>
+            <email>joze.rihtarsic@sodisce.si</email>
+            <organization>Supreme Court Republic of Slovenia</organization>
+            <organizationUrl>http://www.sodisce.si/</organizationUrl>
+            <roles>
+                <role>architect</role>
+                <role>developer</role>
+            </roles>
+        </developer>
+    </developers>
+
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>ebms-sed-commons</artifactId>
+            <version>${project.version}</version>		
+        </dependency>
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>            
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+</project>

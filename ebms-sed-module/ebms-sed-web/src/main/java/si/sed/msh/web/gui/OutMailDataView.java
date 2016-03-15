@@ -26,12 +26,13 @@ import java.util.logging.Logger;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.persistence.TypedQuery;
+import org.msh.ebms.outbox.event.MSHOutEvent;
+import org.msh.ebms.outbox.mail.MSHOutMail;
+import org.msh.ebms.outbox.payload.MSHOutPart;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.StreamedContent;
-import org.sed.ebms.outbox.event.OutEvent;
-import org.sed.ebms.outbox.mail.OutMail;
-import org.sed.ebms.outbox.payload.OutPart;
+
 
 import si.sed.commons.SEDOutboxMailStatus;
 import si.sed.commons.exception.StorageException;
@@ -44,15 +45,15 @@ import si.sed.commons.utils.StorageUtils;
  */
 @ViewScoped
 @ManagedBean(name = "OutMailDataView")
-public class OutMailDataView extends AbstractMailView<OutMail, OutEvent> implements Serializable {
+public class OutMailDataView extends AbstractMailView<MSHOutMail, MSHOutEvent> implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @Override
-    public LazyDataModel<OutMail> getMailList() {
+    public LazyDataModel<MSHOutMail> getMailList() {
         System.out.println("InMailDataView: getMailList");
         if (mInMailModel == null) {
-            mInMailModel = new OutMailDataModel(OutMail.class, getUserTransaction(), getEntityManager());
+            mInMailModel = new OutMailDataModel(MSHOutMail.class, getUserTransaction(), getEntityManager());
         }
         return mInMailModel;
     }
@@ -65,7 +66,7 @@ public class OutMailDataView extends AbstractMailView<OutMail, OutEvent> impleme
     @Override
     public void updateEventList() {
         if (this.mMail != null) {
-            TypedQuery tq = memEManager.createNamedQuery("org.sed.ebms.outbox.event.OutEvent.getMailEventList", OutEvent.class);
+            TypedQuery tq = memEManager.createNamedQuery("org.msh.ebms.outbox.event.MSHOutEvent.getMailEventList", MSHOutEvent.class);
             tq.setParameter("mailId", this.mMail.getId());
             this.mlstMailEvents = tq.getResultList();
         } else {
@@ -75,13 +76,13 @@ public class OutMailDataView extends AbstractMailView<OutMail, OutEvent> impleme
 
     @Override
     public StreamedContent getFile(BigInteger bi) {
-        OutPart part = null;
+        MSHOutPart part = null;
 
-        if (mMail == null || mMail.getOutPayload() == null || mMail.getOutPayload().getOutParts().isEmpty()) {
+        if (mMail == null || mMail.getMSHOutPayload() == null || mMail.getMSHOutPayload().getMSHOutParts().isEmpty()) {
             return null;
         }
 
-        for (OutPart ip : mMail.getOutPayload().getOutParts()) {
+        for (MSHOutPart ip : mMail.getMSHOutPayload().getMSHOutParts()) {
             if (ip.getId().equals(bi)) {
                 part = ip;
                 break;
@@ -99,143 +100,3 @@ public class OutMailDataView extends AbstractMailView<OutMail, OutEvent> impleme
     }
 
 }
-
-
-/*
-public class OutMailDataView implements Serializable {
-
-    
-    private static final long serialVersionUID = 1L;    
-    private static final OutMail S_EMPTY_MAIL = new OutMail();
-    private static final SimpleDateFormat SDF_DDMMYYY_HH_MM_SS = new SimpleDateFormat("dd.MM.YYYY HH:mm:ss");
-    SEDLogger mlog = new SEDLogger(OutMailDataView.class);
-
-    private int mTabActiveIndex = 0;
-
-    @Resource
-    protected UserTransaction mutUTransaction;
-
-    @PersistenceContext(unitName = "ebMS_PU", name = "ebMS_PU")
-    protected EntityManager memEManager;
-
-    private OutMailDataModel moutMailModel = null;
-    private OutMail moutMail;
-    private List<OutEvent> mCurretntoutMailEvents;
-
-    public LazyDataModel<OutMail> getMailList() {
-        long l = mlog.getTime();
-        if (moutMailModel == null) {
-            moutMailModel = new OutMailDataModel(OutMail.class,  getUserTransaction(), getEntityManager());
-        }
-        mlog.logEnd(l);
-        return moutMailModel;
-    }
-
-    public OutMail getOutMail() {
-        return moutMail == null ? S_EMPTY_MAIL : moutMail;
-    }
-
-    public void setOutMail(OutMail outMail) {
-        long l = mlog.getTime();
-        this.moutMail = outMail;
-        if (this.moutMail != null) {
-            TypedQuery tq = memEManager.createNamedQuery("org.sed.ebms.outbox.event.OutEvent.getMailEventList", OutEvent.class);
-            tq.setParameter("mailId", outMail.getId());
-            mCurretntoutMailEvents = tq.getResultList();
-        } else {
-            mCurretntoutMailEvents = null;
-        }
-        mlog.logEnd(l);
-
-    }
-
-    public List<OutEvent> getCurretntOutMailEvents() {
-        return mCurretntoutMailEvents;
-    }
-
-    public void setCurretntoutMailEvents(List<OutEvent> mCurretntoutMailEvents) {
-        this.mCurretntoutMailEvents = mCurretntoutMailEvents;
-    }
-
-    public void onRowSelect(SelectEvent event) {
-        setOutMail((OutMail) event.getObject());
-        //FacesMessage msg = new FacesMessage("outMail Selected", ((OutMail) event.getObject()).getId().toString());
-        //FacesContext.getCurrentInstance().addMessage(null, msg);
-    }
-
-    public void onRowUnselect(UnselectEvent event) {
-        setOutMail(null);
-        //FacesMessage msg = new FacesMessage("outMail Unselected", ((OutMail) event.getObject()).getId().toString());
-        //FacesContext.getCurrentInstance().addMessage(null, msg);
-    }
-
-    public String getStatusColor(String status) {
-        return SEDOutboxMailStatus.getColor(status);
-
-    }
-    public String formatDate(Date date) {
-        return SDF_DDMMYYY_HH_MM_SS.format(date);
-
-    }
-
-    public int rowIndex(OutMail om) {
-        //return  moutMailModel.rowIndex(om);
-        return moutMailModel.getRowIndex();
-
-    }
-
-    public void setTabActiveIndex(int itindex) {
-        mTabActiveIndex = itindex;        
-    }
-
-    public int getTabActiveIndex() {
-        return mTabActiveIndex;
-    }
-
-    public void onTabChange(TabChangeEvent event) {
-        TabView tv = (TabView) event.getComponent();
-        mTabActiveIndex = tv.getActiveIndex();
-    }
-    
-     public void search(ActionEvent event) {
-         String res = (String) event.getComponent().getAttributes().get("status");         
-    }
-     
-     private EntityManager getEntityManager() {
-         long l = mlog.getTime();
-        // for jetty 
-        if (memEManager == null) {
-            try {
-                InitialContext ic = new InitialContext();
-                Context t = (Context) ic.lookup("java:comp");
-                memEManager = (EntityManager) ic.lookup(getJNDIPrefix() + "ebMS_PU");
-            } catch (NamingException ex) {
-                mlog.logError(l, ex);
-            }
-
-        }
-        mlog.logEnd(l);
-        return memEManager;
-    }
-
-    private UserTransaction getUserTransaction() {
-        long l = mlog.getTime();
-        // for jetty 
-        if (mutUTransaction == null) {
-            try {
-                InitialContext ic = new InitialContext();
-                mutUTransaction = (UserTransaction) ic.lookup(getJNDIPrefix() + "UserTransaction");
-            } catch (NamingException ex) {
-                mlog.logError(l, ex);
-            }
-
-        }
-        mlog.logEnd(l);
-        return mutUTransaction;
-    }
-    
-     private String getJNDIPrefix() {
-        return System.getProperty(SEDSystemProperties.SYS_PROP_JNDI_PREFIX, "java:/jboss/");
-    }
-}
-*/

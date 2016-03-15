@@ -26,12 +26,13 @@ import java.util.logging.Logger;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.persistence.TypedQuery;
+import org.msh.ebms.inbox.event.MSHInEvent;
+import org.msh.ebms.inbox.mail.MSHInMail;
+import org.msh.ebms.inbox.payload.MSHInPart;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.StreamedContent;
-import org.sed.ebms.inbox.event.InEvent;
-import org.sed.ebms.inbox.mail.InMail;
-import org.sed.ebms.inbox.payload.InPart;
+
 import si.sed.commons.SEDInboxMailStatus;
 import si.sed.commons.exception.StorageException;
 import si.sed.commons.utils.StorageUtils;
@@ -43,15 +44,14 @@ import si.sed.commons.utils.StorageUtils;
 
 @ViewScoped
 @ManagedBean(name = "InMailDataView")
-public class InMailDataView extends AbstractMailView<InMail, InEvent> implements Serializable {
+public class InMailDataView extends AbstractMailView<MSHInMail, MSHInEvent> implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @Override
-    public LazyDataModel<InMail> getMailList() {
-        System.out.println("InMailDataView: getMailList");
+    public LazyDataModel<MSHInMail> getMailList() {
         if (mInMailModel == null) {
-            mInMailModel = new InMailDataModel(InMail.class, getUserTransaction(), getEntityManager());
+            mInMailModel = new InMailDataModel(MSHInMail.class, getUserTransaction(), getEntityManager());
         }
         return mInMailModel;
     }
@@ -64,7 +64,7 @@ public class InMailDataView extends AbstractMailView<InMail, InEvent> implements
     @Override
     public void updateEventList() {
         if (this.mMail != null) {
-            TypedQuery tq = memEManager.createNamedQuery("org.sed.ebms.inbox.event.InEvent.getMailEventList", InEvent.class);
+            TypedQuery tq = memEManager.createNamedQuery("org.msh.ebms.inbox.event.MSHInEvent.getMailEventList", MSHInEvent.class);
             tq.setParameter("mailId", mMail.getId());
             mlstMailEvents = tq.getResultList();
         } else {
@@ -74,13 +74,13 @@ public class InMailDataView extends AbstractMailView<InMail, InEvent> implements
 
     @Override
     public StreamedContent getFile(BigInteger bi) {
-        InPart inpart = null;
+        MSHInPart inpart = null;
 
-        if (mMail == null || mMail.getInPayload() == null || mMail.getInPayload().getInParts().isEmpty()) {
+        if (mMail == null || mMail.getMSHInPayload() == null || mMail.getMSHInPayload().getMSHInParts().isEmpty()) {
             return null;
         }
 
-        for (InPart ip : mMail.getInPayload().getInParts()) {
+        for (MSHInPart ip : mMail.getMSHInPayload().getMSHInParts()) {
             if (ip.getId().equals(bi)) {
                 inpart = ip;
                 break;

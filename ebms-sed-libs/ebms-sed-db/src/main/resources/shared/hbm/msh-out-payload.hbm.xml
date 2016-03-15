@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd" >
 <hibernate-mapping>    
-    <class name="org.sed.ebms.inbox.payload.InPart"
-           table="SED_INBOX_PAYLOAD">
+    <class name="org.msh.ebms.outbox.payload.MSHOutPart"
+           table="SED_OUTBOX_PAYLOAD">
         <id name="Id" type="java.math.BigInteger" >
             <column name="ID" scale="0" />
             <generator class="sequence">
-                <param name="sequence">SEQ_SED_INBOX_PAYLOAD</param>
+                <param name="sequence">SEQ_SED_OUTBOX_PAYLOAD</param>
             </generator>
         </id>
+        <property column="EBMS_ID" name="EbmsId"  length="128" type="java.lang.String"  />
         <property column="NAME" name="name"  length="128" type="java.lang.String"  />
         <property column="DESCRIPTION" name="Description"  length="512" type="java.lang.String"   />
         <property column="TYPE" name="Type"  length="64" type="java.lang.String" />
@@ -18,6 +19,7 @@
         <property column="ENCODING" name="Encoding"  length="128" type="java.lang.String" />
         <property column="MD5" name="Md5"  length="32" type="java.lang.String" />
     </class>    
+    
     
 
 </hibernate-mapping>
