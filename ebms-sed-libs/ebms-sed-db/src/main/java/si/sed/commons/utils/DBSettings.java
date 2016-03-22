@@ -59,8 +59,6 @@ public class DBSettings {
     protected SEDLogger mlog = new SEDLogger(DBSettings.class);
     final protected Properties mprpProperties = newProperties();
 
-    final protected List<SEDUser> mlstUsers = new ArrayList<>();
-    final protected List<SEDBox> mlstSEDBoxes = new ArrayList<>();
 
     protected TimerTask mRefreshTask;
     protected Timer mtTimer = new Timer(true);
@@ -121,88 +119,8 @@ public class DBSettings {
                 }
             }
         }
-        //----------------------------------
-        // SEDBox
-        TypedQuery<SEDBox> qBox = getEntityManager().createNamedQuery("SEDBox.getAll", SEDBox.class);
-        List<SEDBox> lstBox = qBox.getResultList();
-        if (lstBox.isEmpty()) {
-            SEDBox b1 = new SEDBox();
-            b1.setActiveFromDate(Calendar.getInstance().getTime());
-            b1.setBoxName("izvrsba@sed-court.si");
-            SEDBox b2 = new SEDBox();
-            b2.setActiveFromDate(Calendar.getInstance().getTime());
-            b2.setBoxName("k-vpisnik@sed-court.si");
-            SEDBox b3 = new SEDBox();
-            b3.setActiveFromDate(Calendar.getInstance().getTime());
-            b3.setBoxName("eINS-vpisnik@sed-court.si");
-            lstBox.add(b1);
-            lstBox.add(b2);
-            lstBox.add(b3);
-
-            try {
-                getUserTransaction().begin();
-                for (SEDBox cs : lstBox) {
-                    getEntityManager().persist(cs);
-                }
-                getUserTransaction().commit();
-            } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
-                String msg = "Error storing MSHCertStore!";
-                mlog.logError(l, msg, ex);
-                try {
-                    if (getUserTransaction().getStatus() == Status.STATUS_ACTIVE) {
-                        getUserTransaction().rollback();
-                    }
-                } catch (SystemException ex1) {
-                    // ignore
-                }
-            }
-        }
-         synchronized (mlstSEDBoxes) {
-            mlstSEDBoxes.clear();
-            mlstSEDBoxes.addAll(lstBox);
-        }
-
-        //----------------------------------
-        // SEDBox
-        TypedQuery<SEDUser> qUser = getEntityManager().createNamedQuery("SEDUser.getAll", SEDUser.class);
-        List<SEDUser> lstUser = qUser.getResultList();
-        if (lstUser.isEmpty()) {
-            SEDUser u1 = new SEDUser();
-            u1.setActiveFromDate(Calendar.getInstance().getTime());
-            u1.setUserId("sed");
-
-            SEDUser u2 = new SEDUser();
-            u2.setActiveFromDate(Calendar.getInstance().getTime());
-            u2.setUserId("admin");
-
-            lstUser.add(u1);
-            lstUser.add(u2);
-
-            try {
-                getUserTransaction().begin();
-                for (SEDUser cs : lstUser) {
-                    getEntityManager().persist(cs);
-                }
-                getUserTransaction().commit();
-            } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
-                String msg = "Error storing MSHCertStore!";
-                mlog.logError(l, msg, ex);
-                try {
-                    if (getUserTransaction().getStatus() == Status.STATUS_ACTIVE) {
-                        getUserTransaction().rollback();
-                    }
-                } catch (SystemException ex1) {
-                    // ignore
-                }
-            }
-
-        }
-        synchronized (mlstUsers) {
-            mlstUsers.clear();
-            mlstUsers.addAll(lstUser);
-        }
-
-    }
+       mlog.logEnd(l);
+     }
 
     public void initialize() {
         // set system properties
@@ -226,6 +144,11 @@ public class DBSettings {
     @Lock(LockType.READ)
     public String getPModeFileName() {
         return getData(SEDSystemProperties.SYS_PROP_PMODE);
+    }
+    
+     @Lock(LockType.READ)
+    public String getDomain() {
+        return getData(S_PROP_SED_DOMAIN);
     }
 
     @Lock(LockType.READ)
@@ -391,12 +314,6 @@ public class DBSettings {
         return mprpProperties;
     }
 
-    public List<SEDUser> getSEDUsers() {
-        return mlstUsers;
-    }
-
-    public List<SEDBox> getSEDBoxes() {
-        return mlstSEDBoxes;
-    }
+    
 
 }

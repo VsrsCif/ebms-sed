@@ -33,6 +33,29 @@
     background:         linear-gradient(left top,#cdcfcf, #bdbfcf);
 }
 
+
+.ui-button-icon-only .ui-icon, .ui-button-text-icon-left .ui-icon, .ui-button-text-icon-right .ui-icon {
+    
+    top:0;
+    margin:  2px;
+    padding: 2px 2px 2px 4px;
+    left: 0;
+    
+}
+
+.ui-button-text-icon-left .ui-button-text {
+    padding: 2px 4px 2px 28px;
+}
+
+
 .ui-icon-sed-ok {
+    height: 22px;
+    width:  22px;
+    margin-top: 0;
+    top:0;
     background-image: url('ok.png')  !important;
+}
+
+.image-Button {
+    height: 28px;
 }

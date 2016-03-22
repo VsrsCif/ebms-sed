@@ -25,15 +25,18 @@ Copyright 2016, Supreme Court Republic of Slovenia
  See the Licence for the specific language governing permissions and  
  limitations under the Licence.
 -->
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ns1="http://ebms.sed.org/ebox" 
-targetNamespace="http://ebms.sed.org/ebox" 
-           elementFormDefault="qualified" attributeFormDefault="unqualified">
-    
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ns1="http://ebms.sed.org/ebox" xmlns:usr="http://ebms.sed.org/user" targetNamespace="http://ebms.sed.org/ebox" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:import namespace="http://ebms.sed.org/user" schemaLocation="./sed-user.xsd"/>
 	<xs:element name="SEDBox" type="ns1:SEDBox"/>
 	<xs:complexType name="SEDBox">
 		<xs:annotation>
 			<xs:documentation xml:lang="sl">EBox data</xs:documentation>
-		</xs:annotation>		
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element ref="usr:SEDUser" maxOccurs="unbounded"/>
+			<xs:element name="Export"  type="ns1:Export" minOccurs="0"/>
+			<xs:element name="Notification"  type="ns1:Notification" minOccurs="0"/>
+		</xs:sequence>
 		<xs:attribute name="boxName" type="xs:string" use="required">
 			<xs:annotation>
 				<xs:documentation xml:lang="sl">Naslov e-predala</xs:documentation>
@@ -41,5 +44,15 @@ targetNamespace="http://ebms.sed.org/ebox"
 		</xs:attribute>
 		<xs:attribute name="activeFromDate" type="xs:date" use="required"/>
 		<xs:attribute name="activeToDate" type="xs:date" use="required"/>
+	</xs:complexType>
+	<xs:complexType name="Export">
+                <xs:attribute name="exportToFolder" use="required"/>
+		<xs:attribute name="folder" use="required"/>
+		<xs:attribute name="fileMask" use="required"/>
+	</xs:complexType>
+	<xs:complexType name="Notification">
+		<xs:attribute name="email" use="required"/>
+		<xs:attribute name="Subject" use="required"/>
+		<xs:attribute name="cron" use="required"/>
 	</xs:complexType>
 </xs:schema>

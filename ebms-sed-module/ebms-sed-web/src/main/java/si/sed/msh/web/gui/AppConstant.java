@@ -34,6 +34,7 @@ public class AppConstant {
     public static final String S_PANEL_SETT_PMODE = "PANEL_SETT_PMODE";
     public static final String S_PANEL_ADMIN_USERS = "PANEL_ADMIN_USERS";
     public static final String S_PANEL_ADMIN_EBOXES = "PANEL_ADMIN_EBOXES";
+    public static final String S_PANEL_ADMIN_CRON = "PANEL_ADMIN_CRON";
     
 
     public  String getS_PANEL_INBOX() {
@@ -63,6 +64,9 @@ public class AppConstant {
         return S_PANEL_ADMIN_EBOXES;
     }
     
+     public  String getS_PANEL_ADMIN_CRON() {
+        return S_PANEL_ADMIN_CRON;
+    }
     
     
 }

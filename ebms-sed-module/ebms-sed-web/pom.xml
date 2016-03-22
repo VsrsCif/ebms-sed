@@ -56,17 +56,53 @@
                 <configuration> 
                     <!-- for missing WEB-INF/web.xml-->
                     <failOnMissingWebXml>false</failOnMissingWebXml>
+                    <archive>                        
+                        <manifestEntries>                            
+                            <implementation-version>${project.version}</implementation-version>             
+                            <Implementation-Build>${buildNumber}</Implementation-Build>                            
+                        </manifestEntries>
+                    </archive>                                 
                 </configuration>
+                 
             </plugin>            
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>buildnumber-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>create</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <format> {0}.{1} - {2,date, dd.MM.yyyy HH:mm}</format>
+                    <items>
+                        <item>${project.version}</item>
+                        <item>scmVersion</item>
+                        <item>timestamp</item>                        
+                    </items>
+                    <doCheck>false</doCheck>
+                    <doUpdate>false</doUpdate>
+                    <revisiononscmfailure>     
+                        <!--
+                         Generate sequence build number based on:
+                         build number and timestamp     
+                        -->
+                        <format> {0}.{1} - {2,date, dd.MM.yyyy HH:mm}</format>
+                        <items>
+                            <item>${project.version}</item>
+                            <item>scmVersion</item>
+                            <item>timestamp</item>
+                        </items>
+                    </revisiononscmfailure>
+                </configuration>
+            </plugin>
         </plugins>
         <finalName>${war.final.name}</finalName>
     </build>    
     <dependencies>
-        <!-- dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>ebms-sed-wsdl</artifactId>
-            <version>${project.version}</version>		
-        </dependency -->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>ebms-sed-commons</artifactId>
@@ -86,10 +122,10 @@
         
         
         <!-- GUI uses prifeaces componens --> 
-	<dependency>
-		<groupId>org.primefaces</groupId>
-		<artifactId>primefaces</artifactId>
-	</dependency>	
+        <dependency>
+            <groupId>org.primefaces</groupId>
+            <artifactId>primefaces</artifactId>
+        </dependency>	
         
         <dependency>
             <groupId>javax</groupId>
@@ -102,5 +138,12 @@
             <artifactId>log4j</artifactId>		
             <scope>provided</scope>
         </dependency>
+        
+
     </dependencies>
+    <scm>
+        <connection>scm:git:git://localhost/${basedir}</connection>
+        <developerConnection>scm:git:git://localhost/${basedir}</developerConnection>
+    </scm>
+    
 </project>

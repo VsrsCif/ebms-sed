@@ -13,6 +13,9 @@
     font-size: 14px;
 }
 
+.ui-picklist-list-wrapper {
+    width: 45%
+}
 
 .ui-accordion-content {
     height: 500px;
@@ -71,7 +74,7 @@
     text-align:left;
     padding: 1px 2px;    
     margin: 0;
-    font-size: 85% !important;
+    font-size: 100% !important;
 }
 
 
@@ -132,4 +135,20 @@
 
 .toolbar-Button {
     height: 28px;
+}
+
+.image-Button {
+    height: 28px;
+}
+
+.ui-button-icon-only .ui-icon, .ui-button-text-icon-left .ui-icon, .ui-button-text-icon-right .ui-icon {
+    
+    top:0;
+    margin:  2px;
+    padding: 2px 2px 2px 4px;
+    left: 0;
+}
+
+.ui-button-text-icon-left .ui-button-text {
+    padding: 2px 4px 2px 28px;
 }

@@ -31,14 +31,15 @@ Copyright 2016, Supreme Court Republic of Slovenia
            targetNamespace="http://ebms.sed.org/user" 
            elementFormDefault="qualified" attributeFormDefault="unqualified">
     
-<xs:import namespace="http://ebms.sed.org/ebox" schemaLocation="./sed-ebox.xsd"/>
+    <xs:import namespace="http://ebms.sed.org/ebox" schemaLocation="./sed-ebox.xsd"/>
     <xs:element name="SEDUser" type="ns1:SEDUser"/>
-    <xs:complexType name="SEDUser">		
+    <xs:complexType name="SEDUser">
         <xs:sequence>
             <xs:element ref="box:SEDBox" maxOccurs="unbounded" />
         </xs:sequence>
         <xs:attribute name="userId" use="required"/>
         <xs:attribute name="activeFromDate" type="xs:date" use="required"/>
-        <xs:attribute name="activeToDate" type="xs:date" use="required"/>		
+        <xs:attribute name="activeToDate" type="xs:date" use="required"/>
     </xs:complexType>
+
 </xs:schema>

@@ -28,9 +28,14 @@ import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.util.List;
+import java.util.Calendar;
+import java.util.Date;
+
+import javax.ejb.EJB;
+import org.sed.ebms.user.SEDUser;
 import si.sed.commons.utils.SEDLogger;
-import si.sed.msh.web.gui.entities.User;
+import si.sed.commons.utils.SEDPersistenceBean;
+import si.sed.msh.web.utils.SEDGUIConstants;
 
 
 
@@ -41,13 +46,16 @@ public class LoginManager {
 
     private static final String HOME_PAGE = "/";
     private static final String PAGE_AFTER_LOGOUT = HOME_PAGE; // Another good option is the login page back again
-    private static final String SESSION_USER_VARIABLE_NAME = "sed-user";
+    
     
     private static final SEDLogger mLog = new SEDLogger(LoginManager.class);
 
     private String mstrUsername ="sed";
     private String mstrPassword = "sed1234";
     private String mstrForwardUrl;
+    
+    @EJB
+    SEDPersistenceBean mSedDB;
 
 
     public String getUsername() {
@@ -105,6 +113,7 @@ public class LoginManager {
             String msg = "Username must not be null or empty!";
             mLog.logWarn(l, getClientIP() +  " msg: " +msg,null);
             facesContext().addMessage(null, new FacesMessage(msg));
+            return;
             
         }
         
@@ -112,12 +121,36 @@ public class LoginManager {
             String msg = "Password must not be null or empty!";
             mLog.logWarn(l, getClientIP() +  " msg: " +msg,null);
             facesContext().addMessage(null, new FacesMessage(msg));
+            return;
         }
         try {
-            request.login(getUsername().trim(), getPassword().trim());
+            String userName = getUsername().trim();
+            request.login(userName, getPassword().trim());
+            
+            SEDUser user =  mSedDB.getSEDUser(userName);
+            if(user == null){
+                String msg = "User '"+userName+"' is not reqistred in ebms-sed";
+                mLog.logWarn(l, getClientIP() +  " msg: " +msg,null);
+                facesContext().addMessage(null, new FacesMessage(msg));
+                
+                externalContext.invalidateSession();
+                return;
+            }
+            
+            Date dCd = Calendar.getInstance().getTime();
+            if(user.getActiveFromDate().after(dCd) || 
+                    (user.getActiveToDate()!= null && user.getActiveToDate().before(dCd)) ){
+                String msg = "User '"+userName+"' is not active";
+                mLog.logWarn(l, getClientIP() +  " msg: " +msg,null);
+                facesContext().addMessage(null, new FacesMessage(msg));
+                externalContext.invalidateSession();
+                return;
+            }
+            // get user data
             
             
-            externalContext.getSessionMap().put(SESSION_USER_VARIABLE_NAME, new User(mstrUsername));
+            
+            externalContext.getSessionMap().put(SEDGUIConstants.SESSION_USER_VARIABLE_NAME, user);
             externalContext.redirect(mstrForwardUrl);
             String msg = "Username: '"+getUsername()+"' logged in!";
             mLog.log(l, getClientIP() +  " msg: " +msg,null);
@@ -158,10 +191,10 @@ public class LoginManager {
      *
      * @return The currently logged in {@link User}, or {@code null} if no user is logged in.
      */
-    public User getUser() {
+    public SEDUser getUser() {
         FacesContext context = facesContext();
         ExternalContext externalContext = context.getExternalContext();
-        return (User) externalContext.getSessionMap().get(SESSION_USER_VARIABLE_NAME);
+        return (SEDUser) externalContext.getSessionMap().get(SEDGUIConstants.SESSION_USER_VARIABLE_NAME);
     }
 
     

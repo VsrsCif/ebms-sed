@@ -181,7 +181,6 @@ public class SEDMailBox implements SEDMailBoxWS {
         rsp.getRData().setSubmittedDate(om != null ? om.getSubmittedDate() : mail.getSubmittedDate());
         rsp.getRData().setSenderMessageId(om != null ? om.getSenderMessageId() : mail.getSenderMessageId());
         rsp.getRData().setMailId(om != null ? om.getId() : mail.getId());
-
         return rsp;
     }
 

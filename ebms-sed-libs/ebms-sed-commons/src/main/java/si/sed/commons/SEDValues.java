@@ -23,6 +23,8 @@ package si.sed.commons;
 public class SEDValues {
 
     public static String EBMS_QUEUE_JNDI = "queue/MSHQueue";
+    public static String SCHEDULE_QUEUE_JNDI = "queue/SEDScheduleQueue";
+    
     public static String EBMS_JMS_CONNECTION_FACTORY_JNDI = "ConnectionFactory";
 
     public static String EBMS_QUEUE_PARAM_MAIL_ID = "ebms_queue_mail_id";

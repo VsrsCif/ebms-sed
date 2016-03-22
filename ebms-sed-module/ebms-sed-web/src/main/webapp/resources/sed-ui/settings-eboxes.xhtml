@@ -12,29 +12,55 @@
 
     <composite:implementation >
         <h1>SED-BOX</h1>
-        <p:dataTable var="sp" 
-                     value="#{ApplicationData.SEDBoxes}"
-                     rowKey="sp"
+        <p:panel id="horizontal" toggleTitle="INFO" header="Sed-Box Administration info" 
+                 toggleable="true"  collapsed="true">
+            <h:outputText value="Administration of SED eBox. "></h:outputText>
+        </p:panel>
+
+
+        <p:dataTable id="TblSedBox" 
+                     var="sp" 
+                     value="#{adminSEDBoxView.SEDBoxes}"
+                     selectionMode="single"
+                     selection="#{adminSEDBoxView.currentSedBox}"
+                     rowKey="#{sp.boxName}"
+
                      style="padding: 0px; margin: 0px"
                      scrollable="true" 
-                     scrollHeight="150"
-                     
+                     scrollHeight="200px"                     
                      >
+            <p:ajax event="rowSelect" listener="#{adminSEDBoxView.onRowSelect}" update=":forms:sedboxDialog" />
+            <p:ajax event="rowUnselect" listener="#{adminSEDBoxView.onRowUnselect}" update=":forms:sedboxDialog" />
+
+            <f:facet name="header">
+                <p:commandButton value="Add" update=":forms:sedboxDialog" styleClass="toolbar-Button" icon="ui-icon-sed-add" 
+                                 actionListener="#{adminSEDBoxView.createSEDBox()}"
+                                 oncomplete="PF('sedboxDialog').show()"  />
+                <p:commandButton value="Edit" update=":forms:sedboxDialog" styleClass="toolbar-Button" icon="ui-icon-sed-edit" 
+                                 oncomplete="PF('sedboxDialog').show()" />
+                <p:commandButton value="Delete" styleClass="toolbar-Button" icon="ui-icon-sed-remove" 
+                                 actionListener="#{adminSEDBoxView.removeCurrentSEDBox()}" update=":forms:SettingsSEDBoxes:TblSedBox" />
+
+            </f:facet>
+
+
             <p:column headerText="SEDBox">
-                <h:outputText value="#{sp.boxName}" />
-            </p:column>
+                <h:outputText value="#{sp.boxName}" /></p:column>
             <p:column headerText="Active from date">
-                <h:outputText value="#{sp.activeFromDate}" />
+                <h:outputText value="#{sp.activeFromDate}"><f:convertDateTime pattern="dd.MM.yyyy"  timeZone="CET" /></h:outputText>                
             </p:column>
             <p:column headerText="Active to date">
-                <h:outputText value="#{sp.activeToDate}" />
+                <h:outputText value="#{sp.activeToDate}" ><f:convertDateTime pattern="dd.MM.yyyy" timeZone="CET" /></h:outputText>                
             </p:column>
+
+
         </p:dataTable>
 
-        
-        
 
- 
+
+
+
+
 
     </composite:implementation>
 

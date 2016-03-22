@@ -12,27 +12,58 @@
 
     <composite:implementation >
         <h1>Users</h1>
-        <p:dataTable var="sp" 
-                     value="#{ApplicationData.SEDUsers}"
-                     rowKey="sp"
+          <p:panel id="horizontal" toggleTitle="INFO" header="Sed-User Administration info" 
+                 toggleable="true"  collapsed="true">
+            <h:outputText value="Administration of SED Users. "></h:outputText>
+        </p:panel>
+
+        <p:dataTable id="TblSedUser" 
+                     var="sp" 
+                     value="#{adminSEDUserView.SEDUsers}"
+                     selectionMode="single"
+                     selection="#{adminSEDUserView.currentSedUser}"
+                     rowKey="#{sp.userId}"
+
                      style="padding: 0px; margin: 0px"
                      scrollable="true" 
-                     scrollHeight="150"
-                     
+                     scrollHeight="200px"                     
                      >
+
+            <p:ajax event="rowSelect" listener="#{adminSEDUserView.onRowSelect}" update=":forms:userDialog :forms:UserBoxPickList" />
+            <p:ajax event="rowUnselect" listener="#{adminSEDUserView.onRowUnselect}" update=":forms:userDialog :forms:UserBoxPickList" />
+             <f:facet name="header">
+                <p:commandButton value="Add" update=":forms:userDialog" styleClass="toolbar-Button" icon="ui-icon-sed-add" 
+                                 actionListener="#{adminSEDUserView.createSEDUser()}"
+                                 oncomplete="PF('userDialog').show()" />
+                <p:commandButton value="Edit" update=":forms:userDialog" styleClass="toolbar-Button" icon="ui-icon-sed-edit" 
+                                 oncomplete="PF('userDialog').show()" />
+                <p:commandButton value="Delete" styleClass="toolbar-Button" icon="ui-icon-sed-remove" 
+                                 actionListener="#{adminSEDUserView.removeCurrentSEDUser()}" update=":forms:SettingsUsers:TblSedUser" />
+
+            </f:facet>
+            
+            <p:column style="width:16px">
+                <p:rowToggler />
+            </p:column>
             <p:column headerText="Username">
                 <h:outputText value="#{sp.userId}" />
             </p:column>
-            <p:column headerText="Active from date">
-                <h:outputText value="#{sp.activeFromDate}" />
+           <p:column headerText="Active from date">
+                <h:outputText value="#{sp.activeFromDate}"><f:convertDateTime pattern="dd.MM.yyyy"  timeZone="CET" /></h:outputText>                
             </p:column>
             <p:column headerText="Active to date">
-                <h:outputText value="#{sp.activeToDate}" />
+                <h:outputText value="#{sp.activeToDate}" ><f:convertDateTime pattern="dd.MM.yyyy" timeZone="CET" /></h:outputText>                
             </p:column>
-        </p:dataTable>
-        
+            <p:rowExpansion>
+                <p:dataList value="#{sp.SEDBoxes}" var="ebox"  type="unordered" itemType="none">
+                    #{ebox.boxName}
+                </p:dataList>
+            </p:rowExpansion>
 
- 
+        </p:dataTable>
+
+
+
 
     </composite:implementation>
 

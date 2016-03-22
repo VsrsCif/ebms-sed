@@ -38,7 +38,7 @@
                                 <p:row>
                                     <p:column colspan="3">
                                         <p:commandButton value="Login" actionListener="#{loginManager.login}"
-                                                         icon="ui-icon-sed-ok"/></p:column>
+                                                         class="image-Button" icon="ui-icon-sed-ok"/></p:column>
                                 </p:row>
                                 <p:row>
                                     <p:column colspan="3"><h:messages globalOnly="true"/></p:column>
@@ -46,8 +46,8 @@
                             </p:panelGrid>
                         </h:form>
                     </p:fragment>
-                    <div style="color: blue; margin-top: 30px">
-                        Prijava v aplikacijo ebms-sed
+                    <div style="float:right;color: gray; margin-top: 30px;font-size:12px">
+                        Version: <p:outputLabel value="#{ApplicationData.buildVersion}" />                        
                     </div>
                 </p:panel>
             </center>

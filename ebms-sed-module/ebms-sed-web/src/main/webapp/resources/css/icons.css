@@ -1,4 +1,23 @@
 
+.ui-icon-sed-add {    
+    width:  22px !important;
+    height:  22px !important;
+    background-image: url('../images/add.png') !important;
+    
+}
+.ui-icon-sed-remove {    
+    width:  22px !important;
+    height:  22px !important;
+    background-image: url('../images/remove.png') !important;
+    
+}
+.ui-icon-sed-edit {    
+    width:  22px !important;
+    height:  22px !important;
+    background-image: url('../images/edit.png') !important;
+    
+}
+
 .ui-icon-sed-exit {    
     width:  22px !important;
     height:  22px !important;
