@@ -16,14 +16,12 @@
  */
 package si.sed.msh.web.admin;
 
-import si.sed.msh.web.gui.*;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
-import org.primefaces.event.SelectEvent;
-import org.primefaces.event.UnselectEvent;
 import org.primefaces.model.DualListModel;
 import org.sed.ebms.ebox.SEDBox;
 import org.sed.ebms.user.SEDUser;
@@ -37,50 +35,16 @@ import si.sed.commons.utils.SEDLookups;
 @SessionScoped
 @ManagedBean(name = "adminSEDUserView")
 
-public class AdminSEDUserView extends AbstractJSFView {
+public class AdminSEDUserView extends AbstractAdminJSFView<SEDUser> {
 
     private static final SEDLogger LOG = new SEDLogger(AdminSEDUserView.class);
 
     @EJB
     private SEDLookups mdbLookups;
 
-    private SEDUser msbCurrentSedUser;
-    private SEDUser msbNewSedUser;
-    private SEDUser msbEditableSedUser;
-
     private DualListModel<SEDBox> msbCBDualList = new DualListModel<>();
 
-    public List<SEDUser> getSEDUsers() {
-        return  mdbLookups.getSEDUsers();
-    }
-
-   
-
-    public void onRowSelect(SelectEvent event) {
-        msbEditableSedUser  = (SEDUser) event.getObject();
-    }
-
-    public void onRowUnselect(UnselectEvent event) {
-        long l = LOG.logStart();
-        msbEditableSedUser  = null;
-        LOG.logEnd(l);
-    }
-
-    public SEDUser getCurrentSedUser() {
-        return msbCurrentSedUser;
-        
-    }
-  
-    public void setCurrentSedUser(SEDUser currentSEDUser) {        
-        this.msbCurrentSedUser = currentSEDUser;
-        
-    }
-
-    public SEDUser getEditableSedUser() {
-        return msbCurrentSedUser;
-    }
-
-    public void setEditableSedUser(SEDUser eEditableSedUser) {
+    /*  public void setEditableSedUser(SEDUser eEditableSedUser) {
         if (msbCurrentSedUser != eEditableSedUser){
             this.msbCurrentSedUser = eEditableSedUser;
             if (this.msbCurrentSedUser!= null) {
@@ -91,13 +55,7 @@ public class AdminSEDUserView extends AbstractJSFView {
                 this.msbCBDualList.setTarget(null);
             }
         }
-        
-        
-        
     }
-    
-    
-
     public SEDUser getSEDBoxById(String userId) {
         List<SEDUser> lst = mdbLookups.getSEDUsers();
         for (SEDUser sb : lst) {
@@ -108,9 +66,10 @@ public class AdminSEDUserView extends AbstractJSFView {
         return null;
 
     }
+
     public void createSEDUser() {
         long l = LOG.logStart();
-       
+
         String sbname = "user_%03d";
         int i = 1;
         while (getSEDUserByUsername(String.format(sbname, i)) != null) {
@@ -120,15 +79,14 @@ public class AdminSEDUserView extends AbstractJSFView {
         msbNewSedUser = new SEDUser();
         msbNewSedUser.setUserId(String.format(sbname, i));
         msbNewSedUser.setActiveFromDate(Calendar.getInstance().getTime());
-        
+
         setEditableSedUser(msbNewSedUser);
         LOG.logEnd(l);
     }
-   
 
     public void updateOrAddSEDUser() {
         long l = LOG.logStart();
-        if (msbNewSedUser!= null){
+        if (msbNewSedUser != null) {
             msbNewSedUser.getSEDBoxes().clear();
             msbNewSedUser.getSEDBoxes().addAll(msbCBDualList.getTarget());
             mdbLookups.addSEDUser(msbNewSedUser);
@@ -140,20 +98,55 @@ public class AdminSEDUserView extends AbstractJSFView {
         }
         LOG.logEnd(l);
     }
-    
-     public void removeCurrentSEDUser(){
+
+    public void removeCurrentSEDUser() {
         if (msbCurrentSedUser != null) {
             mdbLookups.removeSEDUser(msbCurrentSedUser);
             msbCurrentSedUser = null;
         }
     }
 
-    
     public boolean isCurrentIsNew() {
         return msbNewSedUser != null;
     }
-     
- public SEDUser getSEDUserByUsername(String username) {
+
+    public SEDUser getSEDUserByUsername(String username) {
+        List<SEDUser> lst = mdbLookups.getSEDUsers();
+        for (SEDUser sb : lst) {
+            if (sb.getUserId().equalsIgnoreCase(username)) {
+                return sb;
+            }
+        }
+        return null;
+
+    }*/
+    public DualListModel<SEDBox> getCurrentPickupDualSEDBoxList() {
+
+                
+        List<String> sbIDs = new ArrayList<>();
+        if (getEditable() != null) {
+            getEditable().getSEDBoxes().stream().forEach((sb) -> {
+                sbIDs.add(sb.getBoxName());
+            });
+        }
+        List<SEDBox> src = new ArrayList<>();
+        List<SEDBox> trg = new ArrayList<>();
+        mdbLookups.getSEDBoxes().stream().forEach((se) -> {
+            if (sbIDs.contains(se.getBoxName())) {
+                trg.add(se);
+            } else {
+                src.add(se);
+            }
+        });
+
+        return msbCBDualList = new DualListModel<>(src, trg);
+    }
+
+    public void setCurrentPickupDualSEDBoxList(DualListModel<SEDBox> dl) {
+        msbCBDualList = dl;
+    }
+
+    public SEDUser getSEDUserByUsername(String username) {
         List<SEDUser> lst = mdbLookups.getSEDUsers();
         for (SEDUser sb : lst) {
             if (sb.getUserId().equalsIgnoreCase(username)) {
@@ -163,14 +156,64 @@ public class AdminSEDUserView extends AbstractJSFView {
         return null;
 
     }
- 
- public DualListModel<SEDBox> getCurrentPickupDualSEDBoxList() {
-        return msbCBDualList = new DualListModel<>(mdbLookups.getSEDBoxes(), getEditableSedUser()!=null?getEditableSedUser().getSEDBoxes():null);
+
+    @Override
+    public void createEditable() {
+        long l = LOG.logStart();
+
+        String sbname = "user_%03d";
+        int i = 1;
+        while (getSEDUserByUsername(String.format(sbname, i)) != null) {
+            i++;
+        }
+
+        SEDUser su = new SEDUser();
+        su.setUserId(String.format(sbname, i));
+        su.setActiveFromDate(Calendar.getInstance().getTime());
+
+        setNew(su);
+        LOG.logEnd(l);
     }
 
- public void setCurrentPickupDualSEDBoxList(DualListModel<SEDBox> dl) {
-         msbCBDualList = dl;
+    @Override
+    public void removeSelected() {
+        SEDUser sb = getSelected();
+        if (sb != null) {
+            mdbLookups.removeSEDUser(sb);
+            setSelected(null);
+        }
     }
-    
+
+    @Override
+    public void persistEditable() {
+        SEDUser sb = getEditable();
+        if (sb != null) {
+            sb.getSEDBoxes().clear();
+            if (msbCBDualList.getTarget() != null && !msbCBDualList.getTarget().isEmpty()) {
+                sb.getSEDBoxes().addAll(msbCBDualList.getTarget());
+            }
+            mdbLookups.addSEDUser(sb);
+            setEditable(null);
+        }
+    }
+
+    @Override
+    public void updateEditable() {
+        SEDUser sb = getEditable();
+        if (sb != null) {
+            System.out.println("UPATE:_ " + msbCBDualList.getTarget().size());
+            sb.getSEDBoxes().clear();
+            if (msbCBDualList.getTarget() != null && !msbCBDualList.getTarget().isEmpty()) {
+                sb.getSEDBoxes().addAll(msbCBDualList.getTarget());
+            }
+            mdbLookups.updateSEDUser(sb);
+            setEditable(null);
+        }
+    }
+
+    @Override
+    public List<SEDUser> getList() {
+        return mdbLookups.getSEDUsers();
+    }
 
 }

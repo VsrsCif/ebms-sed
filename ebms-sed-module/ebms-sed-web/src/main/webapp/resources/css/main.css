@@ -81,14 +81,12 @@
 
 
 .ui-datatable-odd {
-    background: #ffffff;
-    font-size: 85% !important;
+    background: #ffffff;    
     padding:1px 1px;  
 }
 
 .ui-datatable-even {
     background: #D2D5F9;
-    font-size: 85% !important;
     padding:1px 1px;  
 }
 

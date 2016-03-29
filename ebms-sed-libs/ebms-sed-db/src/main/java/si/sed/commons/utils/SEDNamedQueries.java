@@ -12,5 +12,5 @@ package si.sed.commons.utils;
 public class SEDNamedQueries {
     public static String SEDUSER_BY_ID = "org.sed.ebms.user.SEDUser.getByUserId";
     public static String SEDBOX_ALL = "org.sed.ebms.ebox.SEDBox.getAll";
-    public static String SEDBOX_ID = "org.sed.ebms.ebox.SEDBox.getByName";
+    public static String SEDBOX_BY_ID = "org.sed.ebms.ebox.SEDBox.getByName";
 }

@@ -114,6 +114,9 @@ public class StorageUtils {
             destination.transferFrom(source, 0, source.size());
         }
     }
+    public void copyInFile(String strInFileName , File destFile) throws IOException, StorageException {
+        copyFile(getFile(strInFileName), destFile);        
+    }
 
     public static File getNewStorageFile(String suffix, String prefix) throws StorageException {
         File fStore;

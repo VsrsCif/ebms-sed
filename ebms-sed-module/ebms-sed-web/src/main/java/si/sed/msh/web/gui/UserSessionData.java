@@ -61,7 +61,8 @@ public class UserSessionData extends AbstractJSFView {
     }
 
     public String getCurrentSEDBox() {
-        return mstrCurrentSEDBox == null&& getUserEBoxes()!=null? getUserEBoxes().get(0):mstrCurrentSEDBox;
+        return mstrCurrentSEDBox == null&&
+                getUserEBoxes()!=null &&  !getUserEBoxes().isEmpty()? getUserEBoxes().get(0):mstrCurrentSEDBox;
     }
     
      public void onTransfer(TransferEvent event) {

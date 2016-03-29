@@ -35,7 +35,6 @@ Copyright 2016, Supreme Court Republic of Slovenia
 		<xs:sequence>
 			<xs:element ref="usr:SEDUser" maxOccurs="unbounded"/>
 			<xs:element name="Export"  type="ns1:Export" minOccurs="0"/>
-			<xs:element name="Notification"  type="ns1:Notification" minOccurs="0"/>
 		</xs:sequence>
 		<xs:attribute name="boxName" type="xs:string" use="required">
 			<xs:annotation>
@@ -46,13 +45,9 @@ Copyright 2016, Supreme Court Republic of Slovenia
 		<xs:attribute name="activeToDate" type="xs:date" use="required"/>
 	</xs:complexType>
 	<xs:complexType name="Export">
-                <xs:attribute name="exportToFolder" use="required"/>
-		<xs:attribute name="folder" use="required"/>
-		<xs:attribute name="fileMask" use="required"/>
-	</xs:complexType>
-	<xs:complexType name="Notification">
-		<xs:attribute name="email" use="required"/>
-		<xs:attribute name="Subject" use="required"/>
-		<xs:attribute name="cron" use="required"/>
+                <xs:attribute name="active"  type="xs:boolean"  />
+                <xs:attribute name="exportMetaData"  type="xs:boolean"  />
+		<xs:attribute name="folder" use="required" type="xs:string" />
+		<xs:attribute name="fileMask" use="required" type="xs:string"/>
 	</xs:complexType>
 </xs:schema>

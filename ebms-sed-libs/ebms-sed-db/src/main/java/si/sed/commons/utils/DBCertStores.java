@@ -74,8 +74,8 @@ public class DBCertStores {
 
     @PostConstruct
     private void startup() {
-        refreshData();
-        mtTimer.scheduleAtFixedRate(mRefreshTask, m_iRefreshInterval / 2, m_iRefreshInterval);
+       // refreshData();
+       // mtTimer.scheduleAtFixedRate(mRefreshTask, m_iRefreshInterval / 2, m_iRefreshInterval);
 
     }
 

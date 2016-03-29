@@ -17,16 +17,13 @@
 package si.sed.msh.web.admin;
 
 import java.io.StringWriter;
-import si.sed.msh.web.gui.*;
 import java.util.Calendar;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
-import javax.faces.context.FacesContext;
-import org.primefaces.event.SelectEvent;
-import org.primefaces.event.UnselectEvent;
+import org.sed.ebms.ebox.Export;
 import org.sed.ebms.ebox.SEDBox;
 import org.sed.ebms.user.SEDUser;
 import si.sed.commons.utils.DBSettings;
@@ -39,7 +36,7 @@ import si.sed.commons.utils.SEDLookups;
  */
 @SessionScoped
 @ManagedBean(name = "adminSEDBoxView")
-public class AdminSEDBoxView extends AbstractJSFView {
+public class AdminSEDBoxView extends AbstractAdminJSFView<SEDBox> {
 
     private static final SEDLogger LOG = new SEDLogger(AdminSEDBoxView.class);
 
@@ -49,86 +46,12 @@ public class AdminSEDBoxView extends AbstractJSFView {
     @EJB
     private SEDLookups mdbLookups;
 
-    private SEDBox msbCurrentSedBox;
-    private SEDBox msbNewSedBox;
-    private SEDBox msbEditableSedBox;
-
-
-    public List<SEDBox> getSEDBoxes() {
-        List<SEDBox> lst = mdbLookups.getSEDBoxes();
-        return lst;
-    }
-
-    public String boxPrefix(String strBoxName) {
-        return strBoxName != null ? strBoxName.substring(0, strBoxName.indexOf("@")) : "";
-    }
-
-    public void onRowSelect(SelectEvent event) {
-        msbEditableSedBox  = (SEDBox) event.getObject();
-    }
-
-    public void onRowUnselect(UnselectEvent event) {
-        long l = LOG.logStart();
-        msbEditableSedBox  = null;
-        LOG.logEnd(l);
-    }
-
-    public SEDBox getCurrentSedBox() {
-        return msbCurrentSedBox;
-        
-    }
-  
-    public void setCurrentSedBox(SEDBox currentSedBox) {        
-        this.msbCurrentSedBox = currentSedBox;
-    }
-
-    public SEDBox getEditableSedBox() {
-        return msbEditableSedBox;
-    }
-
-    public void setEditableSedBox(SEDBox msbEditableSedBox) {
-        this.msbEditableSedBox = msbEditableSedBox;
-    }
-    
-    public void removeCurrentSEDBox(){
-        if (msbCurrentSedBox != null) {
-            LOG.log("Delete:" + msbCurrentSedBox.getBoxName() + " sed users:" +msbCurrentSedBox.getSEDUsers().size());
-            if (!msbCurrentSedBox.getSEDUsers().isEmpty()){
-                StringWriter sw = new StringWriter();
-                sw.append("Users: ");
-                boolean isFirst = true;
-                for (SEDUser su: msbCurrentSedBox.getSEDUsers()){
-                    if (!isFirst){
-                        sw.append(",");
-                    }
-                    sw.append(su.getUserId());
-                    isFirst = false;                    
-                }
-                
-                 FacesMessage msg = new FacesMessage("Box has users! Delete box from users first!", sw.toString() );
-                 facesContext().addMessage("messages", msg);
-                
-            } else {        
-                mdbLookups.removeSEDBox(msbCurrentSedBox);
-                msbCurrentSedBox = null;
-            }
-        }
-    }
-    
-    
-
     public SEDBox getSEDBoxByName(String sedBox) {
-        List<SEDBox> lst = mdbLookups.getSEDBoxes();
-        for (SEDBox sb : lst) {
-            if (sb.getBoxName().equalsIgnoreCase(sedBox)) {
-                return sb;
-            }
-        }
-        return null;
-
+        return mdbLookups.getSEDBoxByName(sedBox);
     }
-  
-    public void createSEDBox() {
+
+    @Override
+    public void createEditable() {
         long l = LOG.logStart();
 
         String domain = mdbSettings.getDomain();
@@ -137,32 +60,73 @@ public class AdminSEDBoxView extends AbstractJSFView {
         while (getSEDBoxByName(String.format(sbname, i, domain)) != null) {
             i++;
         }
-
-        msbNewSedBox = new SEDBox();
-        msbNewSedBox.setBoxName(String.format(sbname, i, domain));
-        msbNewSedBox.setActiveFromDate(Calendar.getInstance().getTime());
-        
-        setEditableSedBox(msbNewSedBox);
+        SEDBox sbx = new SEDBox();
+        sbx.setBoxName(String.format(sbname, i, domain));
+        sbx.setActiveFromDate(Calendar.getInstance().getTime());
+        sbx.setExport(new Export());
+        setNew(sbx);
         LOG.logEnd(l);
     }
 
-    public void updateOrAddSEDBox() {
-        long l = LOG.logStart();
-        if (msbNewSedBox!= null){
-            mdbLookups.addSEDBox(msbNewSedBox);
-            msbNewSedBox = null;
-        } else if (msbEditableSedBox != null) {
-            mdbLookups.updateSEDBox(msbEditableSedBox);
+    @Override
+    public void removeSelected() {
+        SEDBox sb = getSelected();
+        if (sb != null) {
+            if (!sb.getSEDUsers().isEmpty()) {
+                StringWriter sw = new StringWriter();
+                sw.append("Users: ");
+                boolean isFirst = true;
+                for (SEDUser su : sb.getSEDUsers()) {
+                    if (!isFirst) {
+                        sw.append(",");
+                    }
+                    sw.append(su.getUserId());
+                    isFirst = false;
+                }
+
+                FacesMessage msg = new FacesMessage("Box has users! Delete box from users first!", sw.toString());
+                facesContext().addMessage("messages", msg);
+            } else {
+                mdbLookups.removeSEDBox(sb);
+                setSelected(null);
+            }
+
         }
-        LOG.logEnd(l);
+
     }
 
+    @Override
+    public void startEditSelected() {
+        if (getSelected() != null && getSelected().getExport()== null) {
+            getSelected().setExport(new Export());
+        }
+        super.startEditSelected(); //To change body of generated methods, choose Tools | Templates.
+    }
     
-    public boolean isCurrentIsNew() {
-        return msbNewSedBox == msbEditableSedBox;
+
+    @Override
+    public void persistEditable() {
+          SEDBox sb = getEditable();
+        if (sb != null) {
+            mdbLookups.addSEDBox(sb);
+            setEditable(null);
+        }        
     }
 
+    @Override
+    public void updateEditable() {
+        SEDBox sb = getEditable();
+        if (sb != null) {
+            mdbLookups.updateSEDBox(sb);
+            setEditable(null);
+        }
+    }
 
-    
+    @Override
+    public List<SEDBox> getList() {
+        return mdbLookups.getSEDBoxes();
+    }
+
+  
 
 }

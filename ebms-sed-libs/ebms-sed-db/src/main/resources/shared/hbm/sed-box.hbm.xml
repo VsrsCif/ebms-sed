@@ -7,7 +7,15 @@
             <column name="sed_box" length="512" />            
         </id>        
         <property column="Active_Date_From" name="ActiveFromDate"  length="1024" type="java.util.Date" />       
-        <property column="Active_Date_To" name="ActiveToDate"  length="32" type="java.util.Date" />      
+        <property column="Active_Date_To" name="ActiveToDate"  length="32" type="java.util.Date" />    
+        <component name="Export" class="org.sed.ebms.ebox.Export">
+            <property column="EXPORT_ACTIVE" name="Active"  type="java.lang.Boolean" />    
+            <property column="EXPORT_METADATA" name="ExportMetaData"  type="java.lang.Boolean" />                
+            <property column="EXPORT_FOLDER" name="Folder" type="java.lang.String" length="512"  />    
+            <property column="EXPORT_FILE_MASK" name="FileMask" type="java.lang.String" length="512"  />    
+            
+            
+        </component>
          <bag name="sedUsers"  access="field" table="sed_user_sedbox" 
         	inverse="true"  fetch="select" lazy="false"    >        
             <key>

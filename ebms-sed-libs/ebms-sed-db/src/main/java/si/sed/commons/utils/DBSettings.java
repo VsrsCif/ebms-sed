@@ -6,8 +6,6 @@
 package si.sed.commons.utils;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Properties;
 import java.util.Timer;
@@ -33,10 +31,7 @@ import javax.transaction.RollbackException;
 import javax.transaction.Status;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
-import org.msh.ebms.cert.MSHCertStore;
-import org.sed.ebms.ebox.SEDBox;
 import org.sed.ebms.property.SEDProperty;
-import org.sed.ebms.user.SEDUser;
 import si.sed.commons.SEDSystemProperties;
 import static si.sed.commons.utils.abst.ASettings.newProperties;
 
@@ -77,7 +72,6 @@ public class DBSettings {
     protected static final String S_PROP_SED_DOMAIN = "sed.domain";
     protected static final String S_PROP_SED_DOMAIN_DEF = "sed-court.si";
 
-    public static String JNDI_PREFIX = "java:comp/env/";
 
     public DBSettings() {
         this.mRefreshTask = new TimerTask() {
@@ -92,7 +86,7 @@ public class DBSettings {
     private void startup() {
         refreshData();
         initialize();
-        mtTimer.scheduleAtFixedRate(mRefreshTask, m_iRefreshInterval, m_iRefreshInterval);
+      //  mtTimer.scheduleAtFixedRate(mRefreshTask, m_iRefreshInterval, m_iRefreshInterval);
 
     }
 
@@ -124,8 +118,8 @@ public class DBSettings {
 
     public void initialize() {
         // set system properties
-        System.setProperty(SEDSystemProperties.SYS_PROP_JNDI_PREFIX, JNDI_PREFIX);
-        System.setProperty(SEDSystemProperties.SYS_PROP_JNDI_JMS_PREFIX, JNDI_PREFIX);
+        //System.setProperty(SEDSystemProperties.SYS_PROP_JNDI_PREFIX, JNDI_PREFIX);
+        //System.setProperty(SEDSystemProperties.SYS_PROP_JNDI_JMS_PREFIX, JNDI_PREFIX);
 
         if (!mprpProperties.containsKey(S_PROP_SED_DOMAIN)) {
             synchronized (mprpProperties) {

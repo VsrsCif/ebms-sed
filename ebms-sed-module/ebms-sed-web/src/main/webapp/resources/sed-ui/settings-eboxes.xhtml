@@ -20,45 +20,58 @@
 
         <p:dataTable id="TblSedBox" 
                      var="sp" 
-                     value="#{adminSEDBoxView.SEDBoxes}"
+                     value="#{adminSEDBoxView.list}"
                      selectionMode="single"
-                     selection="#{adminSEDBoxView.currentSedBox}"
+                     selection="#{adminSEDBoxView.selected}"
                      rowKey="#{sp.boxName}"
 
                      style="padding: 0px; margin: 0px"
                      scrollable="true" 
-                     scrollHeight="200px"                     
+                     scrollHeight="200px"                         
                      >
-            <p:ajax event="rowSelect" listener="#{adminSEDBoxView.onRowSelect}" update=":forms:sedboxDialog" />
-            <p:ajax event="rowUnselect" listener="#{adminSEDBoxView.onRowUnselect}" update=":forms:sedboxDialog" />
-
+            <p:ajax event="rowDblselect" listener="#{adminSEDBoxView.startEditSelected()}" 
+                    update=":dialogs:sedboxDialogForm:sedboxDetails"  
+                    oncomplete="PF('sedboxDialog').show()"/>
+         
             <f:facet name="header">
-                <p:commandButton value="Add" update=":forms:sedboxDialog" styleClass="toolbar-Button" icon="ui-icon-sed-add" 
-                                 actionListener="#{adminSEDBoxView.createSEDBox()}"
+                <p:commandButton value="Add" styleClass="toolbar-Button" icon="ui-icon-sed-add" 
+                                 update=":dialogs:sedboxDialogForm:sedboxDetails" 
+                                 actionListener="#{adminSEDBoxView.createEditable()}"
                                  oncomplete="PF('sedboxDialog').show()"  />
-                <p:commandButton value="Edit" update=":forms:sedboxDialog" styleClass="toolbar-Button" icon="ui-icon-sed-edit" 
+                <p:commandButton value="Edit" styleClass="toolbar-Button" icon="ui-icon-sed-edit" 
+                                 update=":dialogs:sedboxDialogForm:sedboxDetails" 
+                                 actionListener="#{adminSEDBoxView.startEditSelected()}"
                                  oncomplete="PF('sedboxDialog').show()" />
                 <p:commandButton value="Delete" styleClass="toolbar-Button" icon="ui-icon-sed-remove" 
-                                 actionListener="#{adminSEDBoxView.removeCurrentSEDBox()}" update=":forms:SettingsSEDBoxes:TblSedBox" />
+                                 actionListener="#{adminSEDBoxView.removeSelected()}"
+                                 update=":forms:SettingsSEDBoxes:TblSedBox" />
 
             </f:facet>
 
 
-            <p:column headerText="SEDBox">
-                <h:outputText value="#{sp.boxName}" /></p:column>
-            <p:column headerText="Active from date">
-                <h:outputText value="#{sp.activeFromDate}"><f:convertDateTime pattern="dd.MM.yyyy"  timeZone="CET" /></h:outputText>                
+            <p:column headerText="SEDBox" width="200">
+                <h:outputText value="#{sp.boxName}" />
             </p:column>
-            <p:column headerText="Active to date">
-                <h:outputText value="#{sp.activeToDate}" ><f:convertDateTime pattern="dd.MM.yyyy" timeZone="CET" /></h:outputText>                
+            <p:column headerText="Active from date" width="80">
+                <h:outputText value="#{sp.activeFromDate}"  ><f:convertDateTime pattern="dd.MM.yyyy"  timeZone="CET" /></h:outputText>                
             </p:column>
-
-
+            <p:column headerText="Active to date" width="80">
+                <h:outputText value="#{sp.activeToDate}"  ><f:convertDateTime pattern="dd.MM.yyyy" timeZone="CET" /></h:outputText>                
+            </p:column>
+            <p:column headerText="Export" width="60">
+                <h:selectBooleanCheckbox value="#{sp.export.active}" disabled="true" />
+            </p:column>
+            <p:column headerText="MetaData" width="60">
+                <h:selectBooleanCheckbox value="#{sp.export.exportMetaData}" disabled="true" />
+            </p:column>
+            <p:column headerText="FileMask" width="200">
+                <h:outputText value="#{sp.export.fileMask}" />
+            </p:column>
+            <p:column headerText="Folder">
+                <h:outputText value="#{sp.export.folder}" />
+            </p:column>
+            
         </p:dataTable>
-
-
-
-
 
 
 

@@ -57,7 +57,7 @@
         </Responder>
         <Leg type="fore-channel">
             <Protocol>
-                <Address>http://localhost:8080/svev-msh-ws/ebms</Address>
+                <Address connectionTimeout="120000" receiveTimeout="120000" chunked="true">http://localhost:8080/svev-msh-ws/ebms</Address>
                 <SOAPVersion>1.2</SOAPVersion>
             </Protocol>
             <BusinessInfo>
@@ -130,7 +130,7 @@
         </Responder>
         <Leg>
             <Protocol>
-                <Address>http://localhost:8080/svev-msh-ws/ebms</Address>
+                <Address connectionTimeout="120000" receiveTimeout="120000" chunked="true">http://localhost:8080/svev-msh-ws/ebms</Address>
                 <SOAPVersion>1.2</SOAPVersion>
             </Protocol>
             <BusinessInfo>
@@ -166,7 +166,7 @@
         </Leg>
         <Leg>
             <Protocol>
-                <Address>http://localhost:8080/svev-msh-ws/ebms</Address>
+                <Address connectionTimeout="120000" receiveTimeout="120000" chunked="true">http://localhost:8080/svev-msh-ws/ebms</Address>
             </Protocol>
             <Security>
                 <X509>

@@ -12,46 +12,51 @@
 
     <composite:implementation >
         <h1>Users</h1>
-          <p:panel id="horizontal" toggleTitle="INFO" header="Sed-User Administration info" 
+        <p:panel id="horizontal" toggleTitle="INFO" header="Sed-User Administration info" 
                  toggleable="true"  collapsed="true">
             <h:outputText value="Administration of SED Users. "></h:outputText>
         </p:panel>
 
         <p:dataTable id="TblSedUser" 
                      var="sp" 
-                     value="#{adminSEDUserView.SEDUsers}"
+                     value="#{adminSEDUserView.list}"
                      selectionMode="single"
-                     selection="#{adminSEDUserView.currentSedUser}"
+                     selection="#{adminSEDUserView.selected}"
                      rowKey="#{sp.userId}"
-
+                     
                      style="padding: 0px; margin: 0px"
                      scrollable="true" 
                      scrollHeight="200px"                     
                      >
 
-            <p:ajax event="rowSelect" listener="#{adminSEDUserView.onRowSelect}" update=":forms:userDialog :forms:UserBoxPickList" />
-            <p:ajax event="rowUnselect" listener="#{adminSEDUserView.onRowUnselect}" update=":forms:userDialog :forms:UserBoxPickList" />
-             <f:facet name="header">
-                <p:commandButton value="Add" update=":forms:userDialog" styleClass="toolbar-Button" icon="ui-icon-sed-add" 
-                                 actionListener="#{adminSEDUserView.createSEDUser()}"
+             <p:ajax event="rowDblselect" listener="#{adminSEDUserView.startEditSelected()}" 
+                    update=":dialogs:userDialogForm:userDetails"
+                    oncomplete="PF('userDialog').show()"/>
+            
+            <f:facet name="header">
+                <p:commandButton value="Add" styleClass="toolbar-Button" icon="ui-icon-sed-add" 
+                                 update=":dialogs:userDialogForm:userDetails" 
+                                 actionListener="#{adminSEDUserView.createEditable()}"
                                  oncomplete="PF('userDialog').show()" />
-                <p:commandButton value="Edit" update=":forms:userDialog" styleClass="toolbar-Button" icon="ui-icon-sed-edit" 
+                <p:commandButton value="Edit" styleClass="toolbar-Button" icon="ui-icon-sed-edit" 
+                                 actionListener="#{adminSEDUserView.startEditSelected()}"
+                                 update=":dialogs:userDialogForm:userDetails" 
                                  oncomplete="PF('userDialog').show()" />
                 <p:commandButton value="Delete" styleClass="toolbar-Button" icon="ui-icon-sed-remove" 
-                                 actionListener="#{adminSEDUserView.removeCurrentSEDUser()}" update=":forms:SettingsUsers:TblSedUser" />
+                                 actionListener="#{adminSEDUserView.removeSelected()}" update=":forms:SettingsUsers:TblSedUser" />
 
             </f:facet>
-            
+
             <p:column style="width:16px">
                 <p:rowToggler />
             </p:column>
-            <p:column headerText="Username">
+            <p:column headerText="Username" width="250">
                 <h:outputText value="#{sp.userId}" />
             </p:column>
-           <p:column headerText="Active from date">
-                <h:outputText value="#{sp.activeFromDate}"><f:convertDateTime pattern="dd.MM.yyyy"  timeZone="CET" /></h:outputText>                
+            <p:column headerText="Active from date" width="60">
+                <h:outputText value="#{sp.activeFromDate}" ><f:convertDateTime pattern="dd.MM.yyyy"  timeZone="CET" /></h:outputText>                
             </p:column>
-            <p:column headerText="Active to date">
+            <p:column headerText="Active to date" width="60">
                 <h:outputText value="#{sp.activeToDate}" ><f:convertDateTime pattern="dd.MM.yyyy" timeZone="CET" /></h:outputText>                
             </p:column>
             <p:rowExpansion>
@@ -61,9 +66,6 @@
             </p:rowExpansion>
 
         </p:dataTable>
-
-
-
 
     </composite:implementation>
 

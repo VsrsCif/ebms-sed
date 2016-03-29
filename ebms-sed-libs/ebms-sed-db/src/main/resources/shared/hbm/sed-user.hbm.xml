@@ -14,7 +14,7 @@
             <key>
                 <column name="userid" not-null="true" />
             </key>
-            <many-to-many entity-name="org.sed.ebms.ebox.SEDBox">
+            <many-to-many entity-name="org.sed.ebms.ebox.SEDBox" unique="true">
                 <column name="sed_box" not-null="true" />
             </many-to-many>
         </bag>

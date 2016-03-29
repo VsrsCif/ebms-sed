@@ -51,7 +51,7 @@
                             </span>
                             <p:outputLabel for="ebox" value="SED-Box: " />
                             <p:selectOneMenu id="ebox" value="#{userSessionData.currentSEDBox}" style="width:150px">
-                                <f:selectItem itemValue="" noSelectionOption="false" />
+                                <f:selectItem itemValue="Select sed-box" noSelectionOption="true" />
                                 <f:selectItems value="#{userSessionData.userEBoxes}" />
                             </p:selectOneMenu>
 
@@ -164,12 +164,12 @@
                                 <p:menuitem value="Certificates"  actionListener="#{MainWindow.onToolbarButtonAction}"  update="forms:MainPanel">
                                     <f:attribute name="panel" value="PANEL_SETT_CERTS" />
                                 </p:menuitem>
-                                <p:menuitem value="Users"  actionListener="#{MainWindow.onToolbarButtonAction}"  update="forms:MainPanel">
-                                    <f:attribute name="panel" value="PANEL_ADMIN_USERS" />
-                                </p:menuitem>
                                 <p:menuitem value="SED-Boxes"  actionListener="#{MainWindow.onToolbarButtonAction}"  update="forms:MainPanel">
                                     <f:attribute name="panel" value="PANEL_ADMIN_EBOXES" />
                                 </p:menuitem>
+                                <p:menuitem value="Users"  actionListener="#{MainWindow.onToolbarButtonAction}"  update="forms:MainPanel">
+                                    <f:attribute name="panel" value="PANEL_ADMIN_USERS" />
+                                </p:menuitem>                                
                                 <p:menuitem value="Scheduler"  actionListener="#{MainWindow.onToolbarButtonAction}"  update="forms:MainPanel">
                                     <f:attribute name="panel" value="PANEL_ADMIN_CRON" />
                                 </p:menuitem>
@@ -180,141 +180,8 @@
                     </p:accordionPanel>
                 </p:layoutUnit>
             </p:layout>
-
-            <p:dialog  header="SEDBox detail" widgetVar="sedboxDialog" modal="true" hideEffect="fade" resizable="true">
-                <p:layout id="sedboxDialog" style="min-width:400px;min-height:200px;">
-                    <p:layoutUnit position="center" rendered="#{empty adminSEDBoxView.editableSedBox}" >
-                        <h:outputText value="Select row in table" />
-                    </p:layoutUnit>
-                    <p:layoutUnit position="center" rendered="#{not empty adminSEDBoxView.editableSedBox}" >
-                        <p:panelGrid  columns="2" columnClasses="label,value">
-
-                            <h:outputText value="Box:" />
-                            <h:outputText value="#{adminSEDBoxView.editableSedBox.boxName}" rendered="#{not adminSEDBoxView.currentIsNew}" />
-                            <h:inputText value="#{adminSEDBoxView.editableSedBox.boxName}" rendered="#{adminSEDBoxView.currentIsNew}" />
-
-                            <h:outputText value="Active from date:" />                                                        
-                            <p:calendar  value="#{adminSEDBoxView.editableSedBox.activeFromDate}" pattern="dd.MM.yyyy" mask="true" navigator="true" showOn="button"/>
-
-                            <h:outputText value="Active to date:" />                            
-                            <p:calendar value="#{adminSEDBoxView.editableSedBox.activeToDate}" pattern="dd.MM.yyyy" mask="true" navigator="true" showOn="button"/>
-                        </p:panelGrid>
-                    </p:layoutUnit>
-                    <p:layoutUnit position="south">
-                        <p:commandButton value="Ok" update=":forms:SettingsSEDBoxes:TblSedBox" styleClass="toolbar-Button" icon="ui-icon-sed-ok" 
-                                         actionListener="#{adminSEDBoxView.updateOrAddSEDBox()}"
-                                         oncomplete="PF('sedboxDialog').hide()"   />
-                        <p:commandButton value="Cancel" update=":forms:sedboxDialog" styleClass="toolbar-Button" icon="ui-icon-sed-cancel" oncomplete="PF('sedboxDialog').hide()" />
-                    </p:layoutUnit>
-                </p:layout>
-            </p:dialog>
-
-
-            <p:dialog  header="SEDCron detail" widgetVar="cronDialog" modal="true" hideEffect="fade" resizable="true">
-                <p:layout id="cronDialog" style="min-width:600px;min-height:200px;">
-                    <p:layoutUnit position="center" rendered="#{empty adminMSHCronJobView.editableMSHCronJob}" >
-                        <h:outputText value="Select row in table" />
-                    </p:layoutUnit>
-                    <p:layoutUnit position="west" rendered="#{not empty adminMSHCronJobView.editableMSHCronJob}" >
-                        <p:panelGrid  columns="2" columnClasses="label,value">
-
-                            <h:outputText value="Minute:" />
-                            <h:inputText value="#{adminMSHCronJobView.editableMSHCronJob.minute}"  />
-
-                            <h:outputText value="Hour:" />
-                            <h:inputText value="#{adminMSHCronJobView.editableMSHCronJob.hour}"  />
-
-                            <h:outputText value="Day of Month:" />
-                            <h:inputText value="#{adminMSHCronJobView.editableMSHCronJob.dayOfMonth}"  />
-
-                            <h:outputText value="Month:" />
-                            <h:inputText value="#{adminMSHCronJobView.editableMSHCronJob.month}"  />
-
-                            <h:outputText value="Day of week:" />
-                            <h:inputText value="#{adminMSHCronJobView.editableMSHCronJob.dayOfWeek}"  />
-
-                       
-
-                        </p:panelGrid>
-
-
-                    </p:layoutUnit>
-                     <p:layoutUnit position="center" rendered="#{not empty adminMSHCronJobView.editableMSHCronJob}" >
-                        <p:panelGrid  columns="2" columnClasses="label,value">
-                            <h:outputText value="Task:" />
-                            <h:inputText value="#{adminMSHCronJobView.editableMSHCronJob.MSHTask.taskType}"  />
-                            
-                            <h:outputText value="Mail address:" />
-                            <h:inputText value="#{adminMSHCronJobView.editableMail}"  />
-                            <h:outputText value="Mail subject:" />
-                            <h:inputText value="#{adminMSHCronJobView.editableMailSubject}"  />
-                        </p:panelGrid>
-
-
-                    </p:layoutUnit>
-                    <p:layoutUnit position="south">
-                        <p:commandButton value="Ok" update=":forms:SettingsCron:TblCron" styleClass="toolbar-Button" icon="ui-icon-sed-ok" 
-                                         actionListener="#{adminMSHCronJobView.updateOrAddMSHCronJob()}"
-                                         oncomplete="PF('cronDialog').hide()"   />
-                        <p:commandButton value="Cancel" update=":forms:cronDialog" styleClass="toolbar-Button" icon="ui-icon-sed-cancel" oncomplete="PF('cronDialog').hide()" />
-                    </p:layoutUnit>
-                </p:layout>
-            </p:dialog>
-
-            <p:dialog   header="SEDUser detail" widgetVar="userDialog" modal="true" hideEffect="fade" resizable="true">
-                <p:layout  id="userDialog" style="min-width:450px;min-height:380px;">
-                    <p:layoutUnit position="center" rendered="#{empty adminSEDUserView.editableSedUser}" >
-                        <h:outputText value="Select row in table" />
-                    </p:layoutUnit>
-                    <p:layoutUnit position="center" rendered="#{not empty adminSEDUserView.editableSedUser}" >
-                        <p:panelGrid >
-
-                            <p:row>
-                                <p:column><h:outputText value="Username:" /></p:column>
-                                <p:column><h:outputText value="#{adminSEDUserView.editableSedUser.userId}" rendered="#{not adminSEDUserView.currentIsNew}" />
-                                    <h:inputText value="#{adminSEDUserView.editableSedUser.userId}" rendered="#{adminSEDUserView.currentIsNew}" /></p:column>
-                            </p:row>
-                            <p:row>
-                                <p:column><h:outputText value="Active from date:" /></p:column>
-                                <p:column><p:calendar value="#{adminSEDUserView.editableSedUser.activeFromDate}" pattern="dd.MM.yyyy" mask="true" navigator="true" showOn="button"/></p:column>
-                            </p:row>
-                            <p:row>
-                                <p:column><h:outputText value="Active to date:" /></p:column>
-                                <p:column><p:calendar value="#{adminSEDUserView.editableSedUser.activeToDate}" pattern="dd.MM.yyyy" mask="true" navigator="true" showOn="button"/></p:column>
-                            </p:row>
-                            <p:row>
-                                <p:column colspan="2" >
-
-                                    <p:pickList id="UserBoxPickList" value="#{adminSEDUserView.currentPickupDualSEDBoxList}" var="sbox" 
-                                                effect="fade"
-                                                itemValue="#{sbox}" itemLabel="#{sbox.boxName}" showSourceControls="false"
-                                                showTargetControls="false" showCheckbox="false" responsive="true"
-                                                showSourceFilter="false" showTargetFilter="false" converter="primeFacesPickListConverter"
-                                                >
-                                        <f:facet name="sourceCaption">Available</f:facet>
-                                        <f:facet name="targetCaption">User sed-boxes</f:facet>
-
-
-
-                                        <p:column >
-                                            <h:outputText value="#{sbox.boxName}" />
-                                        </p:column>
-                                    </p:pickList>
-
-
-                                </p:column>
-                            </p:row>
-                        </p:panelGrid>
-                    </p:layoutUnit>
-                    <p:layoutUnit position="south">
-                        <p:commandButton value="Ok" update=":forms:SettingsUsers:TblSedUser" styleClass="toolbar-Button" icon="ui-icon-sed-ok" 
-                                         actionListener="#{adminSEDUserView.updateOrAddSEDUser()}"
-                                         oncomplete="PF('userDialog').hide()"   />
-                        <p:commandButton value="Cancel" update=":forms:sedboxDialog" styleClass="toolbar-Button" icon="ui-icon-sed-cancel" oncomplete="PF('userDialog').hide()" />
-                    </p:layoutUnit>
-                </p:layout>
-            </p:dialog>
-
         </h:form>
+        <sui:dialogs id="dialogs" />
+        
     </h:body>
 </html>

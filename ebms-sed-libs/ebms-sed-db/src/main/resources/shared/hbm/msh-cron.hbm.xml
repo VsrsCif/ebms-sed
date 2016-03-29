@@ -10,6 +10,8 @@
                 <param name="sequence">SEQ_SED_CRON</param>
             </generator>
         </id>
+        <property column="ACTIVE" name="Active"   type="java.lang.Boolean"/>
+        <property column="SECOND" name="Second"  length="64" type="java.lang.String"/>
         <property column="MINUTE" name="Minute"  length="64" type="java.lang.String"/>
         <property column="HOUR" name="Hour"  length="64" type="java.lang.String"/>
         <property column="DAY_OF_MONTH" name="DayOfMonth"  length="64" type="java.lang.String"/>
@@ -41,7 +43,7 @@
     </class>
     
     <query name="org.msh.ebms.cron.MSHCronJob.getById" ><![CDATA[SELECT p FROM MSHCronJob p WHERE p.Id = :id]]></query>     
-    <query name="org.msh.ebms.cron.MSHCronJob.getAll" ><![CDATA[SELECT p FROM MSHCronJob p order by id desc]]></query>
+    <query name="org.msh.ebms.cron.MSHCronJob.getAll" ><![CDATA[SELECT p FROM MSHCronJob p order by id asc]]></query>
     
 
 </hibernate-mapping>

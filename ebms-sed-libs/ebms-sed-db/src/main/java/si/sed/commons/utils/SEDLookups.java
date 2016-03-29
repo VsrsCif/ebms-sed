@@ -5,9 +5,12 @@
  */
 package si.sed.commons.utils;
 
+import java.io.File;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.Singleton;
@@ -25,6 +28,7 @@ import javax.transaction.Status;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 import org.msh.ebms.cron.MSHCronJob;
+import org.sed.ebms.ebox.Export;
 import org.sed.ebms.ebox.SEDBox;
 import org.sed.ebms.user.SEDUser;
 
@@ -51,73 +55,103 @@ public class SEDLookups {
     private final HashMap<Class, Long> mlstTimeOut = new HashMap<>();
     private final HashMap<Class, List<?>> mlstCacheLookup = new HashMap<>();
 
-    public List<SEDBox> getSEDBoxes() {        
+    public List<SEDBox> getSEDBoxes() {
         return getLookup(SEDBox.class);
     }
-    
-    public void addSEDBox(SEDBox sb) {   
-        add(sb);        
+
+    public boolean addSEDBox(SEDBox sb) {
+        return add(sb);
     }
-    public void updateSEDBox(SEDBox sb) {        
-        update(sb);
+
+    public boolean updateSEDBox(SEDBox sb) {
+        return update(sb);
     }
-    public void removeSEDBox(SEDBox sb) {        
-        remove(sb);
+
+    public boolean removeSEDBox(SEDBox sb) {
+        return remove(sb);
     }
-    public List<SEDUser> getSEDUsers() {        
+
+    public SEDBox getSEDBoxByName(String strname) {
+        if (strname != null && !strname.trim().isEmpty()) {
+            String sedBox = strname.trim();
+            List<SEDBox> lst = getSEDBoxes();
+            for (SEDBox sb : lst) {
+                if (sb.getBoxName().equalsIgnoreCase(sedBox)) {
+                    return sb;
+                }
+            }
+        }
+        return null;
+    }
+
+    public List<SEDUser> getSEDUsers() {
         return getLookup(SEDUser.class);
     }
 
-    public void addSEDUser(SEDUser sb) {   
-        add(sb);        
+    public boolean addSEDUser(SEDUser sb) {
+        return add(sb);
     }
-    public void updateSEDUser(SEDUser sb) {        
-        update(sb);
+
+    public boolean updateSEDUser(SEDUser sb) {
+        return update(sb);
     }
-    public void removeSEDUser(SEDUser sb) {        
-        remove(sb);
+
+    public boolean removeSEDUser(SEDUser sb) {
+        return remove(sb);
     }
-    
-    
-    public List<MSHCronJob> getMSHCronJobs() {        
+
+    public List<MSHCronJob> getMSHCronJobs() {
         return getLookup(MSHCronJob.class);
     }
 
-    public void addMSHCronJob(MSHCronJob sb) {   
-        add(sb);        
+    public boolean addMSHCronJob(MSHCronJob sb) {
+        return add(sb);
     }
-    public void updateMSHCronJob(MSHCronJob sb) {        
-        update(sb);
+
+    public boolean updateMSHCronJob(MSHCronJob sb) {
+        return update(sb);
     }
-    public void removeMSHCronJob(MSHCronJob sb) {        
-        remove(sb);
+
+    public boolean removeMSHCronJob(MSHCronJob sb) {
+        return remove(sb);
     }
-   
+
     @PostConstruct
-    void init(){
+    void init() {
         long l = LOG.logStart();
-         //----------------------------------
+        //----------------------------------
         // SEDBox
-         List<SEDBox> lstBox =  getSEDBoxes();
+        List<SEDBox> lstBox = getSEDBoxes();
         if (lstBox.isEmpty()) {
             SEDBox b1 = new SEDBox();
             b1.setActiveFromDate(Calendar.getInstance().getTime());
             b1.setBoxName("izvrsba@sed-court.si");
+            b1.setExport(new Export());
+            b1.getExport().setActive(Boolean.TRUE);
+            b1.getExport().setExportMetaData(Boolean.TRUE);
+            b1.getExport().setFolder("${sed.home}" +File.separator +  "export-izvrsba");
+            b1.getExport().setFileMask(("${Id}_${SenderEBox}_${Service}"));
+            
             SEDBox b2 = new SEDBox();
             b2.setActiveFromDate(Calendar.getInstance().getTime());
             b2.setBoxName("k-vpisnik@sed-court.si");
             SEDBox b3 = new SEDBox();
             b3.setActiveFromDate(Calendar.getInstance().getTime());
             b3.setBoxName("eINS-vpisnik@sed-court.si");
+            b3.setExport(new Export());
+            b3.getExport().setActive(Boolean.TRUE);
+            b3.getExport().setFolder("${sed.home}" +File.separator +  "export-eins");
+            b3.getExport().setFileMask(("${Service}_${Id}"));
+            
             lstBox.add(b1);
             lstBox.add(b2);
             lstBox.add(b3);
 
-           try {
+            try {
                 mutUTransaction.begin();
                 lstBox.stream().forEach((cs) -> {
                     memEManager.persist(cs);
-                });                
+                });
                 mutUTransaction.commit();
                 mlstCacheLookup.put(SEDBox.class, lstBox);
             } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
@@ -132,9 +166,7 @@ public class SEDLookups {
                 }
             }
         }
-         
 
-    
         //----------------------------------
         // SEDBox
         List<SEDUser> lstUser = getSEDUsers();
@@ -172,7 +204,7 @@ public class SEDLookups {
             }
 
         }
-     LOG.logEnd(l);
+        LOG.logEnd(l);
     }
 
     private <T> List<T> getLookup(Class<T> c) {
@@ -186,49 +218,77 @@ public class SEDLookups {
         }
         return t;
     }
-    
+
     private <T> boolean updateLookup(Class<T> c) {
         return !mlstTimeOut.containsKey(c)
                 || (Calendar.getInstance().getTimeInMillis() - mlstTimeOut.get(c)) > S_UPDATE_TIMEOUT;
     }
-    
-    public <T> void add(T o) {        
+
+    public <T> boolean add(T o) {
+        long l = LOG.logStart();
+        boolean suc = false;
         try {
             mutUTransaction.begin();
             memEManager.persist(o);
             mutUTransaction.commit();
             mlstTimeOut.remove(o.getClass()); // remove timeout to refresh lookup at next call            
+            suc = true;
         } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
-            LOG.logError(0, ex);
+            try {
+                LOG.logError(l, ex.getMessage(), ex);
+                mutUTransaction.rollback();
+            } catch (IllegalStateException | SecurityException | SystemException ex1) {
+                LOG.logWarn(l, "Rollback failed", ex1);
+            }
         }
+        return suc;
     }
-    
-    public <T> void update(T o) {        
+
+    public <T> boolean update(T o) {
+        long l = LOG.logStart();
+        boolean suc = false;
         try {
             mutUTransaction.begin();
             memEManager.merge(o);
             mutUTransaction.commit();
             mlstTimeOut.remove(o.getClass()); // remove timeout to refresh lookup at next call            
+            suc = true;
         } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
-            LOG.logError(0, ex);
+            try {
+                LOG.logError(l, ex.getMessage(), ex);
+                mutUTransaction.rollback();
+            } catch (IllegalStateException | SecurityException | SystemException ex1) {
+                LOG.logWarn(l, "Rollback failed", ex1);
+            }
         }
+        return suc;
     }
-     public <T> void remove(T o) {        
+
+    public <T> boolean remove(T o) {
+        long l = LOG.logStart();
+        boolean suc = false;
         try {
             mutUTransaction.begin();
             memEManager.remove(memEManager.contains(o) ? o : memEManager.merge(o));
             mutUTransaction.commit();
             mlstTimeOut.remove(o.getClass()); // remove timeout to refresh lookup at next call            
+            suc = true;
         } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
-            LOG.logError(0, ex);
+            try {
+                LOG.logError(l, ex.getMessage(), ex);
+                mutUTransaction.rollback();
+            } catch (IllegalStateException | SecurityException | SystemException ex1) {
+                LOG.logWarn(l, "Rollback failed", ex1);
+            }
         }
+        return suc;
     }
 
     private <T> List<T> getFromCache(Class<T> c) {
         return mlstCacheLookup.containsKey(c) ? (List<T>) mlstCacheLookup.get(c) : null;
     }
 
-    private  <T> void cacheLookup(List<T> lst, Class<T> c) {
+    private <T> void cacheLookup(List<T> lst, Class<T> c) {
         if (mlstCacheLookup.containsKey(c)) {
             mlstCacheLookup.get(c).clear();
             mlstCacheLookup.replace(c, lst);

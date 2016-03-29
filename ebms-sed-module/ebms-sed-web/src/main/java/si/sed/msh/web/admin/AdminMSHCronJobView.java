@@ -17,18 +17,17 @@
 package si.sed.msh.web.admin;
 
 import java.math.BigInteger;
-import si.sed.msh.web.gui.*;
 import java.util.List;
 import javax.ejb.EJB;
+import javax.ejb.ScheduleExpression;
+import javax.ejb.TimerConfig;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import org.msh.ebms.cron.MSHCronJob;
 import org.msh.ebms.cron.MSHTask;
 import org.msh.ebms.cron.MSHTaskProperty;
-import org.primefaces.event.SelectEvent;
-import org.primefaces.event.UnselectEvent;
+import si.sed.commons.utils.MSHScheduler;
 
-import si.sed.commons.utils.DBSettings;
 import si.sed.commons.utils.SEDLogger;
 import si.sed.commons.utils.SEDLookups;
 
@@ -36,24 +35,25 @@ import si.sed.commons.utils.SEDLookups;
  *
  * @author Jože Rihtaršič
  */
+
+
 @SessionScoped
 @ManagedBean(name = "adminMSHCronJobView")
-public class AdminMSHCronJobView extends AbstractJSFView {
+public class AdminMSHCronJobView extends AbstractAdminJSFView<MSHCronJob> {
 
     private static final SEDLogger LOG = new SEDLogger(AdminMSHCronJobView.class);
 
     @EJB
-    private DBSettings mdbSettings;
-
-    @EJB
     private SEDLookups mdbLookups;
 
-    private MSHCronJob msbCurrentMSHCronJob;
-    private MSHCronJob msbNewMSHCronJob;
-    private MSHCronJob msbEditableMSHCronJob;
+    @EJB
+    private MSHScheduler mshScheduler;
+
 
     public List<MSHCronJob> getMSHCronJobs() {
+        long l = LOG.logStart();
         List<MSHCronJob> lst = mdbLookups.getMSHCronJobs();
+        LOG.logEnd(l, lst != null ? lst.size() : "null");
         return lst;
     }
 
@@ -61,79 +61,58 @@ public class AdminMSHCronJobView extends AbstractJSFView {
         return strBoxName != null ? strBoxName.substring(0, strBoxName.indexOf("@")) : "";
     }
 
-    public void onRowSelect(SelectEvent event) {
-        msbEditableMSHCronJob = (MSHCronJob) event.getObject();
-    }
-
-    public void onRowUnselect(UnselectEvent event) {
-        long l = LOG.logStart();
-        msbEditableMSHCronJob = null;
-        LOG.logEnd(l);
-    }
-
-    public MSHCronJob getCurrentMSHCronJob() {
-        return msbCurrentMSHCronJob;
-
-    }
-
-    public void setCurrentMSHCronJob(MSHCronJob currentMSHCronJob) {
-        this.msbCurrentMSHCronJob = currentMSHCronJob;
-    }
-
-    public MSHCronJob getEditableMSHCronJob() {
-        return msbEditableMSHCronJob;
-    }
-
-    public void setEditableMSHCronJob(MSHCronJob sbEditableMSHCronJob) {
-        this.msbEditableMSHCronJob = sbEditableMSHCronJob;
-    }
-    
-    public MSHTaskProperty getEditablePropertyByMail(String name){
-        if (msbEditableMSHCronJob!=null && msbEditableMSHCronJob.getMSHTask()!=null 
-                && msbEditableMSHCronJob.getMSHTask().getMSHTaskProperties()!= null) {
-            for (MSHTaskProperty mp: msbEditableMSHCronJob.getMSHTask().getMSHTaskProperties()){
-                if (mp.getValue().equalsIgnoreCase(name)){
+   
+    public MSHTaskProperty getEditableProperty(String name) {
+        if (getEditable() != null && getEditable().getMSHTask() != null) {
+            for (MSHTaskProperty mp : getEditable().getMSHTask().getMSHTaskProperties()) {
+                if (mp.getName().equalsIgnoreCase(name)) {
                     return mp;
                 }
             }
-            
-            
         }
         return null;
     }
-    
+
+    public void setEditableProperty(String name, String val) {
+        MSHTaskProperty pp = null;
+        if (getEditable() != null) {
+            return;
+        }
+        if (getEditable().getMSHTask() != null) {
+            for (MSHTaskProperty mp : getEditable().getMSHTask().getMSHTaskProperties()) {
+                if (mp.getName().equalsIgnoreCase(name)) {
+                    pp = mp;
+                    break;
+                }
+            }
+        } else {
+            getEditable().setMSHTask(new MSHTask());
+        }
+        if (pp == null) {
+            pp = new MSHTaskProperty();
+            pp.setName(val);
+            getEditable().getMSHTask().getMSHTaskProperties().add(pp);
+        }
+        pp.setValue(val);
+
+    }
+
     public String getEditableMail() {
-        MSHTaskProperty mtp = getEditablePropertyByMail("email");
-        return mtp!=null?mtp.getValue():null;
+        MSHTaskProperty mtp = getEditableProperty("email");
+        return mtp != null ? mtp.getValue() : null;
     }
 
     public void setEditableMail(String str) {
-        MSHTaskProperty mtp = getEditablePropertyByMail("email");
-        if (mtp!= null){
-            mtp.setValue(str);
-        }
+        setEditableProperty("email", str);
     }
-     public String getEditableMailSubject() {
-        MSHTaskProperty mtp = getEditablePropertyByMail("subject");
-        return mtp!=null?mtp.getValue():null;
+
+    public String getEditableMailSubject() {
+        MSHTaskProperty mtp = getEditableProperty("subject");
+        return mtp != null ? mtp.getValue() : null;
     }
 
     public void setEditableMailSubject(String str) {
-        MSHTaskProperty mtp = getEditablePropertyByMail("subject");
-        if (mtp!= null){
-            mtp.setValue(str);
-        }
-    }
-    
-    
-
-    public void removeCurrentMSHCronJob() {
-        if (msbCurrentMSHCronJob != null) {
-
-            mdbLookups.removeMSHCronJob(msbCurrentMSHCronJob);
-            msbCurrentMSHCronJob = null;
-
-        }
+        setEditableProperty("subject", str);
     }
 
     public MSHCronJob getMSHCronJobByName(BigInteger id) {
@@ -144,50 +123,84 @@ public class AdminMSHCronJobView extends AbstractJSFView {
             }
         }
         return null;
-
     }
 
-    public void createMSHCronJob() {
-        long l = LOG.logStart();
+  
+    @Override
+    public void createEditable() {
+        MSHCronJob ecj = new MSHCronJob();
+        ecj.setActive(true);
+        ecj.setSecond("*/20");
+        ecj.setMinute("*");
+        ecj.setHour("*");
+        ecj.setDayOfMonth("*");
+        ecj.setMonth("*");
+        ecj.setDayOfWeek("*");
 
-        msbNewMSHCronJob = new MSHCronJob();
-        msbNewMSHCronJob.setDayOfMonth("*");
-        msbNewMSHCronJob.setDayOfWeek("*");
-        msbNewMSHCronJob.setHour("*");
-        msbNewMSHCronJob.setMinute("*");
-        msbNewMSHCronJob.setMonth("*");
-        msbNewMSHCronJob.setMSHTask(new MSHTask());
-        msbNewMSHCronJob.getMSHTask().setTaskType("DeliveredMail");
+        ecj.setMSHTask(new MSHTask());
+        ecj.getMSHTask().setTaskType("DeliveredMail");
         MSHTaskProperty mtp = new MSHTaskProperty();
         mtp.setName("email");
-        mtp.setValue("joze.rihtarsic@sodisce.si");        
-        msbNewMSHCronJob.getMSHTask().getMSHTaskProperties().add(mtp);
+        mtp.setValue("test@mail.com");
+        ecj.getMSHTask().getMSHTaskProperties().add(mtp);
         mtp = new MSHTaskProperty();
-        mtp.setName("Subject");
-        mtp.setValue("[SED] Delivered mail");        
-        msbNewMSHCronJob.getMSHTask().getMSHTaskProperties().add(mtp);
+        mtp.setName("subject");
+        mtp.setValue("[SED] Delivered mail");
+        ecj.getMSHTask().getMSHTaskProperties().add(mtp);
         mtp = new MSHTaskProperty();
         mtp.setName("NotifyOnEmptyBox");
-        mtp.setValue("true");        
-        msbNewMSHCronJob.getMSHTask().getMSHTaskProperties().add(mtp);
-
-        setEditableMSHCronJob(msbNewMSHCronJob);
-        LOG.logEnd(l);
+        mtp.setValue("true");
+        ecj.getMSHTask().getMSHTaskProperties().add(mtp);
+        setNew(ecj);
+        
     }
 
-    public void updateOrAddMSHCronJob() {
-        long l = LOG.logStart();
-        if (msbNewMSHCronJob != null) {
-            mdbLookups.addMSHCronJob(msbNewMSHCronJob);
-            msbNewMSHCronJob = null;
-        } else if (msbEditableMSHCronJob != null) {
-            mdbLookups.updateMSHCronJob(msbEditableMSHCronJob);
+    @Override
+    public void removeSelected() {
+        if (getSelected() != null) {
+            mdbLookups.removeMSHCronJob(getSelected());
+            setSelected(null);
+
         }
-        LOG.logEnd(l);
     }
 
-    public boolean isCurrentIsNew() {
-        return msbNewMSHCronJob == msbEditableMSHCronJob;
+    @Override
+    public void persistEditable() {
+        MSHCronJob ecj = getEditable();
+        if (ecj != null) {
+            mdbLookups.addMSHCronJob(ecj);
+            if (ecj.getActive() != null && ecj.getActive()) {
+                LOG.log("Register timer to TimerService");
+                ScheduleExpression se = new ScheduleExpression()
+                        .second(ecj.getSecond())
+                        .minute(ecj.getMinute())
+                        .hour(ecj.getHour())
+                        .dayOfMonth(ecj.getDayOfMonth())
+                        .month(ecj.getMonth())
+                        .dayOfWeek(ecj.getDayOfWeek());
+                TimerConfig checkTest = new TimerConfig(ecj.getId(), false);
+                mshScheduler.getServices().createCalendarTimer(se, checkTest);
+
+            }
+        }
+        
     }
 
+    @Override
+    public void updateEditable() {
+        MSHCronJob ecj = getEditable();
+        if (ecj != null) {
+            mdbLookups.updateMSHCronJob(ecj);            
+        }
+    }
+
+    @Override
+    public List<MSHCronJob> getList() {
+        long l = LOG.logStart();
+        List<MSHCronJob> lst = mdbLookups.getMSHCronJobs();
+        LOG.logEnd(l, lst != null ? lst.size() : "null");
+        return lst;
+    }
+
+   
 }

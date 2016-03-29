@@ -4,6 +4,7 @@
     xmlns:xjc= "http://java.sun.com/xml/ns/jaxb/xjc"
     jxb:extensionBindingPrefixes="xjc"
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    
 >
     <jxb:bindings>
         <jxb:globalBindings xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
@@ -23,10 +24,12 @@
             
             
             <jxb:javaType name="java.lang.Integer" xmlType="xs:int" />
+            
 
             <xjc:simple/> <!-- add root element to generated object -->
             <!-- xjc:serializable / --> <!-- EJB 3.0. serializable -->
         </jxb:globalBindings>
+        
     </jxb:bindings>
 </jxb:bindings>
 

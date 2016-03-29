@@ -93,7 +93,6 @@
                         <format> {0}.{1} - {2,date, dd.MM.yyyy HH:mm}</format>
                         <items>
                             <item>${project.version}</item>
-                            <item>scmVersion</item>
                             <item>timestamp</item>
                         </items>
                     </revisiononscmfailure>

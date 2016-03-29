@@ -17,17 +17,18 @@ import org.sed.ebms.ebox.SEDBox;
  *
  * @author sluzba
  */
-@FacesConverter(value = "primeFacesPickListConverter")
-public class PrimeFacesPickListConverter implements Converter {
+@FacesConverter(value = "userSedBoxPickListConverter")
+public class UserSedBoxPickListConverter implements Converter {
 
     @Override
     public Object getAsObject(FacesContext arg0, UIComponent arg1, String arg2) {
         Object ret = null;
         if (arg1 instanceof PickList) {
-            Object dualList = ((PickList) arg1).getValue();
-            DualListModel dl = (DualListModel) dualList;
+            PickList pl = (PickList) arg1;
+            DualListModel dl = (DualListModel) pl.getValue();
+            
             for (Object o : dl.getSource()) {
-                String id = "" + ((SEDBox) o).getBoxName();
+                String id =  ((SEDBox) o).getBoxName();
                 if (arg2.equals(id)) {
                     ret = o;
                     break;
@@ -47,11 +48,12 @@ public class PrimeFacesPickListConverter implements Converter {
     }
 
     @Override
-    public String getAsString(FacesContext arg0, UIComponent arg1, Object arg2) {
+    public String getAsString(FacesContext arg0, UIComponent arg1, Object arg2) {       
         String str = "";
-        if (arg2 instanceof SEDBox) {
+        if (arg2 instanceof SEDBox) {            
             str = "" + ((SEDBox) arg2).getBoxName();
         }
+        System.out.println("Return result:  : " +str);
         return str;
     }
 }

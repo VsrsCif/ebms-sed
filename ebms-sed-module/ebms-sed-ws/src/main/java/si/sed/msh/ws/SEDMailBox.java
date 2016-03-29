@@ -660,28 +660,27 @@ public class SEDMailBox implements SEDMailBoxWS {
             session.commit();
             mLog.log("Tranaction commited", userID, applicationId, pmodeId);
 
-        } catch (NotSupportedException | SystemException | RollbackException 
-                | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
-            
-                try {
-                    getUserTransaction().rollback();
+        } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
 
-                } catch (IllegalStateException | SecurityException | SystemException ex1) {
-                    mLog.logWarn(l, "Error rollback transaction", ex1);
-                }
+            try {
+                getUserTransaction().rollback();
 
-                try {
-                    if (session != null) {
-                        session.rollback();
-                    }
-                } catch (JMSException ex1) {
-                    mLog.logWarn(l, "Error rollback JSM session", ex1);
+            } catch (IllegalStateException | SecurityException | SystemException ex1) {
+                mLog.logWarn(l, "Error rollback transaction", ex1);
+            }
+
+            try {
+                if (session != null) {
+                    session.rollback();
                 }
-                SEDException msherr = new SEDException();
-                msherr.setErrorCode(SEDExceptionCode.SERVER_ERROR);
-                msherr.setMessage(ex.getMessage());
-                throw new SEDException_Exception("Error occured while storing to DB", msherr, ex);
-            
+            } catch (JMSException ex1) {
+                mLog.logWarn(l, "Error rollback JSM session", ex1);
+            }
+            SEDException msherr = new SEDException();
+            msherr.setErrorCode(SEDExceptionCode.SERVER_ERROR);
+            msherr.setMessage(ex.getMessage());
+            throw new SEDException_Exception("Error occured while storing to DB", msherr, ex);
+
         } catch (NamingException | JMSException ex) {
             try {
                 getUserTransaction().rollback();
@@ -948,12 +947,12 @@ public class SEDMailBox implements SEDMailBoxWS {
 
     protected String getCurrrentRemoteIP() {
         String clientIP = null;
-        try {
+        if (mwsCtxt != null) {
             MessageContext msgCtxt = mwsCtxt.getMessageContext();
             HttpServletRequest req = (HttpServletRequest) msgCtxt.get(MessageContext.SERVLET_REQUEST);
             clientIP = req.getRemoteAddr();
-        } catch (Exception exc) {
-            mLog.logError(0, "Error getting remote address", exc);
+        } else {
+            mLog.log("WebServiceContext is null! Can't get client's IP. ");
         }
         return clientIP;
     }
