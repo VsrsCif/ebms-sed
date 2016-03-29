@@ -85,17 +85,7 @@
                     </items>
                     <doCheck>false</doCheck>
                     <doUpdate>false</doUpdate>
-                    <revisiononscmfailure>     
-                        <!--
-                         Generate sequence build number based on:
-                         build number and timestamp     
-                        -->
-                        <format> {0}.{1} - {2,date, dd.MM.yyyy HH:mm}</format>
-                        <items>
-                            <item>${project.version}</item>
-                            <item>timestamp</item>
-                        </items>
-                    </revisiononscmfailure>
+                    <revisionOnScmFailure>Unknown</revisionOnScmFailure>
                 </configuration>
             </plugin>
         </plugins>
