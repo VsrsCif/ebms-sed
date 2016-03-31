@@ -4,4 +4,12 @@ jdk:
   
 script:  
   #run all tests 
-  - mvn clean install -P default -DignoreTestFailure=true
+  - mvn clean install -P default -DignoreTestFailure=false
+
+cache:
+  directories:
+  - $HOME/.m2
+
+branches:
+  only:
+  - master

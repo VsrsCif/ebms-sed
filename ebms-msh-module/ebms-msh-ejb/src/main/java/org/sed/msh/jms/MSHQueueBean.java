@@ -231,6 +231,8 @@ public class MSHQueueBean implements MessageListener {
             message.setIntProperty(SEDValues.EBMS_QUEUE_PARAM_RETRY, retry);
             message.setLongProperty(SEDValues.EBMS_QUEUE_PARAM_DELAY, delay);
             message.setLongProperty(SEDValues.EBMS_QUEUE_DELAY_AMQ, delay);
+            message.setLongProperty(SEDValues.EBMS_QUEUE_DELAY_HQ, delay);
+
             
 
             sender.send(message);

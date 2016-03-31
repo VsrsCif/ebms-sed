@@ -105,7 +105,7 @@ public class StorageUtils {
         return fStore;
     }
 
-    public void copyFile(File sourceFile, File destFile) throws IOException {
+    public static synchronized void copyFile(File sourceFile, File destFile) throws IOException {
         if (!destFile.exists()) {
             destFile.createNewFile();
         }
@@ -114,7 +114,7 @@ public class StorageUtils {
             destination.transferFrom(source, 0, source.size());
         }
     }
-    public void copyInFile(String strInFileName , File destFile) throws IOException, StorageException {
+    public static  synchronized void copyInFile(String strInFileName , File destFile) throws IOException, StorageException {
         copyFile(getFile(strInFileName), destFile);        
     }
 

@@ -128,7 +128,9 @@ public class EBMSEndpoint implements Provider<SOAPMessage> {
             MSHInMail inmail = (MSHInMail) ex.get(MSHInMail.class);
 
             String rName = inmail.getReceiverEBox();
-            SEDBox sb = getSedBoxByName(rName);
+            
+            SEDBox sb = (SEDBox)ex.get(SEDBox.class);
+
             
             
             if (sb == null) {
@@ -145,15 +147,7 @@ public class EBMSEndpoint implements Provider<SOAPMessage> {
         return response;
     }
     
-    private SEDBox getSedBoxByName(String sbox){
-        TypedQuery<SEDBox> sq =  getEntityManager().createNamedQuery("org.sed.ebms.ebox.SEDBox.getByName", SEDBox.class);
-        sq.setParameter("BoxName",sbox);
-        try { 
-            return sq.getSingleResult();
-        } catch(NoResultException nre) {
-           return null;
-        }
-    }
+    
 
     private void serializeMail(MSHInMail mail, Collection<Attachment> lstAttch, SEDBox sb) {
         long l = LOG.logStart();

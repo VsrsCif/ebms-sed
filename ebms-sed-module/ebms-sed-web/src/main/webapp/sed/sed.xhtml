@@ -63,11 +63,13 @@
 
                     <h:panelGroup id="MainPanel">
 
+                        
                         <sui:mail-table-in id="InMailPanel" rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_INBOX)  }"  />
                         <sui:mail-table-out id="OutMailPanel" rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_OUTBOX)}"  />
                         <sui:settings-keystore id="SettingsCustomPanel" rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_SETT_CERTS)}"  />
                         <sui:settings-custom id="SettingsCertPanel" rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_SETT_CUSTOM)}"  />
-                        <sui:settings-pmode id="SettingsPModes" rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_SETT_PMODE)}"  />                        
+                        <!--sui:settings-pmode id="SettingsPModes" rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_SETT_PMODE)}"  / -->                        
+                        <sui:pmode_bt id="SettingsPModesBT" rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_PMODE_BT)}"  />
                         <sui:settings-users id="SettingsUsers" rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_ADMIN_USERS)}"  />
                         <sui:settings-eboxes id="SettingsSEDBoxes" rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_ADMIN_EBOXES)}"  />
                         <sui:settings-cron id="SettingsCron" rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_ADMIN_CRON)}"  />
@@ -129,28 +131,22 @@
                             </p:menu>
                         </p:tab>
 
-                        <!-- p:tab id="PANEL_SETT_PMODE">
+                        <p:tab id="PANEL_SETT_PMODE">
                             <f:facet name="title">
                                 <h:graphicImage value="resources/images/settings32.png" width="22" height="22" />
                                 <h:outputText value="P-Modes" />                                 
                             </f:facet>
-                            <p:dataTable var="pmd" value="#{PModeView.PModes}" 
-                                         selectionMode="single" 
-                                         selection="#{PModeView.currentPMode}" 
-                                         rowKey="#{pmd.id}">
-                                <p:ajax event="rowSelect" listener="#{PModeView.onRowSelect}" 
-                                        update="forms:SettingsPModes:PModePanel" />  
+                            <p:menu class="ui-accordion-button">
+                                <p:menuitem value="Business transaction" 
+                                            actionListener="#{MainWindow.onToolbarButtonAction}" 
+                                            update="forms:MainPanel">
+                                    <f:attribute name="panel" value="PANEL_PMODE_BT" />
+                                </p:menuitem>
+                            </p:menu>
+                            
+                     
 
-                                <p:column headerText="ID">
-                                    <h:outputText value="#{pmd.id}" />
-                                </p:column>
-                                <p:column headerText="Is template ">
-                                    <h:outputText value="#{pmd.isTemplate}" />
-                                </p:column>
-
-                            </p:dataTable>
-
-                        </p:tab -->
+                        </p:tab>
 
                         <p:tab id="PANEL_SETT_CUSTOM">
                             <f:facet name="title">

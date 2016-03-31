@@ -61,6 +61,7 @@
         <module>ebms-sed-libs</module>
         <module>ebms-sed-module</module>                
         <module>ebms-msh-module</module>
+        <module>ebms-sed-plugins</module>
         <module>ebms-sed-standalone</module>
 	          
 

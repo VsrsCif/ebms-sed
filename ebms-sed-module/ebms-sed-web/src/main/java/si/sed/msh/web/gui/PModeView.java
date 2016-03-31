@@ -36,7 +36,7 @@ import si.sed.commons.utils.PModeManager;
 public class PModeView {
     
     private PMode currentPMode;
-    PModeManager pm = new  PModeManager();
+   // PModeManager pm = new  PModeManager();
     
     private Map<String,String> mLookupMep;
     private Map<String,String> mLookupMepBinding;
@@ -57,7 +57,7 @@ public class PModeView {
     
     
     public List<PMode> getPModes() {
-        return pm.getPModes().getPModes();
+        return null;
     }
 
     public PMode getCurrentPMode() {
@@ -69,7 +69,8 @@ public class PModeView {
     }
     
      public Leg getCurrentPModeForeChannel() {
-         return this.currentPMode != null?this.currentPMode.getLegs().get(0): null;
+         
+         return null;
     }
     
      public void onRowSelect(SelectEvent event) {

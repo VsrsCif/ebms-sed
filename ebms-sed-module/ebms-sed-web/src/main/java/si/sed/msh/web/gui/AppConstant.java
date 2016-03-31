@@ -32,11 +32,18 @@ public class AppConstant {
     public static final String S_PANEL_SETT_CUSTOM = "PANEL_SETT_CUSTOM";
     public static final String S_PANEL_SETT_CERTS = "PANEL_SETT_CERTS";
     public static final String S_PANEL_SETT_PMODE = "PANEL_SETT_PMODE";
+    public static final String S_PANEL_PMODE_BT = "PANEL_PMODE_BT";
     public static final String S_PANEL_ADMIN_USERS = "PANEL_ADMIN_USERS";
     public static final String S_PANEL_ADMIN_EBOXES = "PANEL_ADMIN_EBOXES";
     public static final String S_PANEL_ADMIN_CRON = "PANEL_ADMIN_CRON";
     
 
+ 
+
+    public  String getS_PANEL_PMODE_BT() {
+        return S_PANEL_PMODE_BT;
+    }
+    
     public  String getS_PANEL_INBOX() {
         return S_PANEL_INBOX;
     }

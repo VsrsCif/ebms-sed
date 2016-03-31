@@ -150,3 +150,27 @@
 .ui-button-text-icon-left .ui-button-text {
     padding: 2px 4px 2px 28px;
 }
+
+
+.ui-diagram-element {
+        border:0.1em dotted #E5E4E2; 
+        background-color: #EFEEEC;
+        width:100px; 
+        height:40px;
+        text-align: center;
+        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.8);
+    }
+.ui-diagram-seq-line {
+        border: none; 
+        border-top: 0 none white; 
+        background-color: lightgrey;
+        width:20px; 
+        height:50px;
+        text-align: center;
+        box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.8);
+    }    
+    
+ 
+    .ui-diagram-element:hover {
+        background-color: #C7C6C4;
+    }

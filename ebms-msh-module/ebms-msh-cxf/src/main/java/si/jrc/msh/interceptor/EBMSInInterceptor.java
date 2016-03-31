@@ -8,6 +8,7 @@ package si.jrc.msh.interceptor;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -18,6 +19,8 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.UUID;
 import javax.activation.DataHandler;
+import javax.persistence.NoResultException;
+import javax.persistence.TypedQuery;
 import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
 import javax.xml.soap.MessageFactory;
@@ -52,6 +55,7 @@ import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.CollaborationInfo
 import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.MessageInfo;
 import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.Messaging;
 import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.SignalMessage;
+import org.sed.ebms.ebox.SEDBox;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import si.sed.commons.utils.sec.CertificateUtils;
@@ -127,6 +131,7 @@ public class EBMSInInterceptor extends AbstractEBMSInterceptor {
             msg.getExchange().put(Messaging.class, msgHeader);
             // get processing mode for message!
             PMode pm = getProcessingMode(msg, msgHeader);
+
             msg.getExchange().put(PMode.class, pm);
             if (pm == null) {
                 String wrnmsg = "PMode for header" + msgHeader.getId();
@@ -147,6 +152,8 @@ public class EBMSInInterceptor extends AbstractEBMSInterceptor {
                     String errmsg = "For response only signal response is expected! UserMessage is ignored";
                     mlog.logError(l, errmsg, null);;
                 }
+                
+                
                 if (msgHeader.getSignalMessages().size() > 0) {
                     // receive as4receipt
                     // receive errors
@@ -160,6 +167,22 @@ public class EBMSInInterceptor extends AbstractEBMSInterceptor {
             } else if (!msgHeader.getUserMessages().isEmpty()) {
                 // 
                 MSHInMail mMail = mebmsUtils.userMessage2MSHMail(msgHeader.getUserMessages().get(0));
+                String receiverBox = mMail.getReceiverEBox();
+                if (receiverBox == null && receiverBox.trim().isEmpty()) {
+                    String errmsg = "Missing receiver box!";
+                    mlog.logError(l, errmsg, null);;
+                    throw new EBMSError(EBMSErrorCode.Other, null, errmsg);
+                }
+
+                SEDBox inSb = getSedBoxByName(mMail.getReceiverEBox());
+                if (inSb == null || (inSb.getActiveToDate() != null && inSb.getActiveToDate().before(Calendar.getInstance().getTime()))) {
+                    String errmsg = "Receiver box: '" + mMail.getReceiverEBox() + "' not exists or is not active.";
+                    mlog.logError(l, errmsg, null);;
+                    throw new EBMSError(EBMSErrorCode.Other, null, errmsg);
+                }
+                
+                msg.getExchange().put(SEDBox.class, inSb);
+
                 // validate attachments
                 List<String> lstSoapAtt = new ArrayList<>();
                 List<String> lstEBMSAtt = new ArrayList<>();
@@ -254,6 +277,16 @@ public class EBMSInInterceptor extends AbstractEBMSInterceptor {
 
         }
         mlog.logEnd(l);
+    }
+
+    private SEDBox getSedBoxByName(String sbox) {
+        TypedQuery<SEDBox> sq = getEntityManager().createNamedQuery("org.sed.ebms.ebox.SEDBox.getByName", SEDBox.class);
+        sq.setParameter("BoxName", sbox);
+        try {
+            return sq.getSingleResult();
+        } catch (NoResultException nre) {
+            return null;
+        }
     }
 
     // receive 

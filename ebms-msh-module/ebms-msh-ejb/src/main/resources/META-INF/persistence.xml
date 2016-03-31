@@ -32,6 +32,8 @@
         <mapping-file>shared/hbm/msh-out-event.hbm.xml</mapping-file>
         <mapping-file>shared/hbm/msh-out-mail.hbm.xml</mapping-file>
         <mapping-file>shared/hbm/msh-out-payload.hbm.xml</mapping-file>
+        <mapping-file>shared/hbm/sed-box.hbm.xml</mapping-file>
+        <mapping-file>shared/hbm/sed-user.hbm.xml</mapping-file>
         <properties>
             <property name="jboss.entity.manager.jndi.name" value="java:jboss/EBMS_MSH_PLUGIN_PU"/> 
             <property name="hibernate.dialect" value="${org.sed.msh.hibernate.dialect}" />
