@@ -21,14 +21,20 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ManagedProperty;
+import javax.faces.bean.SessionScoped;
 import javax.faces.bean.ViewScoped;
 import javax.persistence.TypedQuery;
 import org.msh.ebms.inbox.event.MSHInEvent;
 import org.msh.ebms.inbox.mail.MSHInMail;
 import org.msh.ebms.inbox.payload.MSHInPart;
+import org.msh.ebms.outbox.mail.MSHOutMail;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.StreamedContent;
@@ -41,19 +47,34 @@ import si.sed.commons.utils.StorageUtils;
  *
  * @author Jože Rihtaršič
  */
-
-@ViewScoped
+@SessionScoped
 @ManagedBean(name = "InMailDataView")
 public class InMailDataView extends AbstractMailView<MSHInMail, MSHInEvent> implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @Override
-    public LazyDataModel<MSHInMail> getMailList() {
-        if (mInMailModel == null) {
-            mInMailModel = new InMailDataModel(MSHInMail.class, getUserTransaction(), getEntityManager());
-        }
-        return mInMailModel;
+    @ManagedProperty(value = "#{userSessionData}")
+    private UserSessionData userSessionData;
+
+    
+      @PostConstruct
+    private void init(){
+        mMailModel = new InMailDataModel(MSHInMail.class, getUserTransaction(), getEntityManager(), userSessionData);
+    }
+    
+
+    public void setUserSessionData(UserSessionData messageBean) {
+        this.userSessionData = messageBean;
+    }
+
+    public UserSessionData getUserSessionData() {
+        return this.userSessionData ;
+    }
+    
+    
+    
+    public InMailDataModel getInMailModel(){
+        return (InMailDataModel)mMailModel;
     }
 
     @Override
@@ -96,5 +117,10 @@ public class InMailDataView extends AbstractMailView<MSHInMail, MSHInEvent> impl
         }
         return null;
     }
+    
+    public List<SEDInboxMailStatus> getInStatuses(){
+        return Arrays.asList(SEDInboxMailStatus.values());
+    }
+    
 
 }

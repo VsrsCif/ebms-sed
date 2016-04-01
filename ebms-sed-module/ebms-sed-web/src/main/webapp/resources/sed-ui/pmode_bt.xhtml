@@ -15,7 +15,7 @@
 
         <p:layout style="min-width:400px;min-height:400px; height: 100%;width: 100%"   >
             <p:layoutUnit position="north">
-                
+
                 <p:commandButton value="Add" styleClass="toolbar-Button" icon="ui-icon-sed-add" 
                                  update=":forms:SettingsPModesBT:BusinessTransaction" 
                                  actionListener="#{businessTransaction.addAction()}"
@@ -27,19 +27,25 @@
                 <p:commandButton value="Delete" styleClass="toolbar-Button" icon="ui-icon-sed-remove" 
                                  actionListener="#{adminSEDBoxView.removeSelected()}"
                                  update=":forms:SettingsSEDBoxes:TblSedBox" />
-    
+
             </p:layoutUnit>
-            <p:layoutUnit  position="center" style="width:100%;height:100%;padding: 0px; margin: 0px" gutter="0" >
-                <p:outputPanel id="PModePanel" >
-                    <p:diagram id="BusinessTransaction" value="#{businessTransaction.model}" style="height:600px; " styleClass="ui-widget-content" var="el">
-                         
-                        <f:facet name="element">
-                            <h:outputText value="#{el}" style="display:block;margin-top:1em;"/>
-                            
-                        </f:facet>
-                        
-                    </p:diagram>
-                </p:outputPanel>
+            <p:layoutUnit  position="center" style="width:400px;height:100%;padding: 0px; margin: 0px" gutter="0" >
+
+                <p:dataTable id="BusinessTransaction" var="act" value="#{businessTransaction.getActions()}" style="width:400px;height:100%;padding: 0px; margin: 0px" >
+                    <p:column headerText="sender" width="60">
+                        <p:graphicImage value="resources/images/#{act.leftEnd}.png" height="40" width="60" />
+                    </p:column>
+
+                    <p:column headerText="Action" style=" background: url(resources/images/sq-line.png)  ;">
+                        <h:outputText value="#{act.name}" />                        
+                    </p:column>
+
+                    <p:column headerText="Receiver" width="60" >                         
+                        <p:graphicImage value="resources/images/#{act.rightEnd}.png"  height="40" width="60" />
+                    </p:column>
+
+                    
+                </p:dataTable>
 
             </p:layoutUnit>
 

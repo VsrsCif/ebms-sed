@@ -25,21 +25,17 @@ Copyright 2016, Supreme Court Republic of Slovenia
  See the Licence for the specific language governing permissions and  
  limitations under the Licence.
 -->
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
-           xmlns:ns1="http://ebms.sed.org/user" 
-           xmlns:box="http://ebms.sed.org/ebox"
-           targetNamespace="http://ebms.sed.org/user" 
-           elementFormDefault="qualified" attributeFormDefault="unqualified">
-    
-    <xs:import namespace="http://ebms.sed.org/ebox" schemaLocation="./sed-ebox.xsd"/>
-    <xs:element name="SEDUser" type="ns1:SEDUser"/>
-    <xs:complexType name="SEDUser">
-        <xs:sequence>
-            <xs:element ref="box:SEDBox" maxOccurs="unbounded" />
-        </xs:sequence>
-        <xs:attribute name="userId" use="required"/>
-        <xs:attribute name="activeFromDate" type="xs:date" use="required"/>
-        <xs:attribute name="activeToDate" type="xs:date" use="required"/>
-    </xs:complexType>
-
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ns1="http://ebms.sed.org/user" xmlns:box="http://ebms.sed.org/ebox" targetNamespace="http://ebms.sed.org/user" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:import namespace="http://ebms.sed.org/ebox" schemaLocation="./sed-ebox.xsd"/>
+	<xs:element name="SEDUser" type="ns1:SEDUser"/>
+	<xs:complexType name="SEDUser">
+		<xs:sequence>
+			<xs:element ref="box:SEDBox" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="userId" use="required"/>
+                 <xs:attribute name="adminRole"  type="xs:boolean"  />
+		<xs:attribute name="activeFromDate" type="xs:date" use="required"/>
+		<xs:attribute name="activeToDate" type="xs:date" use="required"/>
+	</xs:complexType>
+	<xs:complexType name="SEDRole"/>
 </xs:schema>

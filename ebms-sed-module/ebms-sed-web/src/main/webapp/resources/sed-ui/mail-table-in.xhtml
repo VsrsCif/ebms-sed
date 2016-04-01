@@ -46,8 +46,8 @@
                                   headerText="St.">
                             <h:outputText value=" " />
                         </p:column>
-                          <p:column width="100" headerText="Rec. date">
-                              <h:outputText value="#{InMailDataView.formatDate(inMail.receivedDate)}" />
+                          <p:column width="130" headerText="Rec. date">
+                              <h:outputText value="#{inMail.receivedDate}"  ><f:convertDateTime pattern="dd.MM.yyyy hh:mm" timeZone="CET" /></h:outputText>
                         </p:column>
 
                         <p:column headerText="Sender">
@@ -57,10 +57,10 @@
                         <p:column headerText="Receiver">
                             <h:outputText value="#{inMail.receiverName}" />
                         </p:column>
-                        <p:column headerText="Service">
+                        <p:column width="150"  headerText="Service">
                             <h:outputText value="#{inMail.service}" />
                         </p:column>
-                        <p:column headerText="Action">
+                        <p:column width="150"  headerText="Action">
                             <h:outputText value="#{inMail.action}" />
                         </p:column>
                     </p:dataTable>
@@ -162,15 +162,18 @@
                         <p:outputPanel id="InMailEvents" style="text-align:center;">
 
 
-                            <p:dataTable var="mailEvents" value="#{InMailDataView.mailEvents}">
+                            <p:dataTable var="mailEvents" value="#{InMailDataView.mailEvents}"
+                                       scrollable="true"
+                                       scrollHeight="135" >
                                 <p:column width="60" headerText="Id">
                                     <h:outputText value="#{mailEvents.id}" />
                                 </p:column>
                                 <p:column headerText="Status" width="15" style="background-color:#{InMailDataView.getStatusColor(mailEvents.status)}" >
                                     <h:outputText value=" " />
                                 </p:column>
-                                <p:column headerText="Date">
-                                    <h:outputText value="#{mailEvents.date}" />
+                                <p:column width="140" headerText="Date">
+                                    <h:outputText value="#{mailEvents.date}"  ><f:convertDateTime pattern="dd.MM.yyyy hh:mm:ss" timeZone="CET" /></h:outputText>
+                                    
                                 </p:column>
                                 <p:column headerText="Description">
                                     <h:outputText value="#{mailEvents.description}" />

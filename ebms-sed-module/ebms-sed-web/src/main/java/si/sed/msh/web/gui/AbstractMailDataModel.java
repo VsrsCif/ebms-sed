@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.faces.bean.ManagedProperty;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
@@ -35,32 +36,40 @@ import javax.transaction.UserTransaction;
 import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortOrder;
 
-
-
 /**
  *
  * @author sluzba
  */
-public abstract  class AbstractMailDataModel<T> extends LazyDataModel<T> {
-    
+public abstract class AbstractMailDataModel<T> extends LazyDataModel<T> {
+
     protected static final long serialVersionUID = 1L;
-    private  final Class<T> type;
+    private final Class<T> type;
     private UserTransaction mutUTransaction;
     private EntityManager memEManager;
     private List<T> mDataList;
+
     
-    
+    private UserSessionData messageBean;
+
+    //must povide the setter method
+    public void setUserSessionData(UserSessionData messageBean) {
+        this.messageBean = messageBean;
+    }
+    public UserSessionData getUserSessionData() {
+        return this.messageBean;
+    }
 
     public AbstractMailDataModel(Class<T> type, UserTransaction utUTransaction, EntityManager emEManager) {
-         this.type = type;
-         this.memEManager = emEManager;
-         this.mutUTransaction = utUTransaction;
-         
+        this.type = type;
+        this.memEManager = emEManager;
+        this.mutUTransaction = utUTransaction;
+
     }
 
     @Override
     public List<T> load(int startingAt, int maxPerPage, String sortField, SortOrder sortOrder, Map<String, Object> filters) {
-        System.out.println("start index: " + startingAt + " max per page: " + maxPerPage);
+        System.out.println("start index: " + startingAt + " max per page: " + maxPerPage + " filtri " + filters);
+        System.out.println("user : " + messageBean);
         int iStarIndex;
         int iResCountIndex;
         String strOrderParam = "Id";
@@ -69,8 +78,8 @@ public abstract  class AbstractMailDataModel<T> extends LazyDataModel<T> {
         iStarIndex = startingAt;
         iResCountIndex = maxPerPage;
         try {
-            CriteriaQuery<Long> cqCount = createSearchCriteria(null,  true);
-            CriteriaQuery<T> cq = createSearchCriteria(null,  false);
+            CriteriaQuery<Long> cqCount = createSearchCriteria( externalFilters(), true);
+            CriteriaQuery<T> cq = createSearchCriteria( externalFilters(), false);
             Long l = getEntityManager().createQuery(cqCount).getSingleResult();
             setRowCount(l.intValue());
             TypedQuery<T> q = getEntityManager().createQuery(cq);
@@ -89,7 +98,7 @@ public abstract  class AbstractMailDataModel<T> extends LazyDataModel<T> {
         return mDataList;
     }
 
-    protected <T> CriteriaQuery createSearchCriteria(Object searchParams,  boolean forCount) {
+    protected <T> CriteriaQuery createSearchCriteria(Object searchParams, boolean forCount) {
         CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
         CriteriaQuery cq = forCount ? cb.createQuery(Long.class) : cb.createQuery(type);
         Root<T> om = cq.from(type);
@@ -122,7 +131,8 @@ public abstract  class AbstractMailDataModel<T> extends LazyDataModel<T> {
                                 lstPredicate.add(cb.greaterThanOrEqualTo(om.get(fieldName.substring(0, fieldName.lastIndexOf("From"))), (Comparable) searchValue));
                             } else if (fieldName.endsWith("To") && searchValue instanceof Comparable) {
                                 lstPredicate.add(cb.lessThan(om.get(fieldName.substring(0, fieldName.lastIndexOf("To"))), (Comparable) searchValue));
-                            } else {
+                            } else if (searchValue instanceof String && !((String)searchValue).isEmpty()) {
+                                System.out.println("Add param: '"+fieldName+"' value: '"+searchValue+"'");
                                 lstPredicate.add(cb.equal(om.get(fieldName), searchValue));
                             }
                         }
@@ -142,10 +152,11 @@ public abstract  class AbstractMailDataModel<T> extends LazyDataModel<T> {
     protected EntityManager getEntityManager() {
         return memEManager;
     }
-    
-    public List<T> getCurrentData(){
+
+    public List<T> getCurrentData() {
         return mDataList;
-                
     }
     
+    abstract Object externalFilters();
+
 }

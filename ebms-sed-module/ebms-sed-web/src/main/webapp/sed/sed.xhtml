@@ -33,7 +33,8 @@
                                              value="Refresh" 
                                              icon="ui-icon-sed-refresh"
                                              styleClass="toolbar-Button"
-                                             actionListener="#{ApplicationData.refreshMainPanel()}" />
+                                              update=":forms:MainPanel"
+                                              ajax="true" />
 
 
                             <span class="ui-separator">
@@ -50,7 +51,8 @@
                                 <span class="ui-icon ui-icon-grip-dotted-vertical " />
                             </span>
                             <p:outputLabel for="ebox" value="SED-Box: " />
-                            <p:selectOneMenu id="ebox" value="#{userSessionData.currentSEDBox}" style="width:150px">
+                            <p:selectOneMenu id="ebox" value="#{userSessionData.currentSEDBox}" style="width:150px" >
+                                <p:ajax update=":forms:MainPanel" />
                                 <f:selectItem itemValue="Select sed-box" noSelectionOption="true" />
                                 <f:selectItems value="#{userSessionData.userEBoxes}" />
                             </p:selectOneMenu>
@@ -63,7 +65,7 @@
 
                     <h:panelGroup id="MainPanel">
 
-                        
+
                         <sui:mail-table-in id="InMailPanel" rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_INBOX)  }"  />
                         <sui:mail-table-out id="OutMailPanel" rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_OUTBOX)}"  />
                         <sui:settings-keystore id="SettingsCustomPanel" rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_SETT_CERTS)}"  />
@@ -78,60 +80,95 @@
                 <p:layoutUnit position="south" resizable="false" size="20" minSize="20" maxSize="200">
 
                 </p:layoutUnit>
-                <p:layoutUnit position="west" resizable="false" size="250" minSize="250" maxSize="250">
+                <p:layoutUnit position="west" resizable="false" size="320" minSize="320" maxSize="320">
                     <p:accordionPanel  >
                         <p:ajax event="tabChange" listener="#{MainWindow.onToolbarTabChange}" update="forms:MainPanel" />
-                        <p:tab id="PANEL_INBOX" >
+                        <p:tab id="PANEL_INBOX"  >
                             <f:facet name="title">
                                 <h:graphicImage value="resources/images/inbox32.png" width="22" height="22" />
                                 <h:outputText value="Inbox" />                                 
                             </f:facet>
+                            <p:panelGrid columns="2"  style="width: 100%">
+                                <f:facet name="header">
+                                    <h:outputText value="Search parameters: " />
+                                </f:facet>
 
-                            <p:menu class="ui-accordion-button">
-                                <p:menuitem value="All mail"  actionListener="#{InMailDataView.search}"  update="forms:InMailPanel" icon="ui-icon-sed-flag-all">
-                                    <f:attribute name="status" value="" />
-                                </p:menuitem>
-                                <p:menuitem value="Received mail" actionListener="#{InMailDataView.search}" update="forms:InMailPanel" icon="ui-icon-sed-flag-green">
-                                    <f:attribute name="status" value="RECEIVED" />
-                                </p:menuitem>
-                                <p:menuitem value="Locked mail" actionListener="#{InMailDataView.search}"  update="forms:InMailPanel" icon="ui-icon-sed-flag-gray">
-                                    <f:attribute name="status" value="LOCKED" />
-                                </p:menuitem>
-                                <p:menuitem value="Error mail" actionListener="#{InMailDataView.search}" update="forms:InMailPanel" icon="ui-icon-sed-flag-red">
-                                    <f:attribute name="status" value="ERROR" />
-                                </p:menuitem>
-                                <p:menuitem value="Delivered" actionListener="#{InMailDataView.search}"  update="forms:InMailPanel" icon="ui-icon-sed-flag-blue">
-                                    <f:attribute name="status" value="DELIVERED" />
-                                </p:menuitem>
-                            </p:menu>
+                                <h:outputText value="Rec. from:" />
+                                <p:calendar  value="#{InMailDataView.inMailModel.filter.receivedDateFrom}" pattern="dd.MM.yyyy" 
+                                             mask="true" navigator="true" showOn="button"   styleClass="searchDate"/>
 
 
+                                <h:outputText value="Rec.to:" />
+                                <p:calendar  value="#{InMailDataView.inMailModel.filter.receivedDateTo}" pattern="dd.MM.yyyy"
+                                             mask="true" navigator="true" showOn="button" styleClass="searchDate"/>
+
+                                <h:outputText value="Sender box:" />
+                                <h:inputText value="#{InMailDataView.inMailModel.filter.senderEBox}" />
+
+                                <h:outputText value="Status:" />
+                                <p:selectOneMenu id="inSts" value="#{InMailDataView.inMailModel.filter.status}" style="width:150px" >                                               
+                                    <f:selectItem itemValue="" noSelectionOption="true" />
+                                    <f:selectItems value="#{InMailDataView.inStatuses}"   />
+                                </p:selectOneMenu>
+
+                                <h:outputText value="Service" />
+                                <h:inputText value="#{InMailDataView.inMailModel.filter.service}" />
+
+                                <h:outputText value="Action" />
+                                <h:inputText value="#{InMailDataView.inMailModel.filter.action}" />
+                                
+                                <h:outputText value="" />
+                                <p:commandButton value="Search" 
+                                                icon="ui-icon-sed-search"                                             
+                                                styleClass="toolbar-Button"
+                                                 update=":forms:MainPanel" ajax="true"/>
+                            </p:panelGrid>
+                            
                         </p:tab>
                         <p:tab id="PANEL_OUTBOX">
                             <f:facet name="title">
                                 <h:graphicImage value="resources/images/outbox32.png" width="22" height="22" />
                                 <h:outputText value="Outbox" />                                 
                             </f:facet>
-                            <p:menu class="ui-accordion-button">
-                                <p:menuitem value="All mail"  actionListener="#{OutMailDataView.search}"  update="forms:InMailPanel" icon="ui-icon-sed-flag-all">
-                                    <f:attribute name="status" value="" />
-                                </p:menuitem>
-                                <p:menuitem value="Submited" actionListener="#{OutMailDataView.search}" update="forms:InMailPanel" icon="ui-icon-sed-flag-green">
-                                    <f:attribute name="status" value="RECEIVED" />
-                                </p:menuitem>
-                                <p:menuitem value="In delivery" actionListener="#{OutMailDataView.search}"  update="forms:InMailPanel"  icon="ui-icon-sed-flag-gray">
-                                    <f:attribute name="status" value="LOCKED" />
-                                </p:menuitem>
-                                <p:menuitem value="Error" actionListener="#{OutMailDataView.search}" update="forms:InMailPanel"  icon="ui-icon-sed-flag-red">
-                                    <f:attribute name="status" value="ERROR" />
-                                </p:menuitem>
-                                <p:menuitem value="Delivered" actionListener="#{OutMailDataView.search}"  update="forms:InMailPanel" icon="ui-icon-sed-flag-blue">
-                                    <f:attribute name="status" value="DELIVERED" />
-                                </p:menuitem>
-                            </p:menu>
+                            <p:panelGrid columns="2"  style="width: 100%">
+                                <f:facet name="header">
+                                    <h:outputText value="Search parameters: " />
+                                </f:facet>
+
+                                <h:outputText value="Subm. from:" />
+                                <p:calendar  value="#{OutMailDataView.outMailModel.filter.submittedDateFrom}" pattern="dd.MM.yyyy" 
+                                             mask="true" navigator="true" showOn="button"   styleClass="searchDate"/>
+
+
+                                <h:outputText value="Subm.to:" />
+                                <p:calendar  value="#{OutMailDataView.outMailModel.filter.submittedDateTo}" pattern="dd.MM.yyyy"
+                                             mask="true" navigator="true" showOn="button" styleClass="searchDate"/>
+ 
+                                <h:outputText value="Receiver box:" />
+                                <h:inputText value="#{OutMailDataView.outMailModel.filter.receiverEBox}" />
+
+                                <h:outputText value="Status:" />
+                                <p:selectOneMenu id="outSt" value="#{OutMailDataView.outMailModel.filter.status}" style="width:150px" 
+                                                 rendered="#{not empty OutMailDataView.outMailModel}">                                               
+                                    <f:selectItem itemValue="" noSelectionOption="true" />
+                                    <f:selectItems value="#{OutMailDataView.outStatuses}"   />
+                                </p:selectOneMenu>
+
+                                <h:outputText value="Service" />
+                                <h:inputText value="#{OutMailDataView.outMailModel.filter.service}" />
+
+                                <h:outputText value="Action" />
+                                <h:inputText value="#{OutMailDataView.outMailModel.filter.action}" />
+                                
+                                <h:outputText value="" />
+                                <p:commandButton value="Search" 
+                                                icon="ui-icon-sed-search"                                             
+                                                styleClass="toolbar-Button"
+                                                 update=":forms:MainPanel" ajax="true"/>
+                            </p:panelGrid>
                         </p:tab>
 
-                        <p:tab id="PANEL_SETT_PMODE">
+                        <p:tab id="PANEL_SETT_PMODE" rendered="#{userSessionData.user.adminRole}">
                             <f:facet name="title">
                                 <h:graphicImage value="resources/images/settings32.png" width="22" height="22" />
                                 <h:outputText value="P-Modes" />                                 
@@ -143,12 +180,12 @@
                                     <f:attribute name="panel" value="PANEL_PMODE_BT" />
                                 </p:menuitem>
                             </p:menu>
-                            
-                     
+
+
 
                         </p:tab>
 
-                        <p:tab id="PANEL_SETT_CUSTOM">
+                        <p:tab id="PANEL_SETT_CUSTOM" rendered="#{userSessionData.user.adminRole}" >
                             <f:facet name="title">
                                 <h:graphicImage value="resources/images/settings32.png" width="22" height="22" />
                                 <h:outputText value="Settings" />                                 
@@ -178,6 +215,6 @@
             </p:layout>
         </h:form>
         <sui:dialogs id="dialogs" />
-        
+
     </h:body>
 </html>

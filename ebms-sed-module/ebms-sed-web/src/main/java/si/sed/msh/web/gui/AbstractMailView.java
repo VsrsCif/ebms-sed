@@ -53,15 +53,18 @@ public abstract class AbstractMailView<T, S> {
     protected EntityManager memEManager;
     
     protected T mMail;    
-    protected LazyDataModel<T> mInMailModel = null;
+    protected LazyDataModel<T> mMailModel = null;
     protected List<S> mlstMailEvents = null;
 
    
-    abstract public LazyDataModel<T> getMailList() ;
+    
     abstract public String getStatusColor(String status);
     abstract public void updateEventList() ;
     abstract public StreamedContent getFile(BigInteger bi);
     
+     public LazyDataModel<T> getMailList(){
+         return mMailModel;
+    }
 
     public T getCurrentMail() {
         return mMail;
@@ -89,7 +92,7 @@ public abstract class AbstractMailView<T, S> {
     }
 
     public int rowIndex(T om) {
-        return mInMailModel.getRowIndex();
+        return mMailModel.getRowIndex();
     }
 
 

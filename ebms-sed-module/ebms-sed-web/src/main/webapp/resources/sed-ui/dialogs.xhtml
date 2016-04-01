@@ -30,20 +30,20 @@
 
                             <h:outputText value="Active to date:" />                            
                             <p:calendar value="#{adminSEDBoxView.editable.activeToDate}" pattern="dd.MM.yyyy" mask="true" navigator="true" showOn="button" style="width: 100%"/>
-                            
+
                             <h:outputText value="Export" />
                             <h:selectBooleanCheckbox value="#{adminSEDBoxView.editable.export.active}"  style="width: 20px"/>
-                            
+
                             <h:outputText value="Metadata" />
                             <h:selectBooleanCheckbox value="#{adminSEDBoxView.editable.export.exportMetaData}"  style="width: 20px"/>
-                            
+
                             <h:outputText value="FileMask" />
                             <h:inputText value="#{adminSEDBoxView.editable.export.fileMask}" style="width: 100%"/>
-                            
+
                             <h:outputText value="Folder" />
                             <h:inputText value="#{adminSEDBoxView.editable.export.folder}" style="width: 100%"/>
-                            
-                            
+
+
                         </p:panelGrid>
                     </p:layoutUnit>
                     <p:layoutUnit position="south">
@@ -74,6 +74,7 @@
                                 <p:column><h:outputText value="#{adminSEDUserView.editable.userId}" rendered="#{empty adminSEDUserView.new}" />
                                     <h:inputText value="#{adminSEDUserView.editable.userId}" rendered="#{not empty adminSEDUserView.new}" /></p:column>
                             </p:row>
+                            
                             <p:row>
                                 <p:column><h:outputText value="Active from date:" /></p:column>
                                 <p:column><p:calendar value="#{adminSEDUserView.editable.activeFromDate}" pattern="dd.MM.yyyy" mask="true" navigator="true" showOn="button"/></p:column>
@@ -93,7 +94,7 @@
                                                 showTargetControls="false" showCheckbox="false" responsive="true"
                                                 showSourceFilter="false" showTargetFilter="false" 
                                                 converter="userSedBoxPickListConverter"
-                                                
+
                                                 >
                                         <f:facet name="sourceCaption">Available</f:facet>
                                         <f:facet name="targetCaption">User sed-boxes</f:facet>

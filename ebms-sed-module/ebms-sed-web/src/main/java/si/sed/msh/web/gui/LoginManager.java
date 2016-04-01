@@ -127,6 +127,8 @@ public class LoginManager {
             String userName = getUsername().trim();
             request.login(userName, getPassword().trim());
             
+            
+            
             SEDUser user =  mSedDB.getSEDUser(userName);
             if(user == null){
                 String msg = "User '"+userName+"' is not reqistred in ebms-sed";
@@ -146,7 +148,16 @@ public class LoginManager {
                 externalContext.invalidateSession();
                 return;
             }
-            // get user data
+            
+            if (!request.isUserInRole("ADMIN") &&  !request.isUserInRole("USER")){
+                 String msg = "User '"+userName+"' does not have roles: USER or ADMIN";
+                mLog.logWarn(l, getClientIP() +  " msg: " +msg,null);
+                facesContext().addMessage(null, new FacesMessage(msg));
+                externalContext.invalidateSession();
+                return;
+            }
+            
+            user.setAdminRole(request.isUserInRole("ADMIN"));
             
             
             

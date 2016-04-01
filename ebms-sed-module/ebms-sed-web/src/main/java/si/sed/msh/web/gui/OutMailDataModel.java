@@ -20,6 +20,7 @@ import java.math.BigInteger;
 import javax.persistence.EntityManager;
 import javax.transaction.UserTransaction;
 import org.msh.ebms.outbox.mail.MSHOutMail;
+import si.sed.msh.web.gui.entities.OutMailTableFilter;
 
 
 /**
@@ -27,9 +28,12 @@ import org.msh.ebms.outbox.mail.MSHOutMail;
  * @author Jože Rihtaršič
  */
 public class OutMailDataModel extends AbstractMailDataModel<MSHOutMail> {
+    
+    OutMailTableFilter outFilter = new OutMailTableFilter();
 
-    public OutMailDataModel(Class<MSHOutMail> type, UserTransaction mutUTransaction, EntityManager memEManager) {
+    public OutMailDataModel(Class<MSHOutMail> type, UserTransaction mutUTransaction, EntityManager memEManager, UserSessionData messageBean) {
         super(type, mutUTransaction, memEManager);
+        setUserSessionData(messageBean);
     }
 
     @Override
@@ -48,4 +52,19 @@ public class OutMailDataModel extends AbstractMailDataModel<MSHOutMail> {
         }
         return null;
     }
+
+     @Override
+    Object externalFilters() {
+        outFilter.setSenderEBox(getUserSessionData().getCurrentSEDBox());
+        return outFilter;
+    }
+    
+    public OutMailTableFilter getFilter() {
+        return outFilter;
+    }
+
+    public void setFilter(OutMailTableFilter imtFilter) {
+        this.outFilter = imtFilter;
+    }
+    
 }

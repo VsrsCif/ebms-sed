@@ -166,8 +166,9 @@ public class ZPPOutInterceptor extends AbstractPluginInterceptor {
             //ed.getKeyInfo().setId(mail.getConversationId());
             //pt.setName("EncryptedData_" + (++i));
             MSHOutPart ptNew = new MSHOutPart();
-            ptNew.setEncoding(ENCODING_UTF8);
-            ptNew.setMimeType(MimeValues.MIME_BIN.getMimeType());
+            
+            ptNew.setMimeType(pt.getMimeType());
+            //ptNew.setMimeType(MimeValues.MIME_BIN.getMimeType());
             ptNew.setFilepath(StorageUtils.getRelativePath(fOut));
             ptNew.setMd5(mpHU.getMD5Hash(fOut));
             ptNew.setFilename(fOut.getName());

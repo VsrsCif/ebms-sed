@@ -21,9 +21,14 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ManagedProperty;
+import javax.faces.bean.SessionScoped;
 import javax.faces.bean.ViewScoped;
 import javax.persistence.TypedQuery;
 import org.msh.ebms.outbox.event.MSHOutEvent;
@@ -32,6 +37,7 @@ import org.msh.ebms.outbox.payload.MSHOutPart;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.StreamedContent;
+import si.sed.commons.SEDInboxMailStatus;
 
 
 import si.sed.commons.SEDOutboxMailStatus;
@@ -43,24 +49,43 @@ import si.sed.commons.utils.StorageUtils;
  *
  * @author Jože Rihtaršič
  */
-@ViewScoped
+@SessionScoped
 @ManagedBean(name = "OutMailDataView")
 public class OutMailDataView extends AbstractMailView<MSHOutMail, MSHOutEvent> implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @Override
-    public LazyDataModel<MSHOutMail> getMailList() {
-        System.out.println("InMailDataView: getMailList");
-        if (mInMailModel == null) {
-            mInMailModel = new OutMailDataModel(MSHOutMail.class, getUserTransaction(), getEntityManager());
+    @ManagedProperty(value = "#{userSessionData}")
+    private UserSessionData userSessionData;
+
+    @PostConstruct
+    private  void init(){
+        mMailModel = new OutMailDataModel(MSHOutMail.class, getUserTransaction(), getEntityManager(), getUserSessionData());
+    }
+    
+    public void setUserSessionData(UserSessionData messageBean) {
+        this.userSessionData = messageBean;
+    }
+
+    public UserSessionData getUserSessionData() {
+        return this.userSessionData ;
+    }
+    
+ 
+    public OutMailDataModel getOutMailModel(){
+        if (mMailModel== null){
+            mMailModel = new OutMailDataModel(MSHOutMail.class, getUserTransaction(), getEntityManager(), getUserSessionData());
         }
-        return mInMailModel;
+        return (OutMailDataModel)mMailModel;
     }
 
     @Override
     public String getStatusColor(String status) {
         return SEDOutboxMailStatus.getColor(status);
+    }
+    
+     public List<SEDOutboxMailStatus> getOutStatuses(){
+        return Arrays.asList(SEDOutboxMailStatus.values());
     }
 
     @Override

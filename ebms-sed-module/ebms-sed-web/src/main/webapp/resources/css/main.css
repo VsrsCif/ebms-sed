@@ -1,3 +1,14 @@
+.ui-datatable-scrollable-body, 
+.ui-accordion-content {
+    background: #cdcfcf;
+    background: -webkit-linear-gradient(bottom right,  #cdcfcf, #bdbfcf);
+    background:    -moz-linear-gradient(left top,#cdcfcf, #bdbfcf);
+    background:     -ms-linear-gradient(left topt,#cdcfcf, #bdbfcf);
+    background:      -o-linear-gradient(left top,#cdcfcf, #bdbfcf);
+    background:         linear-gradient(left top,#cdcfcf, #bdbfcf);
+    
+}
+
 .ui-widget .ui-layout-unit, 
 .ui-widget .ui-layout-unit-content,
 .ui-tabs .ui-tabs-panel
@@ -173,4 +184,10 @@
  
     .ui-diagram-element:hover {
         background-color: #C7C6C4;
+    }
+    
+    
+    .searchDate input {
+        width: 120px;
+        
     }

@@ -81,3 +81,9 @@
     height:  22px !important;
     background-image: url('../images/refresh.png') !important;
 }
+
+.ui-icon-sed-search{
+    width:  22px !important;
+    height:  22px !important;
+    background-image: url('../images/search.png') !important;
+}
