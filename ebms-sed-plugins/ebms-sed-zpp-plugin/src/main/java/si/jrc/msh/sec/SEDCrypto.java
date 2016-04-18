@@ -127,7 +127,7 @@ public class SEDCrypto {
      * @param skey - secret key to encrypt stream
      * @throws SEDSecurityException
      */
-    public void encryptFile(File fIn, File fOut, SecretKey skey) throws SEDSecurityException {
+    public void encryptFile(File fIn, File fOut, Key skey) throws SEDSecurityException {
         try (FileInputStream fis = new FileInputStream(fIn);
                 FileOutputStream fos = new FileOutputStream(fOut)) {
             encryptDecryptStream(fis, fos, skey, Cipher.ENCRYPT_MODE);

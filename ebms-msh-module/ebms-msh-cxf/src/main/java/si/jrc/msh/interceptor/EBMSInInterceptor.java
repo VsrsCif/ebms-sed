@@ -45,6 +45,7 @@ import org.apache.cxf.ws.security.wss4j.WSS4JInInterceptor;
 import org.apache.wss4j.dom.handler.WSHandlerConstants;
 import org.msh.ebms.inbox.mail.MSHInMail;
 import org.msh.ebms.inbox.payload.MSHInPart;
+import org.msh.ebms.outbox.mail.MSHOutMail;
 
 import org.msh.svev.pmode.Certificate;
 import org.msh.svev.pmode.PMode;
@@ -68,6 +69,7 @@ import si.jrc.msh.utils.EBMSUtils;
 import si.sed.commons.utils.PModeManager;
 import si.jrc.msh.utils.EbMSConstants;
 import si.sed.commons.SEDInboxMailStatus;
+import si.sed.commons.SEDOutboxMailStatus;
 import si.sed.commons.exception.HashException;
 import si.sed.commons.exception.StorageException;
 import si.sed.commons.utils.HashUtils;
@@ -171,16 +173,14 @@ public class EBMSInInterceptor extends AbstractEBMSInterceptor {
                 if (receiverBox == null && receiverBox.trim().isEmpty()) {
                     String errmsg = "Missing receiver box!";
                     mlog.logError(l, errmsg, null);;
-                    throw new EBMSError(EBMSErrorCode.Other, null, errmsg);
+                    throw new EBMSError(EBMSErrorCode.Other, mMail.getMessageId(), errmsg);
                 }
 
                 SEDBox inSb = getSedBoxByName(mMail.getReceiverEBox());
                 if (inSb == null || (inSb.getActiveToDate() != null && inSb.getActiveToDate().before(Calendar.getInstance().getTime()))) {
                     String errmsg = "Receiver box: '" + mMail.getReceiverEBox() + "' not exists or is not active.";
-                    mlog.logError(l, errmsg, null);;
-                    throw   new SoapFault(errmsg, version.getReceiver());
-                    
-                    //throw new EBMSError(EBMSErrorCode.Other, null, errmsg);
+                    mlog.logError(l, errmsg, null);
+                    throw new EBMSError(EBMSErrorCode.Other, mMail.getMessageId(), errmsg);
                 }
                 
                 msg.getExchange().put(SEDBox.class, inSb);
@@ -222,7 +222,7 @@ public class EBMSInInterceptor extends AbstractEBMSInterceptor {
 
                 // serializa data  DB
                 // prepare mail to persist 
-                Date dt = new Date();
+                Date dt  = Calendar.getInstance().getTime();
                 // set current status
                 mMail.setStatus(SEDInboxMailStatus.RECEIVE.getValue());
                 mMail.setStatusDate(dt);
@@ -233,7 +233,7 @@ public class EBMSInInterceptor extends AbstractEBMSInterceptor {
 
                 SOAPMessage request = msg.getContent(SOAPMessage.class);
 
-                SignalMessage as4Receipt = mebmsUtils.generateAS4ReceiptSignal(mMail.getMessageId(), Utils.getDomainFromAddress(mMail.getReceiverEBox()), request.getSOAPPart().getDocumentElement());
+                SignalMessage as4Receipt = mebmsUtils.generateAS4ReceiptSignal(mMail.getMessageId(), Utils.getDomainFromAddress(mMail.getReceiverEBox()), request.getSOAPPart().getDocumentElement(),dt);
                 msg.getExchange().put(SignalMessage.class, as4Receipt);
             } else {
                 String errmsg = "Missing userMessage! In a SVEV-MSH  pull-MEP is not exepected!";
@@ -282,13 +282,8 @@ public class EBMSInInterceptor extends AbstractEBMSInterceptor {
     }
 
     private SEDBox getSedBoxByName(String sbox) {
-        TypedQuery<SEDBox> sq = getEntityManager().createNamedQuery("org.sed.ebms.ebox.SEDBox.getByName", SEDBox.class);
-        sq.setParameter("BoxName", sbox);
-        try {
-            return sq.getSingleResult();
-        } catch (NoResultException nre) {
-            return null;
-        }
+        return getDAO().getSedBoxByName(sbox);
+        
     }
 
     // receive 
@@ -315,20 +310,28 @@ public class EBMSInInterceptor extends AbstractEBMSInterceptor {
                 mlog.logError(l, errmsg, null);
                 throw new SoapFault(errmsg, version.getReceiver());
             }
-            /*
+            
             MSHOutMail outmsg = msg.getExchange().get(MSHOutMail.class);
             String strOutMsg = outmsg.getMessageId(); //+ "@" + mSettings.getDomain();
-            if (!strOutMsg.equals(mi.getRefToMessageId())) {
+            if (strOutMsg!= null && !strOutMsg.equals(mi.getRefToMessageId())) {
                 String errmsg = "Outgoing msg ID '" + strOutMsg + "' not equals to received response signal RefToMessageId: '" + mi.getRefToMessageId() + "' ";
                 mlog.logError(l, errmsg, null);
                 //throw new SoapFault(errmsg, version.getReceiver());
-            }*/
+            }
 
-            if (sm.getReceipt() != null) {
-                //outmsg.getMmshMail().setSentDate(mi.getTimestamp());
-                // outmsg.getMmshMail().setStatus(MSHStatusType.Sent.name());
-                // outmsg.setStatusChangeDate(Calendar.getInstance().getTime());
-                // mSHDB.update(outmsg);
+            if ( sm.getErrors()!=null  && !sm.getErrors().isEmpty()){
+                String desc = "";
+                for (org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.Error er: sm.getErrors()){
+                    desc = er.getOrigin() + ""  + er.getSeverity() +" " + er.getErrorCode() + " " + er.getErrorDetail();
+                    break;
+                }
+                
+                getDAO().setStatusToOutMail(outmsg, SEDOutboxMailStatus.EBMSERROR, desc);
+                
+            } else   if (sm.getReceipt() != null) {                
+                outmsg.setReceivedDate(mi.getTimestamp());
+                getDAO().setStatusToOutMail(outmsg, SEDOutboxMailStatus.SENT, "Mail received to receiver MSH");
+                
             }
 
             msg.getExchange().put("SIGNAL_ELEMENTS", sm.getAnies());

@@ -170,9 +170,40 @@ public class SEDDaoBean implements SEDDaoInterface {
         }
 
     }
+    @Override
+    public void serializeInMail(MSHInMail mail){
+    // serialize data to db
+        try {
+
+            mutUTransaction.begin();
+
+            // persist mail    
+            memEManager.persist(mail);
+
+            // persist mail event
+            MSHInEvent me = new MSHInEvent();
+            me.setMailId(mail.getId());
+            me.setStatus(mail.getStatus());
+            me.setDate(mail.getStatusDate());
+            memEManager.persist(me);
+            mutUTransaction.commit();
+        } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
+            {
+                try {
+                    mutUTransaction.rollback();
+                } catch (IllegalStateException | SecurityException | SystemException ex1) {
+                    // ignore 
+                }
+                /*  SEDException msherr = new SEDException();
+                msherr.setErrorCode(SEDExceptionCode.SERVER_ERROR);
+                msherr.setMessage(ex.getMessage());
+                throw new SEDException_Exception("Error occured while storing to DB", msherr, ex);*/
+            }
+        }
+    }
 
     @Override
-    public void serializeMail(MSHOutMail mail, String userID, String applicationId, String pmodeId) {
+    public void serializeOutMail(MSHOutMail mail, String userID, String applicationId, String pmodeId) {
         //  EntityManagerFactory emf = null;
 
         // --------------------

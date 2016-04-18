@@ -144,12 +144,12 @@
                         <password>sa</password>
                     </security>
                 </datasource>
-                <datasource jndi-name="java:/dsEBMS_SED" pool-name="ebMSSEDPool">
+                <datasource jndi-name="java:/dsEBMS_SED" pool-name="ebMSSEDPool" enabled="true" statistics-enabled="true">
                     <connection-url>jdbc:postgresql://localhost/db_sed</connection-url>
                     <driver>postgres</driver>
                     <security>
                         <user-name>sed</user-name>
-                        <password>**********</password>
+                        <password>****</password>
                     </security>
                 </datasource>
                 <drivers>
@@ -312,7 +312,7 @@
                 <security-setting name="#">
                     <role name="guest" delete-non-durable-queue="true" create-non-durable-queue="true" consume="true" send="true"/>
                 </security-setting>
-                <address-setting name="#" message-counter-history-day-limit="10" page-size-bytes="2097152" max-size-bytes="10485760" expiry-address="jms.queue.ExpiryQueue" dead-letter-address="jms.queue.DLQ"/>
+                <address-setting name="#" message-counter-history-day-limit="10" page-size-bytes="2097152" max-size-bytes="10485760" max-delivery-attempts="${max.delivery.attempts:5}" redelivery-multiplier="${redelivery.multiplier:1.5}" redelivery-delay="${redelivery.delay:2}" expiry-address="jms.queue.ExpiryQueue" dead-letter-address="jms.queue.DLQ"/>
                 <http-connector name="http-connector" endpoint="http-acceptor" socket-binding="http"/>
                 <http-connector name="http-connector-throughput" endpoint="http-acceptor-throughput" socket-binding="http">
                     <param name="batch-delay" value="50"/>
@@ -327,6 +327,8 @@
                 <jms-queue name="ExpiryQueue" entries="java:/jms/queue/ExpiryQueue"/>
                 <jms-queue name="DLQ" entries="java:/jms/queue/DLQ"/>
                 <jms-queue name="MSHQueue" entries="java:/jms/queue/MSHQueue"/>
+                <jms-queue name="SEDExecutionQueue" entries="java:/jms/queue/SEDExecutionQueue"/>
+                <jms-queue name="SEDScheduleQueue" entries="java:/jms/queue/SEDScheduleQueue"/>
                 <connection-factory name="InVmConnectionFactory" entries="java:jboss/ConnectionFactory" connectors="in-vm"/>
                 <connection-factory name="RemoteConnectionFactory" entries="java:jboss/exported/jms/RemoteConnectionFactory" connectors="http-connector"/>
                 <pooled-connection-factory name="activemq-ra" transaction="xa" entries="java:/JmsXA java:jboss/DefaultJMSConnectionFactory" connectors="in-vm"/>
@@ -380,6 +382,14 @@
                         <auth-module code="Dummy"/>
                     </authentication-jaspi>
                 </security-domain>
+                <security-domain name="sed-realm" cache-type="default">
+                    <authentication>
+                        <login-module code="org.jboss.security.auth.spi.UsersRolesLoginModule" flag="required">
+                            <module-option name="usersProperties" value="${jboss.server.config.dir}/sed-users.properties"/>
+                            <module-option name="rolesProperties" value="${jboss.server.config.dir}/sed-roles.properties"/>
+                        </login-module>
+                    </authentication>
+                </security-domain>
             </security-domains>
         </subsystem>
         <subsystem xmlns="urn:jboss:domain:transactions:3.0">
@@ -398,6 +408,7 @@
                     <location name="/" handler="welcome-content"/>
                     <filter-ref name="server-header"/>
                     <filter-ref name="x-powered-by-header"/>
+                    <single-sign-on/>
                 </host>
             </server>
             <servlet-container name="default">

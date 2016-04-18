@@ -7,12 +7,14 @@ package si.jrc.msh.interceptor;
 
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;
+import javax.ejb.EJB;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -44,10 +46,13 @@ import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.UserMessage;
 import si.sed.commons.utils.SEDLogger;
 import si.jrc.msh.utils.EBMSUtils;
 import si.jrc.msh.client.sec.KeyPasswordCallback;
+import si.jrc.msh.exception.EBMSError;
 import si.sed.commons.utils.sec.CertificateUtils;
 import si.jrc.msh.exception.ExceptionUtils;
 import si.jrc.msh.exception.SOAPExceptionCode;
+import si.sed.commons.SEDJNDI;
 import si.sed.commons.exception.StorageException;
+import si.sed.commons.interfaces.DBSettingsInterface;
 import si.sed.commons.utils.StorageUtils;
 import si.sed.commons.utils.Utils;
 
@@ -55,11 +60,14 @@ import si.sed.commons.utils.Utils;
  *
  * @author sluzba
  */
-public class EBMSOutInterceptor extends AbstractSoapInterceptor {
+public class EBMSOutInterceptor extends AbstractEBMSInterceptor {
 
     protected final SEDLogger mlog = new SEDLogger(EBMSOutInterceptor.class);
 
     EBMSUtils mEBMSUtil = new EBMSUtils();
+    
+    
+    
 
     public EBMSOutInterceptor() {
         super(Phase.PRE_PROTOCOL);
@@ -70,6 +78,8 @@ public class EBMSOutInterceptor extends AbstractSoapInterceptor {
     @Override
     public void handleMessage(SoapMessage msg) {
         long l = mlog.logStart(msg);
+        mlog.log("handleMessage 1");
+
         SoapVersion version = msg.getVersion();
         boolean isRequest = MessageUtils.isRequestor(msg);
         QName sv = (isRequest ? SoapFault.FAULT_CODE_CLIENT : SoapFault.FAULT_CODE_SERVER);
@@ -79,22 +89,27 @@ public class EBMSOutInterceptor extends AbstractSoapInterceptor {
             mlog.logError(l, errmsg, null);
             throw ExceptionUtils.createSoapFault(SOAPExceptionCode.SoapVersionMismatch, sv, errmsg);
         }
+        mlog.log("handleMessage 2");
 
         if (msg.getContent(SOAPMessage.class) == null) {
             String errmsg = "Internal error missing SOAPMessage!";
             mlog.logError(l, errmsg, null);
             throw ExceptionUtils.createSoapFault(SOAPExceptionCode.InternalFailure, sv, errmsg);
         }
-
+        mlog.log("handleMessage 3");
         PMode pmd = msg.getExchange().get(PMode.class) == null ? (PMode) msg.getExchange().get(PMode.class.getName()) : msg.getExchange().get(PMode.class);
-
+        mlog.log("handleMessage 4");
         if (pmd == null) {
             String errmsg = "Missing PMode configuration for: " + (isRequest ? "Request" : "Response");
             mlog.logError(l, errmsg, null);
             throw ExceptionUtils.createSoapFault(SOAPExceptionCode.ConfigurationFailure, sv, errmsg);
+
         }
 
+        mlog.log("handleMessage 5");
         MSHOutMail outMail = msg.getExchange().get(MSHOutMail.class) == null ? (MSHOutMail) msg.getExchange().get(MSHOutMail.class.getName()) : msg.getExchange().get(MSHOutMail.class);
+        
+        
         SignalMessage signal = msg.getExchange().get(SignalMessage.class);
         try {
             // set attachment fpr wss signature!
@@ -102,6 +117,7 @@ public class EBMSOutInterceptor extends AbstractSoapInterceptor {
         } catch (StorageException ex) {
             mlog.logError(l, "Error adding attachments to soap", ex);
         }
+        mlog.log("handleMessage 6");
 
         // MshIncomingMail inMail = msg.getExchange().get(MshIncomingMail.class);
         //EBMSError err = msg.getExchange().get(EBMSError.class);
@@ -111,23 +127,26 @@ public class EBMSOutInterceptor extends AbstractSoapInterceptor {
         //boolean isRequestor = isRequestor(msg);
         // if sending usermessage, svevkey or as4 receipt -> pmode is mandatory
         // create  MESSAGING
+        mlog.log("handleMessage 7");
         Messaging msgHeader = mEBMSUtil.createMessaging(version);
         // add user message
         if (outMail != null) {
-            UserMessage um = mEBMSUtil.createUserMessage(pmd, outMail, Utils.getDomainFromAddress(outMail.getSenderEBox()));
+            outMail.setSentDate(Calendar.getInstance().getTime()); // reset sent date
+            UserMessage um = mEBMSUtil.createUserMessage(pmd, outMail, Utils.getDomainFromAddress(outMail.getSenderEBox()), outMail.getSentDate());
             msgHeader.getUserMessages().add(um);
         }
         if (signal != null) {
             msgHeader.getSignalMessages().add(signal);
         }
 
-        //      }
-/*
-        // add error
+        // add error signal
+        EBMSError err = msg.getExchange().get(EBMSError.class);
+        mlog.log("handleMessage 8 - error: " + err);
         if (err != null) {
-            SignalMessage sm = mEBMSUtil.generateErrorSignal(err, mSettings.getDomain());
+            SignalMessage sm = mEBMSUtil.generateErrorSignal(err,getSettings().getDomain(), Calendar.getInstance().getTime());
+            mlog.log("handleMessage 9 - error: " + sm);
             msgHeader.getSignalMessages().add(sm);
-        }*/
+        }
         // add svev signal
         // add error
         /*  if (msgSvevKey != null) {
@@ -255,6 +274,12 @@ public class EBMSOutInterceptor extends AbstractSoapInterceptor {
             }
         }
 
+    }
+
+    @Override
+    public void handleFault(SoapMessage message) {
+        super.handleFault(message); //To change body of generated methods, choose Tools | Templates.
+        mlog.log("handleFault 1");
     }
 
 }

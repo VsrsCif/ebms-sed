@@ -16,7 +16,10 @@
  */
 package si.jrc.msh.interceptor;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.Resource;
+import javax.ejb.EJB;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -35,7 +38,10 @@ import org.msh.ebms.inbox.event.MSHInEvent;
 import org.msh.ebms.inbox.mail.MSHInMail;
 import org.msh.ebms.outbox.event.MSHOutEvent;
 import org.msh.ebms.outbox.mail.MSHOutMail;
+import si.sed.commons.SEDJNDI;
 import si.sed.commons.SEDSystemProperties;
+import si.sed.commons.interfaces.DBSettingsInterface;
+import si.sed.commons.interfaces.SEDDaoInterface;
 import si.sed.commons.utils.SEDLogger;
 
 /**
@@ -46,13 +52,10 @@ public abstract class AbstractEBMSInterceptor extends AbstractSoapInterceptor {
 
     String LOADED_CLASSES = "hibernate.ejb.loaded.classes";
 
-    @Resource
-    private UserTransaction mutUTransaction;
-
-    @PersistenceContext(unitName = "ebMS_MSH_PU")
-    private EntityManager memEManager;
-
     SEDLogger mlog = new SEDLogger(AbstractEBMSInterceptor.class);
+     
+    DBSettingsInterface mDBSettings;
+    SEDDaoInterface mSedDao;
 
     public AbstractEBMSInterceptor(String p) {
         super(p);
@@ -63,144 +66,48 @@ public abstract class AbstractEBMSInterceptor extends AbstractSoapInterceptor {
 
     }
 
-    public UserTransaction getUserTransaction() {
+
+   
+
+    public DBSettingsInterface getSettings() {
         long l = mlog.logStart();
-        // for jetty 
-        if (mutUTransaction == null) {
-
+        if (mDBSettings== null) {
             try {
-
-                InitialContext ic = new InitialContext();
-                mutUTransaction = (UserTransaction) ic.lookup(getJNDIPrefix() + "jboss/UserTransaction");
-
+                mDBSettings=  InitialContext.doLookup(SEDJNDI.JNDI_DBSETTINGS);
+                mlog.logEnd(l);
             } catch (NamingException ex) {
-                mlog.logWarn(l, "Error discovering 'jboss/UserTransaction'. Try again with 'UserTransaction'. ERROR:" + ex.getMessage(), null);
-                try {
-                    InitialContext ic = new InitialContext();
-                    mutUTransaction = (UserTransaction) ic.lookup(getJNDIPrefix() + "UserTransaction");
-                } catch (NamingException e1) {
-                    mlog.logError(l, "Error discovering 'UserTransaction'." + ex.getExplanation(), e1);
-                }
+                mlog.logError(l, ex);
             }
-
         }
-        return mutUTransaction;
+        return mDBSettings;
     }
-
-    private String getJNDIPrefix() {
-
-        return System.getProperty(SEDSystemProperties.SYS_PROP_JNDI_PREFIX, "java:/");
-    }
-
-    private String getJNDI_JMSPrefix() {
-        return System.getProperty(SEDSystemProperties.SYS_PROP_JNDI_JMS_PREFIX, "java:/jms/");
-    }
-
-    public EntityManager getEntityManager() {
-        // for jetty 
+    
+     public SEDDaoInterface getDAO() {
         long l = mlog.logStart();
-        
-        if (memEManager == null) {
-            String jndi = getJNDIPrefix() + "ebMS_MSH_PU";
-            String jndi2 =  "__/ebMS_MSH_PU";
+        if (mSedDao== null) {
             try {
-                InitialContext ic = new InitialContext();
-                memEManager = (EntityManager) ic.lookup(jndi);
-
+                mSedDao=  InitialContext.doLookup(SEDJNDI.JNDI_SEDDAO);
+                mlog.logEnd(l);
             } catch (NamingException ex) {
-                mlog.logWarn(l, "Error discovering '"+jndi+"'. Try again with '"+jndi2+"'.", null);
-                try {
-                    InitialContext ic = new InitialContext();
-                    memEManager = (EntityManager) ic.lookup(jndi2);
-
-                } catch (NamingException ex1) {
-                    mlog.logError(l, "Error discovering '"+jndi2+"'." + ex.getExplanation(), ex1);
-                }
-            }
-
+                mlog.logError(l, ex);
+            }            
         }
-        return memEManager;
+      
+        return mSedDao;
     }
 
     @Override
     public abstract void handleMessage(SoapMessage t) throws Fault;
 
     public void serializeMail(MSHOutMail mail, String userID, String applicationId, String pmodeId) {
-        //  EntityManagerFactory emf = null;
-        EntityManager em = null;
-
-        // --------------------
-        // serialize data to db
-        try {
-            //emf = getSEDEntityManagerFactory();
-            //em = emf.createEntityManager();
-            //em.getTransaction().begin();
-            em = getEntityManager();
-            getUserTransaction().begin();
-
-            // persist mail    
-            em.persist(mail);
-            // persist mail event
-            MSHOutEvent me = new MSHOutEvent();
-            me.setMailId(mail.getId());
-            me.setStatus(mail.getStatus());
-            me.setDate(mail.getStatusDate());
-            me.setSenderMessageId(mail.getSenderMessageId());
-            me.setUserId(userID);
-            me.setApplicationId(applicationId);
-            em.persist(me);
-
-            //em.getTransaction().commit();
-            getUserTransaction().commit();
-
-        } catch (Exception ex) {
-            if (em != null) {
-                em.getTransaction().rollback();
-            }
-            ex.printStackTrace();
-        } finally {
-            /* if (em != null) {
-                em.close();
-            }
-            if (emf != null) {
-                emf.close();
-            }*/
-        }
+        
+        getDAO().serializeOutMail(mail, userID, applicationId, pmodeId);
+        
 
     }
 
     public void serializeInMail(MSHInMail mail) {
-
-        // --------------------
-        // serialize data to db
-        try {
-
-            getUserTransaction().begin();
-
-            // persist mail    
-            getEntityManager().persist(mail);
-
-            // persist mail event
-            MSHInEvent me = new MSHInEvent();
-            me.setMailId(mail.getId());
-            me.setStatus(mail.getStatus());
-            me.setDate(mail.getStatusDate());
-            getEntityManager().persist(me);
-            getUserTransaction().commit();
-        } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
-            {
-                try {
-                    getUserTransaction().rollback();
-                } catch (IllegalStateException | SecurityException | SystemException ex1) {
-                    // ignore 
-                }
-                /*  SEDException msherr = new SEDException();
-                msherr.setErrorCode(SEDExceptionCode.SERVER_ERROR);
-                msherr.setMessage(ex.getMessage());
-                throw new SEDException_Exception("Error occured while storing to DB", msherr, ex);*/
-            }
-        }
-
+        getDAO().serializeInMail(mail);
     }
 
 }

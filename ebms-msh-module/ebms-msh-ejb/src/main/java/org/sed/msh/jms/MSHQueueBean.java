@@ -17,7 +17,6 @@
 package org.sed.msh.jms;
 
 import java.math.BigInteger;
-import java.util.Calendar;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
 import javax.ejb.MessageDriven;
@@ -117,11 +116,11 @@ public class MSHQueueBean implements MessageListener {
         }
         // start sending        
 
-        mDB.setStatusToOutMail(mail, SEDOutboxMailStatus.SENDING, null);
+        mDB.setStatusToOutMail(mail, SEDOutboxMailStatus.SENDING, "Start sending to receiver MSH");
         try {
             mmshClient.sendMessage(mail, pMode);
-            mail.setSentDate(Calendar.getInstance().getTime());
-            mDB.setStatusToOutMail(mail, SEDOutboxMailStatus.SENT, null);
+            //mail.setSentDate(Calendar.getInstance().getTime());
+            //mDB.setStatusToOutMail(mail, SEDOutboxMailStatus.SENT, "Mail sent to receiver MSH");
 
         } catch (Exception ex) {
             ex.printStackTrace();

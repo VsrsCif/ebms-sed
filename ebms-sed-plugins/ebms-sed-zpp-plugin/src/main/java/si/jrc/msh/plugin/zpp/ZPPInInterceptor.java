@@ -239,7 +239,7 @@ public class ZPPInInterceptor implements SoapInterceptorInterface {
             mp.setFilename(fDA.getName());
             mp.setName(mp.getFilename().substring(mp.getFilename().lastIndexOf(".")));
 
-            mDB.serializeMail(mout, "", "ZPPDeliveryPlugin", pmd.getId());
+            mDB.serializeOutMail(mout, "", "ZPPDeliveryPlugin", pmd.getId());
 
             mInMail.setStatus(SEDInboxMailStatus.PROCESS.getValue());
             mInMail.setStatusDate(Calendar.getInstance().getTime());
@@ -278,22 +278,6 @@ public class ZPPInInterceptor implements SoapInterceptorInterface {
          */
     }
 
-    private Key getSecretKey(String bi) throws IOException {
-        Key sk = null;
-        Path filePath = Paths.get(System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR) + "/SVEV/" + SECRET_KEY_FILE);
-        try (BufferedReader in = new BufferedReader(new FileReader(filePath.toFile()))) {
-            String line = null;
-            while ((line = in.readLine()) != null) {
-                String[] str = line.split(" ");
-                if (str[0].equals(bi)) {
-                    sk = new SEDKey(new BigInteger(str[0]), Base64.getDecoder().decode(str[1]), str[2], "");
-
-                }
-            }
-        };
-        return sk;
-
-    }
 
     public void decryptMail(Key key, String convID, SEDBox sb) {
         long l = mlog.logStart();

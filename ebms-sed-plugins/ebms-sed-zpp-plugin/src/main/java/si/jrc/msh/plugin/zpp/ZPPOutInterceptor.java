@@ -5,15 +5,18 @@
  */
 package si.jrc.msh.plugin.zpp;
 
+import java.io.BufferedReader;
 import si.sed.commons.exception.SEDSecurityException;
 import si.jrc.msh.sec.SEDCrypto;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.security.Key;
 import javax.crypto.SecretKey;
 import org.apache.cxf.binding.soap.SoapMessage;
 import org.msh.ebms.outbox.mail.MSHOutMail;
@@ -35,7 +38,9 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 import javax.transaction.HeuristicMixedException;
 import javax.transaction.HeuristicRollbackException;
 import javax.transaction.NotSupportedException;
@@ -71,7 +76,7 @@ public class ZPPOutInterceptor implements SoapInterceptorInterface {
 
     protected final SEDLogger mlog = new SEDLogger(ZPPOutInterceptor.class);
 
-      @Resource
+    @Resource
     public UserTransaction mutUTransaction;
 
     @PersistenceContext(unitName = "ebMS_ZPP_PU", name = "ebMS_ZPP_PU")
@@ -118,7 +123,7 @@ public class ZPPOutInterceptor implements SoapInterceptorInterface {
         // todo check if key is already in db
         //SecretKey sk = new SecretKeySpec(bytes, ENCODING_UTF8)
         // generate key
-        SecretKey skey = mscCrypto.getKey(mAlgorithem);
+        SEDKey skey = getOrCreateSecretKey(outMail.getId());
         //create nofitication
         File fDNViz = StorageUtils.getNewStorageFile("pdf", "DeliveryNoification");
 
@@ -141,7 +146,7 @@ public class ZPPOutInterceptor implements SoapInterceptorInterface {
         outMail.setMSHOutPayload(pl);
         outMail.setConversationId(outMail.getId().toString()); // conversation id is id of fist mail
 
-        storeSecretKey(outMail.getId(), skey);
+        
         /*           
          
             ZPPKey zk = new ZPPKey();
@@ -176,7 +181,7 @@ public class ZPPOutInterceptor implements SoapInterceptorInterface {
 
     }
 
-    private MSHOutPayload getEncryptedPayloads(SecretKey skey, MSHOutMail mail) throws SEDSecurityException, StorageException, HashException {
+    private MSHOutPayload getEncryptedPayloads(SEDKey skey, MSHOutMail mail) throws SEDSecurityException, StorageException, HashException {
         long l = mlog.logStart();
 
         MSHOutPayload op = new MSHOutPayload();
@@ -212,9 +217,9 @@ public class ZPPOutInterceptor implements SoapInterceptorInterface {
         return mfpFop;
     }
 
-    private void storeSecretKey(BigInteger bi, SecretKey skey) throws IOException {
-        SEDKey sk = new SEDKey(bi, skey.getEncoded() , skey.getAlgorithm(),skey.getFormat());
-        
+    /*private void storeSecretKey(BigInteger bi, SecretKey skey) throws IOException {
+        SEDKey sk = new SEDKey(bi, skey.getEncoded(), skey.getAlgorithm(), skey.getFormat());
+
         try {
             mutUTransaction.begin();
             memEManager.persist(sk);
@@ -222,26 +227,40 @@ public class ZPPOutInterceptor implements SoapInterceptorInterface {
         } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
             Logger.getLogger(ZPPOutInterceptor.class.getName()).log(Level.SEVERE, null, ex);
         }
-        /*Path filePath = Paths.get(System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR) + "/SVEV/" + SECRET_KEY_FILE);
-        if (!Files.exists(filePath)) {
-        Files.createFile(filePath);
-        }
-        Files.write(filePath, String.format("%d %s %s\n", bi, Base64.getEncoder().encodeToString(skey.getEncoded()), skey.getFormat()).getBytes(), StandardOpenOption.APPEND);
-         */ 
-        
-        
-        
-        /*Path filePath = Paths.get(System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR) + "/SVEV/" + SECRET_KEY_FILE);
-        if (!Files.exists(filePath)) {
-            Files.createFile(filePath);
-        }
-        Files.write(filePath, String.format("%d %s %s\n", bi, Base64.getEncoder().encodeToString(skey.getEncoded()), skey.getFormat()).getBytes(), StandardOpenOption.APPEND);
-*/
-    }
 
+    }*/
     @Override
     public void handleFault(SoapMessage t) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    private SEDKey getOrCreateSecretKey(BigInteger bi) throws IOException {
+        long l = mlog.logStart(bi);
+        SEDKey sk = null;
+
+        try {
+            TypedQuery<SEDKey> q = memEManager.createNamedQuery("si.jrc.msh.sec.SEDKey.getById", SEDKey.class);
+            q.setParameter("id", bi);
+            sk = q.getSingleResult();
+        } catch (NoResultException nr) {
+
+            try {
+                Key skey = mscCrypto.getKey(mAlgorithem);
+                sk = new SEDKey(bi, skey.getEncoded(), skey.getAlgorithm(), skey.getFormat());
+
+                mutUTransaction.begin();
+                memEManager.persist(sk);
+                mutUTransaction.commit();
+
+            } catch (SEDSecurityException ex) {
+                mlog.logError(l, ex);
+            } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
+                mlog.logError(l, ex);
+            }
+        }
+
+        return sk;
+
     }
 
 }

@@ -26,6 +26,7 @@ public enum SEDOutboxMailStatus {
     SCHEDULE("SCHEDULE", "Shedule for resend", "green"),
     SENT("SENT", "Message is  sent to receiving MSH", "blue"),
     ERROR("ERROR", "Error occured pushing/pulling to receiving MSH", "red"),
+    EBMSERROR("EBMSERROR", "EBMS Error occured pushing/pulling to receiving MSH", "darkred"),
     DELETED("DELETED", "Pošiljka je izbrisana", "black");
 
     String mstrVal;
@@ -55,11 +56,7 @@ public enum SEDOutboxMailStatus {
             if (st.getValue().equals(strName)){
                 return st.getColor();
             }
-        }
-        /*SEDOutboxMailStatus st = SEDOutboxMailStatus.valueOf(strName);
-        if (st!=null){
-            return st.getColor();
-        }*/
+        }        
         return strName;
     }
 }

@@ -31,7 +31,8 @@ public interface SEDDaoInterface {
     void setStatusToInMail(MSHInMail mail, SEDInboxMailStatus status, String desc);
     List<MSHInMail> getInMailConvIdAndAction(String action, String convId);
     void updateInMail(MSHInMail mail, String statusDesc);
-    void serializeMail(MSHOutMail mail, String userID, String applicationId, String pmodeId);
+    void serializeOutMail(MSHOutMail mail, String userID, String applicationId, String pmodeId);
+    void serializeInMail(MSHInMail mail);
     SEDBox getSedBoxByName(String sbox);
     
 }

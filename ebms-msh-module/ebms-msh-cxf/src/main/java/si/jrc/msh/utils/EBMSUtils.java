@@ -69,10 +69,10 @@ public class EBMSUtils {
     protected final SEDLogger mlog = new SEDLogger(MshClient.class);
     private static final String ID_PREFIX_ = "SED-";
 
-    public SignalMessage generateErrorSignal(EBMSError ebError, String senderDomain) {
+    public SignalMessage generateErrorSignal(EBMSError ebError, String senderDomain, Date timestamp) {
         SignalMessage sigMsg = new SignalMessage();
         // generate  MessageInfo
-        sigMsg.setMessageInfo(createMessageInfo(senderDomain, ebError.getRefToMessage()));
+        sigMsg.setMessageInfo(createMessageInfo(senderDomain, ebError.getRefToMessage(),timestamp));
 
         // get references
         org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.Error er = new org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.Error();
@@ -88,28 +88,15 @@ public class EBMSUtils {
         return sigMsg;
     }
 
-    public SignalMessage generateSVEVKeySignal(/*SVEVEncryptionKey skey,*/String senderDomain) {
-        SignalMessage sigMsg = new SignalMessage();
-        // generate  MessageInfo
-        sigMsg.setMessageInfo(createMessageInfo(senderDomain, null));
-        Document doc;
-        /*try {
-         doc = XMLUtils.jaxbToDocument(skey);
-         sigMsg.getAnies().add(doc.getDocumentElement());
-         } catch (JAXBException | ParserConfigurationException ex) {
-         Logger.getLogger(EBMSUtils.class.getName()).log(Level.SEVERE, null, ex);
-         }*/
 
-        return sigMsg;
-    }
 
-    public SignalMessage generateAS4ReceiptSignal(UserMessage userMessage, String senderDomain, File inboundMail) {
+    public SignalMessage generateAS4ReceiptSignal(UserMessage userMessage, String senderDomain, File inboundMail, Date timestamp) {
         SignalMessage sigMsg = new SignalMessage();
         try (FileInputStream fos = new FileInputStream(inboundMail);
                 InputStream isXSLT = getClass().getResourceAsStream("/xslt/soap2AS4Receipt.xsl")) {
 
             // add message infof
-            sigMsg.setMessageInfo(createMessageInfo(senderDomain, userMessage.getMessageInfo().getMessageId()));
+            sigMsg.setMessageInfo(createMessageInfo(senderDomain, userMessage.getMessageInfo().getMessageId(),timestamp));
             // generate receipt
             Receipt rcp = new Receipt();
             // generate as4 receipt from xslt
@@ -123,12 +110,12 @@ public class EBMSUtils {
         return sigMsg;
     }
 
-    public SignalMessage generateAS4ReceiptSignal(String refMessageId, String senderDomain, Element inboundMail) {
+    public SignalMessage generateAS4ReceiptSignal(String refMessageId, String senderDomain, Element inboundMail, Date timestamp) {
         SignalMessage sigMsg = new SignalMessage();
         try (InputStream isXSLT = getClass().getResourceAsStream("/xslt/soap2AS4Receipt.xsl")) {
 
             // add message infof
-            sigMsg.setMessageInfo(createMessageInfo(senderDomain, refMessageId));
+            sigMsg.setMessageInfo(createMessageInfo(senderDomain, refMessageId, timestamp));
             // generate receipt
             Receipt rcp = new Receipt();
             // generate as4 receipt from xslt
@@ -156,28 +143,28 @@ public class EBMSUtils {
 
     }
 
-    private MessageInfo createMessageInfo(String senderDomain, String refToMessage) {
-        return createMessageInfo(UUID.randomUUID().toString(), senderDomain, refToMessage);
+    private MessageInfo createMessageInfo(String senderDomain, String refToMessage, Date timestamp) {
+        return createMessageInfo(UUID.randomUUID().toString(), senderDomain, refToMessage,timestamp);
     }
 
-    private MessageInfo createMessageInfo(String msgId, String senderDomain, String refToMessage) {
+    private MessageInfo createMessageInfo(String msgId, String senderDomain, String refToMessage, Date timestamp) {
         if (msgId == null) {
             msgId = UUID.randomUUID().toString();
         }
         MessageInfo mi = new MessageInfo();
         mi.setMessageId(msgId + "@" + senderDomain);
-        mi.setTimestamp(new Date());
+        mi.setTimestamp(timestamp);
         mi.setRefToMessageId(refToMessage);
         return mi;
     }
 
-    public UserMessage createUserMessage(PMode pm, MSHOutMail mo, String senderDomain) {
+    public UserMessage createUserMessage(PMode pm, MSHOutMail mo, String senderDomain, Date timestamp) {
         UserMessage usgMsg = new UserMessage();
 
         // UserMessage usgMsg = new UserMessage();
         // --------------------------------------
         // generate  MessageInfo 
-        MessageInfo mi = createMessageInfo(mo.getMessageId(), senderDomain, mo.getRefToMessageId());
+        MessageInfo mi = createMessageInfo(mo.getMessageId(), senderDomain, mo.getRefToMessageId(),timestamp);
         usgMsg.setMessageInfo(mi);
 
         // generate from 
