@@ -117,12 +117,6 @@
             <version>${project.version}</version>	
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>ebms-msh-plugin</artifactId>            
-            <version>${project.version}</version>	
-            <scope>provided</scope>
-        </dependency>
         
      
         <!--webservice -->

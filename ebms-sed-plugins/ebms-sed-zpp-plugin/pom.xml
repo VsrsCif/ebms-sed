@@ -12,6 +12,7 @@
     <artifactId>ebms-sed-zpp-plugin</artifactId>
     <name>ebms-sed-zpp-plugin</name>
     <description>ZPP delivery plugin</description>
+    <packaging>war</packaging>
 
     <licenses>
         <license>
@@ -40,7 +41,9 @@
         </developer>
     </developers>
     
-    
+     <properties>
+        <war.final.name>plugin-zpp</war.final.name>
+    </properties>
     <build>
         <plugins>
             <plugin>
@@ -51,18 +54,22 @@
                 <artifactId>maven-compiler-plugin</artifactId>
             </plugin>           
             <plugin>
-                <artifactId>maven-jar-plugin</artifactId>
-                <configuration>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <configuration> 
+                    <!-- for missing WEB-INF/web.xml-->
+                    <failOnMissingWebXml>false</failOnMissingWebXml>
                     <archive>                        
                         <manifestEntries>                            
-                            <implementation-version>${project.version}</implementation-version>  
+                            <implementation-version>${project.version}</implementation-version>             
                             <Implementation-Build>${buildNumber}</Implementation-Build>                            
-                            <Dependencies>org.apache.cxf,org.apache.cxf.impl,org.apache.commons.io, org.apache.ws.security</Dependencies >
+                            <Dependencies>org.apache.cxf,org.apache.cxf.impl,org.apache.commons.io, org.apache.ws.security, org.apache.santuario.xmlsec,org.sed,org.primefaces</Dependencies>
                         </manifestEntries>
                     </archive>                                 
-                </configuration>                
-            </plugin>            
-        </plugins>        
+                </configuration>                 
+            </plugin>       
+        </plugins> 
+        <finalName>${war.final.name}</finalName>       
     </build>
 
     <dependencies>
@@ -70,22 +77,22 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>ebms-msh-xsd</artifactId>
-            <version>${project.version}</version>		
+            <version>${project.version}</version>	
+            <scope>provided</scope>	
         </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>ebms-msh-plugin</artifactId>
-            <version>${project.version}</version>		
-        </dependency>
+
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>ebms-sed-commons</artifactId>
             <version>${project.version}</version>		
+            <scope>provided</scope>	
         </dependency>
+    
       
         <dependency>
             <groupId>org.apache.santuario</groupId>
             <artifactId>xmlsec</artifactId>
+            <scope>provided</scope>	
         </dependency>
       
         <dependency>
@@ -98,6 +105,13 @@
             <artifactId>cxf-rt-frontend-jaxws</artifactId>
             <scope>provided</scope>
         </dependency>
+         <!-- GUI uses prifeaces componens --> 
+        <dependency>
+            <groupId>org.primefaces</groupId>
+            <artifactId>primefaces</artifactId>
+            
+        </dependency>	
+        
         <dependency>
             <groupId>javax</groupId>
             <artifactId>javaee-api</artifactId>            

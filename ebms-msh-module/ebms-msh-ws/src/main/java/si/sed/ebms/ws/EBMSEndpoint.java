@@ -24,12 +24,11 @@ import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.Resource;
+import javax.ejb.EJB;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
 import javax.transaction.HeuristicMixedException;
 import javax.transaction.HeuristicRollbackException;
 import javax.transaction.NotSupportedException;
@@ -61,8 +60,10 @@ import org.sed.ebms.ebox.SEDBox;
 import si.jrc.msh.utils.EBMSUtils;
 import si.sed.commons.MimeValues;
 import si.sed.commons.SEDInboxMailStatus;
+import si.sed.commons.SEDJNDI;
 import si.sed.commons.SEDSystemProperties;
 import si.sed.commons.exception.StorageException;
+import si.sed.commons.interfaces.SEDDaoInterface;
 
 import si.sed.commons.utils.HashUtils;
 import si.sed.commons.utils.SEDLogger;
@@ -78,33 +79,28 @@ import si.sed.commons.utils.xml.XMLUtils;
         = {
             "si.jrc.msh.interceptor.EBMSLogInInterceptor",
             "si.jrc.msh.interceptor.EBMSInInterceptor",
-            "si.sed.msh.plugin.MSHPluginInInterceptor"
+            "si.jrc.msh.interceptor.MSHPluginInInterceptor"
         })
 @org.apache.cxf.interceptor.OutInterceptors(interceptors
         = {
             "si.jrc.msh.interceptor.EBMSLogOutInterceptor",
             "si.jrc.msh.interceptor.EBMSOutInterceptor",
-            "si.sed.msh.plugin.MSHPluginOutInterceptor"
+            "si.jrc.msh.interceptor.MSHPluginOutInterceptor"
         })
 public class EBMSEndpoint implements Provider<SOAPMessage> {
 
-    private static final SEDLogger LOG  = new SEDLogger(EBMSEndpoint.class);
-            
+    private static final SEDLogger LOG = new SEDLogger(EBMSEndpoint.class);
+
     @Resource
     WebServiceContext wsContext;
 
-    @Resource
-    private UserTransaction mutUTransaction;
-
-    @PersistenceContext(unitName = "ebMS_MSH_PU")
-    private EntityManager memEManager;
-
+    @EJB(mappedName = SEDJNDI.JNDI_SEDDAO)
+    SEDDaoInterface mDB;
 
     StorageUtils msuStorageUtils = new StorageUtils();
     HashUtils mpHU = new HashUtils();
     EBMSUtils mebmsUtils = new EBMSUtils();
     StringFormater msfFormat = new StringFormater();
-    
 
     public EBMSEndpoint() {
 
@@ -128,11 +124,9 @@ public class EBMSEndpoint implements Provider<SOAPMessage> {
             MSHInMail inmail = (MSHInMail) ex.get(MSHInMail.class);
 
             String rName = inmail.getReceiverEBox();
-            
-            SEDBox sb = (SEDBox)ex.get(SEDBox.class);
 
-            
-            
+            SEDBox sb = (SEDBox) ex.get(SEDBox.class);
+
             if (sb == null) {
                 // return error
             } else if (inmail.getStatus().equals(SEDInboxMailStatus.RECEIVE.getValue())) {
@@ -146,8 +140,6 @@ public class EBMSEndpoint implements Provider<SOAPMessage> {
         LOG.logEnd(l);
         return response;
     }
-    
-    
 
     private void serializeMail(MSHInMail mail, Collection<Attachment> lstAttch, SEDBox sb) {
         long l = LOG.logStart();
@@ -160,21 +152,9 @@ public class EBMSEndpoint implements Provider<SOAPMessage> {
 
         // --------------------
         // serialize data to db
-        try {
-
-            getUserTransaction().begin();
-
-            // persist mail    
-            getEntityManager().merge(mail);
-
-            // persist mail event
-            MSHInEvent me = new MSHInEvent();
-            me.setMailId(mail.getId());
-            me.setStatus(mail.getStatus());
-            me.setDate(mail.getStatusDate());
-            getEntityManager().persist(me);
-            getUserTransaction().commit();
-
+        
+            mDB.setStatusToInMail(mail, SEDInboxMailStatus.RECEIVED, null);
+         
             // serialize to file
             Export e = sb.getExport();
             if (e != null && e.getActive()) {
@@ -183,73 +163,38 @@ public class EBMSEndpoint implements Provider<SOAPMessage> {
                 int i = 1;
                 try {
                     String folder = Utils.replaceProperties(e.getFolder());
-                    File fld =  new File(folder);
+                    File fld = new File(folder);
                     if (!fld.exists()) {
                         fld.mkdirs();
                     }
-                    String filPrefix = fld.getAbsolutePath() + File.separator + val ;
+                    String filPrefix = fld.getAbsolutePath() + File.separator + val;
                     if (e.getExportMetaData()) {
-                        String fileMetaData = filPrefix +"." +  MimeValues.MIME_XML.getSuffix();
+                        String fileMetaData = filPrefix + "." + MimeValues.MIME_XML.getSuffix();
                         try {
-                           
-                            XMLUtils.serialize(mail, fld.getAbsolutePath() + File.separator + val +"." +  MimeValues.MIME_XML.getSuffix() );
+
+                            XMLUtils.serialize(mail, fld.getAbsolutePath() + File.separator + val + "." + MimeValues.MIME_XML.getSuffix());
                         } catch (JAXBException | FileNotFoundException ex) {
-                            LOG.logError(l,"Export metadata ERROR. Export file:" +fileMetaData+ ".",  ex);
+                            LOG.logError(l, "Export metadata ERROR. Export file:" + fileMetaData + ".", ex);
                         }
                     }
-                    for (MSHInPart mp : mail.getMSHInPayload().getMSHInParts()) {                       
-                        msuStorageUtils.copyInFile(mp.getFilepath(), new File(filPrefix + "_" +i +"." +  MimeValues.getSuffixBYMimeType(mp.getMimeType())));
+                    for (MSHInPart mp : mail.getMSHInPayload().getMSHInParts()) {
+                        msuStorageUtils.copyInFile(mp.getFilepath(), new File(filPrefix + "_" + i + "." + MimeValues.getSuffixBYMimeType(mp.getMimeType())));
                     }
                 } catch (IOException | StorageException ex) {
-                    LOG.logError(l,"Export ERROR",  ex);
+                    LOG.logError(l, "Export ERROR", ex);
                 }
             }
 
-        } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
-            {
-                try {
-                    getUserTransaction().rollback();
-                } catch (IllegalStateException | SecurityException | SystemException ex1) {
-                    // ignore 
-                }
-                /*  SEDException msherr = new SEDException();
-                msherr.setErrorCode(SEDExceptionCode.SERVER_ERROR);
-                msherr.setMessage(ex.getMessage());
-                throw new SEDException_Exception("Error occured while storing to DB", msherr, ex);*/
-            }
-        }
+      
         LOG.logEnd(l);
     }
 
-    private UserTransaction getUserTransaction() {
-        // for jetty 
-        if (mutUTransaction == null) {
-            try {
-                InitialContext ic = new InitialContext();
-                mutUTransaction = (UserTransaction) ic.lookup(getJNDIPrefix() + "UserTransaction");
-            } catch (NamingException ex) {
-                Logger.getLogger(EBMSEndpoint.class.getName()).log(Level.SEVERE, null, ex);
-            }
-
-        }
-        return mutUTransaction;
-    }
+   
 
     private String getJNDIPrefix() {
 
         return System.getProperty(SEDSystemProperties.SYS_PROP_JNDI_PREFIX, "java:/jboss/");
     }
 
-    private EntityManager getEntityManager() {
-        // for jetty 
-        if (memEManager == null) {
-            try {
-                InitialContext ic = new InitialContext();
-                memEManager = (EntityManager) ic.lookup(getJNDIPrefix() + "ebMS_PU");
-            } catch (NamingException ex) {
-                Logger.getLogger(EBMSEndpoint.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-        return memEManager;
-    }
+    
 }

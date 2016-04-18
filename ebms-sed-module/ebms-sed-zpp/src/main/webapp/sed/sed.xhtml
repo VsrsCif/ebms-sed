@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:sui="http://java.sun.com/jsf/composite/sed-ui"
+      >
+
+    <h:head>
+        <title>SED User GUI</title>
+        <link href="resources/css/main.css" rel="stylesheet" />
+        <link href="resources/css/icons.css" rel="stylesheet" />
+
+    </h:head>
+
+    <h:body>
+        <h:form id="forms" >
+
+            <p:growl id="messages" showDetail="true" />
+            <!-- main window -->    
+            <p:layout style="min-width:400px;min-height:400px;"  fullPage="true"  >
+                <!-- toolbar -->    
+                <p:layoutUnit position="north" resizable="false" gutter="0" style="padding: 0px; margin: 0px" >
+
+                    <p:toolbar style="padding: 0px; margin: 0px; height: 28px; vertical-align: middle;">
+                        <f:facet name="left">
+                            <p:commandButton id="btnExit"  
+                                             value="Exit" 
+                                             icon="ui-icon-sed-exit"
+                                             actionListener="#{loginManager.logout()}"
+                                             styleClass="toolbar-Button"/>
+                            <p:commandButton id="btnRefresh"  
+                                             value="Refresh" 
+                                             icon="ui-icon-sed-refresh"
+                                             styleClass="toolbar-Button"
+                                              update=":forms:MainPanel"
+                                              ajax="true" />
+
+
+                            <span class="ui-separator">
+                                <span class="ui-icon ui-icon-grip-dotted-vertical " />
+                            </span>
+                            <p:commandButton value="Resend" styleClass="toolbar-Button" />
+                            <p:commandButton value="Delete" styleClass="toolbar-Button" />
+                        </f:facet>
+
+                        <f:facet name="right"  >
+
+                            <p:outputLabel value="User:" /> <b>#{userSessionData.user.userId}</b>
+                            <span class="ui-separator">
+                                <span class="ui-icon ui-icon-grip-dotted-vertical " />
+                            </span>
+                            <p:outputLabel for="ebox" value="SED-Box: " />
+                            <p:selectOneMenu id="ebox" value="#{userSessionData.currentSEDBox}" style="width:150px" >
+                                <p:ajax update=":forms:MainPanel" />
+                                <f:selectItem itemValue="Select sed-box" noSelectionOption="true" />
+                                <f:selectItems value="#{userSessionData.userEBoxes}" />
+                            </p:selectOneMenu>
+
+                        </f:facet>
+
+                    </p:toolbar>
+                </p:layoutUnit>
+                <p:layoutUnit  position="center"  gutter="0" >
+
+                    <h:panelGroup id="MainPanel">
+
+
+                        <sui:mail-table-in id="InMailPanel" rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_INBOX)  }"  />
+                        <sui:mail-table-out id="OutMailPanel" rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_OUTBOX)}"  />
+                        <sui:settings-keystore id="SettingsCustomPanel" rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_SETT_CERTS)}"  />
+                        <sui:settings-custom id="SettingsCertPanel" rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_SETT_CUSTOM)}"  />
+                        <!--sui:settings-pmode id="SettingsPModes" rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_SETT_PMODE)}"  / -->                        
+                        <sui:pmode_bt id="SettingsPModesBT" rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_PMODE_BT)}"  />
+                        <sui:settings-users id="SettingsUsers" rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_ADMIN_USERS)}"  />
+                        <sui:settings-eboxes id="SettingsSEDBoxes" rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_ADMIN_EBOXES)}"  />
+                        <sui:settings-cron id="SettingsCron" rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_ADMIN_CRON)}"  />
+                    </h:panelGroup>
+                </p:layoutUnit>
+                <p:layoutUnit position="south" resizable="false" size="20" minSize="20" maxSize="200">
+
+                </p:layoutUnit>
+                <p:layoutUnit position="west" resizable="false" size="320" minSize="320" maxSize="320">
+                    <p:accordionPanel  >
+                        <p:ajax event="tabChange" listener="#{MainWindow.onToolbarTabChange}" update="forms:MainPanel" />
+                        <p:tab id="PANEL_INBOX"  >
+                            <f:facet name="title">
+                                <h:graphicImage value="resources/images/inbox32.png" width="22" height="22" />
+                                <h:outputText value="Inbox" />                                 
+                            </f:facet>
+                            <p:panelGrid columns="2"  style="width: 100%">
+                                <f:facet name="header">
+                                    <h:outputText value="Search parameters: " />
+                                </f:facet>
+
+                                <h:outputText value="Rec. from:" />
+                                <p:calendar  value="#{InMailDataView.inMailModel.filter.receivedDateFrom}" pattern="dd.MM.yyyy" 
+                                             mask="true" navigator="true" showOn="button"   styleClass="searchDate"/>
+
+
+                                <h:outputText value="Rec.to:" />
+                                <p:calendar  value="#{InMailDataView.inMailModel.filter.receivedDateTo}" pattern="dd.MM.yyyy"
+                                             mask="true" navigator="true" showOn="button" styleClass="searchDate"/>
+
+                                <h:outputText value="Sender box:" />
+                                <h:inputText value="#{InMailDataView.inMailModel.filter.senderEBox}" />
+
+                                <h:outputText value="Status:" />
+                                <p:selectOneMenu id="inSts" value="#{InMailDataView.inMailModel.filter.status}" style="width:150px" >                                               
+                                    <f:selectItem itemValue="" noSelectionOption="true" />
+                                    <f:selectItems value="#{InMailDataView.inStatuses}"   />
+                                </p:selectOneMenu>
+
+                                <h:outputText value="Service" />
+                                <h:inputText value="#{InMailDataView.inMailModel.filter.service}" />
+
+                                <h:outputText value="Action" />
+                                <h:inputText value="#{InMailDataView.inMailModel.filter.action}" />
+                                
+                                <h:outputText value="" />
+                                <p:commandButton value="Search" 
+                                                icon="ui-icon-sed-search"                                             
+                                                styleClass="toolbar-Button"
+                                                 update=":forms:MainPanel" ajax="true"/>
+                            </p:panelGrid>
+                            
+                        </p:tab>
+                        <p:tab id="PANEL_OUTBOX">
+                            <f:facet name="title">
+                                <h:graphicImage value="resources/images/outbox32.png" width="22" height="22" />
+                                <h:outputText value="Outbox" />                                 
+                            </f:facet>
+                            <p:panelGrid columns="2"  style="width: 100%">
+                                <f:facet name="header">
+                                    <h:outputText value="Search parameters: " />
+                                </f:facet>
+
+                                <h:outputText value="Subm. from:" />
+                                <p:calendar  value="#{OutMailDataView.outMailModel.filter.submittedDateFrom}" pattern="dd.MM.yyyy" 
+                                             mask="true" navigator="true" showOn="button"   styleClass="searchDate"/>
+
+
+                                <h:outputText value="Subm.to:" />
+                                <p:calendar  value="#{OutMailDataView.outMailModel.filter.submittedDateTo}" pattern="dd.MM.yyyy"
+                                             mask="true" navigator="true" showOn="button" styleClass="searchDate"/>
+ 
+                                <h:outputText value="Receiver box:" />
+                                <h:inputText value="#{OutMailDataView.outMailModel.filter.receiverEBox}" />
+
+                                <h:outputText value="Status:" />
+                                <p:selectOneMenu id="outSt" value="#{OutMailDataView.outMailModel.filter.status}" style="width:150px" 
+                                                 rendered="#{not empty OutMailDataView.outMailModel}">                                               
+                                    <f:selectItem itemValue="" noSelectionOption="true" />
+                                    <f:selectItems value="#{OutMailDataView.outStatuses}"   />
+                                </p:selectOneMenu>
+
+                                <h:outputText value="Service" />
+                                <h:inputText value="#{OutMailDataView.outMailModel.filter.service}" />
+
+                                <h:outputText value="Action" />
+                                <h:inputText value="#{OutMailDataView.outMailModel.filter.action}" />
+                                
+                                <h:outputText value="" />
+                                <p:commandButton value="Search" 
+                                                icon="ui-icon-sed-search"                                             
+                                                styleClass="toolbar-Button"
+                                                 update=":forms:MainPanel" ajax="true"/>
+                            </p:panelGrid>
+                        </p:tab>
+
+                        <p:tab id="PANEL_SETT_PMODE" rendered="#{userSessionData.user.adminRole}">
+                            <f:facet name="title">
+                                <h:graphicImage value="resources/images/settings32.png" width="22" height="22" />
+                                <h:outputText value="P-Modes" />                                 
+                            </f:facet>
+                            <p:menu class="ui-accordion-button">
+                                <p:menuitem value="Business transaction" 
+                                            actionListener="#{MainWindow.onToolbarButtonAction}" 
+                                            update="forms:MainPanel">
+                                    <f:attribute name="panel" value="PANEL_PMODE_BT" />
+                                </p:menuitem>
+                            </p:menu>
+
+
+
+                        </p:tab>
+
+                        <p:tab id="PANEL_SETT_CUSTOM" rendered="#{userSessionData.user.adminRole}" >
+                            <f:facet name="title">
+                                <h:graphicImage value="resources/images/settings32.png" width="22" height="22" />
+                                <h:outputText value="Settings" />                                 
+                            </f:facet>
+                            <p:menu class="ui-accordion-button">
+                                <p:menuitem value="Custom"  actionListener="#{MainWindow.onToolbarButtonAction}"  update="forms:MainPanel">
+                                    <f:attribute name="panel" value="PANEL_SETT_CUSTOM" />
+                                </p:menuitem>
+                                <p:menuitem value="Certificates"  actionListener="#{MainWindow.onToolbarButtonAction}"  update="forms:MainPanel">
+                                    <f:attribute name="panel" value="PANEL_SETT_CERTS" />
+                                </p:menuitem>
+                                <p:menuitem value="SED-Boxes"  actionListener="#{MainWindow.onToolbarButtonAction}"  update="forms:MainPanel">
+                                    <f:attribute name="panel" value="PANEL_ADMIN_EBOXES" />
+                                </p:menuitem>
+                                <p:menuitem value="Users"  actionListener="#{MainWindow.onToolbarButtonAction}"  update="forms:MainPanel">
+                                    <f:attribute name="panel" value="PANEL_ADMIN_USERS" />
+                                </p:menuitem>                                
+                                <p:menuitem value="Scheduler"  actionListener="#{MainWindow.onToolbarButtonAction}"  update="forms:MainPanel">
+                                    <f:attribute name="panel" value="PANEL_ADMIN_CRON" />
+                                </p:menuitem>
+                            </p:menu>
+
+                        </p:tab>
+
+                    </p:accordionPanel>
+                </p:layoutUnit>
+            </p:layout>
+        </h:form>
+        <sui:dialogs id="dialogs" />
+
+    </h:body>
+</html>

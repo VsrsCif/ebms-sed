@@ -36,9 +36,11 @@ public class AppConstant {
     public static final String S_PANEL_ADMIN_USERS = "PANEL_ADMIN_USERS";
     public static final String S_PANEL_ADMIN_EBOXES = "PANEL_ADMIN_EBOXES";
     public static final String S_PANEL_ADMIN_CRON = "PANEL_ADMIN_CRON";
-    
+    public static final String S_PANEL_PLUGIN = "PANEL_PLUGIN";
 
- 
+    public String getS_PANEL_PLUGIN() {
+        return S_PANEL_PLUGIN;
+    }
 
     public  String getS_PANEL_PMODE_BT() {
         return S_PANEL_PMODE_BT;

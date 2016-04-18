@@ -59,11 +59,12 @@
             <artifactId>ebms-sed-commons</artifactId>
             <version>${project.version}</version>		
         </dependency>
+        
         <dependency>
-		 	<groupId>com.qoppa</groupId>
-		 	<artifactId>pdfImages</artifactId>
-		 	<version>1.0</version>
-		 </dependency>
+                <groupId>log4j</groupId>
+                <artifactId>log4j</artifactId>
+                <version>${log4j.version}</version>                
+            </dependency>
       
     </dependencies>
 </project>

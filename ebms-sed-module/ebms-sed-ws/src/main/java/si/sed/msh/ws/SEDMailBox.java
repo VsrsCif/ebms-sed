@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.Resource;
+import javax.ejb.EJB;
 import javax.interceptor.Interceptors;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
@@ -83,6 +84,7 @@ import org.sed.ebms.SEDMailBoxWS;
 import org.sed.ebms.SubmitMailRequest;
 import org.sed.ebms.SubmitMailResponse;
 import org.sed.ebms.control.Control;
+import org.sed.ebms.ebox.SEDBox;
 import org.sed.ebms.inbox.event.InEvent;
 import org.sed.ebms.inbox.mail.InMail;
 import org.sed.ebms.inbox.payload.InPart;
@@ -91,12 +93,14 @@ import org.sed.ebms.outbox.event.OutEvent;
 import org.sed.ebms.outbox.payload.OutPart;
 import org.sed.ebms.rcontrol.RControl;
 import si.sed.commons.SEDInboxMailStatus;
+import si.sed.commons.SEDJNDI;
 import si.sed.commons.SEDOutboxMailStatus;
 import si.sed.commons.SEDSystemProperties;
 import si.sed.commons.SEDValues;
 import si.sed.commons.exception.HashException;
 import si.sed.commons.exception.SVEVReturnValue;
 import si.sed.commons.exception.StorageException;
+import si.sed.commons.interfaces.SEDLookupsInterface;
 import si.sed.commons.utils.HashUtils;
 import si.sed.commons.utils.PModeManager;
 import si.sed.commons.utils.SEDLogger;
@@ -121,7 +125,10 @@ public class SEDMailBox implements SEDMailBoxWS {
     protected EntityManager memEManager;
     @Resource
     WebServiceContext mwsCtxt;
-
+    
+    @EJB (mappedName=SEDJNDI.JNDI_SEDLOOKUPS)
+    private SEDLookupsInterface mdbLookups;
+    
     protected Queue mqMSHQueue = null;
 
     PModeManager mpModeManager = new PModeManager();
@@ -161,6 +168,22 @@ public class SEDMailBox implements SEDMailBoxWS {
         OutMail mail = submitMailRequest.getData().getOutMail();
         // check for missing data
         SEDRequestUtils.checkOutMailForMissingData(mail);
+        
+        SEDBox sb =  mdbLookups.getSEDBoxByName(mail.getSenderEBox());
+        if (sb == null){
+            String msg = "Sender box [SubmitMailRequest/Data/OutMail/@senderEBox]:  "+mail.getSenderEBox()+" not exists" ;
+            throw SEDRequestUtils.createSEDException(msg, SEDExceptionCode.INVALID_DATA);
+        }else {
+            if (sb.getActiveFromDate()!= null && sb.getActiveFromDate().after(Calendar.getInstance().getTime())){
+                String msg = "Sender box [SubmitMailRequest/Data/OutMail/@senderEBox]:  "+mail.getSenderEBox()+" is  active! (Activation from : '"+sb.getActiveFromDate().toString()+"')" ;
+                throw SEDRequestUtils.createSEDException(msg, SEDExceptionCode.INVALID_DATA);
+            }
+            if (sb.getActiveToDate()!= null && sb.getActiveToDate().before(Calendar.getInstance().getTime())){
+                String msg = "Sender box [SubmitMailRequest/Data/OutMail/@senderEBox]:  "+mail.getSenderEBox()+" is  active! (Activation To : '"+sb.getActiveToDate().toString()+"')" ;
+                throw SEDRequestUtils.createSEDException(msg, SEDExceptionCode.INVALID_DATA);
+            }
+        }
+        
         // check if mail already exists
         OutMail om = mailExists(mail);
         if (om == null) {
@@ -616,7 +639,7 @@ public class SEDMailBox implements SEDMailBoxWS {
         // --------------------
         // serialize data and submit message
         String msgFactoryJndiName = getJNDIPrefix() + SEDValues.EBMS_JMS_CONNECTION_FACTORY_JNDI;
-        String msgQueueJndiName = getJNDI_JMSPrefix() + SEDValues.EBMS_QUEUE_JNDI;
+        String msgQueueJndiName = getJNDI_JMSPrefix() + SEDValues.JNDI_QUEUE_EBMS;
         InitialContext ic = null;
         Connection connection = null;
         Session session = null;

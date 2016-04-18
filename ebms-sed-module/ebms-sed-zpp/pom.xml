@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>si.vsrs.cif.sed</groupId>
+        <artifactId>ebms-sed</artifactId>
+        <version>1.0</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
+
+    
+    <artifactId>ebms-sed-zpp</artifactId>
+    <name>ebms-sed-zpp</name>
+    <packaging>war</packaging>
+    <description>msh zpp plugin</description>
+    
+    <licenses>
+        <license>
+            <name>European Union Public Licence (EUPL)</name>
+            <url>https://joinup.ec.europa.eu/software/page/eupl</url>
+            <distribution>repo</distribution>
+            <comments>European Free/Open Source Software (F/OSS) licence</comments>
+        </license>
+    </licenses>
+    <organization>
+        <name>Supreme Court Republic of Slovenia</name>
+        <url>http://www.sodisce.si/</url>
+    </organization>    
+    <developers>
+        <developer>
+            <id>jrc</id>
+            <name>Jože Rihtaršič</name>
+            <email>joze.rihtarsic@sodisce.si</email>
+            <organization>Supreme Court Republic of Slovenia</organization>
+            <organizationUrl>http://www.sodisce.si/</organizationUrl>
+            <roles>
+                <role>architect</role>
+                <role>developer</role>
+            </roles>
+        </developer>
+    </developers>
+    
+    <properties>
+        <war.final.name>ebms-sed-zpp</war.final.name>
+    </properties>
+
+    
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>               
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <configuration> 
+                    <!-- for missing WEB-INF/web.xml-->
+                    <failOnMissingWebXml>false</failOnMissingWebXml>
+                    <archive>                        
+                        <manifestEntries>                            
+                            <implementation-version>${project.version}</implementation-version>             
+                            <Implementation-Build>${buildNumber}</Implementation-Build>                            
+                        </manifestEntries>
+                    </archive>                                 
+                </configuration>
+                 
+            </plugin>            
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>buildnumber-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>create</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <format> {0}.{1} - {2,date, dd.MM.yyyy HH:mm}</format>
+                    <items>
+                        <item>${project.version}</item>
+                        <item>scmVersion</item>
+                        <item>timestamp</item>                        
+                    </items>
+                    <doCheck>false</doCheck>
+                    <doUpdate>false</doUpdate>
+                    <revisionOnScmFailure>Unknown</revisionOnScmFailure>
+                </configuration>
+            </plugin>
+        </plugins>
+        <finalName>${war.final.name}</finalName>
+    </build>    
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>ebms-sed-commons</artifactId>
+            <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>xalan</artifactId>
+                    <groupId>xalan</groupId> <!-- FOP uses xala 2.6.0. which does not have method:  .TransformerFactoryImpl.setFeature(Ljava/lang/String;Z)V¨-->
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>ebms-msh-db</artifactId>
+            <version>${project.version}</version>		
+        </dependency>
+        
+        
+        <!-- GUI uses prifeaces componens --> 
+        <dependency>
+            <groupId>org.primefaces</groupId>
+            <artifactId>primefaces</artifactId>
+        </dependency>	
+        
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+       
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>		
+            <scope>provided</scope>
+        </dependency>
+        
+
+    </dependencies>
+    <scm>
+        <connection>scm:git:git://localhost/${basedir}</connection>
+        <developerConnection>scm:git:git://localhost/${basedir}</developerConnection>
+    </scm>
+    
+</project>

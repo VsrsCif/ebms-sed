@@ -34,8 +34,9 @@ import java.util.Date;
 import javax.ejb.EJB;
 import org.sed.ebms.user.SEDUser;
 import si.sed.commons.utils.SEDLogger;
-import si.sed.commons.utils.SEDPersistenceBean;
-import si.sed.msh.web.utils.SEDGUIConstants;
+import si.sed.commons.SEDGUIConstants;
+import si.sed.commons.SEDJNDI;
+import si.sed.commons.interfaces.SEDDaoInterface;
 
 
 
@@ -54,8 +55,8 @@ public class LoginManager {
     private String mstrPassword = "sed1234";
     private String mstrForwardUrl;
     
-    @EJB
-    SEDPersistenceBean mSedDB;
+    @EJB (mappedName=SEDJNDI.JNDI_SEDDAO)
+    SEDDaoInterface mSedDB;
 
 
     public String getUsername() {

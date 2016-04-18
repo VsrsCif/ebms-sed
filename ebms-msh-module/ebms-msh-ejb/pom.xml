@@ -19,23 +19,21 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>ebms-msh-xsd</artifactId>
             <version>${project.version}</version>		
+            <scope>provided</scope>	
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>ebms-sed-commons</artifactId>
             <version>${project.version}</version>
+            <scope>provided</scope>	
             <exclusions>
                 <exclusion>
                     <artifactId>xalan</artifactId>
-                    <groupId>xalan</groupId> <!-- FOP uses xala 2.6.0. which does not have method:  .TransformerFactoryImpl.setFeature(Ljava/lang/String;Z)V¨-->
+                    <groupId>xalan</groupId> <!-- FOP uses xalan 2.6.0. which does not have method:  .TransformerFactoryImpl.setFeature(Ljava/lang/String;Z)V¨-->
                 </exclusion>
             </exclusions>
         </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>ebms-msh-db</artifactId>
-            <version>${project.version}</version>		
-        </dependency>
+       
         
         <dependency>
             <groupId>${project.groupId}</groupId>

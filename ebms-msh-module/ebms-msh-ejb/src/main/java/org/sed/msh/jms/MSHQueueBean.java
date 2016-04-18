@@ -18,60 +18,39 @@ package org.sed.msh.jms;
 
 import java.math.BigInteger;
 import java.util.Calendar;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.annotation.Resource;
 import javax.ejb.ActivationConfigProperty;
+import javax.ejb.EJB;
 import javax.ejb.MessageDriven;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
-import javax.jms.Connection;
-import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
-import javax.jms.MessageProducer;
-import javax.jms.Queue;
-import javax.jms.Session;
-import javax.naming.Binding;
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
-import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.transaction.HeuristicMixedException;
-import javax.transaction.HeuristicRollbackException;
-import javax.transaction.NotSupportedException;
-import javax.transaction.RollbackException;
-import javax.transaction.SystemException;
-import javax.transaction.UserTransaction;
 import org.msh.ebms.outbox.mail.MSHOutMail;
-import org.msh.ebms.outbox.event.MSHOutEvent;
 
 import org.msh.svev.pmode.PMode;
 import org.msh.svev.pmode.ReceptionAwareness;
 import si.jrc.msh.client.MshClient;
+import si.sed.commons.SEDJNDI;
 import si.sed.commons.SEDOutboxMailStatus;
-import si.sed.commons.SEDSystemProperties;
+
 import si.sed.commons.SEDValues;
+import si.sed.commons.interfaces.JMSManagerInterface;
+import si.sed.commons.interfaces.SEDDaoInterface;
 import si.sed.commons.utils.PModeManager;
 import si.sed.commons.utils.SEDLogger;
-
 
 /**
  *
  * @author Jože Rihtaršič
  */
-
 @MessageDriven(activationConfig = {
     @ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "Auto-acknowledge"),
     @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),
     @ActivationConfigProperty(propertyName = "destination", propertyValue = "queue/MSHQueue"),
-    @ActivationConfigProperty(propertyName = "maxSession", propertyValue = "${org.sed.msh.maxWorkers:5}")
+    @ActivationConfigProperty(propertyName = "maxSession", propertyValue = "${org.sed.msh.sender.workers.count}")
 })
 @TransactionManagement(TransactionManagementType.BEAN)
 public class MSHQueueBean implements MessageListener {
@@ -80,11 +59,11 @@ public class MSHQueueBean implements MessageListener {
     PModeManager mpModeManager = new PModeManager();
     MshClient mmshClient = new MshClient();
 
-    @Resource
-    public UserTransaction mutUTransaction;
+    @EJB(mappedName = SEDJNDI.JNDI_SEDDAO)
+    SEDDaoInterface mDB;
 
-    @PersistenceContext(unitName = "ebMS_MSH_PU")
-    public EntityManager memEManager;
+    @EJB(mappedName = SEDJNDI.JNDI_JMSMANAGER)
+    JMSManagerInterface mJMS;
 
     public MSHQueueBean() {
     }
@@ -106,20 +85,26 @@ public class MSHQueueBean implements MessageListener {
         // get pmode
         try {
             pModeID = msg.getStringProperty(SEDValues.EBMS_QUEUE_PARAM_PMODE_ID);
+
         } catch (JMSException ex) {
             mlog.logError(t, "Bad message with no property:'" + SEDValues.EBMS_QUEUE_PARAM_PMODE_ID + "'!", ex);
             return;
         }
 
-        MSHOutMail mail = null;
+        MSHOutMail mail;
         try {
-            // get outbox mail
-            TypedQuery<MSHOutMail> q = getEntityManager().createNamedQuery("MSHOutMail.getById", MSHOutMail.class);
-            q.setParameter("id", BigInteger.valueOf(idMsg));
-            mail = q.getSingleResult();
+            mail = mDB.getMailById(MSHOutMail.class, BigInteger.valueOf(idMsg));
         } catch (NoResultException ex) {
             mlog.logError(t, "Message with id: '" + idMsg + "' not exists!", ex);
             return;
+        }
+
+        if (pModeID == null || pModeID.isEmpty()) {
+
+            String recDomain = mail.getReceiverEBox().substring(mail.getReceiverEBox().indexOf("@") + 1).trim();
+            String sendDomain = mail.getSenderEBox().substring(mail.getSenderEBox().indexOf("@") + 1).trim();
+            pModeID = mail.getService() + ":" + sendDomain + ":" + recDomain;
+
         }
 
         // get pmode 
@@ -127,20 +112,20 @@ public class MSHQueueBean implements MessageListener {
         if (pMode == null) {
             String errDesc = "PMode with id: '" + pModeID + "' not exists! Message with id '" + idMsg + "' is not procesed!";
             mlog.logError(t, errDesc, null);
-            setStatusToMail(mail, SEDOutboxMailStatus.ERROR, errDesc);
+            mDB.setStatusToOutMail(mail, SEDOutboxMailStatus.ERROR, errDesc);
             return;
         }
         // start sending        
 
-        setStatusToMail(mail, SEDOutboxMailStatus.SENDING, null);
+        mDB.setStatusToOutMail(mail, SEDOutboxMailStatus.SENDING, null);
         try {
             mmshClient.sendMessage(mail, pMode);
             mail.setSentDate(Calendar.getInstance().getTime());
-            setStatusToMail(mail, SEDOutboxMailStatus.SENT, null);
+            mDB.setStatusToOutMail(mail, SEDOutboxMailStatus.SENT, null);
 
         } catch (Exception ex) {
             ex.printStackTrace();
-            setStatusToMail(mail, SEDOutboxMailStatus.ERROR, ex.getMessage());
+            mDB.setStatusToOutMail(mail, SEDOutboxMailStatus.ERROR, ex.getMessage());
             if (pMode.getReceptionAwareness() != null && pMode.getReceptionAwareness().getRetry() != null) {
                 ReceptionAwareness.Retry rty = pMode.getReceptionAwareness().getRetry();
                 int iRet = 0;
@@ -161,164 +146,22 @@ public class MSHQueueBean implements MessageListener {
                         lDelay *= rty.getMultiplyPeriod();
                     }
                     try {
-                        setStatusToMail(mail, SEDOutboxMailStatus.SCHEDULE, "Resend message in '" + lDelay + "'ms");
-                        sendMessage(idMsg, pModeID, iRet, lDelay);
+                        mDB.setStatusToOutMail(mail, SEDOutboxMailStatus.SCHEDULE, "Resend message in '" + lDelay + "'ms");
+                        mJMS.sendMessage(idMsg, pModeID, iRet, lDelay, false);
                     } catch (NamingException | JMSException ex1) {
                         String errDesc = "Error resending message with id: '" + pModeID + "'!";
-                        setStatusToMail(mail, SEDOutboxMailStatus.ERROR, errDesc + " " + ex.getMessage());
+                        mDB.setStatusToOutMail(mail, SEDOutboxMailStatus.ERROR, errDesc + " " + ex.getMessage());
                         mlog.logError(t, errDesc, ex1);
                     }
                 } else {
-                    setStatusToMail(mail, SEDOutboxMailStatus.ERROR, ex.getMessage());
+                    mDB.setStatusToOutMail(mail, SEDOutboxMailStatus.ERROR, ex.getMessage());
                 }
             } else {
-                setStatusToMail(mail, SEDOutboxMailStatus.ERROR, ex.getMessage());
+                mDB.setStatusToOutMail(mail, SEDOutboxMailStatus.ERROR, ex.getMessage());
             }
 
         }
         mlog.logEnd(t, idMsg);
     }
 
-    public void setStatusToMail(MSHOutMail mail, SEDOutboxMailStatus status, String desc) {
-        long t = mlog.logStart();
-        try {
-            getUserTransaction().begin();
-            mail.setStatusDate(Calendar.getInstance().getTime());
-            mail.setStatus(status.getValue());
-            // persist mail event
-            MSHOutEvent me = new MSHOutEvent();
-            me.setMailId(mail.getId());
-            me.setDescription(desc == null ? status.getDesc() : desc);
-            me.setStatus(mail.getStatus());
-            me.setDate(mail.getStatusDate());
-            me.setSenderMessageId(mail.getSenderMessageId());
-
-            getEntityManager().merge(mail);
-            getEntityManager().persist(me);
-            getUserTransaction().commit();
-        } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
-            {
-                try {
-                    getUserTransaction().rollback();
-                } catch (IllegalStateException | SecurityException | SystemException ex1) {
-                    // ignore 
-                }
-                mlog.logError(t, "Error commiting status to outboxmail: '" + mail.getId() + "'!", ex);
-            }
-        }
-
-    }
-
-    public boolean sendMessage(long biPosiljkaId, String strPmodeId, int retry, long delay) throws NamingException, JMSException {
-        System.out.println("Resent " + retry + " delay : " + delay);
-        boolean suc = false;
-        InitialContext ic = null;
-        Connection connection = null;
-         String msgFactoryJndiName = getJNDIPrefix() + SEDValues.EBMS_JMS_CONNECTION_FACTORY_JNDI;
-        String msgQueueJndiName = getJNDI_JMSPrefix() + SEDValues.EBMS_QUEUE_JNDI;
-        try {
-            ic = new InitialContext();
-            ConnectionFactory cf = (ConnectionFactory) ic.lookup(msgFactoryJndiName);
-            Queue queue = (Queue) ic.lookup(msgQueueJndiName);
-            connection = cf.createConnection();
-            Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-            MessageProducer sender = session.createProducer(queue);
-            Message message = session.createMessage();
-
-            message.setLongProperty(SEDValues.EBMS_QUEUE_PARAM_MAIL_ID, biPosiljkaId);
-            message.setStringProperty(SEDValues.EBMS_QUEUE_PARAM_PMODE_ID, strPmodeId);
-
-            message.setIntProperty(SEDValues.EBMS_QUEUE_PARAM_RETRY, retry);
-            message.setLongProperty(SEDValues.EBMS_QUEUE_PARAM_DELAY, delay);
-            message.setLongProperty(SEDValues.EBMS_QUEUE_DELAY_AMQ, delay);
-            message.setLongProperty(SEDValues.EBMS_QUEUE_DELAY_HQ, delay);
-
-            
-
-            sender.send(message);
-            suc = true;
-        } finally {
-            if (ic != null) {
-                try {
-                    ic.close();
-                } catch (Exception ignore) {
-                }
-            }
-            closeConnection(connection);
-        }
-
-        return suc;
-    }
-
-    protected void closeConnection(Connection con) {
-        try {
-            if (con != null) {
-                con.close();
-            }
-        } catch (JMSException jmse) {
-
-        }
-    }
-
-    private EntityManager getEntityManager() {
-        // for jetty 
-        if (memEManager == null) {
-            try {
-                InitialContext ic = new InitialContext();
-                memEManager = (EntityManager) ic.lookup(getJNDIPrefix() + "ebMS_PU");
-
-            } catch (NamingException ex) {
-                Logger.getLogger(MSHQueueBean.class.getName()).log(Level.SEVERE, null, ex);
-            }
-
-        }
-        return memEManager;
-    }
-
-    private UserTransaction getUserTransaction() {
-        // for jetty 
-        if (mutUTransaction == null) {
-            try {
-                InitialContext ic = new InitialContext();
-
-                mutUTransaction = (UserTransaction) ic.lookup("UserTransaction");
-
-            } catch (NamingException ex) {
-                Logger.getLogger(MSHQueueBean.class.getName()).log(Level.SEVERE, null, ex);
-            }
-
-        }
-        return mutUTransaction;
-    }
-
-    /*private String getJNDIPrefix() {
-        return "__/";
-        // return System.getProperty(SEDSystemProperties.SYS_PROP_JNDI_PREFIX, "java:/");
-    }*/
-    private String getJNDI_JMSPrefix() {
-        return System.getProperty(SEDSystemProperties.SYS_PROP_JNDI_JMS_PREFIX, "java:/jms/");
-    }
-
-    private String getJNDIPrefix() {
-
-        return System.getProperty(SEDSystemProperties.SYS_PROP_JNDI_PREFIX, "java:/jboss/");
-    }
-
-    private static final void listContext(Context ctx, String indent) {
-        try {
-            NamingEnumeration list = ctx.listBindings("");
-            while (list.hasMore()) {
-                Binding item = (Binding) list.next();
-                String className = item.getClassName();
-                String name = item.getName();
-                System.out.println(indent + className + " " + name);
-                Object o = item.getObject();
-                if (o instanceof javax.naming.Context) {
-                    listContext((Context) o, indent + " ");
-                }
-            }
-        } catch (NamingException ex) {
-            System.out.println(ex);
-        }
-    }
 }

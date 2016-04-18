@@ -14,37 +14,55 @@
         <!-- sed-box ADD/EDIT dialog! -->
         <p:dialog  header="SEDBox detail" widgetVar="sedboxDialog" modal="true" hideEffect="fade" resizable="true"  appendTo="@(body)">
             <h:form id="sedboxDialogForm" >
-                <p:layout id="sedboxDetails" style="min-width:450px;min-height:300px;">
+                <p:layout id="sedboxDetails" style="min-width:600px;min-height:400px;">
                     <p:layoutUnit position="center" rendered="#{empty adminSEDBoxView.editable}" >
                         <h:outputText value="Select row in table" />
                     </p:layoutUnit>
-                    <p:layoutUnit position="center" rendered="#{not empty adminSEDBoxView.editable}" >
-                        <p:panelGrid  columns="2" columnClasses="label,value">
-
-                            <h:outputText value="Box:" />
-                            <h:outputText value="#{adminSEDBoxView.editable.boxName}" rendered="#{empty adminSEDBoxView.new}" style="width: 100%" />
-                            <h:inputText value="#{adminSEDBoxView.editable.boxName}" rendered="#{not empty adminSEDBoxView.new}" style="width: 100%" /> 
+                    <p:layoutUnit position="center" rendered="#{not empty adminSEDBoxView.editable}"  >
+                        <p:panelGrid  columns="4" columnClasses="label,value" style="width: 580px">
+                            <f:facet name="header" >
+                                <h:outputText value="Box:" />
+                                <h:outputText value="#{adminSEDBoxView.editable.boxName}" rendered="#{empty adminSEDBoxView.new}" style="width: 100%" />
+                                <h:inputText value="#{adminSEDBoxView.editable.boxName}" rendered="#{not empty adminSEDBoxView.new}" style="width: 100%" /> 
+                            </f:facet>
 
                             <h:outputText value="Active from date:" />                                                        
                             <p:calendar  value="#{adminSEDBoxView.editable.activeFromDate}" pattern="dd.MM.yyyy" mask="true" navigator="true" showOn="button" style="width: 100%"/>
-
                             <h:outputText value="Active to date:" />                            
                             <p:calendar value="#{adminSEDBoxView.editable.activeToDate}" pattern="dd.MM.yyyy" mask="true" navigator="true" showOn="button" style="width: 100%"/>
-
-                            <h:outputText value="Export" />
-                            <h:selectBooleanCheckbox value="#{adminSEDBoxView.editable.export.active}"  style="width: 20px"/>
-
-                            <h:outputText value="Metadata" />
-                            <h:selectBooleanCheckbox value="#{adminSEDBoxView.editable.export.exportMetaData}"  style="width: 20px"/>
-
-                            <h:outputText value="FileMask" />
-                            <h:inputText value="#{adminSEDBoxView.editable.export.fileMask}" style="width: 100%"/>
-
-                            <h:outputText value="Folder" />
-                            <h:inputText value="#{adminSEDBoxView.editable.export.folder}" style="width: 100%"/>
-
-
                         </p:panelGrid>
+                        <p:panelGrid  columns="2" columnClasses="label,value" style="width: 580px">
+                            <f:facet name="header">
+                                <h:selectBooleanCheckbox value="#{adminSEDBoxView.editable.export.active}"  style="width: 20px"/>
+                                <h:outputText value="Export" />
+                                
+                            </f:facet>
+
+
+                        <h:outputText value="Export metadata:" />
+                        <h:selectBooleanCheckbox value="#{adminSEDBoxView.editable.export.exportMetaData}"  style="width: 20px"/>
+
+
+                        <h:outputText value="FileMask" />
+                        <h:inputText value="#{adminSEDBoxView.editable.export.fileMask}" style="width: 100%"/>
+
+                        <h:outputText value="Folder" />
+                        <h:inputText value="#{adminSEDBoxView.editable.export.folder}" style="width: 100%"/>
+                        </p:panelGrid>
+                        <p:panelGrid  columns="2" columnClasses="label,value" style="width: 580px" >
+                            <f:facet name="header">
+                                <h:selectBooleanCheckbox value="#{adminSEDBoxView.editable.execute.active}"  style="width: 20px" />
+                                <h:outputText value="Execute" />
+                                
+                            </f:facet>
+                            
+                            <h:outputText value="Command:" />
+                            <h:inputText value="#{adminSEDBoxView.editable.execute.command}" style="width: 100%"/>
+                            
+                             <h:outputText value="Parameters:" />
+                             <h:inputText value="#{adminSEDBoxView.editable.execute.parameters}" style="width: 100%"/>
+                             
+                            </p:panelGrid>
                     </p:layoutUnit>
                     <p:layoutUnit position="south">
                         <p:commandButton value="Ok" update=":forms:SettingsSEDBoxes:TblSedBox" 
@@ -74,7 +92,7 @@
                                 <p:column><h:outputText value="#{adminSEDUserView.editable.userId}" rendered="#{empty adminSEDUserView.new}" />
                                     <h:inputText value="#{adminSEDUserView.editable.userId}" rendered="#{not empty adminSEDUserView.new}" /></p:column>
                             </p:row>
-                            
+
                             <p:row>
                                 <p:column><h:outputText value="Active from date:" /></p:column>
                                 <p:column><p:calendar value="#{adminSEDUserView.editable.activeFromDate}" pattern="dd.MM.yyyy" mask="true" navigator="true" showOn="button"/></p:column>

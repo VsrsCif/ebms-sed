@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"   
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:composite="http://java.sun.com/jsf/composite"
+      >
+    <composite:interface>
+    </composite:interface>
+
+    <composite:implementation >
+        <h1>Cron jobs</h1>
+        <p:panel id="horizontal" toggleTitle="INFO" header="Sed-Box Cron job" 
+                 toggleable="true"  collapsed="true">
+            <h:outputText value="Administration of SED Cron. "></h:outputText>
+        </p:panel>
+        <p:dataTable id="TblCron" 
+                     var="sp" 
+                     value="#{adminMSHCronJobView.list}"
+                     selectionMode="single"
+                     selection="#{adminMSHCronJobView.selected}"
+                     rowKey="#{sp.id}"
+
+                     style="padding: 0px; margin: 0px"
+                     scrollable="true" 
+                     scrollHeight="200px"                     
+                     >
+             <p:ajax event="rowDblselect" listener="#{adminMSHCronJobView.startEditSelected()}" 
+                    update=":dialogs:cronDialogForm:cronJob"
+                    oncomplete="PF('cronDialog').show()"/>
+
+            <f:facet name="header">
+                <p:commandButton value="Add"  styleClass="toolbar-Button" icon="ui-icon-sed-add" 
+                                 actionListener="#{adminMSHCronJobView.createEditable()}"
+                                 oncomplete="PF('cronDialog').show()" 
+                                 update=":dialogs:cronDialogForm:cronJob"
+                                 
+                                 />
+                <p:commandButton value="Edit"  styleClass="toolbar-Button" icon="ui-icon-sed-edit" 
+                                 oncomplete="PF('cronDialog').show()"                                                                   
+                                 actionListener="#{adminMSHCronJobView.startEditSelected()}"
+                                 update=":dialogs:cronDialogForm:cronJob"
+                                 />
+                <p:commandButton value="Delete" styleClass="toolbar-Button" icon="ui-icon-sed-remove" 
+                                 actionListener="#{adminMSHCronJobView.removeSelected()}" update=":forms:SettingsCron:TblCron" />
+ 
+            </f:facet>
+            <p:column headerText="Id">
+                <h:outputText value="#{sp.id}" /></p:column>
+            <p:column headerText="Active">
+                <h:selectBooleanCheckbox value="#{sp.active}" disabled="true" />
+            </p:column>
+            <p:column headerText="Second">
+                <h:outputText value="#{sp.second}"></h:outputText>                
+            </p:column>
+            <p:column headerText="Minute">
+                <h:outputText value="#{sp.minute}"></h:outputText>                
+            </p:column>
+            <p:column headerText="Hour">
+                <h:outputText value="#{sp.hour}" ></h:outputText>                
+            </p:column>
+            <p:column headerText="Day of month">
+                <h:outputText value="#{sp.dayOfMonth}" ></h:outputText>                
+            </p:column>
+            <p:column headerText="Month">
+                <h:outputText value="#{sp.month}" ></h:outputText>                
+            </p:column>
+            <p:column headerText="Day of week">
+                <h:outputText value="#{sp.dayOfWeek}" ></h:outputText>                
+            </p:column>
+            <p:column headerText="Task type">
+                <h:outputText value="#{sp.MSHTask.taskType}" ></h:outputText>                
+            </p:column>
+        </p:dataTable>
+
+
+
+       
+
+
+    </composite:implementation>
+
+</html>

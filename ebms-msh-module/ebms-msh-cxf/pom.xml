@@ -66,23 +66,16 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>ebms-msh-xsd</artifactId>
-            <version>${project.version}</version>		
+            <version>${project.version}</version>	
+            <scope>provided</scope>	
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>ebms-sed-commons</artifactId>
             <version>${project.version}</version>		
+            <scope>provided</scope>	
         </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>ebms-msh-plugin</artifactId>
-            <version>${project.version}</version>		
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>ebms-sed-wsdl</artifactId>
-            <version>${project.version}</version>		
-        </dependency>
+
        
         <dependency>
             <groupId>log4j</groupId>

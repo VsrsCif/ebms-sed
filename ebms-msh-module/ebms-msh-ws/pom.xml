@@ -55,7 +55,8 @@
                 <configuration> 
                     <archive>    
                         <manifestEntries>                            
-                            <Dependencies>org.apache.cxf,org.apache.cxf.impl,org.apache.commons.io, org.apache.ws.security, org.apache.santuario.xmlsec</Dependencies >
+                            <Dependencies>org.apache.cxf,org.apache.cxf.impl,org.apache.commons.io, org.apache.ws.security, org.apache.santuario.xmlsec,org.sed
+                            </Dependencies >
                         </manifestEntries>
                     </archive>
                     <!-- for missing WEB-INF/web.xml-->

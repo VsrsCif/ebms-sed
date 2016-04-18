@@ -16,6 +16,7 @@
  */
 package si.sed.msh.web.admin;
 
+import si.sed.msh.web.abst.AbstractAdminJSFView;
 import java.io.StringWriter;
 import java.util.Calendar;
 import java.util.List;
@@ -23,12 +24,14 @@ import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
+import org.sed.ebms.ebox.Execute;
 import org.sed.ebms.ebox.Export;
 import org.sed.ebms.ebox.SEDBox;
 import org.sed.ebms.user.SEDUser;
-import si.sed.commons.utils.DBSettings;
+import si.sed.commons.SEDJNDI;
+import si.sed.commons.interfaces.DBSettingsInterface;
+import si.sed.commons.interfaces.SEDLookupsInterface;
 import si.sed.commons.utils.SEDLogger;
-import si.sed.commons.utils.SEDLookups;
 
 /**
  *
@@ -40,11 +43,11 @@ public class AdminSEDBoxView extends AbstractAdminJSFView<SEDBox> {
 
     private static final SEDLogger LOG = new SEDLogger(AdminSEDBoxView.class);
 
-    @EJB
-    private DBSettings mdbSettings;
+    @EJB (mappedName=SEDJNDI.JNDI_DBSETTINGS)
+    private DBSettingsInterface mdbSettings;
 
-    @EJB
-    private SEDLookups mdbLookups;
+    @EJB (mappedName=SEDJNDI.JNDI_SEDLOOKUPS)
+    private SEDLookupsInterface mdbLookups;
 
     public SEDBox getSEDBoxByName(String sedBox) {
         return mdbLookups.getSEDBoxByName(sedBox);
@@ -64,6 +67,7 @@ public class AdminSEDBoxView extends AbstractAdminJSFView<SEDBox> {
         sbx.setBoxName(String.format(sbname, i, domain));
         sbx.setActiveFromDate(Calendar.getInstance().getTime());
         sbx.setExport(new Export());
+        sbx.setExecute(new Execute());
         setNew(sbx);
         LOG.logEnd(l);
     }
@@ -99,6 +103,9 @@ public class AdminSEDBoxView extends AbstractAdminJSFView<SEDBox> {
     public void startEditSelected() {
         if (getSelected() != null && getSelected().getExport()== null) {
             getSelected().setExport(new Export());
+        }
+        if (getSelected() != null && getSelected().getExecute()== null) {
+            getSelected().setExecute(new Execute());
         }
         super.startEditSelected(); //To change body of generated methods, choose Tools | Templates.
     }

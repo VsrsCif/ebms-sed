@@ -5,14 +5,19 @@
  */
 package si.jrc.msh.sec;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 import java.security.Key;
 
-public class SEDKey  implements Key {
+public class SEDKey  implements Key, Serializable {
+    
     BigInteger id;
     byte[] secretKey;
     String algorithm;
     String format;
+
+    public SEDKey() {
+    }
 
     public SEDKey(BigInteger id, byte[] secretKey, String algorithm, String format) {
         this.id = id;
@@ -44,6 +49,18 @@ public class SEDKey  implements Key {
     @Override
     public byte[] getEncoded() {
         return secretKey;
+    }
+
+    public void setEncoded(byte[] secretKey) {
+        this.secretKey = secretKey;
+    }
+
+    public void setAlgorithm(String algorithm) {
+        this.algorithm = algorithm;
+    }
+
+    public void setFormat(String format) {
+        this.format = format;
     }
 
    

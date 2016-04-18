@@ -141,9 +141,7 @@ public class Main {
 
             org.eclipse.jetty.plus.jndi.Transaction transactionMgr = new org.eclipse.jetty.plus.jndi.Transaction(ut);
 
-            mb.memEManager = em;
-            mb.mutUTransaction = ut;
-
+  
         } catch (NamingException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }

@@ -104,7 +104,7 @@
                 <configuration> 
                     <archive>    
                         <manifestEntries>                            
-                            <Dependencies>org.apache.cxf,org.apache.cxf.impl,org.apache.commons.io, org.apache.ws.security</Dependencies >
+                            <Dependencies>org.apache.cxf,org.apache.cxf.impl,org.apache.commons.io, org.apache.ws.security,org.sed</Dependencies >
                         </manifestEntries>
                     </archive>
                     <!-- for missing WEB-INF/web.xml-->
@@ -119,22 +119,19 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>ebms-msh-xsd</artifactId>
             <version>${project.version}</version>		
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>ebms-sed-wsdl</artifactId>
             <version>${project.version}</version>		
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>ebms-sed-commons</artifactId>
             <version>${project.version}</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>xalan</artifactId>
-                    <groupId>xalan</groupId> <!-- FOP uses xala 2.6.0. which does not have method:  .TransformerFactoryImpl.setFeature(Ljava/lang/String;Z)V¨-->
-                </exclusion>
-            </exclusions>
+            <scope>provided</scope>
         </dependency>
         
         <dependency>

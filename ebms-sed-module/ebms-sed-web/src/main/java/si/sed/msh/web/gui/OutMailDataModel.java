@@ -16,10 +16,10 @@
  */
 package si.sed.msh.web.gui;
 
+import si.sed.msh.web.abst.AbstractMailDataModel;
 import java.math.BigInteger;
-import javax.persistence.EntityManager;
-import javax.transaction.UserTransaction;
 import org.msh.ebms.outbox.mail.MSHOutMail;
+import si.sed.commons.interfaces.SEDDaoInterface;
 import si.sed.msh.web.gui.entities.OutMailTableFilter;
 
 
@@ -31,9 +31,9 @@ public class OutMailDataModel extends AbstractMailDataModel<MSHOutMail> {
     
     OutMailTableFilter outFilter = new OutMailTableFilter();
 
-    public OutMailDataModel(Class<MSHOutMail> type, UserTransaction mutUTransaction, EntityManager memEManager, UserSessionData messageBean) {
-        super(type, mutUTransaction, memEManager);
-        setUserSessionData(messageBean);
+    public OutMailDataModel(Class<MSHOutMail> type, UserSessionData messageBean,  SEDDaoInterface db) {
+        super(type);
+        setUserSessionData(messageBean, db);
     }
 
     @Override
@@ -54,7 +54,7 @@ public class OutMailDataModel extends AbstractMailDataModel<MSHOutMail> {
     }
 
      @Override
-    Object externalFilters() {
+    public Object externalFilters() {
         outFilter.setSenderEBox(getUserSessionData().getCurrentSEDBox());
         return outFilter;
     }

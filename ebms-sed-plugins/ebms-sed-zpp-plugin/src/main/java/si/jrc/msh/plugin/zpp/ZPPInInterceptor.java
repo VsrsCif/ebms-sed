@@ -16,6 +16,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.math.BigInteger;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -28,15 +29,22 @@ import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.Resource;
+import javax.ejb.EJB;
+import javax.ejb.Local;
+import javax.ejb.Remote;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionManagement;
+import javax.ejb.TransactionManagementType;
+import javax.jms.JMSException;
+import javax.naming.NamingException;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.NoResultException;
-import javax.persistence.Query;
+import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
+import javax.transaction.UserTransaction;
 import javax.xml.bind.JAXBException;
 import javax.xml.transform.TransformerException;
 import org.apache.cxf.binding.soap.SoapMessage;
-import org.apache.cxf.phase.Phase;
 import org.apache.xmlgraphics.util.MimeConstants;
 import org.msh.ebms.inbox.mail.MSHInMail;
 import org.msh.ebms.inbox.payload.MSHInPart;
@@ -45,6 +53,7 @@ import org.msh.ebms.outbox.payload.MSHOutPart;
 import org.msh.ebms.outbox.payload.MSHOutPayload;
 import org.msh.svev.pmode.PMode;
 import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.SignalMessage;
+import org.sed.ebms.ebox.Execute;
 import org.sed.ebms.ebox.Export;
 import org.sed.ebms.ebox.SEDBox;
 import org.w3c.dom.Element;
@@ -58,7 +67,11 @@ import si.sed.commons.SEDSystemProperties;
 import si.sed.commons.exception.FOPException;
 import si.sed.commons.exception.HashException;
 import si.sed.commons.exception.StorageException;
-import si.sed.commons.utils.FOPUtils;
+import si.jrc.msh.plugin.zpp.utils.FOPUtils;
+import si.sed.commons.SEDJNDI;
+import si.sed.commons.interfaces.JMSManagerInterface;
+import si.sed.commons.interfaces.SEDDaoInterface;
+import si.sed.commons.interfaces.SoapInterceptorInterface;
 import si.sed.commons.utils.HashUtils;
 
 import si.sed.commons.utils.StorageUtils;
@@ -67,13 +80,15 @@ import si.sed.commons.utils.StringFormater;
 import si.sed.commons.utils.Utils;
 import si.sed.commons.utils.sec.CertificateUtils;
 import si.sed.commons.utils.xml.XMLUtils;
-import si.sed.msh.plugin.AbstractPluginInterceptor;
 
 /**
  *
  * @author sluzba
  */
-public class ZPPInInterceptor extends AbstractPluginInterceptor {
+@Stateless
+@Local(SoapInterceptorInterface.class)
+@TransactionManagement(TransactionManagementType.BEAN)
+public class ZPPInInterceptor implements SoapInterceptorInterface {
 
     protected final SEDLogger mlog = new SEDLogger(ZPPOutInterceptor.class);
     SEDCrypto mSedCrypto = new SEDCrypto();
@@ -83,13 +98,20 @@ public class ZPPInInterceptor extends AbstractPluginInterceptor {
     FOPUtils mfpFop = null;
     StringFormater msfFormat = new StringFormater();
 
+    @EJB(mappedName = SEDJNDI.JNDI_SEDDAO)
+    SEDDaoInterface mDB;
+
+    @EJB(mappedName = SEDJNDI.JNDI_JMSMANAGER)
+    JMSManagerInterface mJMS;
+
+    @Resource
+    public UserTransaction mutUTransaction;
+
+    @PersistenceContext(unitName = "ebMS_ZPP_PU", name = "ebMS_ZPP_PU")
+    public EntityManager memEManager;
+
     public ZPPInInterceptor() {
-        super(Phase.PRE_INVOKE);
 
-    }
-
-    public ZPPInInterceptor(String phase) {
-        super(phase);
     }
 
     @Override
@@ -112,17 +134,22 @@ public class ZPPInInterceptor extends AbstractPluginInterceptor {
                 processInZPPAdviceoFDelivery(mInMail, pmd, msg);
             }
 
+            mlog.log("ZPPInInterceptor 1");
             if (sigAnies != null) {
+                mlog.log("ZPPInInterceptor 2");
                 List<Element> lst = (List<Element>) sigAnies;
                 Key k = null;
                 for (Element e : lst) {
                     if (e.getLocalName().equals("EncryptedKey")) {
+                        mlog.log("ZPPInInterceptor 4");
                         k = mSedCrypto.decryptEncryptedKey(e, CertificateUtils.getInstance().getKeyStore(), SEDCrypto.SymEncAlgorithms.AES128_CBC);
                         break;
 
                     }
                 }
+                mlog.log("ZPPInInterceptor 3, key: " + k);
                 if (moutMail != null && k != null) {
+                    mlog.log("ZPPInInterceptor 4, key: " + k);
                     decryptMail(k, moutMail.getConversationId(), sb);
 
                 }
@@ -146,10 +173,12 @@ public class ZPPInInterceptor extends AbstractPluginInterceptor {
                 X509Certificate xc = mSedCrypto.getCertificate(new ByteArrayInputStream(Base64.getDecoder().decode(x509)));
                 // get key 
                 Key key = getEncryptionKeyForDeliveryAdvice(mInMail);
-                String encrypteKey = mSedCrypto.encryptKeyWithReceiverPublicKey(key, xc, mInMail.getSenderEBox(), mInMail.getConversationId());
+                mlog.log("processInZPPAdviceoFDelivery - get key" + key);
+                Element elKey = mSedCrypto.encryptedKeyWithReceiverPublicKey(key, xc, mInMail.getSenderEBox(), mInMail.getConversationId());
+                mlog.log("processInZPPAdviceoFDelivery - get encrypted key" + elKey);
                 // got signal message:
                 SignalMessage signal = msg.getExchange().get(SignalMessage.class);
-                signal.getAnies().add(mSedCrypto.encryptedKeyWithReceiverPublicKey(key, xc, mInMail.getSenderEBox(), mInMail.getConversationId()));
+                signal.getAnies().add(elKey);
 
             }
 
@@ -210,11 +239,12 @@ public class ZPPInInterceptor extends AbstractPluginInterceptor {
             mp.setFilename(fDA.getName());
             mp.setName(mp.getFilename().substring(mp.getFilename().lastIndexOf(".")));
 
-            serializeMail(mout, "", "ZPPDeliveryPlugin", pmd.getId());
+            mDB.serializeMail(mout, "", "ZPPDeliveryPlugin", pmd.getId());
 
             mInMail.setStatus(SEDInboxMailStatus.PROCESS.getValue());
             mInMail.setStatusDate(Calendar.getInstance().getTime());
-            updateInMail(mInMail, "DeliveryAdviceGenerated and submited to sender");
+//           
+            mDB.updateInMail(mInMail, "DeliveryAdviceGenerated and submited to sender");
 
         } catch (IOException | SEDSecurityException ex) {
             mlog.logError(l, ex);
@@ -234,34 +264,18 @@ public class ZPPInInterceptor extends AbstractPluginInterceptor {
     }
 
     public Key getEncryptionKeyForDeliveryAdvice(MSHInMail mi) throws IOException {
-        Key k = getSecretKey(mi.getConversationId());
-        /*
-        EntityManagerFactory emf = null;
-        EntityManager em = null;
-        try {
-            emf = getSEDEntityManagerFactory();
-            em = emf.createEntityManager();
-            BigInteger bi = new BigInteger(mi.getConversationId());
-            Query q = em.createNativeQuery("select secret_key, algorithm from zpp_plugin_out_keys  where mail_id = :mailId");
-            q.setParameter("mailId", bi);
 
-            List<Object[]> lst = q.getResultList();
+//Key k = getSecretKey(mi.getConversationId());
+        TypedQuery<SEDKey> q = memEManager.createNamedQuery("si.jrc.msh.sec.SEDKey.getById", SEDKey.class);
+        q.setParameter("id", new BigInteger(mi.getConversationId()));
+        return q.getSingleResult();
+
+        /*List<Object[]> lst = q.getResultList();
             String keyStr = (String) lst.get(0)[0];
             String alg = (String) lst.get(0)[1];
 
             k = new SEDKey(bi, Base64.getDecoder().decode(keyStr), alg, "");
-
-        } finally {
-            if (em != null) {
-                em.close();
-            }
-            if (emf != null) {
-                emf.close();
-            }
-        }*/
-
-        return k;
-
+         */
     }
 
     private Key getSecretKey(String bi) throws IOException {
@@ -284,27 +298,19 @@ public class ZPPInInterceptor extends AbstractPluginInterceptor {
     public void decryptMail(Key key, String convID, SEDBox sb) {
         long l = mlog.logStart();
 
-        EntityManagerFactory emf = null;
-        EntityManager em = null;
         try {
-            //emf = getSEDEntityManagerFactory();
-            em = getEntityManager();
 
-            Query q = em.createNamedQuery("MSHInMail.getByConvIdAndAction", MSHInMail.class);
-            q.setParameter("convId", convID);
-            q.setParameter("action", "DeliveryNotification");
-            List<MSHInMail> lst = q.getResultList();
+            List<MSHInMail> lst = mDB.getInMailConvIdAndAction("DeliveryNotification", convID);;
 
             for (MSHInMail mi : lst) {
 
                 if (sb == null) {
-                    sb = getSedBoxByName(mi.getReceiverEBox());
+                    sb = mDB.getSedBoxByName(mi.getReceiverEBox());
                 }
-                
-                
+
                 String exporFileName = null;
                 File exportFolder = null;
-                if (sb!= null && sb.getExport() != null && sb.getExport().getActive() && sb.getExport().getFileMask() != null) {
+                if (sb != null && sb.getExport() != null && sb.getExport().getActive() && sb.getExport().getFileMask() != null) {
                     Export e = sb.getExport();
                     exporFileName = msfFormat.format(e.getFileMask(), mi);
                     String folder = Utils.replaceProperties(e.getFolder());
@@ -312,13 +318,11 @@ public class ZPPInInterceptor extends AbstractPluginInterceptor {
                     if (!exportFolder.exists()) {
                         exportFolder.mkdirs();
                     }
-                    System.out.println("Export files to: " +folder + " mask: " + exporFileName );
-                } else {
-                    System.out.println("Do not export files! ") ;
                 }
 
                 List<MSHInPart> lstDec = new ArrayList<>();
-                int i =0; 
+                int i = 0;
+                List<String> listFiles = new  ArrayList<>();
                 for (MSHInPart mip : mi.getMSHInPayload().getMSHInParts()) {
                     String oldFileName = mip.getFilename();
                     i++;
@@ -341,19 +345,22 @@ public class ZPPInInterceptor extends AbstractPluginInterceptor {
                             miDec.setFilepath(StorageUtils.getRelativePath(fNew));
                             lstDec.add(miDec);
                             if (sb.getExport() != null && exportFolder != null && exporFileName != null) {
-                                String filPrefix = exportFolder.getAbsolutePath() + File.separator + exporFileName ;
-                                System.out.println("Export files prefix: " + filPrefix );
+                                String filPrefix = exportFolder.getAbsolutePath() + File.separator + exporFileName;
+                                System.out.println("Export files prefix: " + filPrefix);
                                 if (sb.getExport().getExportMetaData()) {
-                                    System.out.println("Export metadata: " + filPrefix );
+                                    System.out.println("Export metadata: " + filPrefix);
                                     try {
-
-                                        XMLUtils.serialize(mi, filPrefix+ "." + MimeValues.MIME_XML.getSuffix());
+                                        String fn = filPrefix + "." + MimeValues.MIME_XML.getSuffix();
+                                        listFiles.add(fn);
+                                        XMLUtils.serialize(mi, fn);
                                     } catch (JAXBException | FileNotFoundException ex) {
-                                       // LOG.logError(l, "Export metadata ERROR. Export file:" + fileMetaData + ".", ex);
+                                        // LOG.logError(l, "Export metadata ERROR. Export file:" + fileMetaData + ".", ex);
                                     }
                                 }
-                                System.out.println("Export file: : " + fNew );
-                                StorageUtils.copyFile(fNew,  new File(filPrefix + "_" +i +"." +  MimeValues.getSuffixBYMimeType(miDec.getMimeType())));
+                                System.out.println("Export file: : " + fNew);
+                                String fn = filPrefix + "_" + i + "." + MimeValues.getSuffixBYMimeType(miDec.getMimeType());
+                                listFiles.add(fn);
+                                StorageUtils.copyFile(fNew, new File(fn));
                             }
 
                         } catch (IOException | StorageException | SEDSecurityException | HashException ex) {
@@ -365,23 +372,29 @@ public class ZPPInInterceptor extends AbstractPluginInterceptor {
                 mi.getMSHInPayload().getMSHInParts().addAll(lstDec);
                 mi.setStatus(SEDInboxMailStatus.RECEIVED.getValue());
                 mi.setStatusDate(Calendar.getInstance().getTime());
-                updateInMail(mi, "Received secred key and decript payloads");
+                mDB.updateInMail(mi, "Received secred key and decript payloads");
 
+                if (sb != null && sb.getExecute() != null && sb.getExecute().getActive() && sb.getExecute().getCommand() != null) {
+                    Execute e = sb.getExecute();
+                    String params = msfFormat.format(e.getParameters(), mi);
+                    try {
+                        mJMS.executeProcessOnInMail(mi.getId().longValue(), sb.getExecute().getCommand(), String.join(File.pathSeparator, listFiles) + " " +   params);
+                    } catch (NamingException | JMSException ex) {
+                        Logger.getLogger(ZPPInInterceptor.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    
+                }
+                
             }
         } finally {
 
         }
         mlog.logEnd(l);
     }
-    
-     private SEDBox getSedBoxByName(String sbox) {
-        TypedQuery<SEDBox> sq = getEntityManager().createNamedQuery("org.sed.ebms.ebox.SEDBox.getByName", SEDBox.class);
-        sq.setParameter("BoxName", sbox);
-        try {
-            return sq.getSingleResult();
-        } catch (NoResultException nre) {
-            return null;
-        }
+
+    @Override
+    public void handleFault(SoapMessage t) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

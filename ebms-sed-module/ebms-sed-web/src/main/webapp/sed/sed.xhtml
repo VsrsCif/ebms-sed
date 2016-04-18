@@ -22,7 +22,7 @@
                 <!-- toolbar -->    
                 <p:layoutUnit position="north" resizable="false" gutter="0" style="padding: 0px; margin: 0px" >
 
-                    <p:toolbar style="padding: 0px; margin: 0px; height: 28px; vertical-align: middle;">
+                    <p:toolbar  id="toolbar" style="padding: 0px; margin: 0px; height: 28px; vertical-align: middle;">
                         <f:facet name="left">
                             <p:commandButton id="btnExit"  
                                              value="Exit" 
@@ -33,15 +33,22 @@
                                              value="Refresh" 
                                              icon="ui-icon-sed-refresh"
                                              styleClass="toolbar-Button"
-                                              update=":forms:MainPanel"
-                                              ajax="true" />
+                                             update=":forms:MainPanel"
+                                             ajax="true" />
 
 
                             <span class="ui-separator">
                                 <span class="ui-icon ui-icon-grip-dotted-vertical " />
                             </span>
-                            <p:commandButton value="Resend" styleClass="toolbar-Button" />
-                            <p:commandButton value="Delete" styleClass="toolbar-Button" />
+                            <p:commandButton value="Resend" styleClass="toolbar-Button" rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_OUTBOX)}"
+                                             actionListener="#{OutMailDataView.resendSelectedMail()}" 
+                                             update=":forms:MainPanel"
+                                             ajax="true"/>
+                            <p:commandButton value="Delete" styleClass="toolbar-Button"  
+                                             rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_OUTBOX)}" 
+                                             actionListener="#{OutMailDataView.deleteSelectedMail()}" 
+                                             update=":forms:MainPanel"
+                                             ajax="true"/>
                         </f:facet>
 
                         <f:facet name="right"  >
@@ -75,6 +82,12 @@
                         <sui:settings-users id="SettingsUsers" rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_ADMIN_USERS)}"  />
                         <sui:settings-eboxes id="SettingsSEDBoxes" rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_ADMIN_EBOXES)}"  />
                         <sui:settings-cron id="SettingsCron" rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_ADMIN_CRON)}"  />
+                        <p:outputPanel id="PluginFrame" rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_PLUGIN)}" 
+                                       style="width: 100%;height: 100%">  
+                            <iframe id="iframeCenter" src="http://localhost:8080/zpp-plugin/" width="100%"  
+                                    height="100%" frameborder="0" crolling="auto">  
+                            </iframe>  
+                        </p:outputPanel>  
                     </h:panelGroup>
                 </p:layoutUnit>
                 <p:layoutUnit position="south" resizable="false" size="20" minSize="20" maxSize="200">
@@ -82,7 +95,7 @@
                 </p:layoutUnit>
                 <p:layoutUnit position="west" resizable="false" size="320" minSize="320" maxSize="320">
                     <p:accordionPanel  >
-                        <p:ajax event="tabChange" listener="#{MainWindow.onToolbarTabChange}" update="forms:MainPanel" />
+                        <p:ajax event="tabChange" listener="#{MainWindow.onToolbarTabChange}" update="forms:MainPanel forms:toolbar" />
                         <p:tab id="PANEL_INBOX"  >
                             <f:facet name="title">
                                 <h:graphicImage value="resources/images/inbox32.png" width="22" height="22" />
@@ -116,14 +129,14 @@
 
                                 <h:outputText value="Action" />
                                 <h:inputText value="#{InMailDataView.inMailModel.filter.action}" />
-                                
+
                                 <h:outputText value="" />
                                 <p:commandButton value="Search" 
-                                                icon="ui-icon-sed-search"                                             
-                                                styleClass="toolbar-Button"
+                                                 icon="ui-icon-sed-search"                                             
+                                                 styleClass="toolbar-Button"
                                                  update=":forms:MainPanel" ajax="true"/>
                             </p:panelGrid>
-                            
+
                         </p:tab>
                         <p:tab id="PANEL_OUTBOX">
                             <f:facet name="title">
@@ -143,7 +156,7 @@
                                 <h:outputText value="Subm.to:" />
                                 <p:calendar  value="#{OutMailDataView.outMailModel.filter.submittedDateTo}" pattern="dd.MM.yyyy"
                                              mask="true" navigator="true" showOn="button" styleClass="searchDate"/>
- 
+
                                 <h:outputText value="Receiver box:" />
                                 <h:inputText value="#{OutMailDataView.outMailModel.filter.receiverEBox}" />
 
@@ -159,11 +172,11 @@
 
                                 <h:outputText value="Action" />
                                 <h:inputText value="#{OutMailDataView.outMailModel.filter.action}" />
-                                
+
                                 <h:outputText value="" />
                                 <p:commandButton value="Search" 
-                                                icon="ui-icon-sed-search"                                             
-                                                styleClass="toolbar-Button"
+                                                 icon="ui-icon-sed-search"                                             
+                                                 styleClass="toolbar-Button"
                                                  update=":forms:MainPanel" ajax="true"/>
                             </p:panelGrid>
                         </p:tab>
@@ -180,10 +193,23 @@
                                     <f:attribute name="panel" value="PANEL_PMODE_BT" />
                                 </p:menuitem>
                             </p:menu>
-
-
-
                         </p:tab>
+
+                        <p:tab id="PANEL_PLUGIN" rendered="#{userSessionData.user.adminRole}">
+                            <f:facet name="title">
+                                <h:graphicImage value="resources/images/settings32.png" width="22" height="22" />
+                                <h:outputText value="Plugins" />                                 
+                            </f:facet>
+                            <p:menu class="ui-accordion-button">
+                                <p:menuitem value="ZPP plugin" 
+                                            actionListener="#{MainWindow.onToolbarButtonAction}" 
+                                            update="forms:MainPanel">
+                                    <f:attribute name="panel" value="PANEL_PLUGIN" />
+                                </p:menuitem>
+                            </p:menu>
+                        </p:tab>
+
+
 
                         <p:tab id="PANEL_SETT_CUSTOM" rendered="#{userSessionData.user.adminRole}" >
                             <f:facet name="title">

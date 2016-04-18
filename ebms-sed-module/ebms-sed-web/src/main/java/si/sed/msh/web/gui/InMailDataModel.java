@@ -16,10 +16,10 @@
  */
 package si.sed.msh.web.gui;
 
+import si.sed.msh.web.abst.AbstractMailDataModel;
 import java.math.BigInteger;
-import javax.persistence.EntityManager;
-import javax.transaction.UserTransaction;
 import org.msh.ebms.inbox.mail.MSHInMail;
+import si.sed.commons.interfaces.SEDDaoInterface;
 import si.sed.msh.web.gui.entities.InMailTableFilter;
 
 
@@ -30,9 +30,9 @@ import si.sed.msh.web.gui.entities.InMailTableFilter;
 public class InMailDataModel extends AbstractMailDataModel<MSHInMail> {
     InMailTableFilter imtFilter = new InMailTableFilter();
 
-    public InMailDataModel(Class<MSHInMail> type, UserTransaction mutUTransaction, EntityManager memEManager, UserSessionData userSessionData) {
-        super(type, mutUTransaction, memEManager);
-        setUserSessionData(userSessionData);
+    public InMailDataModel(Class<MSHInMail> type, UserSessionData userSessionData,  SEDDaoInterface db) {
+        super(type);
+        setUserSessionData(userSessionData, db);
     }
 
     @Override
@@ -54,7 +54,7 @@ public class InMailDataModel extends AbstractMailDataModel<MSHInMail> {
     }
 
     @Override
-    Object externalFilters() {
+    public Object externalFilters() {
         imtFilter.setReceiverEBox(getUserSessionData().getCurrentSEDBox());
         return imtFilter;
     }

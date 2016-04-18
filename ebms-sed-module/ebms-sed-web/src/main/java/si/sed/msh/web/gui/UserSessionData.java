@@ -17,6 +17,7 @@ package si.sed.msh.web.gui;
 * See the Licence for the specific language governing permissions and  
 * limitations under the Licence.
  */
+import si.sed.msh.web.abst.AbstractJSFView;
 import javax.faces.bean.ManagedBean;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
@@ -30,7 +31,7 @@ import org.primefaces.event.TransferEvent;
 import org.primefaces.event.UnselectEvent;
 import org.sed.ebms.user.SEDUser;
 import si.sed.commons.utils.SEDLogger;
-import si.sed.msh.web.utils.SEDGUIConstants;
+import si.sed.commons.SEDGUIConstants;
 
 @SessionScoped
 @ManagedBean(name = "userSessionData")

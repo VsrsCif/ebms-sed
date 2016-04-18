@@ -36,16 +36,20 @@ public class MainWindow {
     String mstrWindowShow = AppConstant.S_PANEL_INBOX;
 
     public void onToolbarTabChange(TabChangeEvent event) {
-        mstrWindowShow = event.getTab().getId();
-        System.out.println("Set render: " + event.getTab().getId());
-        FacesMessage msg = new FacesMessage("Tab Changed", "Active Tab: " + event.getTab().getId());
-        FacesContext.getCurrentInstance().addMessage(null, msg);
+        if (event!=null) {
+            mstrWindowShow = event.getTab().getId();
+            System.out.println("Set render: " + event.getTab().getId());
+            FacesMessage msg = new FacesMessage("Tab Changed", "Active Tab: " + event.getTab().getId());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+        }
     }
 
     public void onToolbarButtonAction(ActionEvent event) {
+        if (event!=null) {
         String res = (String) event.getComponent().getAttributes().get("panel");
         System.out.println("Res:" + res);
         mstrWindowShow = res;
+        }
     }
 
     public String currentPanel() {

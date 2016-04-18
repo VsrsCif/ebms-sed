@@ -86,6 +86,12 @@ public class TestLoad {
     }
 
     public static void main(String... args) {
+        
+        
+        System.out.println("test: "  + Integer.parseInt("IFRJ9", 32));
+        
+    
+        
         TestLoad tl = new TestLoad();
         try {
             tl.testLoad_a(50);

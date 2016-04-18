@@ -16,11 +16,11 @@
  */
 package si.sed.msh.web.gui;
 
+import si.sed.msh.web.abst.AbstractJSFView;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -28,7 +28,6 @@ import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
-import javax.faces.application.FacesMessage;
 import javax.faces.application.ViewHandler;
 import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
@@ -36,12 +35,10 @@ import javax.faces.component.UIViewRoot;
 import javax.faces.context.FacesContext;
 import javax.xml.ws.WebServiceContext;
 import org.primefaces.event.RowEditEvent;
-import org.primefaces.event.SelectEvent;
-import org.primefaces.event.UnselectEvent;
-import org.sed.ebms.ebox.SEDBox;
-import org.sed.ebms.user.SEDUser;
+import si.sed.commons.SEDJNDI;
 import si.sed.commons.SEDSystemProperties;
-import si.sed.commons.utils.DBSettings;
+import si.sed.commons.interfaces.DBSettingsInterface;
+
 
 /**
  *
@@ -54,8 +51,8 @@ public class ApplicationData extends AbstractJSFView {
     @Resource
     WebServiceContext context;
 
-    @EJB
-    private DBSettings mdbSettings;
+    @EJB (mappedName=SEDJNDI.JNDI_DBSETTINGS)
+    private DBSettingsInterface mdbSettings;
 
     public String getHomeFolder() {
         return System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR);

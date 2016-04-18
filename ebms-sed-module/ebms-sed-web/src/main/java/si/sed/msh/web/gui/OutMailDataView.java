@@ -16,9 +16,11 @@
  */
 package si.sed.msh.web.gui;
 
+import si.sed.msh.web.abst.AbstractMailView;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Arrays;
@@ -26,24 +28,25 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
+import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.SessionScoped;
-import javax.faces.bean.ViewScoped;
-import javax.persistence.TypedQuery;
+import javax.faces.context.ExternalContext;
+import javax.jms.JMSException;
+import javax.naming.NamingException;
 import org.msh.ebms.outbox.event.MSHOutEvent;
 import org.msh.ebms.outbox.mail.MSHOutMail;
 import org.msh.ebms.outbox.payload.MSHOutPart;
 import org.primefaces.model.DefaultStreamedContent;
-import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.StreamedContent;
-import si.sed.commons.SEDInboxMailStatus;
-
+import si.sed.commons.SEDJNDI;
 
 import si.sed.commons.SEDOutboxMailStatus;
 import si.sed.commons.exception.StorageException;
+import si.sed.commons.interfaces.JMSManagerInterface;
+import si.sed.commons.interfaces.SEDDaoInterface;
 import si.sed.commons.utils.StorageUtils;
-
 
 /**
  *
@@ -55,45 +58,48 @@ public class OutMailDataView extends AbstractMailView<MSHOutMail, MSHOutEvent> i
 
     private static final long serialVersionUID = 1L;
 
+    @EJB(mappedName = SEDJNDI.JNDI_SEDDAO)
+    SEDDaoInterface mDB;
+    
+    @EJB (mappedName=SEDJNDI.JNDI_JMSMANAGER)
+   JMSManagerInterface mJMS;
+
     @ManagedProperty(value = "#{userSessionData}")
     private UserSessionData userSessionData;
 
     @PostConstruct
-    private  void init(){
-        mMailModel = new OutMailDataModel(MSHOutMail.class, getUserTransaction(), getEntityManager(), getUserSessionData());
+    private void init() {
+        mMailModel = new OutMailDataModel(MSHOutMail.class, getUserSessionData(), mDB);
     }
-    
+
     public void setUserSessionData(UserSessionData messageBean) {
         this.userSessionData = messageBean;
     }
 
     public UserSessionData getUserSessionData() {
-        return this.userSessionData ;
+        return this.userSessionData;
     }
-    
- 
-    public OutMailDataModel getOutMailModel(){
-        if (mMailModel== null){
-            mMailModel = new OutMailDataModel(MSHOutMail.class, getUserTransaction(), getEntityManager(), getUserSessionData());
+
+    public OutMailDataModel getOutMailModel() {
+        if (mMailModel == null) {
+            mMailModel = new OutMailDataModel(MSHOutMail.class, getUserSessionData(), mDB);
         }
-        return (OutMailDataModel)mMailModel;
+        return (OutMailDataModel) mMailModel;
     }
 
     @Override
     public String getStatusColor(String status) {
         return SEDOutboxMailStatus.getColor(status);
     }
-    
-     public List<SEDOutboxMailStatus> getOutStatuses(){
+
+    public List<SEDOutboxMailStatus> getOutStatuses() {
         return Arrays.asList(SEDOutboxMailStatus.values());
     }
 
     @Override
     public void updateEventList() {
         if (this.mMail != null) {
-            TypedQuery tq = memEManager.createNamedQuery("org.msh.ebms.outbox.event.MSHOutEvent.getMailEventList", MSHOutEvent.class);
-            tq.setParameter("mailId", this.mMail.getId());
-            this.mlstMailEvents = tq.getResultList();
+            mlstMailEvents = mDB.getMailEventList(MSHOutEvent.class, mMail.getId());
         } else {
             this.mlstMailEvents = null;
         }
@@ -122,6 +128,25 @@ public class OutMailDataView extends AbstractMailView<MSHOutMail, MSHOutEvent> i
             }
         }
         return null;
+    }
+    
+     public void resendSelectedMail() throws IOException {
+       if (this.mMail != null) {
+           try {
+                // get pmode
+       
+               mJMS.sendMessage(this.mMail.getId().longValue(),null, 0, 0, false);
+           } catch (NamingException | JMSException ex) {
+               Logger.getLogger(OutMailDataView.class.getName()).log(Level.SEVERE, null, ex);
+           }
+        } 
+    }
+      public void deleteSelectedMail() throws IOException {
+       if (this.mMail != null) {
+           
+               mDB.setStatusToOutMail(this.mMail, SEDOutboxMailStatus.DELETED, "Manual deleted by " + getUserSessionData().getUser().getUserId());               
+           
+        } 
     }
 
 }

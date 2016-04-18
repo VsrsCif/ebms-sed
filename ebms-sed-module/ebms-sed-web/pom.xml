@@ -51,7 +51,6 @@
                 <artifactId>maven-compiler-plugin</artifactId>               
             </plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
                 <configuration> 
                     <!-- for missing WEB-INF/web.xml-->
@@ -60,7 +59,9 @@
                         <manifestEntries>                            
                             <implementation-version>${project.version}</implementation-version>             
                             <Implementation-Build>${buildNumber}</Implementation-Build>                            
+                            <Dependencies>org.sed, org.primefaces</Dependencies>
                         </manifestEntries>
+                        
                     </archive>                                 
                 </configuration>
                  
@@ -96,24 +97,14 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>ebms-sed-commons</artifactId>
             <version>${project.version}</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>xalan</artifactId>
-                    <groupId>xalan</groupId> <!-- FOP uses xala 2.6.0. which does not have method:  .TransformerFactoryImpl.setFeature(Ljava/lang/String;Z)V¨-->
-                </exclusion>
-            </exclusions>
+            <scope>provided</scope>            
         </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>ebms-msh-db</artifactId>
-            <version>${project.version}</version>		
-        </dependency>
-        
         
         <!-- GUI uses prifeaces componens --> 
         <dependency>
             <groupId>org.primefaces</groupId>
             <artifactId>primefaces</artifactId>
+            
         </dependency>	
         
         <dependency>

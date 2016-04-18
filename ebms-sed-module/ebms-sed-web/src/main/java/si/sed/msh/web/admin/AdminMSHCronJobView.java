@@ -16,6 +16,7 @@
  */
 package si.sed.msh.web.admin;
 
+import si.sed.msh.web.abst.AbstractAdminJSFView;
 import java.math.BigInteger;
 import java.util.List;
 import javax.ejb.EJB;
@@ -26,10 +27,12 @@ import javax.faces.bean.SessionScoped;
 import org.msh.ebms.cron.MSHCronJob;
 import org.msh.ebms.cron.MSHTask;
 import org.msh.ebms.cron.MSHTaskProperty;
-import si.sed.commons.utils.MSHScheduler;
+import si.sed.commons.SEDJNDI;
+import si.sed.commons.interfaces.SEDLookupsInterface;
+import si.sed.commons.interfaces.SEDSchedulerInterface;
 
 import si.sed.commons.utils.SEDLogger;
-import si.sed.commons.utils.SEDLookups;
+
 
 /**
  *
@@ -43,11 +46,11 @@ public class AdminMSHCronJobView extends AbstractAdminJSFView<MSHCronJob> {
 
     private static final SEDLogger LOG = new SEDLogger(AdminMSHCronJobView.class);
 
-    @EJB
-    private SEDLookups mdbLookups;
+    @EJB (mappedName=SEDJNDI.JNDI_SEDLOOKUPS)
+    private SEDLookupsInterface mdbLookups;
 
-    @EJB
-    private MSHScheduler mshScheduler;
+    @EJB (mappedName=SEDJNDI.JNDI_SEDSCHEDLER)
+    private SEDSchedulerInterface mshScheduler;
 
 
     public List<MSHCronJob> getMSHCronJobs() {

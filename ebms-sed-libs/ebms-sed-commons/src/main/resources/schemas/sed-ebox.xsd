@@ -35,6 +35,7 @@ Copyright 2016, Supreme Court Republic of Slovenia
 		<xs:sequence>
 			<xs:element ref="usr:SEDUser" maxOccurs="unbounded"/>
 			<xs:element name="Export"  type="ns1:Export" minOccurs="0"/>
+                        <xs:element name="Execute"  type="ns1:Execute" minOccurs="0"/>
 		</xs:sequence>
 		<xs:attribute name="boxName" type="xs:string" use="required">
 			<xs:annotation>
@@ -49,5 +50,10 @@ Copyright 2016, Supreme Court Republic of Slovenia
                 <xs:attribute name="exportMetaData"  type="xs:boolean"  />
 		<xs:attribute name="folder" use="required" type="xs:string" />
 		<xs:attribute name="fileMask" use="required" type="xs:string"/>
+	</xs:complexType>
+        <xs:complexType name="Execute">
+                <xs:attribute name="active"  type="xs:boolean"  />    
+                <xs:attribute name="command"  type="xs:string"  />
+                <xs:attribute name="parameters"  type="xs:string"  />
 	</xs:complexType>
 </xs:schema>

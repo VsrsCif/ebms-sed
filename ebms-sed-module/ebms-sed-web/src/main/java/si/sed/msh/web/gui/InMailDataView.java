@@ -16,6 +16,7 @@
  */
 package si.sed.msh.web.gui;
 
+import si.sed.msh.web.abst.AbstractMailView;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -26,21 +27,21 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
+import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.SessionScoped;
-import javax.faces.bean.ViewScoped;
 import javax.persistence.TypedQuery;
 import org.msh.ebms.inbox.event.MSHInEvent;
 import org.msh.ebms.inbox.mail.MSHInMail;
 import org.msh.ebms.inbox.payload.MSHInPart;
-import org.msh.ebms.outbox.mail.MSHOutMail;
 import org.primefaces.model.DefaultStreamedContent;
-import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.StreamedContent;
 
 import si.sed.commons.SEDInboxMailStatus;
+import si.sed.commons.SEDJNDI;
 import si.sed.commons.exception.StorageException;
+import si.sed.commons.interfaces.SEDDaoInterface;
 import si.sed.commons.utils.StorageUtils;
 
 /**
@@ -52,6 +53,9 @@ import si.sed.commons.utils.StorageUtils;
 public class InMailDataView extends AbstractMailView<MSHInMail, MSHInEvent> implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    
+    @EJB (mappedName=SEDJNDI.JNDI_SEDDAO)
+    SEDDaoInterface mDB;
 
     @ManagedProperty(value = "#{userSessionData}")
     private UserSessionData userSessionData;
@@ -59,7 +63,7 @@ public class InMailDataView extends AbstractMailView<MSHInMail, MSHInEvent> impl
     
       @PostConstruct
     private void init(){
-        mMailModel = new InMailDataModel(MSHInMail.class, getUserTransaction(), getEntityManager(), userSessionData);
+        mMailModel = new InMailDataModel(MSHInMail.class, userSessionData, mDB);
     }
     
 
@@ -85,9 +89,7 @@ public class InMailDataView extends AbstractMailView<MSHInMail, MSHInEvent> impl
     @Override
     public void updateEventList() {
         if (this.mMail != null) {
-            TypedQuery tq = memEManager.createNamedQuery("org.msh.ebms.inbox.event.MSHInEvent.getMailEventList", MSHInEvent.class);
-            tq.setParameter("mailId", mMail.getId());
-            mlstMailEvents = tq.getResultList();
+            mlstMailEvents = mDB.getMailEventList(MSHInEvent.class, mMail.getId());
         } else {
             mlstMailEvents = null;
         }

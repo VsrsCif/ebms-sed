@@ -50,29 +50,26 @@ public class SEDSystemProperties {
      * </p>
      */
     public static final String SYS_PROP_PMODE_DEF = "pmode-conf.xml";
-    
-    
+
     /**
      * Default value for plugin folder name.
      *
      * <p>
-     * Def plugin folder name form plugins;
-     * ${SYS_PROP_HOME_DIR}/plugins
+     * Def plugin folder name form plugins; ${SYS_PROP_HOME_DIR}/plugins
      * </p>
      */
     public static final String SYS_PROP_FOLDER_PLUGINS_DEF = "plugins";
-    
+
     /**
      * Default value for plugin folder name.
      *
      * <p>
-     * Def plugin folder name for plugins;
-     * ${SYS_PROP_HOME_DIR}/plugins
+     * Def plugin folder name for plugins; ${SYS_PROP_HOME_DIR}/plugins
      * </p>
      */
     public static final String SYS_PROP_FOLDER_STORAGE_DEF = "storage";
-    
-     /**
+
+    /**
      * Default value for plugin folder name.
      *
      * <p>
@@ -110,7 +107,17 @@ public class SEDSystemProperties {
      * Workers handle outbox messages.
      * </p>
      */
-    public static final String SYS_PROP_MAX_QUEUE_WORKERS = "org.sed.msh.maxWorkers";
+    public static final String SYS_PROP_QUEUE_SENDER_WORKERS = "org.sed.msh.sender.workers.count";
+
+    /**
+     * System property for out qeue workers.
+     *
+     * <p>
+     * If system property is not given, max 5 outgoing workers are initiated.
+     * Workers handle outbox messages.
+     * </p>
+     */
+    public static final String SYS_PROP_EXECUTION_WORKERS = "org.sed.msh.execution.workers.count";
 
     /**
      * System property for database dialect
@@ -143,5 +150,15 @@ public class SEDSystemProperties {
      */
     public static final String SYS_PROP_JNDI_PREFIX = "org.sed.jndi.prefix";
     public static final String SYS_PROP_JNDI_JMS_PREFIX = "org.sed.jndi.jms.prefix";
+
+    static {
+        if (System.getProperty(SYS_PROP_QUEUE_SENDER_WORKERS) == null) {
+            System.setProperty(SYS_PROP_QUEUE_SENDER_WORKERS, "5");
+        }
+         if (System.getProperty(SYS_PROP_EXECUTION_WORKERS) == null) {
+            System.setProperty(SYS_PROP_EXECUTION_WORKERS, "5");
+        }
+
+    }
 
 }

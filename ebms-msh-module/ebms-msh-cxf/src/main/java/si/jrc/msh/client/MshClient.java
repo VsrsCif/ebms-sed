@@ -57,8 +57,8 @@ import si.sed.commons.utils.SEDLogger;
 
 import si.jrc.msh.utils.SvevUtils;
 import si.sed.commons.utils.Utils;
-import si.sed.msh.plugin.MSHPluginInInterceptor;
-import si.sed.msh.plugin.MSHPluginOutInterceptor;
+import si.jrc.msh.interceptor.MSHPluginInInterceptor;
+import si.jrc.msh.interceptor.MSHPluginOutInterceptor;
 
 /**
  *

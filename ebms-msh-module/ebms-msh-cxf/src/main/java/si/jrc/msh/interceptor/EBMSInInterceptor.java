@@ -178,7 +178,9 @@ public class EBMSInInterceptor extends AbstractEBMSInterceptor {
                 if (inSb == null || (inSb.getActiveToDate() != null && inSb.getActiveToDate().before(Calendar.getInstance().getTime()))) {
                     String errmsg = "Receiver box: '" + mMail.getReceiverEBox() + "' not exists or is not active.";
                     mlog.logError(l, errmsg, null);;
-                    throw new EBMSError(EBMSErrorCode.Other, null, errmsg);
+                    throw   new SoapFault(errmsg, version.getReceiver());
+                    
+                    //throw new EBMSError(EBMSErrorCode.Other, null, errmsg);
                 }
                 
                 msg.getExchange().put(SEDBox.class, inSb);

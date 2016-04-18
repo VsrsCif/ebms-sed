@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"   
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:composite="http://java.sun.com/jsf/composite"
+      xmlns:sui="http://java.sun.com/jsf/composite/sed-ui"
+
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+    <composite:interface>
+    </composite:interface>
+
+    <composite:implementation >
+
+        <p:layout style="min-width:400px;min-height:400px; height: 100%;width: 100%"   >
+            <p:layoutUnit  position="north" style="width:100%;height:100%;padding: 0px; margin: 0px" gutter="0" >
+                <p:outputPanel id="PModePanel" >
+                    <p:fieldset  legend="General settings" style="margin-bottom:20px"  >
+                        <table style=" width: 100%" >
+                            <tr>
+                                <td align="right" width="120">Id</td> 
+                                <td align="left"><h:inputText value="#{PModeView.currentPMode.id}"  style="width:200px;"  readonly='true' /></td>
+                                <td align="right" width="180">Extends:</td> 
+                                <td align="left"><h:inputText value="#{PModeView.currentPMode.extends}"  style="width:200px;"  readonly='true' /></td>
+                                <td align="right" width="180">Is template:</td> 
+                                <td align="left"><h:inputText value="#{PModeView.currentPMode.isTemplate}"  style="width:60px;"  readonly='true' /></td>
+                                <td align="right" width="180">Agreement:</td> 
+                                <td align="left"><h:inputText value="#{PModeView.currentPMode.agreement}"  style="width:200px;"  readonly='true' /></td>
+                            </tr>
+                            <tr>
+                                <td align="right" width="120">MEP</td> 
+                                <td align="left">
+                                    <p:selectOneMenu id="MEP" value="#{PModeView.currentPMode.MEP}" style="width:150px">
+                                        <!-- p:ajax listener="#{dropdownView.onMEPChange}" update="city" / -->
+                                        <f:selectItems value="#{PModeView.lookupMEP}" />
+                                    </p:selectOneMenu></td>
+                                <td align="right" width="180">Binding</td> 
+                                <td align="left" colspan="2">
+                                    <p:selectOneMenu id="MEPBinding" value="#{PModeView.currentPMode.MEPbinding}" style="width:150px">
+                                        <!-- p:ajax listener="#{dropdownView.onMEPBinding}}" update="city" / -->
+                                        <f:selectItems value="#{PModeView.lookupMEPBinding}" />
+                                    </p:selectOneMenu></td>
+                            </tr>
+                        </table>
+                    </p:fieldset>
+                </p:outputPanel>
+                <p:selectOneButton value="">
+                    <f:selectItem itemLabel="Fore channel1" itemValue="fore-channel" />
+                    <f:selectItem itemLabel="Back channel" itemValue="back-channel" />
+                </p:selectOneButton>
+            </p:layoutUnit>
+
+            <p:layoutUnit  position="center" style="width:100%;height:100%;padding: 0px; margin: 0px" gutter="0" >
+                
+                <p:scrollPanel mode="native"  style="width:100%;height:100%;padding: 0px; margin: 0px" >
+                    <sui:settings-pmode-leg id="PModeLeg"   />
+                </p:scrollPanel>
+            </p:layoutUnit>
+
+        </p:layout>
+    </composite:implementation>
+
+</html>

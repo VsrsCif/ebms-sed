@@ -14,44 +14,68 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.security.Security;
 import javax.crypto.SecretKey;
 import org.apache.cxf.binding.soap.SoapMessage;
-import org.apache.cxf.phase.Phase;
 import org.msh.ebms.outbox.mail.MSHOutMail;
 import org.msh.ebms.outbox.payload.MSHOutPart;
 import org.msh.ebms.outbox.payload.MSHOutPayload;
 
 import si.sed.commons.MimeValues;
 import si.sed.commons.exception.StorageException;
-import si.sed.msh.plugin.AbstractPluginInterceptor;
+
 import si.sed.commons.utils.SEDLogger;
 import si.sed.commons.utils.StorageUtils;
 import java.util.Base64;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.Resource;
+import javax.ejb.EJB;
+import javax.ejb.Local;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionManagement;
+import javax.ejb.TransactionManagementType;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.transaction.HeuristicMixedException;
+import javax.transaction.HeuristicRollbackException;
+import javax.transaction.NotSupportedException;
+import javax.transaction.RollbackException;
+import javax.transaction.SystemException;
+import javax.transaction.UserTransaction;
 import org.apache.xmlgraphics.util.MimeConstants;
 import si.jrc.msh.plugin.zpp.doc.DocumentSodBuilder;
 import si.sed.commons.SEDSystemProperties;
 import si.sed.commons.exception.FOPException;
 import si.sed.commons.exception.HashException;
-import si.sed.commons.utils.FOPUtils;
+import si.jrc.msh.plugin.zpp.utils.FOPUtils;
+import si.jrc.msh.sec.SEDKey;
+import si.sed.commons.SEDJNDI;
+import si.sed.commons.interfaces.SEDDaoInterface;
+import si.sed.commons.interfaces.SoapInterceptorInterface;
 import si.sed.commons.utils.HashUtils;
 
 /**
  *
  * @author sluzba
  */
-public class ZPPOutInterceptor extends AbstractPluginInterceptor {
+@Stateless
+@Local(SoapInterceptorInterface.class)
+@TransactionManagement(TransactionManagementType.BEAN)
+public class ZPPOutInterceptor implements SoapInterceptorInterface {
 
     public static final String ENCODING_UTF8 = "UTF-8";
     public static final String ENCODING_BASE64 = "base64";
     public static final String SECRET_KEY_FILE = "secret-key.dat";
-    
 
     protected final SEDCrypto.SymEncAlgorithms mAlgorithem = SEDCrypto.SymEncAlgorithms.AES128_CBC;
 
     protected final SEDLogger mlog = new SEDLogger(ZPPOutInterceptor.class);
+
+      @Resource
+    public UserTransaction mutUTransaction;
+
+    @PersistenceContext(unitName = "ebMS_ZPP_PU", name = "ebMS_ZPP_PU")
+    public EntityManager memEManager;
 
     SEDCrypto mscCrypto = new SEDCrypto();
     HashUtils mpHU = new HashUtils();
@@ -59,7 +83,7 @@ public class ZPPOutInterceptor extends AbstractPluginInterceptor {
     DocumentSodBuilder dsbSodBuilder = new DocumentSodBuilder();
 
     public ZPPOutInterceptor() {
-        super(Phase.USER_LOGICAL);
+
     }
 
     @Override
@@ -77,7 +101,7 @@ public class ZPPOutInterceptor extends AbstractPluginInterceptor {
                 prepareToZPPDelivery(outMail);
             } catch (HashException | SEDSecurityException | StorageException | FOPException | IOException ex) {
                 mlog.logError(l, ex);
-            } 
+            }
         }
         mlog.logEnd(l);
     }
@@ -88,38 +112,37 @@ public class ZPPOutInterceptor extends AbstractPluginInterceptor {
 
         //  EntityManagerFactory emf = null;
         //  EntityManager em = null;
-    //    try {
-            //    emf = getSEDEntityManagerFactory();
-            //   em = emf.createEntityManager();
-            // todo check if key is already in db
-            //SecretKey sk = new SecretKeySpec(bytes, ENCODING_UTF8)
-            // generate key
-            SecretKey skey = mscCrypto.getKey(mAlgorithem);
-            //create nofitication
-            File fDNViz = StorageUtils.getNewStorageFile("pdf", "DeliveryNoification");
+        //    try {
+        //    emf = getSEDEntityManagerFactory();
+        //   em = emf.createEntityManager();
+        // todo check if key is already in db
+        //SecretKey sk = new SecretKeySpec(bytes, ENCODING_UTF8)
+        // generate key
+        SecretKey skey = mscCrypto.getKey(mAlgorithem);
+        //create nofitication
+        File fDNViz = StorageUtils.getNewStorageFile("pdf", "DeliveryNoification");
 
-            getFOP().generateVisualization(outMail, fDNViz, FOPUtils.FopTransformations.DeliveryNotification, MimeConstants.MIME_PDF);
+        getFOP().generateVisualization(outMail, fDNViz, FOPUtils.FopTransformations.DeliveryNotification, MimeConstants.MIME_PDF);
 
-            // encrypt payloads 
-            MSHOutPayload pl = getEncryptedPayloads(skey, outMail);
+        // encrypt payloads 
+        MSHOutPayload pl = getEncryptedPayloads(skey, outMail);
 
-            String fPDFVizualization = StorageUtils.getRelativePath(fDNViz);
-            //add vizualization as pdf
-            MSHOutPart ptNew = new MSHOutPart();
-            ptNew.setEncoding(ENCODING_UTF8);
-            ptNew.setMimeType(MimeValues.MIME_PDF.getMimeType());
-            ptNew.setDescription("DeliveryNoification");
-            ptNew.setType("DeliveryNoification");
-            ptNew.setFilepath(fPDFVizualization);
-            ptNew.setFilename("DeliveryNoification.pdf");
-            pl.getMSHOutParts().add(0, ptNew);
+        String fPDFVizualization = StorageUtils.getRelativePath(fDNViz);
+        //add vizualization as pdf
+        MSHOutPart ptNew = new MSHOutPart();
+        ptNew.setEncoding(ENCODING_UTF8);
+        ptNew.setMimeType(MimeValues.MIME_PDF.getMimeType());
+        ptNew.setDescription("DeliveryNoification");
+        ptNew.setType("DeliveryNoification");
+        ptNew.setFilepath(fPDFVizualization);
+        ptNew.setFilename("DeliveryNoification.pdf");
+        pl.getMSHOutParts().add(0, ptNew);
 
-            outMail.setMSHOutPayload(pl);
-            outMail.setConversationId(outMail.getId().toString()); // conversation id is id of fist mail
+        outMail.setMSHOutPayload(pl);
+        outMail.setConversationId(outMail.getId().toString()); // conversation id is id of fist mail
 
-            
-            storeSecretKey(outMail.getId(), skey);
-            /*           
+        storeSecretKey(outMail.getId(), skey);
+        /*           
          
             ZPPKey zk = new ZPPKey();
             zk.setId(outMail.getId());
@@ -166,7 +189,7 @@ public class ZPPOutInterceptor extends AbstractPluginInterceptor {
             //ed.getKeyInfo().setId(mail.getConversationId());
             //pt.setName("EncryptedData_" + (++i));
             MSHOutPart ptNew = new MSHOutPart();
-            
+
             ptNew.setMimeType(pt.getMimeType());
             //ptNew.setMimeType(MimeValues.MIME_BIN.getMimeType());
             ptNew.setFilepath(StorageUtils.getRelativePath(fOut));
@@ -190,11 +213,35 @@ public class ZPPOutInterceptor extends AbstractPluginInterceptor {
     }
 
     private void storeSecretKey(BigInteger bi, SecretKey skey) throws IOException {
-        Path filePath = Paths.get(System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR) + "/SVEV/" + SECRET_KEY_FILE);
+        SEDKey sk = new SEDKey(bi, skey.getEncoded() , skey.getAlgorithm(),skey.getFormat());
+        
+        try {
+            mutUTransaction.begin();
+            memEManager.persist(sk);
+            mutUTransaction.commit();
+        } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
+            Logger.getLogger(ZPPOutInterceptor.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        /*Path filePath = Paths.get(System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR) + "/SVEV/" + SECRET_KEY_FILE);
+        if (!Files.exists(filePath)) {
+        Files.createFile(filePath);
+        }
+        Files.write(filePath, String.format("%d %s %s\n", bi, Base64.getEncoder().encodeToString(skey.getEncoded()), skey.getFormat()).getBytes(), StandardOpenOption.APPEND);
+         */ 
+        
+        
+        
+        /*Path filePath = Paths.get(System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR) + "/SVEV/" + SECRET_KEY_FILE);
         if (!Files.exists(filePath)) {
             Files.createFile(filePath);
         }
-        Files.write(filePath, String.format("%d %s %s\n", bi,Base64.getEncoder().encodeToString(skey.getEncoded()), skey.getFormat() ).getBytes(), StandardOpenOption.APPEND);
+        Files.write(filePath, String.format("%d %s %s\n", bi, Base64.getEncoder().encodeToString(skey.getEncoded()), skey.getFormat()).getBytes(), StandardOpenOption.APPEND);
+*/
+    }
+
+    @Override
+    public void handleFault(SoapMessage t) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

@@ -42,7 +42,7 @@ public class TestUtils {
         // Create a Session
         Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
         // Create the destination Queue
-        Queue mshQue = session.createQueue(SEDValues.EBMS_QUEUE_JNDI);
+        Queue mshQue = session.createQueue(SEDValues.JNDI_QUEUE_EBMS);
 
         return mshQue;
     }
