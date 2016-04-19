@@ -5,10 +5,12 @@
  */
 package si.sed.commons.utils;
 
+import java.math.BigInteger;
 import si.sed.commons.interfaces.SEDSchedulerInterface;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import javax.ejb.EJB;
 import javax.ejb.Local;
 import javax.ejb.Lock;
 import javax.ejb.LockType;
@@ -17,6 +19,10 @@ import javax.ejb.Startup;
 import javax.ejb.Timeout;
 import javax.ejb.Timer;
 import javax.ejb.TimerService;
+import org.msh.ebms.cron.MSHCronJob;
+import si.sed.commons.SEDJNDI;
+import si.sed.commons.email.EmailUtils;
+import si.sed.commons.interfaces.SEDLookupsInterface;
 
 /**
  *
@@ -30,6 +36,9 @@ public class MSHScheduler implements SEDSchedulerInterface {
 
     private static final SEDLogger LOG = new SEDLogger(MSHScheduler.class);
     private final AtomicInteger checks = new AtomicInteger();
+    
+    @EJB(mappedName = SEDJNDI.JNDI_SEDLOOKUPS)
+    private SEDLookupsInterface mdbLookups;
 
     @Resource
     private TimerService timerService;
@@ -46,11 +55,13 @@ public class MSHScheduler implements SEDSchedulerInterface {
     @Timeout
     @Override
     public void timeout(Timer timer) {
-        LOG.log("Timeout for: " + timer.getInfo());
-        if ("checkTest".equals(timer.getInfo())) {
-
-            checkTest();
-        }
+        MSHCronJob mj = mdbLookups.getMSHCronJobById((BigInteger)(timer.getInfo()));
+        
+        LOG.log("Timeout for: " + mj);
+        EmailUtils eu = new EmailUtils();
+//        eu.sendMailMessage("joze.rihtar", subject, body);
+        
+        
     }
 
     private void checkTest() {
@@ -67,5 +78,6 @@ public class MSHScheduler implements SEDSchedulerInterface {
     public TimerService getServices() {
         return timerService;
     }
+    
 
 }

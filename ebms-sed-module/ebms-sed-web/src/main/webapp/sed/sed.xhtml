@@ -60,7 +60,7 @@
                             <p:outputLabel for="ebox" value="SED-Box: " />
                             <p:selectOneMenu id="ebox" value="#{userSessionData.currentSEDBox}" style="width:150px" >
                                 <p:ajax update=":forms:MainPanel" />
-                                <f:selectItem itemValue="Select sed-box" noSelectionOption="true" />
+                                <f:selectItem itemValue="ALL" noSelectionOption="true" itemLabel="All SED-Boxes"/>
                                 <f:selectItems value="#{userSessionData.userEBoxes}" />
                             </p:selectOneMenu>
 

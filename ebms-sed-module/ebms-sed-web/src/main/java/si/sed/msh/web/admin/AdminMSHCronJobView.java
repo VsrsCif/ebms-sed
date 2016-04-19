@@ -21,6 +21,7 @@ import java.math.BigInteger;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.ScheduleExpression;
+import javax.ejb.Timer;
 import javax.ejb.TimerConfig;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
@@ -33,25 +34,21 @@ import si.sed.commons.interfaces.SEDSchedulerInterface;
 
 import si.sed.commons.utils.SEDLogger;
 
-
 /**
  *
  * @author Jože Rihtaršič
  */
-
-
 @SessionScoped
 @ManagedBean(name = "adminMSHCronJobView")
 public class AdminMSHCronJobView extends AbstractAdminJSFView<MSHCronJob> {
 
     private static final SEDLogger LOG = new SEDLogger(AdminMSHCronJobView.class);
 
-    @EJB (mappedName=SEDJNDI.JNDI_SEDLOOKUPS)
+    @EJB(mappedName = SEDJNDI.JNDI_SEDLOOKUPS)
     private SEDLookupsInterface mdbLookups;
 
-    @EJB (mappedName=SEDJNDI.JNDI_SEDSCHEDLER)
+    @EJB(mappedName = SEDJNDI.JNDI_SEDSCHEDLER)
     private SEDSchedulerInterface mshScheduler;
-
 
     public List<MSHCronJob> getMSHCronJobs() {
         long l = LOG.logStart();
@@ -64,7 +61,6 @@ public class AdminMSHCronJobView extends AbstractAdminJSFView<MSHCronJob> {
         return strBoxName != null ? strBoxName.substring(0, strBoxName.indexOf("@")) : "";
     }
 
-   
     public MSHTaskProperty getEditableProperty(String name) {
         if (getEditable() != null && getEditable().getMSHTask() != null) {
             for (MSHTaskProperty mp : getEditable().getMSHTask().getMSHTaskProperties()) {
@@ -128,7 +124,6 @@ public class AdminMSHCronJobView extends AbstractAdminJSFView<MSHCronJob> {
         return null;
     }
 
-  
     @Override
     public void createEditable() {
         MSHCronJob ecj = new MSHCronJob();
@@ -155,7 +150,7 @@ public class AdminMSHCronJobView extends AbstractAdminJSFView<MSHCronJob> {
         mtp.setValue("true");
         ecj.getMSHTask().getMSHTaskProperties().add(mtp);
         setNew(ecj);
-        
+
     }
 
     @Override
@@ -186,14 +181,33 @@ public class AdminMSHCronJobView extends AbstractAdminJSFView<MSHCronJob> {
 
             }
         }
-        
+
     }
 
     @Override
     public void updateEditable() {
         MSHCronJob ecj = getEditable();
         if (ecj != null) {
-            mdbLookups.updateMSHCronJob(ecj);            
+            mdbLookups.updateMSHCronJob(ecj);
+            for (Timer t : mshScheduler.getServices().getAllTimers()) {
+                if (t.getInfo().equals(ecj.getId())) {
+                    t.cancel();
+                    break;
+                }
+            }
+            if (ecj.getActive() != null && ecj.getActive()) {
+                LOG.log("Register timer to TimerService");
+                ScheduleExpression se = new ScheduleExpression()
+                        .second(ecj.getSecond())
+                        .minute(ecj.getMinute())
+                        .hour(ecj.getHour())
+                        .dayOfMonth(ecj.getDayOfMonth())
+                        .month(ecj.getMonth())
+                        .dayOfWeek(ecj.getDayOfWeek());
+                TimerConfig checkTest = new TimerConfig(ecj.getId(), false);
+                mshScheduler.getServices().createCalendarTimer(se, checkTest);
+            }
+
         }
     }
 
@@ -205,5 +219,4 @@ public class AdminMSHCronJobView extends AbstractAdminJSFView<MSHCronJob> {
         return lst;
     }
 
-   
 }

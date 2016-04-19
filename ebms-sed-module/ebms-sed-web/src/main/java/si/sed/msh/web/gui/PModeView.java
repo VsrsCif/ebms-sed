@@ -25,7 +25,6 @@ import javax.faces.bean.ViewScoped;
 import org.msh.svev.pmode.Leg;
 import org.msh.svev.pmode.PMode;
 import org.primefaces.event.SelectEvent;
-import si.sed.commons.utils.PModeManager;
 
 /**
  *

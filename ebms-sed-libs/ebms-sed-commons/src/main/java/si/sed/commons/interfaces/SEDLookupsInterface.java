@@ -5,6 +5,7 @@
  */
 package si.sed.commons.interfaces;
 
+import java.math.BigInteger;
 import java.util.List;
 import javax.ejb.Local;
 import org.msh.ebms.cron.MSHCronJob;
@@ -23,6 +24,8 @@ public interface SEDLookupsInterface {
     boolean addSEDBox(SEDBox sb);
 
     boolean addSEDUser(SEDUser sb);
+    
+    public MSHCronJob getMSHCronJobById(BigInteger id);
 
     List<MSHCronJob> getMSHCronJobs();
 

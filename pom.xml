@@ -64,7 +64,7 @@
         <module>ebms-sed-module</module>                
         <module>ebms-msh-module</module>
         <module>ebms-sed-plugins</module>
-        <module>ebms-sed-standalone</module>
+        <!-- module>ebms-sed-standalone</module --> <!--dvelopment of standalone  demo aplicatin is postponed -->
 	          
 
     </modules>

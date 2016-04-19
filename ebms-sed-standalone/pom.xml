@@ -12,7 +12,8 @@
     <artifactId>ebms-sed-standalone</artifactId>
     <name>ebms-sed-standalone</name>
     <packaging>war</packaging>
-    <description>SVEV msh ebMS 3.0 webservice implementation</description>
+    <description>PROJECT IS DEPRECATED: currently application is tested and developed for wildfly 10.
+Demo aplication for secure elektronic delivery.</description>
     
     <licenses>
         <license>

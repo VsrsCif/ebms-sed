@@ -5,7 +5,9 @@
  */
 package si.sed.msh.web.gui.entities;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  *
@@ -17,7 +19,7 @@ public class OutMailTableFilter {
     protected String conversationId;
     protected String subject;
     protected String receiverEBox;
-    protected String senderEBox;
+    protected List<String> senderEBoxList = new ArrayList<>();
     protected String status;    
     protected Date submittedDateFrom;
     protected Date submittedDateTo;
@@ -62,13 +64,11 @@ public class OutMailTableFilter {
         this.receiverEBox = receiverEBox;
     }
 
-    public String getSenderEBox() {
-        return senderEBox;
+    public List<String> getSenderEBoxList() {
+        return senderEBoxList;
     }
 
-    public void setSenderEBox(String senderEBox) {
-        this.senderEBox = senderEBox;
-    }
+    
 
     public Date getSubmittedDateFrom() {
         return submittedDateFrom;

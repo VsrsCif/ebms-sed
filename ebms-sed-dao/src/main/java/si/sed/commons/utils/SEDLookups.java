@@ -7,6 +7,7 @@ package si.sed.commons.utils;
 
 import si.sed.commons.interfaces.SEDLookupsInterface;
 import java.io.File;
+import java.math.BigInteger;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -128,6 +129,20 @@ public class SEDLookups implements SEDLookupsInterface {
     @Override
     public boolean removeMSHCronJob(MSHCronJob sb) {
         return remove(sb);
+    }
+    
+      @Override
+    public MSHCronJob getMSHCronJobById(BigInteger id) {
+        if (id != null) {
+            
+            List<MSHCronJob> lst = getMSHCronJobs();
+            for (MSHCronJob sb : lst) {
+                if (id.equals(sb.getId())) {
+                    return sb;
+                }
+            }
+        }
+        return null;
     }
 
     @PostConstruct

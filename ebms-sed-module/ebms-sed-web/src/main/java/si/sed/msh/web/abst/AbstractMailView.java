@@ -87,8 +87,7 @@ public abstract class AbstractMailView<T, S> {
 
 
     public void search(ActionEvent event) {
-        String res = (String) event.getComponent().getAttributes().get("status");
-        System.out.println("Res:" + res);
+        String res = (String) event.getComponent().getAttributes().get("status");     
     }
 
     public void setTabActiveIndex(int itindex) {

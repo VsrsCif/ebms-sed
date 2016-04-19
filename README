@@ -1,10 +1,16 @@
-Aplikacija ebms-sed je "out-of-the box" aplikacija za varno elektronsko vročanje po specifikacijah SVEV 2.0
+Aplikacija ebms-sed je demo aplikacije za varno elektronsko izmenjavo po ebms 3.0 (AS 4) 
+protokolu. Namen aplikacije je primer implementacije za izmenjavo sporočil (koreografija SVEV 2.0) za 
+vročanje pošiljk, kot to določa Pravilnik o elektronskem poslovanju v civilnih sodnih
+postopkih (Ur.l. RS, št. 64/10 in 23/11, v nadaljevanju PEPCSP). Namen aplikacije je 
+zmanjšati tehnične in stroškovne ovire izvajalcem logističnih storitev (vročanje izhodne 
+pošte, kuvertiranje, skeniranje dohodne pošte) in uporabnikom storitev sodišča 
+za prehod na elektronsko poslovanje.
 
-Uporabljene tehnologije
-- aplikacija uporablja maven 3.0.2 in jdk 1.8.
-- za aplikacijski strežnik je uporabljen Jetty,
-- za vizalizacijo apacheFOP,
-- apache-cxf za ws-security (in WS-ReliableMessaging)
+Cilj aplikacije je primer izvorne kode delujoče aplikacije za izmenjavo dokumentov po 
+ebms 3.0 standardu (AS 4 profil). Aplikacija omogoča zagotavljanje varnosti (podpisovanje in šifriranje),
+zanesljivost prenosa, preverjanje vsebin na standardni način. Ravno tako omogoča nastavljivo 
+koreografijo izmenjavo sporočil (primer SVEV 2.0). Izvorno kodo in aplikacijo se lahko na lastno odgovornost 
+uporabi za izmenjavo sporočil s sodišči ali drugimi strankami.
 
 
 Sestava embs-sed projekta:
@@ -17,30 +23,24 @@ Sestava embs-sed projekta:
 			, xenc-schema.xsd  (http://www.w3.org/TR/xmlenc-core/xenc-schema.xsd)
 			, xmldsig-core-schema.xsd (http://www.w3.org/TR/xmldsig-core/xmldsig-core-schema.xsd)
 			, xlink.xsd (http://www.w3.org/TR/xml-i18n-bp/xmlspec/xlink.xsd);
-		- ebms-sed-wsdl: modul generira java klienta in WS-API iz spletnega opisa (wsdl) SED-WS modula.
-		- ebms-sed-commons: skupna orodja in šifiranti.
-	- ebms-sed-module: implementacija ebms-sed spletnih storitev
-	- ebms-msh-module: implementacija ebMS 3.0. modula
+		- ebms-sed-wsdl: modul generira java klienta in WS-API iz spletnega opisa (wsdl) SED-WS modula;
+		- ebms-sed-commons: skupna orodja in šifiranti;
+		- ebms-sed-dao: skupne storitve za shranjevanje in branje entitet v relacijsko bazo in datotečni sistem. 
+	- ebms-sed-module: implementacija ebms-sed spletnih in FS storitev za prevzemanje in pošiljanje pošte ter
+			   implementacija  spletnega vmesnika;
+	- ebms-msh-module: implementacija ebMS 3.0 (AS 4). modula
 
-za izgradnjo se postavi v mapo: ebms-sed 
-in poženi ukaz:
-mvn clean install
 
-Pri tem se izgradita aplikacije:
-ebms-sed/ebms-msh-module/ebms-msh-ear/target/ebms-msh.ear
-in 
 
-ebms-sed-module/ebms-sed-ws/target/ebms-sed-ws.war
+Glavne Uporabljene tehnologije
+- maven 3+, jdk 1.8+:  za izgradnjo in zagon aplikacije
+- wildfly aplikacijski strežnik. (Aplikacija uporablja jee vmesnike: JPA 2.0, EJB 3.0, JMS, tako da se lahko z manjšimi napori namesti tudi na drugi "aplikacijski strežnik")
+- apacheFOP vizalizacijo  izmenjave sporočil,
+- apache-cxf za implementacijo spletnih storitev ws-security, in WS-ReliableMessaging.
+- spletni vmesnik je zgrajen s JSF in primefaces knjižnicami: 
+Podrobnejši spisek vseh odvisnih tehnologij se nahaja v ebms-sed/pom.xml (dependecies)
 
-Za namestitev preveri namestivena navodila v mapi:
-ebms-sed/documentation/
-
-po uspešni namestitvi sta na voljo dva sklopa spletnih storitev: 
-
-ebMS 3.0 spletne storitve: 
-http://localhost:8080/ebms-msh/ebms?wsdl
-
-Interne spletne storitve za pošiljanje in prevzem dohodne pošte
-http://localhost:8080/ebms-sed-ws/SEDMailBoxWS?wsdl
+Podrobnejša dokumentacija o aplikaciji (opis, arhitektura, namestitev in uporabniška navodila) se nahajajo na spletni strani:
+http://vsrscif.github.io/ebms-sed/
 
 

@@ -55,7 +55,15 @@ public class InMailDataModel extends AbstractMailDataModel<MSHInMail> {
 
     @Override
     public Object externalFilters() {
-        imtFilter.setReceiverEBox(getUserSessionData().getCurrentSEDBox());
+        String strSedBox =  getUserSessionData().getCurrentSEDBox();
+        imtFilter.getReceiverEBoxList().clear();
+        if (strSedBox.equalsIgnoreCase("ALL")){
+            imtFilter.getReceiverEBoxList().addAll(getUserSessionData().getUserEBoxes());
+        
+        } else {
+            imtFilter.getReceiverEBoxList().add(strSedBox);
+        }
+        
         return imtFilter;
     }
 

@@ -22,16 +22,15 @@ import org.msh.ebms.outbox.mail.MSHOutMail;
 import si.sed.commons.interfaces.SEDDaoInterface;
 import si.sed.msh.web.gui.entities.OutMailTableFilter;
 
-
 /**
  *
  * @author Jože Rihtaršič
  */
 public class OutMailDataModel extends AbstractMailDataModel<MSHOutMail> {
-    
+
     OutMailTableFilter outFilter = new OutMailTableFilter();
 
-    public OutMailDataModel(Class<MSHOutMail> type, UserSessionData messageBean,  SEDDaoInterface db) {
+    public OutMailDataModel(Class<MSHOutMail> type, UserSessionData messageBean, SEDDaoInterface db) {
         super(type);
         setUserSessionData(messageBean, db);
     }
@@ -53,12 +52,20 @@ public class OutMailDataModel extends AbstractMailDataModel<MSHOutMail> {
         return null;
     }
 
-     @Override
+    @Override
     public Object externalFilters() {
-        outFilter.setSenderEBox(getUserSessionData().getCurrentSEDBox());
+        String strSedBox = getUserSessionData().getCurrentSEDBox();
+        outFilter.getSenderEBoxList().clear();
+        if (strSedBox.equalsIgnoreCase("ALL")) {
+            outFilter.getSenderEBoxList().addAll(getUserSessionData().getUserEBoxes());
+
+        } else {
+            outFilter.getSenderEBoxList().add(strSedBox);
+        }
+
         return outFilter;
     }
-    
+
     public OutMailTableFilter getFilter() {
         return outFilter;
     }
@@ -66,5 +73,5 @@ public class OutMailDataModel extends AbstractMailDataModel<MSHOutMail> {
     public void setFilter(OutMailTableFilter imtFilter) {
         this.outFilter = imtFilter;
     }
-    
+
 }

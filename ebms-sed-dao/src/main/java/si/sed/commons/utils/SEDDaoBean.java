@@ -170,9 +170,10 @@ public class SEDDaoBean implements SEDDaoInterface {
         }
 
     }
+
     @Override
-    public void serializeInMail(MSHInMail mail){
-    // serialize data to db
+    public void serializeInMail(MSHInMail mail) {
+        // serialize data to db
         try {
 
             mutUTransaction.begin();
@@ -230,7 +231,6 @@ public class SEDDaoBean implements SEDDaoInterface {
             mutUTransaction.commit();
             mJMS.sendMessage(mail.getId().longValue(), pmodeId, 0, 0, false);
 
-            
         } catch (Exception ex) {
             try {
                 mutUTransaction.rollback();
@@ -339,28 +339,41 @@ public class SEDDaoBean implements SEDDaoInterface {
                 String mName = m.getName();
                 if (Modifier.isPublic(m.getModifiers()) && m.getParameterCount() == 0 && !m.getReturnType().equals(Void.TYPE) && (mName.startsWith("get") || mName.startsWith("is"))) {
                     String fieldName = mName.substring(mName.startsWith("get") ? 3 : 2);
+                    // get returm parameter
+                    Object searchValue;
                     try {
-                        cls.getMethod("set" + fieldName, new Class[]{m.getReturnType()});
-                    } catch (NoSuchMethodException | SecurityException ex) {
-                        // method does not have setter
-                        continue;
-                    }
-                    try {
-                        // get returm parameter
-                        Object searchValue = m.invoke(searchParams, new Object[]{});
-                        if (searchValue != null) {
-                            if (fieldName.endsWith("From") && searchValue instanceof Comparable) {
-                                lstPredicate.add(cb.greaterThanOrEqualTo(om.get(fieldName.substring(0, fieldName.lastIndexOf("From"))), (Comparable) searchValue));
-                            } else if (fieldName.endsWith("To") && searchValue instanceof Comparable) {
-                                lstPredicate.add(cb.lessThan(om.get(fieldName.substring(0, fieldName.lastIndexOf("To"))), (Comparable) searchValue));
-                            } else if (searchValue instanceof String && !((String) searchValue).isEmpty()) {
-                                System.out.println("Add param: '" + fieldName + "' value: '" + searchValue + "'");
-                                lstPredicate.add(cb.equal(om.get(fieldName), searchValue));
-                            }
-                        }
+                        searchValue = m.invoke(searchParams, new Object[]{});
                     } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
                         LOG.logError(l, ex);
+                        continue;
                     }
+
+                    if (searchValue == null) {
+                        continue;
+                    }
+
+                    if (fieldName.endsWith("List") && searchValue instanceof List ) {
+                        lstPredicate.add(om.get(fieldName.substring(0, fieldName.lastIndexOf("List"))).in( ((List)searchValue).toArray()));
+                        System.out.println("Add  predicat: " + searchValue);
+                    } else {
+                        try {
+                            cls.getMethod("set" + fieldName, new Class[]{m.getReturnType()});
+                        } catch (NoSuchMethodException | SecurityException ex) {
+                            // method does not have setter // ignore other methods
+                            continue;
+                        }
+
+                        if (fieldName.endsWith("From") && searchValue instanceof Comparable) {
+                            lstPredicate.add(cb.greaterThanOrEqualTo(om.get(fieldName.substring(0, fieldName.lastIndexOf("From"))), (Comparable) searchValue));
+                        } else if (fieldName.endsWith("To") && searchValue instanceof Comparable) {
+                            lstPredicate.add(cb.lessThan(om.get(fieldName.substring(0, fieldName.lastIndexOf("To"))), (Comparable) searchValue));
+                        } else if (searchValue instanceof String && !((String) searchValue).isEmpty()) {
+                            System.out.println("Add param: '" + fieldName + "' value: '" + searchValue + "'");
+                            lstPredicate.add(cb.equal(om.get(fieldName), searchValue));
+                        }
+
+                    }
+
                 }
             }
             if (!lstPredicate.isEmpty()) {
