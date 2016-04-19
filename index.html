@@ -10,14 +10,17 @@
         
         <script type="text/javascript">
             var lastPage = "";
-            function show(which) {
-                window.location.hash = '#/'+which;
+             function init() {
+                 var currentHash = window.location.hash.replace(/^#\/?/,""); 
+                if (currentHash === "") {
+                    loadPage("home");
+                } else{
+                    loadPage(currentHash);
+                }
                 return false;
             }
-            function showHome() {
-                show('home');
-                return false;
-            } // for onload
+            
+           
             function loadPage(page) {
                 $('#entryPage').load(page + '.html');
                 return false;
@@ -54,14 +57,14 @@
         </script>
 
     </head>
-    <body  onload="loadPage('home')" >
+    <body  onload="init()" >
         <!-- Start header, logo,  top menu , main menu-->
         <header role="banner">
             <div class="inner">
                 <a href="index.html" rel="home"><div  class="page-header-logo">
-                        <div class="logo">
-                            <img src ="img/sed-logo.png" alt="LOGO" />
-                            <h1> Secure e-delivery over ebMS 3.0</h1>
+                        <div class="logo" style="position: absolute; top: -30px; left: -115px;">
+                            <img src ="img/first-page.svg" alt="LOGO" height='200' />
+                            <h1 > Secure e-delivery over ebMS 3.0</h1>
                             
                         </div>
                     </div>
@@ -78,7 +81,7 @@ function googleTranslateElementInit() {
 
                 <!-- end #top-nav -->
 
-                <nav class="menu-top-nav">
+                <nav class="menu-top-nav" style="position: relative;top:120px;">
                     <ul  >
                         <li ><a href="#/home" >O projektu</a></li>
                         <li ><a href="#/ebms" >eMS 3.0</a></li>
@@ -95,8 +98,10 @@ function googleTranslateElementInit() {
         </header>
         <!-- END  header, logo,  top menu -->
         <!-- end header -->
+   
         <main id="content" class="group" role="main">
-            <div  id="entryPage" class="main">
+        
+            <div  id="entryPage" >
         
             </div>
             <!-- end .main -->	

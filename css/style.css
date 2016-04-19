@@ -20,16 +20,18 @@ nav ul{
 }
 
 header[role="banner"]{
-    background:#053b5b;
-    height: 200px;
+    /*background:#053b5b;*/
+    background:transparent;
+    height: 150px;
     width: 100%;
+    
 }
 
 
 
 
 .page-header-logo{
-    background:  #053b5b url(../img/logo.png) no-repeat;
+  /*  background:  #053b5b url(../img/logo.png) no-repeat;*/
 }
 
 .inner{
@@ -83,10 +85,36 @@ a:active,a:focus{
 -----------------------------------------------------------------------------------------------
 ===============================================================================================*/
 
+.sidebar { 
+  display:block;
+  float: right;
+  width: 275px;
+  padding: 0 10px 10px 10px;
+}
+
+
+.sidebar ul
+{ width: 275px; 
+  padding: 0; 
+  margin: 0;}
+
+.sidebar li
+{ list-style: circle; 
+  padding: 0 }
+
+.sidebar li a, .sidebar li a:hover
+{ padding: 0;
+  display: block;
+  background: transparent;} 
+
+.sidebar li a.selected
+{ color: #444;
+  text-decoration: none;} 
+
 #content[role="main"]{
     background: #FFF;
-    border-top: 45px solid #0090D2;
-    margin: -45px auto 0;
+    border-top: 30px solid #0090D2;
+    margin: -35px auto 0;
     padding: 24px 0 0 0;
     width: 1020px;
 }
@@ -104,6 +132,10 @@ footer[role="contentinfo"]{
     padding: 0 0 40px 0;
 }
 
+code {
+    width: 680px;
+}
+
 /* 2.1 HEADER STYLES
 --------------------------------------------------------- */
 header .logo{ 
@@ -119,11 +151,11 @@ header .logo h1{
     font-style: italic;
     font-weight: 400;
     margin: 0;
-    left: 195px;
+    left: 150px;
     line-height: 1;
     position: relative;
     text-transform: none;
-    top: -30px;
+    top: -135px;
 }
 header .logo h2{
     color: #FFF;
@@ -155,7 +187,7 @@ header .logo h2{
     text-decoration: none;
 }
 .menu-top-nav li a{
-    color: #FFF;
+    color: #000;
     padding: 0 4px;
 }
 
@@ -168,7 +200,7 @@ header .logo h2{
     top: 100%;
     width: 100%;
     padding: 5px;
-    background:#053b5b;
+   /* background:#053b5b;*/
 }
 
 
@@ -188,8 +220,8 @@ header .inner nav ul{
     float: left;
     font-family: 'Helvetica Neue',Arial,sans-serif;
     letter-spacing: 1px;
-    margin:0 0 0 -10px;
-    background: #053b5b url(../img/menu.png) repeat-x;
+    /*margin:0 0 0 -10px;
+    background: #053b5b url(../img/menu.png) repeat-x;*/
 
 }
 header .inner nav ul li{

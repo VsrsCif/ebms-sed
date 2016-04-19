@@ -1,107 +1,142 @@
-<article class='content'>
-    <a href="#install:build">Izgradna projekta</a><br  />
-    <a href="#install:standalone">Namestitev in zagon samostojne aplikacije: ebms-sed.war</a><br  />
-    <a href="#install:wildfly">Namestitev na aplikacijski strežnik wildfly</a><br  />
+<div class ="sidebar" >    
+    <h2>Kazalo:</h2>
+    <ul>
+        <li><a href="#install:build">Izgradna projekta</a><br  /></li>
+        <li><a href="#install:standalone">Namestitev in zagon samostojne aplikacije: ebms-sed.war</a><br  /></li>
+        <li><a href="#install:wildfly">Namestitev na aplikacijski strežnik wildfly</a><br  /></li>
+    </ul>
+</div>
+<div class="main">
+    <article class='content'>
 
-    <h1 id="install:build">Izgradnja</h1>
 
-    Projekt ebms-sed je sestavljen s pomočjo <a href="https://maven.apache.org/">maven 3.x</a> tehnologije. 
-    Za izgradnjo aplikacije je potrebno imeti nameščeno java 1.8+ in maven 3.x.  
-    <br /><br />
+        <h1 id="install:build">Izgradnja</h1>
 
-    Na spletnem naslovu:  <a href="https://github.com/VsrsCif/ebms-sed">https://github.com/VsrsCif/ebms-sed</a> prenesi izvorno kodo lokalno na disk. 
-    (Priporočamo z klikom na Gumb <b>DownloadZip</b>. Preneseni arhiv ebms-sed-master.zip odpakiraj v mapo "ebms-sed-master".)<br />
-    V ukazni vrstici (linux: bash, windows: cmd), se postavi v odpakirano mapo in poženi maven ukaz za izgradjo aplikacije:
-    <pre><code>mvn clean install</code></pre>
-    Komponente so uspešno izgrajene, ko se na zaslonu izpiše:
-    <pre><code>    
+        Projekt ebms-sed je sestavljen s pomočjo <a href="https://maven.apache.org/">maven 3.x</a> tehnologije. 
+        Za izgradnjo aplikacije je potrebno imeti nameščeno java 1.8+ in maven 3.x.  
+        <br /><br />
+
+        Na spletnem naslovu:  <a href="https://github.com/VsrsCif/ebms-sed">https://github.com/VsrsCif/ebms-sed</a> prenesi izvorno kodo lokalno na disk. 
+        (Priporočamo z klikom na Gumb <b>DownloadZip</b>. Preneseni arhiv ebms-sed-master.zip odpakiraj v mapo "ebms-sed-master".)<br />
+        V ukazni vrstici (linux: bash, windows: cmd), se postavi v odpakirano mapo in poženi maven ukaz za izgradjo aplikacije:
+        <pre><code>mvn clean install</code></pre>
+        Komponente so uspešno izgrajene, ko se na zaslonu izpiše:
+        <pre><code>    
 Reactor Summary:
-
-ebms-sed .......................................... SUCCESS [3.049s]
-ebms-msh-xsd ...................................... SUCCESS [15.740s]
-ebms-sed-wsdl ..................................... SUCCESS [8.129s]
-ebms-sed-commons .................................. SUCCESS [6.645s]
-ebms-msh-plugin ................................... SUCCESS [2.975s]
-ebms-msh-libs ..................................... SUCCESS [0.017s]
-ebms-sed-ws ....................................... SUCCESS [5.411s]
-ebms-sed-web ...................................... SUCCESS [4.560s]
-ebms-sed-module ................................... SUCCESS [0.116s]
-ebms-msh-cxf ...................................... SUCCESS [3.897s]
-ebms-msh-ejb ...................................... SUCCESS [1.550s]
-ebms-msh-ws ....................................... SUCCESS [1.169s]
-ebms-msh-ear ...................................... SUCCESS [1.799s]
-ebms-msh-module ................................... SUCCESS [0.011s]
-ebms-sed-standalone ............................... SUCCESS [12.794s]
-------------------------------------------------------------------------
+ebms-sed ...................... SUCCESS [0.794s]
+ebms-msh-xsd .................. SUCCESS [0.265s]
+ebms-sed-wsdl ................. SUCCESS [0.176s]
+ebms-sed-commons .............. SUCCESS [0.069s]
+ebms-msh-libs ................. SUCCESS [0.004s]
+ebms-sed-dao .................. SUCCESS [0.034s]
+ebms-sed-ws ................... SUCCESS [0.028s]
+ebms-sed-web .................. SUCCESS [0.066s]
+ebms-sed-module ............... SUCCESS [0.007s]
+ebms-msh-cxf .................. SUCCESS [0.023s]
+ebms-msh-ejb .................. SUCCESS [0.010s]
+ebms-msh-ws ................... SUCCESS [0.008s]
+ebms-msh-ear .................. SUCCESS [0.007s]
+ebms-msh-module ............... SUCCESS [0.002s]
+ebms-sed-zpp-plugin ........... SUCCESS [0.126s]
+ebms-sed-plugins .............. SUCCESS [0.004s]
+------------------------------------------------
 BUILD SUCCESS
 ------------------------------------------------------------------------
 </code></pre>
 
-    Po kočnani izgradnji so komponente združene v tri module:
-    <ul>
-        <li><b>ebms-msh.ear</b>: implememntacija spletnih ebMS 3.0 storitev za izmenjavo ebMS 3.0 sporočil med MSH moduli. Sporočila so 
-            podpisana/kriptirana skladno z p-mode konfiguracijo.<br />Po uspešni namestivti na lokalni računalnik, so storitve dostopne na naslovu:
-            <a href="http://localhost:8080/ebms-sed/ebms?wsdl">http://localhost:8080/ebms-sed/ebms?wsdl</a>.
-            <br />Modul se nahaja v podmapi: <br /><code>ebms-msh-module/ebms-msh-ear/target/ebms-msh.ear</code>                
-        </li>
-        <li><b>ebms-sed-ws.war</b>: implementacija spletnih storitev za integracijo z zalednimi sistemi. 
-            Po uspešni namestivti so storitve dostopne na naslovu: 
-            <a href="http://localhost:8080/ebms-sed-ws/sed-mailbox?wsdl">http://localhost:8080/ebms-sed-ws/sed-mailbox?wsdl</a>.
-            <br />Modul se nahaja v podmapi: <br /><code>ebms-sed-module/ebms-sed-ws/target/ebms-sed-ws.war</code></li>            
-        <li><b>ebms-sed-webgui.war</b>: implementacija spletnega vmesnika za nadzor delovanja aplikacije.
-            Po uspešni namestivti je aplikacija dostopna na naslovu: 
-            <a href="http://localhost:8080/ebms-sed-webgui/">http://localhost:8080/ebms-sed-webgui/</a>.            
-            <br />Modul se nahaja v podmapi:<br /><code>ebms-sed-module/ebms-sed-web/target/ebms-sed-webgui.war</code></li>                
-    </ul>
+        Po kočnani izgradnji so narejeni naslednji moduli:
+        <ul>
+            <li><b>ebms-sed-dao.jar</b>: implementacija skupnih storitev za shranjevanje in branje entitet.            
+                <br />Modul se nahaja v podmapi:<br /><code>ebms-sed-dao/target/ebms-sed-dao.jar</code></li>                
+            <li><b>ebms-msh.ear</b>: implememntacija spletnih ebMS 3.0 storitev za izmenjavo ebMS 3.0 sporočil med MSH moduli. Sporočila so 
+                podpisana/kriptirana skladno z p-mode konfiguracijo.<br />Po uspešni namestivti na lokalni računalnik, so storitve dostopne na naslovu:
+                <a href="http://localhost:8080/ebms-sed/ebms?wsdl">http://localhost:8080/ebms-sed/ebms?wsdl</a>.
+                <br />Modul se nahaja v podmapi: <br /><code>ebms-msh-module/ebms-msh-ear/target/ebms-msh.ear</code>                
+            </li>
+            <li><b>ebms-sed-ws.war</b>: implementacija spletnih storitev za integracijo z zalednimi sistemi. 
+                Po uspešni namestitvi so storitve dostopne na naslovu: 
+                <a href="http://localhost:8080/ebms-sed-ws/sed-mailbox?wsdl">http://localhost:8080/ebms-sed-ws/sed-mailbox?wsdl</a>.
+                <br />Modul se nahaja v podmapi: <br /><code>ebms-sed-module/ebms-sed-ws/target/ebms-sed-ws.war</code></li>            
+            <li><b>ebms-sed-webgui.war</b>: implementacija spletnega vmesnika za nadzor delovanja aplikacije.
+                Po uspešni namestitvi je aplikacija dostopna na naslovu: 
+                <a href="http://localhost:8080/ebms-sed-webgui/">http://localhost:8080/ebms-sed-webgui/</a>.            
+                <br />Modul se nahaja v podmapi:<br /><code>ebms-sed-module/ebms-sed-web/target/ebms-sed-webgui.war</code></li>                
+            <li><b>plugin-zpp.war.war</b>: implementacija ZPP plugin modula, ki je implementacija SVEV 2.0 koreografijo izmenjave sporočil.
+                Po uspešni namestitvi so administracijske strani dostopne: 
+                <a href="http://localhost:8080/ebms-sed-webgui/">http://localhost:8080/zpp-plugin/</a>.
+                <br />Modul se nahaja v podmapi:<br /><code>ebms-sed-module/ebms-sed-web/target/ebms-sed-webgui.war</code></li>                
+        </ul>
+        Po kočnani izgradnji so narejeni naslednje skupne knjižnice:
+        <ul>
+            <li><b>ebms-msh-xsd-1.0.jar</b>: v knjižnici so generirani java objekti iz ebMS 3.0 shem. SOAP_1.1.xsd (http://schemas.xmlsoap.org/soap/envelope/)
+                ,SOAP_1.2.xsd (http://www.w3.org/2003/05/soap-envelope/), xml.xsd (http://www.w3.org/2001/03/xml.xsd)
+                , ebms-header-3_0-200704.xsd (http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/core/ebms-header-3_0-200704.xsd)
+                , ebbp-signals-2.0.xsd  (http://docs.oasis-open.org/ebxml-bp/2.0.4/ebbp-signals-2.0.4.xsd)
+                , xenc-schema.xsd  (http://www.w3.org/TR/xmlenc-core/xenc-schema.xsd)
+                , xmldsig-core-schema.xsd (http://www.w3.org/TR/xmldsig-core/xmldsig-core-schema.xsd)
+                , xlink.xsd (http://www.w3.org/TR/xml-i18n-bp/xmlspec/xlink.xsd);
+                <br />knjižnica se nahaja v podmapi:<br /><code>ebms-sed-libs/ebms-msh-xsd/target/ebms-msh-xsd-1.0.jar</code></li>    
+            <li><b>ebms-sed-wsdl-1.0.jar</b>: v knjižnici je izgranjen java klient (API) spletnih storitev modula ebms-sed-ws. 
+                Knjižnica se lahko uporabi za izdelavo integracije  zalednih sitemov preko spletnih storitev z ebms-sed aplikacijo ;
+                <br />knjižnica se nahaja v podmapi:<br /><code>ebms-sed-libs/ebms-sed-wsdl/target/ebms-sed-wsdl-1.0.jar</code></li>  
+            <li><b>ebms-sed-commons-1.0.jar</b>: Knjižnica združuje skupna orodja in statične šifrante;
+                <br />knjižnica se nahaja v podmapi:<br /><code>ebms-sed-libs/ebms-sed-commons-wsdl/target/ebms-sed-commons-1.0.jar</code></li>  
 
+        </ul>
 
-    <h1 id="install:standalone">Namestitev in zagon samostojne aplikacije ebms-sed.war</h1>
-    Namen "samostojne aplikacije" <b>ebms-sed.war</b> je omogočiti enostavno namestitev in
-    uporabo aplikacije ebms-sed. Za namestitev in zagon ni potrebno poznavaje tehnologij JEE in aplikacijskih strežnikov. 
-    Aplikacija je namenjena spoznavanju funkcionalnosti in ni primerna za produkcijsko uporabo. 
-    <br /><br />    
-    Ob izgradnju se ebms-sed komponente združijo v zagonskem spletnem arhivu:<b>ebms-sed.war</b>
-    <code>ebms-sed/ebms-sed-standalone/target/ebms-sed.war</code>. Arhiv vsebuje 
-    vse odvisne tehnologije, ki jih aplikacija <b>ebms-sed</b> potrebuje za samostojno delovanje: 
-    <ul>
-        <li><a href="https://eclipse.org/jetty/">Jetty</a>: enostavni http strežnik;</li>
-        <li><a href="http://activemq.apache.org/">ActiveMQ</a>: ogrodje za java messaging service (JMS);</li>
-        <li><a href="https://cxf.apache.org/">Apache-cxf</a>: ogrodje za spletne storitve;</li>
-        <li><a href="http://hibernate.org/">Hibernate (JPA)</a>;</li>
-        <li><a href="https://db.apache.org/derby/">Apache derby</a>: relacijska baza;</li>
-        <li><a href="http://www.primefaces.org/">Primefaces</a>: spletno UI ogrodje za izdelavo spletnih aplikacij.</li>
-    </ul>
+        <h1 id="install:standalone">Namestitev in zagon samostojne aplikacije ebms-sed.war</h1>
+        <b>Zaradi intezivnega razvoja novih funkcionalnosti ebms-sed in skript, ki omogočajo enostavno namesititev na 
+            wildfly aplikacijski strežnik se trenutno se demo "standalone aplikacija" ne vzdržuje.         
+        </b>
+        <!-- h1 id="install:standalone">Namestitev in zagon samostojne aplikacije ebms-sed.war</h1>
+        Namen "samostojne aplikacije" <b>ebms-sed.war</b> je omogočiti enostavno namestitev in
+        uporabo aplikacije ebms-sed. Za namestitev in zagon ni potrebno poznavaje tehnologij JEE in aplikacijskih strežnikov. 
+        Aplikacija je namenjena spoznavanju funkcionalnosti in ni primerna za produkcijsko uporabo. 
+        <br /><br />    
+        Ob izgradnju se ebms-sed komponente združijo v zagonskem spletnem arhivu:<b>ebms-sed.war</b>
+        <code>ebms-sed/ebms-sed-standalone/target/ebms-sed.war</code>. Arhiv vsebuje 
+        vse odvisne tehnologije, ki jih aplikacija <b>ebms-sed</b> potrebuje za samostojno delovanje: 
+        <ul>
+            <li><a href="https://eclipse.org/jetty/">Jetty</a>: enostavni http strežnik;</li>
+            <li><a href="http://activemq.apache.org/">ActiveMQ</a>: ogrodje za java messaging service (JMS);</li>
+            <li><a href="https://cxf.apache.org/">Apache-cxf</a>: ogrodje za spletne storitve;</li>
+            <li><a href="http://hibernate.org/">Hibernate (JPA)</a>;</li>
+            <li><a href="https://db.apache.org/derby/">Apache derby</a>: relacijska baza;</li>
+            <li><a href="http://www.primefaces.org/">Primefaces</a>: spletno UI ogrodje za izdelavo spletnih aplikacij.</li>
+        </ul>
     
-    <h2>Navodila za uporabo</h2>
-    Pred uporabo namesti <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">java 1.8+</a>, 
-    nato aplikacijo <b>ebms-sed.war</b> (ebms-sed/ebms-sed-standalone/target/ebms-sed.war) in celotno mapo <b>lib</b> (ebms-sed/ebms-sed-standalone/target/target/lib)
-    ) presnemi v namestitveno mapo (npr.: c:\temp\ebms-sed).<br /> 
-    V ukaznem oknu (cmd.exe) nastavi namestitveno mapo: <code>'cd c:\temp\ebms-sed'</code>
-    in poženi aplikacijo z ukazom:
-    <pre><code>java -jar ebms-sed.war</code></pre>
-        
-    Ob prvem zagonu se izdela mapa <b>sed-home</b> mapa z nastavitvami, ki jih lahko kasneje spreminjajo.    
-    Obstoječa konfiguracija je narejena tako, da "ebms-sed" pošlje sporočilo samemu sebi, ter tako deluje kot pošiljatelj in prejemnik ebMS sporočila.
-    Do storitev aplikacije se lahko dostopa na zgornjih naslovih. <br />Za lažje prvo spoznavanje aplikacije je pripravljen 
-    SOAP-UI projekt (https://github.com/VsrsCif/ebms-sed/blob/master/documentation/samples/sed-mailbox-soapui-project.xml), 
-    s katerim lahko preizkusite delovanje aplikacije. SoapUI je aplikacija za testiranje spletnih storitev in jo lahko pridobite na 
-    naslovu <a href="http://www.soapui.org/downloads/latest-release.html">http://www.soapui.org/downloads/latest-release.html</a>
+        <h2>Navodila za uporabo</h2>
+        Pred uporabo namesti <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">java 1.8+</a>, 
+        nato aplikacijo <b>ebms-sed.war</b> (ebms-sed/ebms-sed-standalone/target/ebms-sed.war) in celotno mapo <b>lib</b> (ebms-sed/ebms-sed-standalone/target/target/lib)
+        ) presnemi v namestitveno mapo (npr.: c:\temp\ebms-sed).<br /> 
+        V ukaznem oknu (cmd.exe) nastavi namestitveno mapo: <code>'cd c:\temp\ebms-sed'</code>
+        in poženi aplikacijo z ukazom:
+        <pre><code>java -jar ebms-sed.war</code></pre>
+    
+        Ob prvem zagonu se izdela mapa <b>sed-home</b> mapa z nastavitvami, ki jih lahko kasneje spreminjajo.    
+        Obstoječa konfiguracija je narejena tako, da "ebms-sed" pošlje sporočilo samemu sebi, ter tako deluje kot pošiljatelj in prejemnik ebMS sporočila.
+        Do storitev aplikacije se lahko dostopa na zgornjih naslovih. <br />Za lažje prvo spoznavanje aplikacije je pripravljen 
+        SOAP-UI projekt (https://github.com/VsrsCif/ebms-sed/blob/master/documentation/samples/sed-mailbox-soapui-project.xml), 
+        s katerim lahko preizkusite delovanje aplikacije. SoapUI je aplikacija za testiranje spletnih storitev in jo lahko pridobite na 
+        naslovu <a href="http://www.soapui.org/downloads/latest-release.html">http://www.soapui.org/downloads/latest-release.html</a>
+        -->
 
 
-    <h1 id="install:wildfly">Namestitev na aplikacijski strežnik wildfly-10.0.0.Final</h1>
-    Na povezavi <a href="http://wildfly.org/downloads/">wildfly downloads</a>  prenesi aplikacijski 
-    strežnik <b>Java EE7 Full & Web Distribution</b> 10.x.x.Final. Arhiv odpakiraj v namestitveno mapo(npr.:
-    c:\temp\wildfly-10.0.0.Final):
-    
-    <h3>1. Popravek modula: org.apache.ws.security</h3>
-    Aplikacija trenutno uporablja apache-cxf knjižnice, ki so nameščeni v wildfly aplikacijskem strežniku. 
-    Za uporabo je potreben manjši popravek v namestitveni datoteki:
-    <pre><code>wildfly-10.0.0.Final/modules/system/layers/base/org/apache/ws/security/main/module.xml</code></pre>
-    
-    kjer je med odvisne module potrebno dodati vrstico:
-    <pre><code>&lt;module name="javax.mail.api" /></code></pre>
-    modul  org.apache.ws.security ima tako odvisne module:
-<pre><code>&lt;dependencies>
+        <h1 id="install:wildfly">Namestitev na aplikacijski strežnik wildfly-10.0.0.Final</h1>
+        Na povezavi <a href="http://wildfly.org/downloads/">wildfly downloads</a>  prenesi aplikacijski 
+        strežnik <b>Java EE7 Full & Web Distribution</b> 10.x.x.Final. Arhiv odpakiraj v namestitveno mapo(npr.:
+        c:\temp\wildfly-10.0.0.Final):
+
+        <h3>1. Popravek modula: org.apache.ws.security</h3>
+        Aplikacija trenutno uporablja apache-cxf knjižnice, ki so nameščeni v wildfly aplikacijskem strežniku. 
+        Za uporabo je potreben manjši popravek v namestitveni datoteki:
+        <pre><code>wildfly-10.0.0.Final/modules/system/layers/base/org/apache/ws/security/main/module.xml</code></pre>
+
+
+        kjer je med odvisne module potrebno dodati vrstico:
+        <pre><code>&lt;module name="javax.mail.api" /></code></pre>
+        modul  org.apache.ws.security ima tako odvisne module:
+        <pre><code>&lt;dependencies>
   &lt;module name="javax.api" />
   &lt;module name="javax.mail.api" />
   &lt;module name="javax.xml.bind.api" services="import"/>
@@ -116,19 +151,19 @@ BUILD SUCCESS
   &lt;module name="org.opensaml" />
   &lt;module name="org.slf4j" />
 &lt;/dependencies></code></pre>
-<br />
-<h3>Nastavitve standalone-ebms.xml</h3>
-V mapi:  wildfly-10.0.0.Final/standalone/configuration
-naredi kopijo: standalone.xml
-<pre><code>copy standalone.xml standalone-ebms.xml</code></pre>
-Za urejanje odpri datoteko <code>standalone-ebms.xml</code>. V razdelek:
-<pre><code>&lt;server xmlns="urn:jboss:domain:3.0">
+        <br />
+        <h3>Nastavitve standalone-ebms.xml</h3>
+        V mapi:  wildfly-10.0.0.Final/standalone/configuration
+        naredi kopijo: standalone.xml
+        <pre><code>copy standalone.xml standalone-ebms.xml</code></pre>
+        Za urejanje odpri datoteko <code>standalone-ebms.xml</code>. V razdelek:
+        <pre><code>&lt;server xmlns="urn:jboss:domain:3.0">
   &lt;extensions> ….</code></pre>
-Dodaj vrstico: 
-<pre><code>&lt;extension module="org.wildfly.extension.messaging-activemq"/></code></pre> 
+        Dodaj vrstico: 
+        <pre><code>&lt;extension module="org.wildfly.extension.messaging-activemq"/></code></pre> 
 
-Nato dodaj modul  urn:jboss:domain:messaging-activemq:1.0
-<pre><code> &lt;subsystem xmlns="urn:jboss:domain:messaging-activemq:1.0">
+        Nato dodaj modul  urn:jboss:domain:messaging-activemq:1.0
+        <pre><code> &lt;subsystem xmlns="urn:jboss:domain:messaging-activemq:1.0">
             &lt;server name="default">
                 &lt;security-setting name="#">
                     &lt;role name="guest" send="true" consume="true" create-non-durable-queue="true" delete-non-durable-queue="true"/>
@@ -155,53 +190,54 @@ Nato dodaj modul  urn:jboss:domain:messaging-activemq:1.0
             &lt;/server>
         &lt;/subsystem></code></pre> 
 
-V modul <code>&lt;subsystem xmlns="urn:jboss:domain:ejb3:4.0"></code> dodaj:
-<pre><code>&lt;mdb>
+        V modul <code>&lt;subsystem xmlns="urn:jboss:domain:ejb3:4.0"></code> dodaj:
+        <pre><code>&lt;mdb>
     &lt;resource-adapter-ref resource-adapter-name="${ejb.resource-adapter-name:activemq-ra.rar}"/>
     &lt;bean-instance-pool-ref pool-name="mdb-strict-max-pool"/>
 &lt;/mdb></code></pre>
 
-<h3>Dodajanje jdbc knjižnice  in bazne povezave za postgres</h3>
-Na spletni strani „https://jdbc.postgresql.org/download.html“ pridobi primereno jdbc knjižnico za nameščeno postgresql bazo. <br />
-Posgresql driver se bo namestil s pomočjo jboss-cli ukazov, zato v mapi: <br />
-<code>wildfly-10.0.0.Final/bin</code>določi widlfly admin uporabnika tako da poženem skripto (in izbereš  userType: a) Management User):<br />
-<code>./add-user.(sh|bat)</code><br /><br />
+        <h3>Dodajanje jdbc knjižnice  in bazne povezave za postgres</h3>
+        Na spletni strani „https://jdbc.postgresql.org/download.html“ pridobi primereno jdbc knjižnico za nameščeno postgresql bazo. <br />
+        Posgresql driver se bo namestil s pomočjo jboss-cli ukazov, zato v mapi: <br />
+        <code>wildfly-10.0.0.Final/bin</code>določi widlfly admin uporabnika tako da poženem skripto (in izbereš  userType: a) Management User):<br />
+        <code>./add-user.(sh|bat)</code><br /><br />
 
-Nato poženi aplikacijski strežnik:<br />
-<code>./standalone.(sh|bat) -c standalone-ebms.xml</code>
+        Nato poženi aplikacijski strežnik:<br />
+        <code>./standalone.(sh|bat) -c standalone-ebms.xml</code>
 
-Po končanem štartu strežnika zaženi CLI konzolo:  
-<code>./jboss-cli.sh  oz. ./jboss-cli.bat</code>
-V ukazno vrstico nato vpiši connect  in [enter]<br />
+        Po končanem štartu strežnika zaženi CLI konzolo:  
+        <code>./jboss-cli.sh  oz. ./jboss-cli.bat</code>
+        V ukazno vrstico nato vpiši connect  in [enter]<br />
 
-Za namestitev ojdbc knjižnice prekopirajo ukaz in popravi pot in verzijo do posgresql knjižnice.:
-<pre><code>[standalone@localhost:9990 /] module add --name=org.postgres --resources=[potDoMapeZKnjiznico]/postgresql-x.x-x.jdbc42.jar --dependencies=javax.api,javax.transaction.api</code></pre>
+        Za namestitev ojdbc knjižnice prekopirajo ukaz in popravi pot in verzijo do posgresql knjižnice.:
+        <pre><code>[standalone@localhost:9990 /] module add --name=org.postgres --resources=[potDoMapeZKnjiznico]/postgresql-x.x-x.jdbc42.jar --dependencies=javax.api,javax.transaction.api</code></pre>
 
-Nato določi ojdbc knjižnico
-<pre><code>[standalone@localhost:9990 /]/subsystem=datasources/jdbc-driver=postgres:add(driver-name="postgres",driver-module-name="org.postgres",driver-class-name=org.postgresql.Driver</code></pre>
+        Nato določi ojdbc knjižnico
+        <pre><code>[standalone@localhost:9990 /]/subsystem=datasources/jdbc-driver=postgres:add(driver-name="postgres",driver-module-name="org.postgres",driver-class-name=org.postgresql.Driver</code></pre>
 
-Nato določi povezavo na bazo:
-<pre><code>[standalone@localhost:9990 /]data-source add --jndi-name=java:/dsEBMS_SED --name=ebMSSEDPool --connection-url=jdbc:postgresql://localhost/db_sed --driver-name=postgres --user-name=[username] --password=[password]</code></pre>
+        Nato določi povezavo na bazo:
+        <pre><code>[standalone@localhost:9990 /]data-source add --jndi-name=java:/dsEBMS_SED --name=ebMSSEDPool --connection-url=jdbc:postgresql://localhost/db_sed --driver-name=postgres --user-name=[username] --password=[password]</code></pre>
 
 
 
-<h3>Namestitev aplikacije</h3>
-v mapo wildfly-10.0.0.Final/standalone/
-<pre><code>
+        <h3>Namestitev aplikacije</h3>
+        v mapo wildfly-10.0.0.Final/standalone/
+        <pre><code>
 copy "[buildFolder]\ebms-sed\ebms-msh-module\ebms-msh-ear\target\ebms-msh.ear" [wildfly-home]\standalone\deployments\
 copy "[buildFolder]\ebms-sed\ebms-sed-module\ebms-sed-ws\target\ebms-sed-ws.war" [wildfly-home]\standalone\deployments\
 copy "[buildFolder]\ebms-sed\ebms-sed-module\ebms-sed-web\target\ebms-sed-webgui.war" [wildfly-home]\standalone\deployments\</code></pre>
 
-<h3>Priprava sed-home mape</h3>
-V mapi <code>[buildFolder]\ebms-sed\ebms-sed-standalone\home_dir_template</code> je primer prednastavljenih datotek. 
-Presnemi mapo v c:\temp\home-dir)
-<pre><code>copy  [buildFolder]\ebms-sed\ebms-sed-standalone\home_dir_template c:\temp\sed-homer</code></pre>
+        <h3>Priprava sed-home mape</h3>
+        V mapi <code>[buildFolder]\ebms-sed\ebms-sed-standalone\home_dir_template</code> je primer prednastavljenih datotek. 
+        Presnemi mapo v c:\temp\home-dir)
+        <pre><code>copy  [buildFolder]\ebms-sed\ebms-sed-standalone\home_dir_template c:\temp\sed-homer</code></pre>
 
-Nato ponovno poženi strežnik z naslednjimi nastavitvami:
-<pre><code>./standalone.sh -c standalone-ebms.xml -Dorg.sed.msh.hibernate.hbm2ddl.auto=create -Dsed.home=c:\temp\sed-home</code></pre>
+        Nato ponovno poženi strežnik z naslednjimi nastavitvami:
+        <pre><code>./standalone.sh -c standalone-ebms.xml -Dorg.sed.msh.hibernate.hbm2ddl.auto=create -Dsed.home=c:\temp\sed-home</code></pre>
 
-<b>OPOZORILO</b><br />
-aplikacijo s parametrom <b>org.sed.msh.hibernate.hbm2ddl.auto=create</b> poženi samo prvič. Parameter omogoči izdelavo baznih tabel. 
+        <b>OPOZORILO</b><br />
+        aplikacijo s parametrom <b>org.sed.msh.hibernate.hbm2ddl.auto=create</b> poženi samo prvič. Parameter omogoči izdelavo baznih tabel. 
 
 
-</article>  
+    </article>  
+</div>
