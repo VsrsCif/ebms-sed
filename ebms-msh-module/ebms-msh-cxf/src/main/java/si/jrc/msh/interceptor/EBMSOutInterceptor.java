@@ -14,7 +14,6 @@ import java.util.Properties;
 import java.util.UUID;
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;
-import javax.ejb.EJB;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -26,7 +25,6 @@ import org.apache.cxf.attachment.AttachmentImpl;
 import org.apache.cxf.binding.soap.SoapFault;
 import org.apache.cxf.binding.soap.SoapMessage;
 import org.apache.cxf.binding.soap.SoapVersion;
-import org.apache.cxf.binding.soap.interceptor.AbstractSoapInterceptor;
 import org.apache.cxf.binding.soap.saaj.SAAJOutInterceptor;
 import org.apache.cxf.message.MessageUtils;
 import org.apache.cxf.phase.Phase;
@@ -43,18 +41,18 @@ import org.msh.svev.pmode.X509;
 import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.Messaging;
 import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.SignalMessage;
 import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.UserMessage;
+import org.sed.ebms.cert.SEDCertStore;
 import si.sed.commons.utils.SEDLogger;
 import si.jrc.msh.utils.EBMSUtils;
-import si.jrc.msh.client.sec.KeyPasswordCallback;
+import si.jrc.msh.client.sec.SimplePasswordCallback;
 import si.jrc.msh.exception.EBMSError;
-import si.sed.commons.utils.sec.CertificateUtils;
+//import si.sed.commons.utils.sec.CertificateUtils;
 import si.jrc.msh.exception.ExceptionUtils;
 import si.jrc.msh.exception.SOAPExceptionCode;
-import si.sed.commons.SEDJNDI;
 import si.sed.commons.exception.StorageException;
-import si.sed.commons.interfaces.DBSettingsInterface;
 import si.sed.commons.utils.StorageUtils;
 import si.sed.commons.utils.Utils;
+import si.sed.commons.utils.sec.KeystoreUtils;
 
 /**
  *
@@ -65,9 +63,6 @@ public class EBMSOutInterceptor extends AbstractEBMSInterceptor {
     protected final SEDLogger mlog = new SEDLogger(EBMSOutInterceptor.class);
 
     EBMSUtils mEBMSUtil = new EBMSUtils();
-    
-    
-    
 
     public EBMSOutInterceptor() {
         super(Phase.PRE_PROTOCOL);
@@ -108,8 +103,7 @@ public class EBMSOutInterceptor extends AbstractEBMSInterceptor {
 
         mlog.log("handleMessage 5");
         MSHOutMail outMail = msg.getExchange().get(MSHOutMail.class) == null ? (MSHOutMail) msg.getExchange().get(MSHOutMail.class.getName()) : msg.getExchange().get(MSHOutMail.class);
-        
-        
+
         SignalMessage signal = msg.getExchange().get(SignalMessage.class);
         try {
             // set attachment fpr wss signature!
@@ -143,7 +137,7 @@ public class EBMSOutInterceptor extends AbstractEBMSInterceptor {
         EBMSError err = msg.getExchange().get(EBMSError.class);
         mlog.log("handleMessage 8 - error: " + err);
         if (err != null) {
-            SignalMessage sm = mEBMSUtil.generateErrorSignal(err,getSettings().getDomain(), Calendar.getInstance().getTime());
+            SignalMessage sm = mEBMSUtil.generateErrorSignal(err, getSettings().getDomain(), Calendar.getInstance().getTime());
             mlog.log("handleMessage 9 - error: " + sm);
             msgHeader.getSignalMessages().add(sm);
         }
@@ -230,14 +224,18 @@ public class EBMSOutInterceptor extends AbstractEBMSInterceptor {
 
             // create signature priperties
             String cpropname = "CP." + UUID.randomUUID().toString();
-            Properties cp = CertificateUtils.getInstance().getSignProperties(alias);
+            SEDCertStore cs = getLookups().getSEDCertStoreByCertAlias(alias, true);
+            //Properties cp = CertificateUtils.getInstance().getVerifySignProperties();
+            Properties cp = KeystoreUtils.getSignProperties(alias, cs);
+            //Properties cp = CertificateUtils.getInstance().getSignProperties(alias);
             outProps.put(cpropname, cp);
             // set wss properties
             outProps.put(WSHandlerConstants.ACTION, WSHandlerConstants.SIGNATURE);
             outProps.put(WSHandlerConstants.SIGNATURE_PARTS, elmWr.toString());
             outProps.put(WSHandlerConstants.SIGNATURE_USER, alias);
             outProps.put(WSHandlerConstants.USER, alias);
-            outProps.put(WSHandlerConstants.PW_CALLBACK_CLASS, KeyPasswordCallback.class.getName());
+            outProps.put(WSHandlerConstants.PW_CALLBACK_REF, new SimplePasswordCallback("key1234"));
+
             outProps.put(WSHandlerConstants.SIG_PROP_REF_ID, cpropname);
 
             if (sig.getAlgorithm() != null || !sig.getAlgorithm().isEmpty()) {

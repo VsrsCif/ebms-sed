@@ -6,6 +6,7 @@ package si.jrc.msh.plugin.zpp.doc;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
@@ -43,7 +44,7 @@ public class DocumentEVemBuilder extends DocumentBuilder {
     private static final String NM_VIS = "http://www.crea.si/Schemas/2004/Document/ObjectType/Visualisation";
 
     @Override
-    public void createMail(MSHOutMail dce, String alias, FileOutputStream fos) throws SEDSecurityException {
+    public void createMail(MSHOutMail dce, FileOutputStream fos,KeyStore.PrivateKeyEntry key) throws SEDSecurityException {
         long t = getTime();
         mlgLogger.info("DocumentBuilder.createMail: begin ");
 
@@ -182,7 +183,7 @@ public class DocumentEVemBuilder extends DocumentBuilder {
         });
         // sign document and return value
         
-        singDocument(dw3c, lstSignatureIDS, alias,  fos);
+        singDocument(dw3c, lstSignatureIDS, fos, key);
 
         mlgLogger.info(
                 "DocumentBuilder.DocumentCreaBuilder: - end (" + (getTime() - t) + "ms)");

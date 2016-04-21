@@ -19,8 +19,6 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.UUID;
 import javax.activation.DataHandler;
-import javax.persistence.NoResultException;
-import javax.persistence.TypedQuery;
 import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
 import javax.xml.soap.MessageFactory;
@@ -56,10 +54,11 @@ import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.CollaborationInfo
 import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.MessageInfo;
 import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.Messaging;
 import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.SignalMessage;
+import org.sed.ebms.cert.SEDCertStore;
 import org.sed.ebms.ebox.SEDBox;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-import si.sed.commons.utils.sec.CertificateUtils;
+//import si.sed.commons.utils.sec.CertificateUtils;
 
 import si.jrc.msh.exception.EBMSError;
 import si.jrc.msh.exception.EBMSErrorCode;
@@ -77,6 +76,7 @@ import si.sed.commons.utils.HashUtils;
 import si.sed.commons.utils.SEDLogger;
 import si.sed.commons.utils.StorageUtils;
 import si.sed.commons.utils.Utils;
+import si.sed.commons.utils.sec.KeystoreUtils;
 import si.sed.commons.utils.xml.XMLUtils;
 
 /**
@@ -501,7 +501,10 @@ public class EBMSInInterceptor extends AbstractEBMSInterceptor {
         inProps.put(WSHandlerConstants.ACTION, WSHandlerConstants.SIGNATURE);
 
         String cpropname = "CP." + UUID.randomUUID().toString();
-        Properties cp = CertificateUtils.getInstance().getVerifySignProperties(sc.getX509().getSignature().getCertificate().getAlias());
+        String alias = sc.getX509().getSignature().getCertificate().getAlias();
+        SEDCertStore cs = getLookups().getSEDCertStoreByCertAlias(alias, false);
+        //Properties cp = CertificateUtils.getInstance().getVerifySignProperties();
+        Properties cp = KeystoreUtils.getVerifySignProperties(alias, cs);
         inProps.put(cpropname, cp);
 
         inProps.put(WSHandlerConstants.SIG_VER_PROP_REF_ID, cpropname);

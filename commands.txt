@@ -1,0 +1,5 @@
+git config --global --unset http.proxy
+git config --global http.proxy http://proxy.gov.si:80
+git push origin gh-pages
+git clone https://github.com/VsrsCif/ebms-sed.git
+

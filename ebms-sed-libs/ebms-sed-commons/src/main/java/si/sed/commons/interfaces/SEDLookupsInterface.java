@@ -32,6 +32,7 @@ public interface SEDLookupsInterface {
     void exportLookups();
     
     SEDBox getSEDBoxByName(String strname);
+    SEDCertStore getSEDCertStoreByCertAlias(String alias, boolean isKey);
     SEDCronJob getSEDCronJobById(BigInteger id);
     SEDTaskType getSEDTaskTypeByType(String type);
     SEDUser getSEDUserByUserId(String userId);

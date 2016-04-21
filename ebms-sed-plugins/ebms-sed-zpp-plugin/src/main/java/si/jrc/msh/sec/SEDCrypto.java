@@ -50,7 +50,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 import si.sed.commons.exception.SEDSecurityException;
-import si.sed.commons.utils.sec.CertificateUtils;
+//import si.sed.commons.utils.sec.CertificateUtils;
 import si.sed.commons.utils.xml.XMLUtils;
 
 /**
@@ -342,7 +342,7 @@ public class SEDCrypto {
 
     }
 
-    public Key decryptKey(String strKey, KeyStore keyStore, SymEncAlgorithms targetKeyAlg) throws SEDSecurityException {
+    public Key decryptKey(String strKey, Key rsaKey, SymEncAlgorithms targetKeyAlg) throws SEDSecurityException {
             
         Key keyDec = null;
         Document doc;
@@ -369,10 +369,10 @@ public class SEDCrypto {
         } catch (XMLEncryptionException | KeyResolverException ex) {
             throw new SEDSecurityException(SEDSecurityException.SEDSecurityExceptionCode.EncryptionException, ex, ex.getMessage());
         }
-        Key rsaKey = CertificateUtils.getInstance().getPrivateKeyForX509Cert(xc);
+        /*Key rsaKey = CertificateUtils.getInstance().getPrivateKeyForX509Cert(xc);
         if (rsaKey == null){
             throw new SEDSecurityException(SEDSecurityException.SEDSecurityExceptionCode.CertificateException, "x.509 cert for decrypting Encrypted key not found");
-        }
+        }*/
         
 
         XMLCipher chDec;
@@ -390,7 +390,7 @@ public class SEDCrypto {
 
     }
     
-    public Key decryptEncryptedKey(Element elKey, KeyStore keyStore, SymEncAlgorithms targetKeyAlg) throws SEDSecurityException {
+    public Key decryptEncryptedKey(Element elKey, Key rsaKey, SymEncAlgorithms targetKeyAlg) throws SEDSecurityException {
             
         Key keyDec = null;
     
@@ -412,10 +412,10 @@ public class SEDCrypto {
         } catch (XMLEncryptionException | KeyResolverException ex) {
             throw new SEDSecurityException(SEDSecurityException.SEDSecurityExceptionCode.EncryptionException, ex, ex.getMessage());
         }
-        Key rsaKey = CertificateUtils.getInstance().getPrivateKeyForX509Cert(xc);
+        /*Key rsaKey = CertificateUtils.getInstance().getPrivateKeyForX509Cert(xc);
         if (rsaKey == null){
             throw new SEDSecurityException(SEDSecurityException.SEDSecurityExceptionCode.CertificateException, "x.509 cert for decrypting Encrypted key not found");
-        }
+        }*/
         
 
         XMLCipher chDec;

@@ -6,6 +6,7 @@ package si.jrc.msh.plugin.zpp.doc;
 
 import java.io.FileOutputStream;
 import java.math.BigDecimal;
+import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
@@ -41,7 +42,7 @@ public class DocumentSodBuilder extends DocumentBuilder {
 
 
     @Override
-    public void createMail( MSHOutMail dce, String alias,  FileOutputStream fos)
+    public void createMail( MSHOutMail dce,  FileOutputStream fos, KeyStore.PrivateKeyEntry key)
             throws SEDSecurityException {
         try {
             long t = getTime();
@@ -134,7 +135,7 @@ public class DocumentSodBuilder extends DocumentBuilder {
             org.w3c.dom.Document dw3c = convertEpDoc2W3cDoc(document, new Class[]{Document.class, Message.class});
             
             // sign document and return value
-            singDocument(dw3c, lstSignatureIDS, alias, fos);
+            singDocument(dw3c, lstSignatureIDS, fos, key);
             mlgLogger.info("DocumentBuilder.DocumentBuilder: - end (" + (getTime() - t) + "ms)");
         } catch (StorageException ex) {
              String strMsg = "DocumentSodBuilder.createMail: error reading file'" + ex.getMessage() + "'.";

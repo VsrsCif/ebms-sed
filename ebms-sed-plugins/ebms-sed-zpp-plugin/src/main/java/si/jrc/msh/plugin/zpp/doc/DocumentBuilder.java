@@ -109,7 +109,7 @@ public abstract class DocumentBuilder {
         return xDoc;
     }
 
-    public abstract void createMail(MSHOutMail dce, String alias,  FileOutputStream fos) throws SEDSecurityException;
+    public abstract void createMail(MSHOutMail dce,  FileOutputStream fos,KeyStore.PrivateKeyEntry key) throws SEDSecurityException;
 
     /*
     protected static synchronized ESignDocImpl getSigJDK() throws SEDSecurityException {
@@ -130,15 +130,14 @@ public abstract class DocumentBuilder {
     }
 
     protected synchronized void singDocument(Document xDoc, List<String[]> strIds,
-            String alias, FileOutputStream fos) throws SEDSecurityException {
+             FileOutputStream fos, KeyStore.PrivateKeyEntry key ) throws SEDSecurityException {
         long t = getTime();
         mlgLogger.info("DocumentBuilder.singDocument: begin ");
 
-        KeyStore.PrivateKeyEntry entry = (KeyStore.PrivateKeyEntry) CertificateUtils.getInstance().getPrivateKeyEntryForAlias(alias);
-
+        
         NodeList lst = xDoc.getDocumentElement().getElementsByTagName(SIGNATURE_ELEMENT_NAME);
         Element eltSignature = (Element) lst.item(0);
-        getSignUtils().singDocument(entry, eltSignature, strIds, fos);
+        getSignUtils().singDocument(key, eltSignature, strIds, fos);
 
         mlgLogger.info("DocumentBuilder.singDocument: - end (" + (getTime() - t) + "ms)");
     }

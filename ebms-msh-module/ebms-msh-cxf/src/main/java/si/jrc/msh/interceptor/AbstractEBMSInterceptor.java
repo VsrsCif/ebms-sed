@@ -16,32 +16,18 @@
  */
 package si.jrc.msh.interceptor;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.annotation.Resource;
-import javax.ejb.EJB;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.transaction.HeuristicMixedException;
-import javax.transaction.HeuristicRollbackException;
-import javax.transaction.NotSupportedException;
-import javax.transaction.RollbackException;
-import javax.transaction.SystemException;
-import javax.transaction.UserTransaction;
 import org.apache.cxf.binding.soap.SoapMessage;
 import org.apache.cxf.binding.soap.interceptor.AbstractSoapInterceptor;
 import org.apache.cxf.interceptor.Fault;
-import org.msh.ebms.inbox.event.MSHInEvent;
 import org.msh.ebms.inbox.mail.MSHInMail;
-import org.msh.ebms.outbox.event.MSHOutEvent;
 import org.msh.ebms.outbox.mail.MSHOutMail;
 import si.sed.commons.SEDJNDI;
-import si.sed.commons.SEDSystemProperties;
 import si.sed.commons.interfaces.DBSettingsInterface;
 import si.sed.commons.interfaces.SEDDaoInterface;
+import si.sed.commons.interfaces.SEDLookupsInterface;
 import si.sed.commons.utils.SEDLogger;
 
 /**
@@ -56,6 +42,7 @@ public abstract class AbstractEBMSInterceptor extends AbstractSoapInterceptor {
      
     DBSettingsInterface mDBSettings;
     SEDDaoInterface mSedDao;
+    SEDLookupsInterface mSedLookups;
 
     public AbstractEBMSInterceptor(String p) {
         super(p);
@@ -94,6 +81,20 @@ public abstract class AbstractEBMSInterceptor extends AbstractSoapInterceptor {
         }
       
         return mSedDao;
+    }
+     
+      public SEDLookupsInterface getLookups() {
+        long l = mlog.logStart();
+        if (mSedLookups== null) {
+            try {
+                mSedLookups=  InitialContext.doLookup(SEDJNDI.JNDI_SEDLOOKUPS);
+                mlog.logEnd(l);
+            } catch (NamingException ex) {
+                mlog.logError(l, ex);
+            }            
+        }
+      
+        return mSedLookups;
     }
 
     @Override

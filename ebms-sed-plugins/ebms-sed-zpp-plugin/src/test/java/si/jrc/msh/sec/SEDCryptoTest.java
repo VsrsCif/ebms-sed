@@ -11,6 +11,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.security.Key;
+import java.security.KeyStore;
 import java.security.cert.X509Certificate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -109,7 +110,8 @@ public class SEDCryptoTest {
         assertNotNull("Encrypting key not succeded!", encKey);
 
         // Decrypting key
-        Key decKey = instance.decryptKey(encKey, cu.getKeystore(SEDCryptoTest.class.getResourceAsStream(KEYSTORE), KEYSTORE_TYPE, KEYSTORE_PASSWORD), alg);
+        KeyStore.PrivateKeyEntry ke = cu.getPrivateKeyEntryForAlias(SIGN_KEY_ALIAS);
+        Key decKey = instance.decryptKey(encKey, ke.getPrivateKey(), alg);
         assertNotNull("Decrypting key not succeded!", decKey);
 
         // decrypt file

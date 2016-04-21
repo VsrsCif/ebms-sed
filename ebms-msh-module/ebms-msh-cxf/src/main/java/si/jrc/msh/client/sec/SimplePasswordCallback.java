@@ -21,41 +21,31 @@ import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.callback.UnsupportedCallbackException;
 
 import org.apache.wss4j.common.ext.WSPasswordCallback;
-import si.sed.commons.exception.SEDSecurityException;
 
 import si.sed.commons.utils.SEDLogger;
-import si.sed.commons.utils.sec.KeyPasswordManager;
 
 /**
  *
  * @author Joze Rihtarsic <joze.rihtarsic@sodisce.si>
  */
-public class KeyPasswordCallback implements CallbackHandler {
+public class SimplePasswordCallback implements CallbackHandler {
     
+    String password;
+
+    public SimplePasswordCallback(String psswd) {
+        this.password = psswd;
+    }
     
 
-    protected final SEDLogger mlog = new SEDLogger(KeyPasswordCallback.class);
+    protected final SEDLogger mlog = new SEDLogger(SimplePasswordCallback.class);
 
     @Override
     public void handle(Callback[] callbacks) throws UnsupportedCallbackException {
-        long l = mlog.logStart();
-        for (Callback callback : callbacks) {
-            WSPasswordCallback pc = (WSPasswordCallback) callback;
-            String pass;
-            String identifier = pc.getIdentifier();
-            try {
-                pass = KeyPasswordManager.getInstance().getPasswordForAlias(identifier);
-            } catch (SEDSecurityException ex) {
-                throw new UnsupportedCallbackException(callback, ex.getMessage());
-            }
-            if (pass != null) {
-                pc.setPassword(pass);
-                return;
-            } else {
-                String msg = String.format("Missing password for key with alias '%s'.", identifier);
-                mlog.logError(l, msg, null);
-                throw new UnsupportedCallbackException(callback, msg);
-            }
+        if (callbacks[0] instanceof WSPasswordCallback ) {
+            WSPasswordCallback pc = (WSPasswordCallback)callbacks[0]; 
+            pc.setPassword(password); 
+        } else  {
+            throw new UnsupportedCallbackException(callbacks[0]);
         }
     }
 }

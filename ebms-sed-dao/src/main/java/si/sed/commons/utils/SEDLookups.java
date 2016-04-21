@@ -34,6 +34,7 @@ import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 import javax.xml.bind.JAXBException;
 import org.sed.ebms.cert.SEDCertStore;
+import org.sed.ebms.cert.SEDCertificate;
 import org.sed.ebms.cron.SEDCronJob;
 import org.sed.ebms.cron.SEDTaskType;
 import org.sed.ebms.cron.SEDTaskTypeProperty;
@@ -202,6 +203,28 @@ public class SEDLookups implements SEDLookupsInterface {
     @Override
     public List<SEDCertStore> getSEDCertStore() {
         return getLookup(SEDCertStore.class);
+    }
+
+    @Override
+    public SEDCertStore getSEDCertStoreByCertAlias(String alias, boolean isKey) {
+        SEDCertStore rsCS =null;
+        List<SEDCertStore> lst = getSEDCertStore();
+        for (SEDCertStore cs: lst){
+            for (SEDCertificate c: cs.getSEDCertificates()){
+                if (c.getAlias().equalsIgnoreCase(alias)){
+                    if (c.isKeyEntry() == isKey){
+                        return cs;
+                    } else if (!isKey) { // if searching for cert not key but key is fund search on 
+                        rsCS = cs; // alias is not repeated in keystore
+                        break;
+                    }
+                }
+            }
+            
+        }
+        return rsCS;
+        
+        
     }
 
     @Override

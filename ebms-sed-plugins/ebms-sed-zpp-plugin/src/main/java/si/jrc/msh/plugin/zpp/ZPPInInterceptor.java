@@ -5,7 +5,6 @@
  */
 package si.jrc.msh.plugin.zpp;
 
-import java.io.BufferedReader;
 import si.sed.commons.exception.SEDSecurityException;
 import si.jrc.msh.sec.SEDCrypto;
 import si.jrc.msh.sec.SEDKey;
@@ -14,12 +13,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.math.BigInteger;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.security.Key;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
@@ -32,7 +27,6 @@ import java.util.logging.Logger;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.Local;
-import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
@@ -53,11 +47,11 @@ import org.msh.ebms.outbox.payload.MSHOutPart;
 import org.msh.ebms.outbox.payload.MSHOutPayload;
 import org.msh.svev.pmode.PMode;
 import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.SignalMessage;
+import org.sed.ebms.cert.SEDCertStore;
 import org.sed.ebms.ebox.Execute;
 import org.sed.ebms.ebox.Export;
 import org.sed.ebms.ebox.SEDBox;
 import org.w3c.dom.Element;
-import static si.jrc.msh.plugin.zpp.ZPPOutInterceptor.SECRET_KEY_FILE;
 
 import si.jrc.msh.plugin.zpp.doc.DocumentSodBuilder;
 import si.sed.commons.MimeValues;
@@ -71,6 +65,7 @@ import si.jrc.msh.plugin.zpp.utils.FOPUtils;
 import si.sed.commons.SEDJNDI;
 import si.sed.commons.interfaces.JMSManagerInterface;
 import si.sed.commons.interfaces.SEDDaoInterface;
+import si.sed.commons.interfaces.SEDLookupsInterface;
 import si.sed.commons.interfaces.SoapInterceptorInterface;
 import si.sed.commons.utils.HashUtils;
 
@@ -78,7 +73,8 @@ import si.sed.commons.utils.StorageUtils;
 import si.sed.commons.utils.SEDLogger;
 import si.sed.commons.utils.StringFormater;
 import si.sed.commons.utils.Utils;
-import si.sed.commons.utils.sec.CertificateUtils;
+import si.sed.commons.utils.sec.KeystoreUtils;
+//import si.sed.commons.utils.sec.CertificateUtils;
 import si.sed.commons.utils.xml.XMLUtils;
 
 /**
@@ -94,6 +90,7 @@ public class ZPPInInterceptor implements SoapInterceptorInterface {
     SEDCrypto mSedCrypto = new SEDCrypto();
     HashUtils mpHU = new HashUtils();
     DocumentSodBuilder dsbSodBuilder = new DocumentSodBuilder();
+    KeystoreUtils mkeyUtils = new KeystoreUtils();
 
     FOPUtils mfpFop = null;
     StringFormater msfFormat = new StringFormater();
@@ -103,12 +100,18 @@ public class ZPPInInterceptor implements SoapInterceptorInterface {
 
     @EJB(mappedName = SEDJNDI.JNDI_JMSMANAGER)
     JMSManagerInterface mJMS;
+    
+    @EJB(mappedName = SEDJNDI.JNDI_SEDLOOKUPS)
+    SEDLookupsInterface msedLookup;
 
     @Resource
     public UserTransaction mutUTransaction;
 
     @PersistenceContext(unitName = "ebMS_ZPP_PU", name = "ebMS_ZPP_PU")
     public EntityManager memEManager;
+    
+    // TODO externalize
+    String singDAAlias = "msh.e-box-a.si";
 
     public ZPPInInterceptor() {
 
@@ -142,7 +145,9 @@ public class ZPPInInterceptor implements SoapInterceptorInterface {
                 for (Element e : lst) {
                     if (e.getLocalName().equals("EncryptedKey")) {
                         mlog.log("ZPPInInterceptor 4");
-                        k = mSedCrypto.decryptEncryptedKey(e, CertificateUtils.getInstance().getKeyStore(), SEDCrypto.SymEncAlgorithms.AES128_CBC);
+                        SEDCertStore sc =  msedLookup.getSEDCertStoreByCertAlias(singDAAlias, true);
+                        
+                        k = mSedCrypto.decryptEncryptedKey(e, mkeyUtils.getPrivateKeyEntryForAlias(singDAAlias, sc).getPrivateKey(), SEDCrypto.SymEncAlgorithms.AES128_CBC);
                         break;
 
                     }
@@ -228,10 +233,13 @@ public class ZPPInInterceptor implements SoapInterceptorInterface {
 
         try (FileOutputStream fos = new FileOutputStream(fDA)) {
 
-            // TODO externalize
-            String singDAAlias = "msh.e-box-a.si";
+            
+            
+            SEDCertStore cs =  msedLookup.getSEDCertStoreByCertAlias(singDAAlias, true);
+            
+            
             // create signed delivery advice
-            dsbSodBuilder.createMail(mout, singDAAlias, fos);
+            dsbSodBuilder.createMail(mout, fos, mkeyUtils.getPrivateKeyEntryForAlias(singDAAlias, cs));
             mp.setDescription("DeliveryAdvice");
 
             mp.setFilepath(StorageUtils.getRelativePath(fDA));
