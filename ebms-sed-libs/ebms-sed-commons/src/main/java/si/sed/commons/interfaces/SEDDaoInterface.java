@@ -10,6 +10,7 @@ import java.util.List;
 import javax.ejb.Local;
 import org.msh.ebms.inbox.mail.MSHInMail;
 import org.msh.ebms.outbox.mail.MSHOutMail;
+import org.sed.ebms.cron.SEDTaskExecution;
 import org.sed.ebms.ebox.SEDBox;
 import org.sed.ebms.user.SEDUser;
 import si.sed.commons.SEDInboxMailStatus;
@@ -34,5 +35,7 @@ public interface SEDDaoInterface {
     void serializeOutMail(MSHOutMail mail, String userID, String applicationId, String pmodeId);
     void serializeInMail(MSHInMail mail);
     SEDBox getSedBoxByName(String sbox);
-    
+
+    boolean addExecutionTask(SEDTaskExecution ad);
+    boolean updateExecutionTask(SEDTaskExecution ad);
 }

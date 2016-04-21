@@ -33,7 +33,7 @@ Copyright 2016, Supreme Court Republic of Slovenia
 			<xs:documentation xml:lang="sl">EBox data</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element ref="usr:SEDUser" maxOccurs="unbounded"/>
+			<!-- xs:element ref="usr:SEDUser" maxOccurs="unbounded"/ -->
 			<xs:element name="Export"  type="ns1:Export" minOccurs="0"/>
                         <xs:element name="Execute"  type="ns1:Execute" minOccurs="0"/>
 		</xs:sequence>

@@ -176,7 +176,7 @@ public class EBMSUtils {
         // add sender id
         PartyId piFrom = new PartyId();
         piFrom.setType(EbMSConstants.EBMS_PARTY_TYPE_NAME);
-        piFrom.setValue(mo.getSenderName());
+        piFrom.setValue(mo.getSenderName() == null || mo.getSenderName().isEmpty()?mo.getSenderEBox():mo.getSenderName());
         usgMsg.getPartyInfo().getFrom().getPartyIds().add(piFrom);
         piFrom = new PartyId();
         piFrom.setType(EbMSConstants.EBMS_PARTY_TYPE_EBOX);
@@ -187,7 +187,7 @@ public class EBMSUtils {
         usgMsg.getPartyInfo().getTo().setRole(pm.getResponder().getRole()); // get from p-mode
         PartyId piTo = new PartyId();
         piTo.setType(EbMSConstants.EBMS_PARTY_TYPE_NAME);
-        piTo.setValue(mo.getReceiverName());
+        piTo.setValue(mo.getReceiverName() == null || mo.getReceiverName().isEmpty()?mo.getReceiverEBox():mo.getReceiverName());
         usgMsg.getPartyInfo().getTo().getPartyIds().add(piTo);
         piTo = new PartyId();
         piTo.setType(EbMSConstants.EBMS_PARTY_TYPE_EBOX);

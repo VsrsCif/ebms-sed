@@ -22,15 +22,15 @@ import org.msh.ebms.inbox.mail.MSHInMail;
 import si.sed.commons.interfaces.SEDDaoInterface;
 import si.sed.msh.web.gui.entities.InMailTableFilter;
 
-
 /**
  *
  * @author Jože Rihtaršič
  */
 public class InMailDataModel extends AbstractMailDataModel<MSHInMail> {
+
     InMailTableFilter imtFilter = new InMailTableFilter();
 
-    public InMailDataModel(Class<MSHInMail> type, UserSessionData userSessionData,  SEDDaoInterface db) {
+    public InMailDataModel(Class<MSHInMail> type, UserSessionData userSessionData, SEDDaoInterface db) {
         super(type);
         setUserSessionData(userSessionData, db);
     }
@@ -55,15 +55,18 @@ public class InMailDataModel extends AbstractMailDataModel<MSHInMail> {
 
     @Override
     public Object externalFilters() {
-        String strSedBox =  getUserSessionData().getCurrentSEDBox();
+        if (imtFilter == null) {
+            imtFilter = new InMailTableFilter();
+        }
+        String strSedBox = getUserSessionData().getCurrentSEDBox();
         imtFilter.getReceiverEBoxList().clear();
-        if (strSedBox.equalsIgnoreCase("ALL")){
+        if (strSedBox == null || strSedBox.equalsIgnoreCase("ALL")) {
             imtFilter.getReceiverEBoxList().addAll(getUserSessionData().getUserEBoxes());
-        
+
         } else {
             imtFilter.getReceiverEBoxList().add(strSedBox);
         }
-        
+
         return imtFilter;
     }
 

@@ -99,7 +99,7 @@ Copyright 2015, Supreme Court Republic of Slovenia
         </xs:attribute>
         <xs:attribute name="conversationId" use="optional">
             <xs:annotation>
-                <xs:documentation xml:lang="sl">enolična oznaka "poslovne transakcije" v izmenjavi podaktov. V primeru, da ni podan je v prvem sporočilo določen kot senderMessageId.  </xs:documentation>
+                <xs:documentation xml:lang="sl">enolična oznaka "poslovne transakcije" v izmenjavi podaktov. V primeru, da ni podan se v prvem sporočilo avtomatsko zgenerira kot UUID@[domena posiljatelja].  </xs:documentation>
             </xs:annotation>
             <xs:simpleType>
                 <xs:restriction base="xs:string">

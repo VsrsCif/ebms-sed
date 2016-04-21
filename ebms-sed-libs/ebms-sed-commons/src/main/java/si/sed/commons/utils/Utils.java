@@ -121,8 +121,6 @@ public class Utils {
                     buffer.append("${}"); // REVIEW: Correct?
                 } else // Collect the system property
                 {
-                    String value = null;
-
                     String key = string.substring(start + 2, i);
                     properties = true;
                     buffer.append(System.getProperty(key, ""));

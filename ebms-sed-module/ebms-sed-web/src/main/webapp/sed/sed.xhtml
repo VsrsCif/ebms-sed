@@ -4,6 +4,7 @@
       xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:p="http://primefaces.org/ui"
       xmlns:sui="http://java.sun.com/jsf/composite/sed-ui"
+      xmlns:dlg="http://java.sun.com/jsf/composite/sed-ui/dialog"
       >
 
     <h:head>
@@ -40,15 +41,27 @@
                             <span class="ui-separator">
                                 <span class="ui-icon ui-icon-grip-dotted-vertical " />
                             </span>
-                            <p:commandButton value="Resend" styleClass="toolbar-Button" rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_OUTBOX)}"
+                            <p:commandButton value="New" styleClass="toolbar-Button"  
+                                             rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_OUTBOX)}" 
+                                              icon="ui-icon-sed-resend"
+                                              actionListener="#{OutMailDataView.composeNewMail()}"
+                                              update=":dlgCompose:mailComposeForm"
+                                              oncomplete="PF('mailComposeDialog').show()"/>
+                                            
+                            <p:commandButton value="Resend" styleClass="toolbar-Button" 
+                                             rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_OUTBOX)}"
                                              actionListener="#{OutMailDataView.resendSelectedMail()}" 
+                                             icon="ui-icon-sed-resend"
                                              update=":forms:MainPanel"
                                              ajax="true"/>
                             <p:commandButton value="Delete" styleClass="toolbar-Button"  
+                                             icon="ui-icon-sed-remove"
                                              rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_OUTBOX)}" 
                                              actionListener="#{OutMailDataView.deleteSelectedMail()}" 
                                              update=":forms:MainPanel"
                                              ajax="true"/>
+                              
+                            
                         </f:facet>
 
                         <f:facet name="right"  >
@@ -75,8 +88,8 @@
 
                         <sui:mail-table-in id="InMailPanel" rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_INBOX)  }"  />
                         <sui:mail-table-out id="OutMailPanel" rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_OUTBOX)}"  />
-                        <sui:settings-keystore id="SettingsCustomPanel" rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_SETT_CERTS)}"  />
-                        <sui:settings-custom id="SettingsCertPanel" rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_SETT_CUSTOM)}"  />
+                        <sui:settings-keystore id="SettingsCertPanel" rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_SETT_CERTS)}"  />
+                        <sui:settings-custom id="SettingsCustomPanel" rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_SETT_CUSTOM)}"  />
                         <!--sui:settings-pmode id="SettingsPModes" rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_SETT_PMODE)}"  / -->                        
                         <sui:pmode_bt id="SettingsPModesBT" rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_PMODE_BT)}"  />
                         <sui:settings-users id="SettingsUsers" rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_ADMIN_USERS)}"  />
@@ -241,6 +254,9 @@
             </p:layout>
         </h:form>
         <sui:dialogs id="dialogs" />
-
+        <dlg:dlg-compose id="dlgCompose" />
+        <dlg:dlg-tasktype id="dlgTaskType" />
+        <dlg:dlg-keystore id="dlgKeyStore" />
+        
     </h:body>
 </html>

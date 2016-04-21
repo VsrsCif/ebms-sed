@@ -35,34 +35,34 @@
                             <f:facet name="header">
                                 <h:selectBooleanCheckbox value="#{adminSEDBoxView.editable.export.active}"  style="width: 20px"/>
                                 <h:outputText value="Export" />
-                                
+
                             </f:facet>
 
 
-                        <h:outputText value="Export metadata:" />
-                        <h:selectBooleanCheckbox value="#{adminSEDBoxView.editable.export.exportMetaData}"  style="width: 20px"/>
+                            <h:outputText value="Export metadata:" />
+                            <h:selectBooleanCheckbox value="#{adminSEDBoxView.editable.export.exportMetaData}"  style="width: 20px"/>
 
 
-                        <h:outputText value="FileMask" />
-                        <h:inputText value="#{adminSEDBoxView.editable.export.fileMask}" style="width: 100%"/>
+                            <h:outputText value="FileMask" />
+                            <h:inputText value="#{adminSEDBoxView.editable.export.fileMask}" style="width: 100%"/>
 
-                        <h:outputText value="Folder" />
-                        <h:inputText value="#{adminSEDBoxView.editable.export.folder}" style="width: 100%"/>
+                            <h:outputText value="Folder" />
+                            <h:inputText value="#{adminSEDBoxView.editable.export.folder}" style="width: 100%"/>
                         </p:panelGrid>
                         <p:panelGrid  columns="2" columnClasses="label,value" style="width: 580px" >
                             <f:facet name="header">
                                 <h:selectBooleanCheckbox value="#{adminSEDBoxView.editable.execute.active}"  style="width: 20px" />
                                 <h:outputText value="Execute" />
-                                
+
                             </f:facet>
-                            
+
                             <h:outputText value="Command:" />
                             <h:inputText value="#{adminSEDBoxView.editable.execute.command}" style="width: 100%"/>
-                            
-                             <h:outputText value="Parameters:" />
-                             <h:inputText value="#{adminSEDBoxView.editable.execute.parameters}" style="width: 100%"/>
-                             
-                            </p:panelGrid>
+
+                            <h:outputText value="Parameters:" />
+                            <h:inputText value="#{adminSEDBoxView.editable.execute.parameters}" style="width: 100%"/>
+
+                        </p:panelGrid>
                     </p:layoutUnit>
                     <p:layoutUnit position="south">
                         <p:commandButton value="Ok" update=":forms:SettingsSEDBoxes:TblSedBox" 
@@ -142,50 +142,73 @@
         <p:dialog   header="SEDCron detail" widgetVar="cronDialog" modal="true" hideEffect="fade" resizable="true" appendTo="@(body)">
             <h:form id="cronDialogForm">
                 <p:layout id="cronJob" style="min-width:630px;min-height:300px;">
-                    <p:layoutUnit position="center" rendered="#{empty adminMSHCronJobView.editable}" >
+                    <p:layoutUnit position="center" rendered="#{empty adminSEDCronJobView.editable}" >
                         <h:outputText value="Select row in table or add new!" />
                     </p:layoutUnit>
-                    <p:layoutUnit position="west" rendered="#{not empty adminMSHCronJobView.editable}" >
+                    <p:layoutUnit position="west" rendered="#{not empty adminSEDCronJobView.editable}" >
                         <p:panelGrid  columns="2" columnClasses="label,value" >
 
                             <h:outputText value="Active:" />
-                            <h:selectBooleanCheckbox id="cActive" value="#{adminMSHCronJobView.editable.active}"  />
+                            <h:selectBooleanCheckbox id="cActive" value="#{adminSEDCronJobView.editable.active}"  />
 
                             <h:outputText value="Second" />
-                            <p:inputText id="cSecond" value="#{adminMSHCronJobView.editable.second}"  />
+                            <p:inputText id="cSecond" value="#{adminSEDCronJobView.editable.second}"  />
 
                             <h:outputText value="Minute:" />
-                            <p:inputText id="cMinute" value="#{adminMSHCronJobView.editable.minute}"  />
+                            <p:inputText id="cMinute" value="#{adminSEDCronJobView.editable.minute}"  />
 
                             <h:outputText value="Hour:" />
-                            <p:inputText id="cHour" value="#{adminMSHCronJobView.editable.hour}"  />
+                            <p:inputText id="cHour" value="#{adminSEDCronJobView.editable.hour}"  />
 
                             <h:outputText value="Day of Month:" />
-                            <p:inputText id="cDOfM" value="#{adminMSHCronJobView.editable.dayOfMonth}"  />
+                            <p:inputText id="cDOfM" value="#{adminSEDCronJobView.editable.dayOfMonth}"  />
 
                             <h:outputText id="cM" value="Month:" />
-                            <p:inputText value="#{adminMSHCronJobView.editable.month}"  />
+                            <p:inputText value="#{adminSEDCronJobView.editable.month}"  />
 
                             <h:outputText id="cDOfW" value="Day of week:" />
-                            <p:inputText value="#{adminMSHCronJobView.editable.dayOfWeek}"  />
+                            <p:inputText value="#{adminSEDCronJobView.editable.dayOfWeek}"  />
                         </p:panelGrid>
                     </p:layoutUnit>
-                    <p:layoutUnit position="center" rendered="#{not empty adminMSHCronJobView.editable}" >
-                        <p:panelGrid  columns="2" columnClasses="label,value">
-                            <h:outputText value="Task:" />
-                            <h:inputText value="#{adminMSHCronJobView.editable.MSHTask.taskType}"  />
+                    <p:layoutUnit position="center" rendered="#{not empty adminSEDCronJobView.editable}" >
 
-                            <h:outputText value="Mail address:" />
-                            <h:inputText value="#{adminMSHCronJobView.editableMail}"  />
-                            <h:outputText value="Mail subject:" />
-                            <h:inputText value="#{adminMSHCronJobView.editableMailSubject}"  />
+                        <p:panelGrid  columns="2" columnClasses="label,value" >
+
+                            <h:outputText value="Task" />
+                            <p:selectOneMenu id="taskType" value="#{adminSEDCronJobView.editableTask}" style="width:150px" >
+                                <p:ajax update=":dialogs:cronDialogForm:TblTaskTypeProp" />                               
+                                <f:selectItems value="#{adminSEDCronJobView.taskTypeList}" />
+                            </p:selectOneMenu>
+                            
                         </p:panelGrid>
+
+                        <p:dataTable id="TblTaskTypeProp" 
+                                     var="sp" 
+                                     value="#{adminSEDCronJobView.editable.SEDTask.SEDTaskProperties}"                                     
+                                     rowKey="#{sp.key}"
+                                     style="padding: 0px; margin: 0px; width: 300px;"
+                                     scrollable="true" 
+                                     scrollHeight="200"
+                                     editable="true"
+                                     editMode="cell"
+                                     >
+                            <p:column headerText="Key">
+                                <h:outputText value="#{sp.key}" />
+                            </p:column>
+                            <p:column headerText="value">
+                                <p:cellEditor>
+                                    <f:facet name="output"><h:outputText value="#{sp.value}" /></f:facet>
+                                    <f:facet name="input"><p:inputText value="#{sp.value}" /></f:facet>
+                                </p:cellEditor>
+
+                            </p:column>
+                        </p:dataTable>                        
                     </p:layoutUnit>  
 
                     <p:layoutUnit position="south">
                         <p:commandButton value="Ok"  styleClass="toolbar-Button" 
                                          icon="ui-icon-sed-ok" 
-                                         action="#{adminMSHCronJobView.addOrUpdateEditable()}"
+                                         action="#{adminSEDCronJobView.addOrUpdateEditable()}"
                                          oncomplete="PF('cronDialog').hide()" 
                                          update=":forms:SettingsCron:TblCron"
                                          />

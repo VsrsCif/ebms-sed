@@ -42,6 +42,7 @@ import org.msh.ebms.inbox.event.MSHInEvent;
 import org.msh.ebms.inbox.mail.MSHInMail;
 import org.msh.ebms.outbox.event.MSHOutEvent;
 import org.msh.ebms.outbox.mail.MSHOutMail;
+import org.sed.ebms.cron.SEDTaskExecution;
 import org.sed.ebms.ebox.SEDBox;
 import org.sed.ebms.user.SEDUser;
 import si.sed.commons.SEDInboxMailStatus;
@@ -394,5 +395,73 @@ public class SEDDaoBean implements SEDDaoInterface {
         } catch (NoResultException nre) {
             return null;
         }
+    }
+    
+    @Override
+    public boolean addExecutionTask(SEDTaskExecution ad){
+        return add(ad);
+    };
+    
+    @Override
+    public boolean updateExecutionTask(SEDTaskExecution ad){
+        return update(ad);
+    }
+    
+    
+    public <T> boolean add(T o) {
+        long l = LOG.logStart();
+        boolean suc = false;
+        try {
+            mutUTransaction.begin();
+            memEManager.persist(o);
+            mutUTransaction.commit();         
+            suc = true;
+        } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
+            try {
+                LOG.logError(l, ex.getMessage(), ex);
+                mutUTransaction.rollback();
+            } catch (IllegalStateException | SecurityException | SystemException ex1) {
+                LOG.logWarn(l, "Rollback failed", ex1);
+            }
+        }
+        return suc;
+    }
+
+    public <T> boolean update(T o) {
+        long l = LOG.logStart();
+        boolean suc = false;
+        try {
+            mutUTransaction.begin();
+            memEManager.merge(o);
+            mutUTransaction.commit();     
+            suc = true;
+        } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
+            try {
+                LOG.logError(l, ex.getMessage(), ex);
+                mutUTransaction.rollback();
+            } catch (IllegalStateException | SecurityException | SystemException ex1) {
+                LOG.logWarn(l, "Rollback failed", ex1);
+            }
+        }
+        return suc;
+    }
+
+    public <T> boolean remove(T o) {
+        long l = LOG.logStart();
+        boolean suc = false;
+        try {
+            mutUTransaction.begin();
+            memEManager.remove(memEManager.contains(o) ? o : memEManager.merge(o));
+            mutUTransaction.commit(); 
+            suc = true;
+        } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
+            try {
+                LOG.logError(l, ex.getMessage(), ex);
+                mutUTransaction.rollback();
+            } catch (IllegalStateException | SecurityException | SystemException ex1) {
+                LOG.logWarn(l, "Rollback failed", ex1);
+            }
+        }
+        return suc;
     }
 }

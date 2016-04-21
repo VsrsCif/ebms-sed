@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"   
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:composite="http://java.sun.com/jsf/composite"
+      >
+    <composite:interface>
+    </composite:interface>
+
+    <composite:implementation >
+        <!-- sed-box ADD/EDIT dialog! -->
+
+        <p:dialog   header="SEDTaskType detail" widgetVar="taskTypeDialog" modal="true" hideEffect="fade" resizable="true" appendTo="@(body)">
+            <h:form id="cronDialogForm">
+                <p:layout id="taskType" style="min-width:650px;min-height:320px;">
+                    <p:layoutUnit position="west" rendered="#{not empty adminSEDTaskTypeView.editable}" >
+                        <p:panelGrid  columns="2" columnClasses="label,value" >
+
+
+                            <h:outputText value="type" />
+                            <p:inputText id="type" value="#{adminSEDTaskTypeView.editable.type}"  />
+
+                            <h:outputText value="Name" />
+                            <p:inputText id="cMinute" value="#{adminSEDTaskTypeView.editable.name}"  />
+
+                            <h:outputText value="Desc:" />
+                            <p:inputText id="cHour" value="#{adminSEDTaskTypeView.editable.description}"  />
+
+                            <h:outputText value="JNDI:" />
+                            <p:inputText id="cDOfM" value="#{adminSEDTaskTypeView.editable.jndi}"  />
+
+                        </p:panelGrid>
+                    </p:layoutUnit>
+                    <p:layoutUnit position="center" rendered="#{not empty adminSEDTaskTypeView.editable}" >
+                        <h:outputText value="Task properties" />
+                        <p:dataTable id="TblTaskTypeProp" 
+                                     var="sp" 
+                                     value="#{adminSEDTaskTypeView.editable.SEDTaskTypeProperties}"
+                                     selectionMode="single"
+                                     selection="#{adminSEDTaskTypeView.selectedTaskProperty}"
+                                     rowKey="#{sp.key}"
+                                     style="padding: 0px; margin: 0px; width: 300px;"
+                                     scrollable="true" 
+                                     scrollHeight="200"
+                                     editable="true"
+                                     editMode="cell"
+                                     >
+
+
+                            <f:facet name="header">
+                                <p:commandButton value="Add"  styleClass="toolbar-Button" icon="ui-icon-sed-add" 
+                                                 actionListener="#{adminSEDTaskTypeView.addTypeProperty()}"
+                                                 update=":dlgTaskType:cronDialogForm"
+                                                 />
+
+                                <p:commandButton value="Delete" styleClass="toolbar-Button" icon="ui-icon-sed-remove" 
+                                                 actionListener="#{adminSEDTaskTypeView.removeSelectedTypeProperty()}" 
+                                                 update=":dlgTaskType:cronDialogForm"
+                                                 />
+
+                            </f:facet>
+                            <p:column headerText="Key">
+                                <p:cellEditor>
+                                    <f:facet name="output"><h:outputText value="#{sp.key}" /></f:facet>
+                                    <f:facet name="input"><p:inputText value="#{sp.key}" /></f:facet>
+                                </p:cellEditor>
+                            </p:column>
+                            <p:column headerText="Desc">
+                                <p:cellEditor>
+                                    <f:facet name="output"><h:outputText value="#{sp.description}" /></f:facet>
+                                    <f:facet name="input"><p:inputText value="#{sp.description}" /></f:facet>
+                                </p:cellEditor>
+
+                            </p:column>
+
+
+
+                        </p:dataTable>
+                    </p:layoutUnit>  
+
+                    <p:layoutUnit position="south">
+                        <p:commandButton value="Ok"  styleClass="toolbar-Button" 
+                                         icon="ui-icon-sed-ok" 
+                                         action="#{adminSEDTaskTypeView.addOrUpdateEditable()}"
+                                         oncomplete="PF('taskTypeDialog').hide()" 
+                                         update=":forms:SettingsCron:TblTaskType"
+                                         />
+                        <p:commandButton value="Cancel" styleClass="toolbar-Button" icon="ui-icon-sed-cancel" oncomplete="PF('taskTypeDialog').hide()" />
+                    </p:layoutUnit>
+
+                </p:layout>
+            </h:form>
+        </p:dialog>
+
+    </composite:implementation>
+
+</html>

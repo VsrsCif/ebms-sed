@@ -24,9 +24,9 @@ import java.util.Properties;
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
-import org.msh.ebms.cert.MSHCertStore;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.event.UnselectEvent;
+import org.sed.ebms.cert.SEDCertStore;
 import si.sed.commons.SEDJNDI;
 import si.sed.commons.interfaces.DBCertStoresInterface;
 import si.sed.commons.utils.sec.CertificateUtils;
@@ -44,24 +44,24 @@ public class TrustStoreModel {
     @EJB (mappedName = SEDJNDI.JNDI_DBCERTSTORE)
     DBCertStoresInterface mCertStores; 
     
-    MSHCertStore currentCertStore = null;
+    SEDCertStore currentCertStore = null;
 
     CertificateUtils mce = CertificateUtils.getInstance();
 
     
-    public List<MSHCertStore> getDBCertStores(){
+    public List<SEDCertStore> getDBCertStores(){
         return mCertStores.getCertStores();
     }
     
-    public MSHCertStore getCurrentCertStore(){
+    public SEDCertStore getCurrentCertStore(){
         return currentCertStore;
     }
-    public void setCurrentCertStore(MSHCertStore certStore){
+    public void setCurrentCertStore(SEDCertStore certStore){
         currentCertStore = certStore;
     }
     
      public void onRowSelect(SelectEvent event) {
-        setCurrentCertStore((MSHCertStore) event.getObject());
+        setCurrentCertStore((SEDCertStore) event.getObject());
     }
 
     public void onRowUnselect(UnselectEvent event) {

@@ -18,6 +18,7 @@ package si.sed.msh.web.admin;
 
 import si.sed.msh.web.abst.AbstractAdminJSFView;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.ScheduleExpression;
@@ -25,9 +26,12 @@ import javax.ejb.Timer;
 import javax.ejb.TimerConfig;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
-import org.msh.ebms.cron.MSHCronJob;
-import org.msh.ebms.cron.MSHTask;
-import org.msh.ebms.cron.MSHTaskProperty;
+import org.sed.ebms.cron.SEDCronJob;
+import org.sed.ebms.cron.SEDTask;
+import org.sed.ebms.cron.SEDTaskProperty;
+import org.sed.ebms.cron.SEDTaskType;
+import org.sed.ebms.cron.SEDTaskTypeProperty;
+
 import si.sed.commons.SEDJNDI;
 import si.sed.commons.interfaces.SEDLookupsInterface;
 import si.sed.commons.interfaces.SEDSchedulerInterface;
@@ -39,10 +43,10 @@ import si.sed.commons.utils.SEDLogger;
  * @author Jože Rihtaršič
  */
 @SessionScoped
-@ManagedBean(name = "adminMSHCronJobView")
-public class AdminMSHCronJobView extends AbstractAdminJSFView<MSHCronJob> {
+@ManagedBean(name = "adminSEDCronJobView")
+public class AdminSEDCronJobView extends AbstractAdminJSFView<SEDCronJob> {
 
-    private static final SEDLogger LOG = new SEDLogger(AdminMSHCronJobView.class);
+    private static final SEDLogger LOG = new SEDLogger(AdminSEDCronJobView.class);
 
     @EJB(mappedName = SEDJNDI.JNDI_SEDLOOKUPS)
     private SEDLookupsInterface mdbLookups;
@@ -50,21 +54,12 @@ public class AdminMSHCronJobView extends AbstractAdminJSFView<MSHCronJob> {
     @EJB(mappedName = SEDJNDI.JNDI_SEDSCHEDLER)
     private SEDSchedulerInterface mshScheduler;
 
-    public List<MSHCronJob> getMSHCronJobs() {
-        long l = LOG.logStart();
-        List<MSHCronJob> lst = mdbLookups.getMSHCronJobs();
-        LOG.logEnd(l, lst != null ? lst.size() : "null");
-        return lst;
-    }
 
-    public String boxPrefix(String strBoxName) {
-        return strBoxName != null ? strBoxName.substring(0, strBoxName.indexOf("@")) : "";
-    }
 
-    public MSHTaskProperty getEditableProperty(String name) {
-        if (getEditable() != null && getEditable().getMSHTask() != null) {
-            for (MSHTaskProperty mp : getEditable().getMSHTask().getMSHTaskProperties()) {
-                if (mp.getName().equalsIgnoreCase(name)) {
+    public SEDTaskProperty getEditableProperty(String name) {
+        if (getEditable() != null && getEditable().getSEDTask() != null) {
+            for (SEDTaskProperty mp : getEditable().getSEDTask().getSEDTaskProperties()) {
+                if (mp.getKey().equalsIgnoreCase(name)) {
                     return mp;
                 }
             }
@@ -73,50 +68,32 @@ public class AdminMSHCronJobView extends AbstractAdminJSFView<MSHCronJob> {
     }
 
     public void setEditableProperty(String name, String val) {
-        MSHTaskProperty pp = null;
+        SEDTaskProperty pp = null;
         if (getEditable() != null) {
             return;
         }
-        if (getEditable().getMSHTask() != null) {
-            for (MSHTaskProperty mp : getEditable().getMSHTask().getMSHTaskProperties()) {
-                if (mp.getName().equalsIgnoreCase(name)) {
+        if (getEditable().getSEDTask() != null) {
+            for (SEDTaskProperty mp : getEditable().getSEDTask().getSEDTaskProperties()) {
+                if (mp.getKey().equalsIgnoreCase(name)) {
                     pp = mp;
                     break;
                 }
             }
         } else {
-            getEditable().setMSHTask(new MSHTask());
+            getEditable().setSEDTask(new SEDTask());
         }
         if (pp == null) {
-            pp = new MSHTaskProperty();
-            pp.setName(val);
-            getEditable().getMSHTask().getMSHTaskProperties().add(pp);
+            pp = new SEDTaskProperty();
+            pp.setKey(val);
+            getEditable().getSEDTask().getSEDTaskProperties().add(pp);
         }
         pp.setValue(val);
 
     }
 
-    public String getEditableMail() {
-        MSHTaskProperty mtp = getEditableProperty("email");
-        return mtp != null ? mtp.getValue() : null;
-    }
-
-    public void setEditableMail(String str) {
-        setEditableProperty("email", str);
-    }
-
-    public String getEditableMailSubject() {
-        MSHTaskProperty mtp = getEditableProperty("subject");
-        return mtp != null ? mtp.getValue() : null;
-    }
-
-    public void setEditableMailSubject(String str) {
-        setEditableProperty("subject", str);
-    }
-
-    public MSHCronJob getMSHCronJobByName(BigInteger id) {
-        List<MSHCronJob> lst = mdbLookups.getMSHCronJobs();
-        for (MSHCronJob sb : lst) {
+    public SEDCronJob getMSHCronJobByName(BigInteger id) {
+        List<SEDCronJob> lst = mdbLookups.getSEDCronJobs();
+        for (SEDCronJob sb : lst) {
             if (sb.getId().equals(id)) {
                 return sb;
             }
@@ -126,7 +103,7 @@ public class AdminMSHCronJobView extends AbstractAdminJSFView<MSHCronJob> {
 
     @Override
     public void createEditable() {
-        MSHCronJob ecj = new MSHCronJob();
+        SEDCronJob ecj = new SEDCronJob();
         ecj.setActive(true);
         ecj.setSecond("*/20");
         ecj.setMinute("*");
@@ -135,20 +112,20 @@ public class AdminMSHCronJobView extends AbstractAdminJSFView<MSHCronJob> {
         ecj.setMonth("*");
         ecj.setDayOfWeek("*");
 
-        ecj.setMSHTask(new MSHTask());
-        ecj.getMSHTask().setTaskType("DeliveredMail");
-        MSHTaskProperty mtp = new MSHTaskProperty();
-        mtp.setName("email");
+        ecj.setSEDTask(new SEDTask());
+        ecj.getSEDTask().setTaskType("DeliveredMail");
+        SEDTaskProperty mtp = new SEDTaskProperty();
+        mtp.setKey("email");
         mtp.setValue("test@mail.com");
-        ecj.getMSHTask().getMSHTaskProperties().add(mtp);
-        mtp = new MSHTaskProperty();
-        mtp.setName("subject");
+        ecj.getSEDTask().getSEDTaskProperties().add(mtp);
+        mtp = new SEDTaskProperty();
+        mtp.setKey("subject");
         mtp.setValue("[SED] Delivered mail");
-        ecj.getMSHTask().getMSHTaskProperties().add(mtp);
-        mtp = new MSHTaskProperty();
-        mtp.setName("NotifyOnEmptyBox");
+        ecj.getSEDTask().getSEDTaskProperties().add(mtp);
+        mtp = new SEDTaskProperty();
+        mtp.setKey("NotifyOnEmptyBox");
         mtp.setValue("true");
-        ecj.getMSHTask().getMSHTaskProperties().add(mtp);
+        ecj.getSEDTask().getSEDTaskProperties().add(mtp);
         setNew(ecj);
 
     }
@@ -156,7 +133,7 @@ public class AdminMSHCronJobView extends AbstractAdminJSFView<MSHCronJob> {
     @Override
     public void removeSelected() {
         if (getSelected() != null) {
-            mdbLookups.removeMSHCronJob(getSelected());
+            mdbLookups.removeSEDCronJob(getSelected());
             setSelected(null);
 
         }
@@ -164,9 +141,9 @@ public class AdminMSHCronJobView extends AbstractAdminJSFView<MSHCronJob> {
 
     @Override
     public void persistEditable() {
-        MSHCronJob ecj = getEditable();
+        SEDCronJob ecj = getEditable();
         if (ecj != null) {
-            mdbLookups.addMSHCronJob(ecj);
+            mdbLookups.addSEDCronJob(ecj);
             if (ecj.getActive() != null && ecj.getActive()) {
                 LOG.log("Register timer to TimerService");
                 ScheduleExpression se = new ScheduleExpression()
@@ -186,9 +163,9 @@ public class AdminMSHCronJobView extends AbstractAdminJSFView<MSHCronJob> {
 
     @Override
     public void updateEditable() {
-        MSHCronJob ecj = getEditable();
+        SEDCronJob ecj = getEditable();
         if (ecj != null) {
-            mdbLookups.updateMSHCronJob(ecj);
+            mdbLookups.updateSEDCronJob(ecj);
             for (Timer t : mshScheduler.getServices().getAllTimers()) {
                 if (t.getInfo().equals(ecj.getId())) {
                     t.cancel();
@@ -212,11 +189,60 @@ public class AdminMSHCronJobView extends AbstractAdminJSFView<MSHCronJob> {
     }
 
     @Override
-    public List<MSHCronJob> getList() {
+    public List<SEDCronJob> getList() {
         long l = LOG.logStart();
-        List<MSHCronJob> lst = mdbLookups.getMSHCronJobs();
+        List<SEDCronJob> lst = mdbLookups.getSEDCronJobs();
         LOG.logEnd(l, lst != null ? lst.size() : "null");
         return lst;
     }
 
+    public List<String> getTaskTypeList() {
+        long l = LOG.logStart();
+        List<String> rstLst = new ArrayList<>();
+        List<SEDTaskType> lst = mdbLookups.getSEDTaskTypes();
+        lst.stream().forEach((tsk) -> {
+            rstLst.add(tsk.getType());
+        });
+        LOG.logEnd(l, lst != null ? lst.size() : "null");
+        return rstLst;
+    }
+    
+    
+    public void setEditableTask(String task){
+        System.out.println("Set task:"  + task);
+        SEDCronJob scj = getEditable();
+        if (scj !=null){
+            System.out.println("Set task: 1");
+            if (scj.getSEDTask()==null 
+                    || scj.getSEDTask().getTaskType()==null
+                    || !scj.getSEDTask().getTaskType().equals(task)) {
+                System.out.println("Set task: 2");
+                SEDTaskType sdt =  mdbLookups.getSEDTaskTypeByType(task);
+                if (sdt!= null){
+                    System.out.println("Set task: 3");
+                    SEDTask  tsk = new SEDTask();
+                    tsk.setTaskType(sdt.getType());
+                    for (SEDTaskTypeProperty  p: sdt.getSEDTaskTypeProperties()){
+                        SEDTaskProperty tp = new SEDTaskProperty();
+                        tp.setKey(p.getKey());
+                        tsk.getSEDTaskProperties().add(tp);
+                    }
+                    System.out.println("Set task: 4");
+                    scj.setSEDTask(tsk);
+                }
+                
+                
+            }
+            
+        }
+        
+    }
+    
+    public String getEditableTask(){
+        if (getEditable()!=null && getEditable().getSEDTask()!=null){
+            return getEditable().getSEDTask().getTaskType();
+        }
+        return null;
+    }
+    
 }

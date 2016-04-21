@@ -100,8 +100,8 @@ public class DBSettings implements DBSettingsInterface {
         long l = mlog.logStart();
         //----------------------------------
         // SEDProperty
-        TypedQuery<SEDProperty> q = getEntityManager().createNamedQuery("SEDProperty.getAll", SEDProperty.class);
-        List<SEDProperty> lst = q.getResultList();
+        
+        List<SEDProperty> lst = getSEDProperties();
         synchronized (mprpProperties) {
             mprpProperties.clear();
             for (SEDProperty sd : lst) {
@@ -319,7 +319,20 @@ public class DBSettings implements DBSettingsInterface {
     public Properties getProperties() {
         return mprpProperties;
     }
-
+    @Override
+    public List<SEDProperty> getSEDProperties(){
+        TypedQuery<SEDProperty> q = getEntityManager().createNamedQuery("SEDProperty.getAll", SEDProperty.class);
+        return q.getResultList();
+    }
     
+    
+    @Override 
+    public void setSEDProperties(List<SEDProperty> prps){
+        if (prps!=null && !prps.isEmpty()) {
+            for (SEDProperty sp: prps){
+                setData(sp.getKey(), sp.getValue(),sp.getGroup());
+            }
+        }
+    }
 
 }

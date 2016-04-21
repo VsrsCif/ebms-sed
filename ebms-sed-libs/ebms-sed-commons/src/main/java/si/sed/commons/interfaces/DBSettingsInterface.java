@@ -5,10 +5,12 @@
  */
 package si.sed.commons.interfaces;
 
+import java.util.List;
 import java.util.Properties;
 import javax.ejb.Local;
 import javax.ejb.Lock;
 import javax.ejb.LockType;
+import org.sed.ebms.property.SEDProperty;
 
 /**
  *
@@ -26,6 +28,10 @@ public interface DBSettingsInterface {
     @Lock(value = LockType.READ)
     String getPModeFileName();
 
+    @Lock(value = LockType.READ)
+    void setSEDProperties(List<SEDProperty> prps);
+    List<SEDProperty> getSEDProperties();
+    
     Properties getProperties();
 
     @Lock(value = LockType.READ)

@@ -11,6 +11,9 @@
     </composite:interface>
 
     <composite:implementation >
+          <p:commandButton value="Export" styleClass="toolbar-Button" icon="ui-icon-sed-export"                                 
+                                 actionListener="#{ApplicationData.exportLookups()}"
+                                 />
         <h1>Environment Properties</h1>
         <p:dataTable var="sp" 
                      value="#{ApplicationData.systemPropertyKeys}"

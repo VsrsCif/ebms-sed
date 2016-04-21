@@ -32,6 +32,17 @@ public class SEDSystemProperties {
     public static final String SYS_PROP_HOME_DIR = "sed.home";
     public static final String SYS_PROP_HOME_DIR_DEF = "sed-home";
 
+    
+     /**
+     * System property for init lookups  file.
+     *
+     * <p>
+     * System property define init lookups file. File is absolute path to init file
+     * home directory.
+     * </p>
+     */
+    public static final String SYS_PROP_INIT_LOOKUPS = "org.sed.init.lookups";
+    
     /**
      * System property for pmode configuration file.
      *

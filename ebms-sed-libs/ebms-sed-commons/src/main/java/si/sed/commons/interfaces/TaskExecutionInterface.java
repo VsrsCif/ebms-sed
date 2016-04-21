@@ -5,20 +5,16 @@
  */
 package si.sed.commons.interfaces;
 
-import java.util.List;
+import java.util.Properties;
 import javax.ejb.Local;
-import javax.ejb.Lock;
-import javax.ejb.LockType;
-import org.sed.ebms.cert.SEDCertStore;
 
 /**
  *
  * @author sluzba
  */
 @Local
-public interface DBCertStoresInterface {
-
-    @Lock(value = LockType.READ)
-    List<SEDCertStore> getCertStores();
+public interface TaskExecutionInterface {
     
+     public String executeTask(Properties p) throws Exception;
+
 }

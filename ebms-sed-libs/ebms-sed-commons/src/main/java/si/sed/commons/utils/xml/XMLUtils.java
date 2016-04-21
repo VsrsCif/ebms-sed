@@ -54,6 +54,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.ls.DOMImplementationLS;
 import org.w3c.dom.ls.LSSerializer;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 /**
  *
@@ -221,7 +222,7 @@ public class XMLUtils {
             Source xml = new JAXBSource(jbc, jabxObj);
             res = validateBySchema(xml, schXsd, xsdResourceFolder);
         } catch (JAXBException ex) {
-            ex.printStackTrace();
+            
             res += "SchemaValidationError 2:" + ex.getMessage() + "\n";
         }
         return res;
@@ -242,9 +243,9 @@ public class XMLUtils {
             Validator validator = schema.newValidator();
             validator.validate(xml);
             res = se.getErrorAsString();
-        } catch (SAXException | IOException ex) {
-            ex.printStackTrace();
-            res += "SchemaValidationError 1:" + ex.getMessage() + "\n";
+        } catch ( SAXException | IOException ex) {
+            
+            res += "SchemaValidationError:" + ex.getMessage() + "\n";
         }
 
         return res;

@@ -46,7 +46,7 @@ Copyright 2015, Supreme Court Republic of Slovenia
             <xs:extension base="xs:base64Binary">
                 <xs:attribute name="id" type="xs:integer" use="optional">
                     <xs:annotation>
-                        <xs:documentation xml:lang="sl">Enolična  pošiljateljeva oznaka priponke </xs:documentation>
+                        <xs:documentation xml:lang="sl">Enolična oznaka pošiljke SED. Številko določa bazna sekvenca ob zapisu v bazo</xs:documentation>
                     </xs:annotation>
                 </xs:attribute>
                 <xs:attribute name="name" use="optional">

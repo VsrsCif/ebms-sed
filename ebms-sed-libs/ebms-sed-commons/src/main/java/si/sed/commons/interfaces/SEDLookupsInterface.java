@@ -8,8 +8,12 @@ package si.sed.commons.interfaces;
 import java.math.BigInteger;
 import java.util.List;
 import javax.ejb.Local;
-import org.msh.ebms.cron.MSHCronJob;
+import org.sed.ebms.cert.SEDCertStore;
+import org.sed.ebms.cron.SEDCronJob;
+import org.sed.ebms.cron.SEDTaskType;
+
 import org.sed.ebms.ebox.SEDBox;
+import org.sed.ebms.plugin.SEDPlugin;
 import org.sed.ebms.user.SEDUser;
 
 /**
@@ -18,33 +22,38 @@ import org.sed.ebms.user.SEDUser;
  */
 @Local
 public interface SEDLookupsInterface {
-
-    boolean addMSHCronJob(MSHCronJob sb);
-
     boolean addSEDBox(SEDBox sb);
-
+    boolean addSEDCertStore(SEDCertStore sb);
+    boolean addSEDCronJob(SEDCronJob sb);
+    boolean addSEDPlugin(SEDPlugin sb);
+    boolean addSEDTaskType(SEDTaskType sb);
     boolean addSEDUser(SEDUser sb);
     
-    public MSHCronJob getMSHCronJobById(BigInteger id);
-
-    List<MSHCronJob> getMSHCronJobs();
-
-    SEDBox getSEDBoxByName(String strname);
-
-    List<SEDBox> getSEDBoxes();
-
-    List<SEDUser> getSEDUsers();
-
-    boolean removeMSHCronJob(MSHCronJob sb);
-
-    boolean removeSEDBox(SEDBox sb);
-
-    boolean removeSEDUser(SEDUser sb);
-
-    boolean updateMSHCronJob(MSHCronJob sb);
-
-    boolean updateSEDBox(SEDBox sb);
-
-    boolean updateSEDUser(SEDUser sb);
+    void exportLookups();
     
+    SEDBox getSEDBoxByName(String strname);
+    SEDCronJob getSEDCronJobById(BigInteger id);
+    SEDTaskType getSEDTaskTypeByType(String type);
+    SEDUser getSEDUserByUserId(String userId);
+    
+    List<SEDBox> getSEDBoxes();
+    List<SEDCertStore> getSEDCertStore();    
+    List<SEDCronJob> getSEDCronJobs();
+    List<SEDPlugin> getSEDPlugin();    
+    List<SEDTaskType> getSEDTaskTypes();    
+    List<SEDUser> getSEDUsers();
+    
+    boolean removeSEDBox(SEDBox sb);
+    boolean removeEDCertStore(SEDCertStore sb);
+    boolean removeSEDCronJob(SEDCronJob sb);    
+    boolean removeSEDPlugin(SEDPlugin sb);
+    boolean removeSEDTaskType(SEDTaskType sb);
+    boolean removeSEDUser(SEDUser sb);
+    
+    boolean updateSEDBox(SEDBox sb);
+    boolean updateSEDCertStore(SEDCertStore sb);
+    boolean updateSEDCronJob(SEDCronJob sb);
+    boolean updateSEDPlugin(SEDPlugin sb);
+    boolean updateSEDTaskType(SEDTaskType sb);
+    boolean updateSEDUser(SEDUser sb);
 }

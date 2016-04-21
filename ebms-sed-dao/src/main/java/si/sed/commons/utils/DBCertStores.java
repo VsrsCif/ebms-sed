@@ -33,8 +33,8 @@ import javax.transaction.RollbackException;
 import javax.transaction.Status;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
-import org.msh.ebms.cert.MSHCertStore;
-import org.msh.ebms.cert.MSHCertificate;
+import org.sed.ebms.cert.SEDCertStore;
+import org.sed.ebms.cert.SEDCertificate;
 import si.sed.commons.SEDSystemProperties;
 import si.sed.commons.interfaces.DBSettingsInterface;
 
@@ -59,7 +59,7 @@ public class DBCertStores implements DBCertStoresInterface {
     public EntityManager memEManager;
 
     protected SEDLogger mlog = new SEDLogger(DBCertStores.class);
-    final protected List<MSHCertStore> mprpCertStores = new ArrayList<>();
+    final protected List<SEDCertStore> mprpCertStores = new ArrayList<>();
     protected TimerTask mRefreshTask;
     protected Timer mtTimer = new Timer(true);
 
@@ -85,21 +85,21 @@ public class DBCertStores implements DBCertStoresInterface {
 
     final protected void refreshData() {
         long l = mlog.logStart();
-        TypedQuery<MSHCertStore> q = getEntityManager().createNamedQuery("MSHCertStore.getAll", MSHCertStore.class);
-        List<MSHCertStore> lst = q.getResultList();
+        TypedQuery<SEDCertStore> q = getEntityManager().createNamedQuery("SEDCertStore.getAll", SEDCertStore.class);
+        List<SEDCertStore> lst = q.getResultList();
 
         if (lst.isEmpty()) {
             
             String path = mdsSettings.getSecurityFolderPath();
-            List<MSHCertStore> lsttst = createTestData();
+            List<SEDCertStore> lsttst = createTestData();
             try {
                 getUserTransaction().begin();
-                for (MSHCertStore cs: lsttst) {
+                for (SEDCertStore cs: lsttst) {
                     getEntityManager().persist(cs);
                 }
                 getUserTransaction().commit();
             } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
-                String msg = "Error storing MSHCertStore!";
+                String msg = "Error storing SEDCertStore!";
                 mlog.logError(l, msg, ex);
                 try {
                     if (getUserTransaction().getStatus() == Status.STATUS_ACTIVE) {
@@ -110,7 +110,7 @@ public class DBCertStores implements DBCertStoresInterface {
                 }
             }
         }
-        q = getEntityManager().createNamedQuery("MSHCertStore.getAll", MSHCertStore.class);
+        q = getEntityManager().createNamedQuery("SEDCertStore.getAll", SEDCertStore.class);
         lst = q.getResultList();
 
         synchronized (mprpCertStores) {
@@ -120,30 +120,30 @@ public class DBCertStores implements DBCertStoresInterface {
         mlog.logEnd(l);
     }
 
-    private List<MSHCertStore> createTestData() {
+    private List<SEDCertStore> createTestData() {
 
-        List<MSHCertStore> lstTS = new ArrayList<>();
+        List<SEDCertStore> lstTS = new ArrayList<>();
         // Create keystore
-        MSHCertStore ks = new MSHCertStore();
-        ks.setFilePath("${sed.home}/security/security/msh.e-box-a-keystore.jks");
+        SEDCertStore ks = new SEDCertStore();
+        ks.setFilePath("${sed.home}/security/security/sed.e-box-a-keystore.jks");
         ks.setPassword("test1234");
         ks.setType("JKS");
-        MSHCertificate mhsCert = new MSHCertificate();
-        mhsCert.setAlias("msh.e-box-a.si");
+        SEDCertificate mhsCert = new SEDCertificate();
+        mhsCert.setAlias("sed.e-box-a.si");
         mhsCert.setKeyPassword("key1234");
-        ks.getMSHCertificates().add(mhsCert);
+        ks.getSEDCertificates().add(mhsCert);
 
         // Create truststore
-        MSHCertStore ts = new MSHCertStore();
-        ts.setFilePath("${sed.home}/security/security/msh.e-box-a-truststore.jks");
+        SEDCertStore ts = new SEDCertStore();
+        ts.setFilePath("${sed.home}/security/security/sed.e-box-a-truststore.jks");
         ts.setPassword("test1234");
         ts.setType("JKS");
-        MSHCertificate mhtCert1 = new MSHCertificate();
-        mhtCert1.setAlias("msh.e-box-a.si");
-        MSHCertificate mhtCert2 = new MSHCertificate();
-        mhtCert2.setAlias("msh.e-box-b.si");
-        ts.getMSHCertificates().add(mhtCert1);
-        ts.getMSHCertificates().add(mhtCert2);
+        SEDCertificate mhtCert1 = new SEDCertificate();
+        mhtCert1.setAlias("sed.e-box-a.si");
+        SEDCertificate mhtCert2 = new SEDCertificate();
+        mhtCert2.setAlias("sed.e-box-b.si");
+        ts.getSEDCertificates().add(mhtCert1);
+        ts.getSEDCertificates().add(mhtCert2);
 
         lstTS.add(ks);
         lstTS.add(ts);
@@ -152,7 +152,7 @@ public class DBCertStores implements DBCertStoresInterface {
 
     @Lock(LockType.READ)
     @Override
-    public List<MSHCertStore> getCertStores() {
+    public List<SEDCertStore> getCertStores() {
         return mprpCertStores;
     }
 

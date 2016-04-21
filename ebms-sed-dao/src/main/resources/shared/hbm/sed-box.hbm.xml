@@ -20,7 +20,7 @@
             <property column="EXECUTE_PARAMETERS" name="Parameters" type="java.lang.String" length="512"  />    
             
         </component>
-         <bag name="sedUsers"  access="field" table="sed_user_sedbox" 
+         <!-- bag name="sedUsers"  access="field" table="sed_user_sedbox" 
         	inverse="true"  fetch="select" lazy="false"    >        
             <key>
                 <column name="sed_box" not-null="true" />        
@@ -28,7 +28,7 @@
             <many-to-many entity-name="org.sed.ebms.user.SEDUser" >
                 <column name="userid" not-null="true" />
             </many-to-many>
-        </bag>  
+        </bag -->  
     </class>    
     <query name="org.sed.ebms.ebox.SEDBox.getAll" ><![CDATA[SELECT p FROM SEDBox p order by p.BoxName asc]]></query>
     <query name="org.sed.ebms.ebox.SEDBox.getByName" ><![CDATA[SELECT p FROM SEDBox p where p.BoxName=:BoxName]]></query>

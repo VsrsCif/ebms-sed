@@ -11,40 +11,97 @@
     </composite:interface>
 
     <composite:implementation >
+        
+        <h1>Task definitions</h1>
+        <p:panel id="TaskDesc" toggleTitle="INFO" header="Task definitions" 
+                 toggleable="true"  collapsed="true">
+            <h:outputText value="Administration of Task definitions. "></h:outputText>
+        </p:panel>
+        <p:dataTable id="TblTaskType" 
+                     var="sp" 
+                     value="#{adminSEDTaskTypeView.list}"
+                     selectionMode="single"
+                     selection="#{adminSEDTaskTypeView.selected}"
+                     rowKey="#{sp.type}"
+
+                     style="padding: 0px; margin: 0px"
+                     scrollable="true" 
+                     scrollHeight="200"    
+                     
+                     >
+             <p:ajax event="rowDblselect" listener="#{adminSEDTaskTypeView.startEditSelected()}" 
+                    update=":dialogs:cronDialogForm:cronJob"
+                    oncomplete="PF('taskTypeDialog').show()"/>
+
+            <f:facet name="header">
+                <p:commandButton value="Add"  styleClass="toolbar-Button" icon="ui-icon-sed-add" 
+                                 actionListener="#{adminSEDTaskTypeView.createEditable()}"
+                                 oncomplete="PF('taskTypeDialog').show()" 
+                                 update=":dlgTaskType:cronDialogForm:taskType"
+                                 
+                                 />
+                <p:commandButton value="Edit"  styleClass="toolbar-Button" icon="ui-icon-sed-edit" 
+                                 oncomplete="PF('taskTypeDialog').show()"                                                                   
+                                 actionListener="#{adminSEDTaskTypeView.startEditSelected()}"
+                                 update=":dlgTaskType:cronDialogForm:taskType"
+                                 />
+                <p:commandButton value="Delete" styleClass="toolbar-Button" icon="ui-icon-sed-remove" 
+                                 actionListener="#{adminSEDTaskTypeView.removeSelected()}" update=":forms:SettingsCron:TblTaskType" />
+ 
+            </f:facet>
+             <p:column headerText="Type" width="120">
+                <h:outputText value="#{sp.type}" />
+            </p:column>
+            <p:column headerText="Name" width="160">
+                <h:outputText value="#{sp.name}"></h:outputText>                
+            </p:column>
+            <p:column headerText="JNDI">
+                <h:outputText value="#{sp.jndi}"></h:outputText>                
+            </p:column>
+            <p:column headerText="Description">
+                <h:outputText value="#{sp.description}" ></h:outputText>                
+            </p:column>
+            
+        </p:dataTable>
+
+        
+        
+        
+        
         <h1>Cron jobs</h1>
-        <p:panel id="horizontal" toggleTitle="INFO" header="Sed-Box Cron job" 
+        <p:panel id="CronDesc" toggleTitle="INFO" header="Sed-Box Cron job" 
                  toggleable="true"  collapsed="true">
             <h:outputText value="Administration of SED Cron. "></h:outputText>
         </p:panel>
         <p:dataTable id="TblCron" 
                      var="sp" 
-                     value="#{adminMSHCronJobView.list}"
+                     value="#{adminSEDCronJobView.list}"
                      selectionMode="single"
-                     selection="#{adminMSHCronJobView.selected}"
+                     selection="#{adminSEDCronJobView.selected}"
                      rowKey="#{sp.id}"
 
                      style="padding: 0px; margin: 0px"
                      scrollable="true" 
-                     scrollHeight="200px"                     
+                     scrollHeight="400"                     
                      >
-             <p:ajax event="rowDblselect" listener="#{adminMSHCronJobView.startEditSelected()}" 
+             <p:ajax event="rowDblselect" listener="#{adminSEDCronJobView.startEditSelected()}" 
                     update=":dialogs:cronDialogForm:cronJob"
                     oncomplete="PF('cronDialog').show()"/>
 
             <f:facet name="header">
                 <p:commandButton value="Add"  styleClass="toolbar-Button" icon="ui-icon-sed-add" 
-                                 actionListener="#{adminMSHCronJobView.createEditable()}"
+                                 actionListener="#{adminSEDCronJobView.createEditable()}"
                                  oncomplete="PF('cronDialog').show()" 
                                  update=":dialogs:cronDialogForm:cronJob"
                                  
                                  />
                 <p:commandButton value="Edit"  styleClass="toolbar-Button" icon="ui-icon-sed-edit" 
                                  oncomplete="PF('cronDialog').show()"                                                                   
-                                 actionListener="#{adminMSHCronJobView.startEditSelected()}"
+                                 actionListener="#{adminSEDCronJobView.startEditSelected()}"
                                  update=":dialogs:cronDialogForm:cronJob"
                                  />
                 <p:commandButton value="Delete" styleClass="toolbar-Button" icon="ui-icon-sed-remove" 
-                                 actionListener="#{adminMSHCronJobView.removeSelected()}" update=":forms:SettingsCron:TblCron" />
+                                 actionListener="#{adminSEDCronJobView.removeSelected()}" update=":forms:SettingsCron:TblCron" />
  
             </f:facet>
             <p:column headerText="Id">
@@ -71,7 +128,7 @@
                 <h:outputText value="#{sp.dayOfWeek}" ></h:outputText>                
             </p:column>
             <p:column headerText="Task type">
-                <h:outputText value="#{sp.MSHTask.taskType}" ></h:outputText>                
+                <h:outputText value="#{sp.SEDTask.taskType}" ></h:outputText>                
             </p:column>
         </p:dataTable>
 

@@ -76,7 +76,7 @@ public class AdminSEDBoxView extends AbstractAdminJSFView<SEDBox> {
     public void removeSelected() {
         SEDBox sb = getSelected();
         if (sb != null) {
-            if (!sb.getSEDUsers().isEmpty()) {
+            /*if (!sb.getSEDUsers().isEmpty()) {
                 StringWriter sw = new StringWriter();
                 sw.append("Users: ");
                 boolean isFirst = true;
@@ -90,10 +90,10 @@ public class AdminSEDBoxView extends AbstractAdminJSFView<SEDBox> {
 
                 FacesMessage msg = new FacesMessage("Box has users! Delete box from users first!", sw.toString());
                 facesContext().addMessage("messages", msg);
-            } else {
+            } else {*/
                 mdbLookups.removeSEDBox(sb);
                 setSelected(null);
-            }
+            //}
 
         }
 
