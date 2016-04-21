@@ -125,6 +125,35 @@ public class SEDDaoBean implements SEDDaoInterface {
     }
 
     @Override
+    public <T> void removeMail(Class<T> type, List<T> lst) {
+        long l = LOG.logStart(type);
+
+        try {
+            mutUTransaction.begin();
+            for (T ent : lst) {
+                //remove mail
+                memEManager.remove(ent);
+            }
+            mutUTransaction.commit();
+        } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
+            {
+                try {
+                    mutUTransaction.rollback();
+                } catch (IllegalStateException | SecurityException | SystemException ex1) {
+                    // ignore 
+                }
+                LOG.logError(l, ex);
+                /*  SEDException msherr = new SEDException();
+                msherr.setErrorCode(SEDExceptionCode.SERVER_ERROR);
+                msherr.setMessage(ex.getMessage());
+                throw new SEDException_Exception("Error occured while storing to DB", msherr, ex);*/
+            }
+        }
+
+        LOG.logEnd(l);
+    }
+
+    @Override
     public List<MSHInMail> getInMailConvIdAndAction(String action, String convId) {
         long l = LOG.logStart(action, convId);
         Query q = memEManager.createNamedQuery("org.msh.ebms.inbox.mail.MSHInMail.getByConvIdAndAction", MSHInMail.class);
@@ -353,8 +382,8 @@ public class SEDDaoBean implements SEDDaoInterface {
                         continue;
                     }
 
-                    if (fieldName.endsWith("List") && searchValue instanceof List ) {
-                        lstPredicate.add(om.get(fieldName.substring(0, fieldName.lastIndexOf("List"))).in( ((List)searchValue).toArray()));
+                    if (fieldName.endsWith("List") && searchValue instanceof List) {
+                        lstPredicate.add(om.get(fieldName.substring(0, fieldName.lastIndexOf("List"))).in(((List) searchValue).toArray()));
                         System.out.println("Add  predicat: " + searchValue);
                     } else {
                         try {
@@ -396,25 +425,26 @@ public class SEDDaoBean implements SEDDaoInterface {
             return null;
         }
     }
-    
+
     @Override
-    public boolean addExecutionTask(SEDTaskExecution ad){
+    public boolean addExecutionTask(SEDTaskExecution ad) {
         return add(ad);
-    };
+    }
+
+    ;
     
     @Override
-    public boolean updateExecutionTask(SEDTaskExecution ad){
+    public boolean updateExecutionTask(SEDTaskExecution ad) {
         return update(ad);
     }
-    
-    
+
     public <T> boolean add(T o) {
         long l = LOG.logStart();
         boolean suc = false;
         try {
             mutUTransaction.begin();
             memEManager.persist(o);
-            mutUTransaction.commit();         
+            mutUTransaction.commit();
             suc = true;
         } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
             try {
@@ -433,7 +463,7 @@ public class SEDDaoBean implements SEDDaoInterface {
         try {
             mutUTransaction.begin();
             memEManager.merge(o);
-            mutUTransaction.commit();     
+            mutUTransaction.commit();
             suc = true;
         } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
             try {
@@ -452,7 +482,7 @@ public class SEDDaoBean implements SEDDaoInterface {
         try {
             mutUTransaction.begin();
             memEManager.remove(memEManager.contains(o) ? o : memEManager.merge(o));
-            mutUTransaction.commit(); 
+            mutUTransaction.commit();
             suc = true;
         } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
             try {

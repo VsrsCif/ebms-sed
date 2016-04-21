@@ -16,21 +16,16 @@
  */
 package si.sed.msh.web.gui;
 
-import generated.SedLookups;
 import si.sed.msh.web.abst.AbstractJSFView;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.faces.application.ViewHandler;
@@ -38,14 +33,12 @@ import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
 import javax.faces.component.UIViewRoot;
 import javax.faces.context.FacesContext;
-import javax.xml.bind.JAXBException;
 import javax.xml.ws.WebServiceContext;
 import org.primefaces.event.RowEditEvent;
 import si.sed.commons.SEDJNDI;
 import si.sed.commons.SEDSystemProperties;
 import si.sed.commons.interfaces.DBSettingsInterface;
 import si.sed.commons.interfaces.SEDLookupsInterface;
-import si.sed.commons.utils.xml.XMLUtils;
 
 
 /**
@@ -178,6 +171,6 @@ public class ApplicationData extends AbstractJSFView {
     }
     
     public void exportLookups(){
-        msedLookups.exportLookups();
+        msedLookups.exportLookups(new File(System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR)));
     }
 }

@@ -137,7 +137,7 @@ public class SEDLookups implements SEDLookupsInterface {
     }
     
     @Override
-    public void exportLookups() {
+    public void exportLookups(File f) {
         long l = LOG.logStart();
         SedLookups slps = new SedLookups();
         slps.setExportDate(Calendar.getInstance().getTime());
@@ -159,7 +159,7 @@ public class SEDLookups implements SEDLookupsInterface {
         slps.getSEDCertStores().getSEDCertStores().addAll(getSEDCertStore());
         slps.getSEDPlugins().getSEDPlugins().addAll(getSEDPlugin());
         try {
-            XMLUtils.serialize(slps, new File("sed-settings.xml"));
+            XMLUtils.serialize(slps, new File(f, "sed-settings.xml"));
         } catch (JAXBException | FileNotFoundException ex) {
             LOG.logError(l, ex.getMessage(), ex);
         }

@@ -5,6 +5,7 @@
  */
 package si.sed.commons.interfaces;
 
+import java.io.File;
 import java.math.BigInteger;
 import java.util.List;
 import javax.ejb.Local;
@@ -29,7 +30,7 @@ public interface SEDLookupsInterface {
     boolean addSEDTaskType(SEDTaskType sb);
     boolean addSEDUser(SEDUser sb);
     
-    void exportLookups();
+    void exportLookups(File f);
     
     SEDBox getSEDBoxByName(String strname);
     SEDCertStore getSEDCertStoreByCertAlias(String alias, boolean isKey);
