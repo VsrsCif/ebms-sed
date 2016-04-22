@@ -71,6 +71,7 @@ public class SEDLookups implements SEDLookupsInterface {
     private final HashMap<Class, Long> mlstTimeOut = new HashMap<>();
     @Resource
     public UserTransaction mutUTransaction;
+    
     public <T> boolean add(T o) {
         long l = LOG.logStart();
         boolean suc = false;
