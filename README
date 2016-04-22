@@ -1,4 +1,6 @@
-Build  status on travis: [[https://api.travis-ci.org/VsrsCif/ebms-sed.svg?branch=master]]
+Build  status on travis: <img src="https://api.travis-ci.org/VsrsCif/ebms-sed.svg?branch=master" alt="Travis CI badge" />
+
+
  
 
 Aplikacija ebms-sed je demo aplikacije za varno elektronsko izmenjavo po ebms 3.0 (AS 4) 
