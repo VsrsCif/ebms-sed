@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd" >
+<hibernate-mapping>    
+    <class name="org.sed.ebms.plugin.SEDPlugin"
+           table="SED_PLUGIN">
+        <id name="Id" type="java.math.BigInteger" >
+            <column name="ID" scale="0" />
+            <generator class="sequence">
+                <param name="sequence">SEQ_SED_PLUGIN</param>
+            </generator>
+        </id>                  
+        <property column="ACTIVE" name="Active"   type="java.lang.Boolean"/>        
+        <property column="NAME" name="Name"  length="128" type="java.lang.String"/>
+        <property column="DESCRIPTION" name="Desc"  length="1024" type="java.lang.String"/>
+        <property column="JNDI_IN_INTERCEPTOR" name="JndiInInterceptor"  length="128" type="java.lang.String"/>
+        <property column="JNDI_OUT_INTERCEPTOR" name="JndiOutInterceptor"  length="128" type="java.lang.String"/>
+        <property column="SETTINGS_URL" name="SettingsUrl"  length="512" type="java.lang.String"/>
+        
+        
+    </class>    
+    <query name="org.sed.ebms.plugin.SEDPlugin.getAll" ><![CDATA[SELECT p FROM SEDPlugin p]]></query>    
+
+</hibernate-mapping>

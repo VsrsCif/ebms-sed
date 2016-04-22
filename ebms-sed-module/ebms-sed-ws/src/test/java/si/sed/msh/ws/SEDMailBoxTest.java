@@ -63,6 +63,7 @@ import si.sed.commons.exception.HashException;
 import si.sed.commons.exception.SVEVReturnValue;
 import si.sed.commons.exception.StorageException;
 import si.sed.commons.utils.HashUtils;
+import si.sed.commons.utils.SEDLookups;
 import si.sed.commons.utils.StorageUtils;
 import si.sed.commons.utils.Utils;
 
@@ -78,6 +79,7 @@ public class SEDMailBoxTest extends TestUtils {
 
     static SEDMailBox mTestInstance = new SEDMailBox();
     static EntityManagerFactory memfFactory = null;
+    static EntityManagerFactory memfMSHFactory = null;
 
     @BeforeClass
     public static void startClass() throws Exception {
@@ -104,9 +106,18 @@ public class SEDMailBoxTest extends TestUtils {
             mTestInstance.mqMSHQueue = mshueue;
             //---------------------------------
             // set derby database
+            //SEDLookups msLookup = new SEDLookups();
+            //  mTestInstance.mdbLookups = msLookup;
+            
+            memfMSHFactory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
             memfFactory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
+            //msLookup.memEManager =  memfMSHFactory.createEntityManager();
             mTestInstance.memEManager = memfFactory.createEntityManager();
+            //msLookup.mutUTransaction =  new MockUserTransaction(msLookup.memEManager.getTransaction());
             mTestInstance.mutUTransaction = new MockUserTransaction(mTestInstance.memEManager.getTransaction());
+            
+            // set lookup 
+          
 
         } catch (NamingException | JMSException ex) {
             Logger.getLogger(SEDMailBoxTest.class.getName()).log(Level.SEVERE, null, ex);

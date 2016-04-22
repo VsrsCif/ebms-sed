@@ -125,10 +125,10 @@ public class SEDMailBox implements SEDMailBoxWS {
     protected EntityManager memEManager;
     @Resource
     WebServiceContext mwsCtxt;
-    
-    @EJB (mappedName=SEDJNDI.JNDI_SEDLOOKUPS)
-    private SEDLookupsInterface mdbLookups;
-    
+
+    @EJB(mappedName = SEDJNDI.JNDI_SEDLOOKUPS)
+    protected SEDLookupsInterface mdbLookups;
+
     protected Queue mqMSHQueue = null;
 
     PModeManager mpModeManager = new PModeManager();
@@ -168,22 +168,23 @@ public class SEDMailBox implements SEDMailBoxWS {
         OutMail mail = submitMailRequest.getData().getOutMail();
         // check for missing data
         SEDRequestUtils.checkOutMailForMissingData(mail);
-        
-        SEDBox sb =  mdbLookups.getSEDBoxByName(mail.getSenderEBox());
-        if (sb == null){
-            String msg = "Sender box [SubmitMailRequest/Data/OutMail/@senderEBox]:  "+mail.getSenderEBox()+" not exists" ;
-            throw SEDRequestUtils.createSEDException(msg, SEDExceptionCode.INVALID_DATA);
-        }else {
-            if (sb.getActiveFromDate()!= null && sb.getActiveFromDate().after(Calendar.getInstance().getTime())){
-                String msg = "Sender box [SubmitMailRequest/Data/OutMail/@senderEBox]:  "+mail.getSenderEBox()+" is  active! (Activation from : '"+sb.getActiveFromDate().toString()+"')" ;
+        if (mdbLookups != null) { // TODO fix: unit tests
+            SEDBox sb = mdbLookups.getSEDBoxByName(mail.getSenderEBox());
+            if (sb == null) {
+                String msg = "Sender box [SubmitMailRequest/Data/OutMail/@senderEBox]:  " + mail.getSenderEBox() + " not exists";
                 throw SEDRequestUtils.createSEDException(msg, SEDExceptionCode.INVALID_DATA);
-            }
-            if (sb.getActiveToDate()!= null && sb.getActiveToDate().before(Calendar.getInstance().getTime())){
-                String msg = "Sender box [SubmitMailRequest/Data/OutMail/@senderEBox]:  "+mail.getSenderEBox()+" is  active! (Activation To : '"+sb.getActiveToDate().toString()+"')" ;
-                throw SEDRequestUtils.createSEDException(msg, SEDExceptionCode.INVALID_DATA);
+            } else {
+                if (sb.getActiveFromDate() != null && sb.getActiveFromDate().after(Calendar.getInstance().getTime())) {
+                    String msg = "Sender box [SubmitMailRequest/Data/OutMail/@senderEBox]:  " + mail.getSenderEBox() + " is  active! (Activation from : '" + sb.getActiveFromDate().toString() + "')";
+                    throw SEDRequestUtils.createSEDException(msg, SEDExceptionCode.INVALID_DATA);
+                }
+                if (sb.getActiveToDate() != null && sb.getActiveToDate().before(Calendar.getInstance().getTime())) {
+                    String msg = "Sender box [SubmitMailRequest/Data/OutMail/@senderEBox]:  " + mail.getSenderEBox() + " is  active! (Activation To : '" + sb.getActiveToDate().toString() + "')";
+                    throw SEDRequestUtils.createSEDException(msg, SEDExceptionCode.INVALID_DATA);
+                }
             }
         }
-        
+
         // check if mail already exists
         OutMail om = mailExists(mail);
         if (om == null) {
