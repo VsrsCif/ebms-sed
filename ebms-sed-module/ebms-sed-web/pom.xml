@@ -59,7 +59,7 @@
                         <manifestEntries>                            
                             <implementation-version>${project.version}</implementation-version>             
                             <Implementation-Build>${buildNumber}</Implementation-Build>                            
-                            <Dependencies>org.sed, org.primefaces</Dependencies>
+                            <Dependencies>org.sed</Dependencies>
                         </manifestEntries>
                         
                     </archive>                                 

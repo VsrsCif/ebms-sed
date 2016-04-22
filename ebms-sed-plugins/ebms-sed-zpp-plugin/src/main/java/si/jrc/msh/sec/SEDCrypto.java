@@ -65,9 +65,9 @@ public class SEDCrypto {
     }
 
     public enum SymEncAlgorithms {
-        AES128_CBC("http://www.w3.org/2001/04/xmlenc#aes128-cbc", "AES", 128),
-        AES192_CBC("http://www.w3.org/2001/04/xmlenc#aes192-cbc", "AES",  192),
-        AES256_CBC("http://www.w3.org/2001/04/xmlenc#aes256-cbc", "AES",  256)
+        AES128_CBC("http://www.w3.org/2001/04/xmlenc#aes128-cbc", "AES", 128)
+       ,AES192_CBC("http://www.w3.org/2001/04/xmlenc#aes192-cbc", "AES",  192)
+       ,AES256_CBC("http://www.w3.org/2001/04/xmlenc#aes256-cbc", "AES",  256)
         ;        
 
         private final String mstrW3_uri;

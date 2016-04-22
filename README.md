@@ -31,7 +31,7 @@ Sestava embs-sed projekta:
 			, xlink.xsd (http://www.w3.org/TR/xml-i18n-bp/xmlspec/xlink.xsd);
 		- ebms-sed-wsdl: modul generira java klienta in WS-API iz spletnega opisa (wsdl) SED-WS modula;
 		- ebms-sed-commons: skupna orodja in šifiranti;
-		- ebms-sed-dao: skupne storitve za shranjevanje in branje entitet v relacijsko bazo in datotečni sistem. 
+        - ebms-sed-dao: skupne storitve za shranjevanje in branje entitet v relacijsko bazo in datotečni sistem. 
 	- ebms-sed-module: implementacija ebms-sed spletnih in FS storitev za prevzemanje in pošiljanje pošte ter
 			   implementacija  spletnega vmesnika;
 	- ebms-msh-module: implementacija ebMS 3.0 (AS 4). modula

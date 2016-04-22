@@ -1,0 +1,86 @@
+
+<SedLookups xmlns:ns2="http://ebms.sed.org/cron/" xmlns:ns3="http://ebms.sed.org/ebox" xmlns:ns4="http://ebms.sed.org/plugin" xmlns:ns5="http://ebms.sed.org/property" xmlns:ns6="http://ebms.sed.org/user" xmlns:ns7="http://ebms.sed.org/cert" exportDate="2016-04-21T23:12:44.404+02:00">
+    <SEDCronJobs>
+        <ns2:SEDCronJob id="6" active="true" second="*/20" minute="*" hour="*" dayOfMonth="*" month="*" dayOfWeek="*">
+            <ns2:SEDTask taskType="archive">
+                <ns2:SEDTaskProperty id="118" key="export_folder">${sed.home}/archive/</ns2:SEDTaskProperty>
+                <ns2:SEDTaskProperty id="119" key="date_offset">1</ns2:SEDTaskProperty>
+            </ns2:SEDTask>
+        </ns2:SEDCronJob>
+        <ns2:SEDCronJob id="218" active="true" second="*/20" minute="*" hour="*" dayOfMonth="*" month="*" dayOfWeek="*">
+            <ns2:SEDTask taskType="backup">
+                <ns2:SEDTaskProperty id="219" key="export_folder">${sed.home}/backup/</ns2:SEDTaskProperty>
+                <ns2:SEDTaskProperty id="220" key="email"/>
+                <ns2:SEDTaskProperty id="221" key="send-mail"/>
+            </ns2:SEDTask>
+        </ns2:SEDCronJob>
+        <ns2:SEDCronJob id="240" active="true" second="*/20" minute="*" hour="*" dayOfMonth="*" month="*" dayOfWeek="*">
+            <ns2:SEDTask taskType="mailReport">
+                <ns2:SEDTaskProperty id="241" key="sedbox">izvrsba@sed-court.si</ns2:SEDTaskProperty>
+                <ns2:SEDTaskProperty id="242" key="email">receiver@mail.change.com</ns2:SEDTaskProperty>
+                <ns2:SEDTaskProperty id="243" key="send-mail">sender@mail.change.si</ns2:SEDTaskProperty>
+                <ns2:SEDTaskProperty id="244" key="subject">[SED REPORT]  - Izvrsba</ns2:SEDTaskProperty>
+            </ns2:SEDTask>
+        </ns2:SEDCronJob>
+    </SEDCronJobs>
+    <SEDTaskTypes>
+        <ns2:SEDTaskType type="archive" name="Daily archive" jndi="java:global/sed-basic-tasks/TaskArchive!si.sed.commons.interfaces.TaskExecutionInterface" description="Daily archive">
+            <ns2:SEDTaskTypeProperty id="8" key="export_folder" description="Export folder" mandatory="false"/>
+            <ns2:SEDTaskTypeProperty id="117" key="date_offset" description="date to from today" mandatory="true"/>
+        </ns2:SEDTaskType>
+        <ns2:SEDTaskType type="backup" name="Backup" jndi="java:global/sed-basic-tasks/TaskBackup!si.sed.commons.interfaces.TaskExecutionInterface" description="Backup database">
+            <ns2:SEDTaskTypeProperty id="215" key="export_folder" description="Export folder" mandatory="true"/>
+            <ns2:SEDTaskTypeProperty id="216" key="email" description="Prejemnikov naslov" mandatory="true"/>
+            <ns2:SEDTaskTypeProperty id="217" key="send-mail" description="pošiljateljev email" mandatory="true"/>
+        </ns2:SEDTaskType>
+        <ns2:SEDTaskType type="mailReport" name="Report send by mail" jndi="java:global/sed-basic-tasks/TaskEmailReport!si.sed.commons.interfaces.TaskExecutionInterface" description="Delivery report">
+            <ns2:SEDTaskTypeProperty id="9" key="sedbox" description="SED-Predal" mandatory="true"/>
+            <ns2:SEDTaskTypeProperty id="10" key="email" description="Prejemnikov naslov" mandatory="true"/>
+            <ns2:SEDTaskTypeProperty id="11" key="send-mail" description="pošiljateljev email" mandatory="true"/>
+            <ns2:SEDTaskTypeProperty id="12" key="subject" description="[EMBS-SED] sedpredal" mandatory="true"/>
+        </ns2:SEDTaskType>
+    </SEDTaskTypes>
+    <SEDBoxes>
+        <ns3:SEDBox boxName="eINS-vpisnik@sed-court.si" activeFromDate="2016-04-20+02:00">
+            <ns3:Export active="true" folder="${sed.home}/export-eins" fileMask="${Service}_${Id}"/>
+        </ns3:SEDBox>
+        <ns3:SEDBox boxName="izvrsba@sed-court.si" activeFromDate="2016-04-20+02:00">
+            <ns3:Export active="true" exportMetaData="true" folder="${sed.home}/export-izvrsba" fileMask="${Id}_${SenderEBox}_${Service}"/>
+        </ns3:SEDBox>
+        <ns3:SEDBox boxName="k-vpisnik@sed-court.si" activeFromDate="2016-04-20+02:00"/>
+    </SEDBoxes>
+    <SEDPlugins/>
+    <SEDProperties>
+        <ns5:SEDProperty key="sed.domain" value="sed-domain.org" group="SED"/>
+        <ns5:SEDProperty key="org.sed.pmode" value="pmode-conf.xml" group="SYSTEM"/>
+    </SEDProperties>
+    <SEDUsers>
+        <ns6:SEDUser userId="sed" activeFromDate="2016-04-20+02:00">
+            <ns3:SEDBox boxName="izvrsba@sed-court.si" activeFromDate="2016-04-20+02:00">
+                <ns3:Export active="true" exportMetaData="true" folder="${sed.home}/export-izvrsba" fileMask="${Id}_${SenderEBox}_${Service}"/>
+            </ns3:SEDBox>
+            <ns3:SEDBox boxName="k-vpisnik@sed-court.si" activeFromDate="2016-04-20+02:00"/>
+            <ns3:SEDBox boxName="eINS-vpisnik@sed-court.si" activeFromDate="2016-04-20+02:00">
+                <ns3:Export active="true" folder="${sed.home}/export-eins" fileMask="${Service}_${Id}"/>
+            </ns3:SEDBox>
+        </ns6:SEDUser>
+        <ns6:SEDUser userId="admin" activeFromDate="2016-04-20+02:00">
+            <ns3:SEDBox boxName="izvrsba@sed-court.si" activeFromDate="2016-04-20+02:00">
+                <ns3:Export active="true" exportMetaData="true" folder="${sed.home}/export-izvrsba" fileMask="${Id}_${SenderEBox}_${Service}"/>
+            </ns3:SEDBox>
+            <ns3:SEDBox boxName="k-vpisnik@sed-court.si" activeFromDate="2016-04-20+02:00"/>
+            <ns3:SEDBox boxName="eINS-vpisnik@sed-court.si" activeFromDate="2016-04-20+02:00">
+                <ns3:Export active="true" folder="${sed.home}/export-eins" fileMask="${Service}_${Id}"/>
+            </ns3:SEDBox>
+        </ns6:SEDUser>
+    </SEDUsers>
+    <SEDCertStores>
+        <ns7:SEDCertStore id="1" filePath="${sed.home}/security/msh.e-box-a-truststore.jks" type="jks" password="test1234">
+            <ns7:SEDCertificate id="2" alias="msh.e-box-b.si" issuerDN="CN=msh.e-box-b.si, OU=test, OU=msh, OU=jrc, OU=si" subjectDN="CN=msh.e-box-b.si, OU=test, OU=msh, OU=jrc, OU=si" validFrom="2016-02-29T14:55:29+01:00" validTo="2021-02-27T14:55:29+01:00" serialNumber="1048029646" type="X.509" keyEntry="false"/>
+            <ns7:SEDCertificate id="3" alias="msh.e-box-a.si" issuerDN="CN=msh.e-box-a.si, OU=test, OU=msh, OU=jrc, OU=si" subjectDN="CN=msh.e-box-a.si, OU=test, OU=msh, OU=jrc, OU=si" validFrom="2016-02-29T14:55:28+01:00" validTo="2021-02-27T14:55:28+01:00" serialNumber="1725505630" type="X.509" keyEntry="false"/>
+        </ns7:SEDCertStore>
+        <ns7:SEDCertStore id="4" filePath="${sed.home}/security/msh.e-box-a-keystore.jks" type="jks" password="test1234">
+            <ns7:SEDCertificate id="5" alias="msh.e-box-a.si" issuerDN="CN=msh.e-box-a.si, OU=test, OU=msh, OU=jrc, OU=si" subjectDN="CN=msh.e-box-a.si, OU=test, OU=msh, OU=jrc, OU=si" validFrom="2016-02-29T14:55:28+01:00" validTo="2021-02-27T14:55:28+01:00" serialNumber="1725505630" type="X.509" keyEntry="true" keyPassword="key1234"/>
+        </ns7:SEDCertStore>
+    </SEDCertStores>
+</SedLookups>
