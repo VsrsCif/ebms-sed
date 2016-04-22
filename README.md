@@ -2,7 +2,7 @@
 [Travis build](https://travis-ci.org/VsrsCif/ebms-sed)
 
 
- 
+  
 
 Aplikacija ebms-sed je demo aplikacije za varno elektronsko izmenjavo po ebms 3.0 (AS 4) 
 protokolu. Namen aplikacije je primer implementacije za izmenjavo sporočil (koreografija SVEV 2.0) za 
