@@ -51,8 +51,8 @@ public class LoginManager {
     
     private static final SEDLogger mLog = new SEDLogger(LoginManager.class);
 
-    private String mstrUsername ="sed";
-    private String mstrPassword = "sed1234";
+    private String mstrUsername ="";
+    private String mstrPassword = "";
     private String mstrForwardUrl;
     
     @EJB (mappedName=SEDJNDI.JNDI_SEDDAO)

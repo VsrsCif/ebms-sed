@@ -292,8 +292,11 @@ public class SEDLookups implements SEDLookupsInterface {
     @PostConstruct
     void init() {
         long l = LOG.logStart();
+        LOG.log("System property: " +SEDSystemProperties.SYS_PROP_INIT_LOOKUPS + " exists: " +System.getProperties().containsKey(SEDSystemProperties.SYS_PROP_INIT_LOOKUPS) );
         if (System.getProperties().containsKey(SEDSystemProperties.SYS_PROP_INIT_LOOKUPS)) {
+            
             File f = new File(System.getProperty(SEDSystemProperties.SYS_PROP_INIT_LOOKUPS));
+            LOG.log("Update data from database: " +f.getAbsolutePath());
             try {
                 SedLookups cls = (SedLookups) XMLUtils.deserialize(f, SedLookups.class);
                 if (cls.getSEDBoxes() != null && !cls.getSEDBoxes().getSEDBoxes().isEmpty()) {
@@ -358,7 +361,7 @@ public class SEDLookups implements SEDLookupsInterface {
                 }
 
             } catch (JAXBException ex) {
-                Logger.getLogger(SEDLookups.class.getName()).log(Level.SEVERE, null, ex);
+                LOG.logError(l, ex);
             }
 
         }

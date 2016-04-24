@@ -1,50 +1,49 @@
 #/!bin/sh
 
-EbmsSeDFolder=$1
-TmpFolder="ebms-sed-$(date +%Y%m%d%H%M)"
-rm -rf $TmpFolder
 
-mkdir $TmpFolder
-mkdir "$TmpFolder/modules"
-mkdir "$TmpFolder/deployments"
-mkdir "$TmpFolder/widlfly-10"
+SED_PROJECT=$1
+if [ "x$SED_PROJECT" = "x" ]; then
+	SED_PROJECT="../"
+fi
 
-cp "$EbmsSeDFolder/ebms-sed-libs/ebms-msh-xsd/target/ebms-msh-xsd-1.0.jar" "$TmpFolder/modules/" 	
-cp "$EbmsSeDFolder/ebms-sed-libs/ebms-sed-wsdl/target/ebms-sed-wsdl-1.0.jar" "$TmpFolder/modules/"
-cp "$EbmsSeDFolder/ebms-sed-libs/ebms-sed-commons/target/ebms-sed-commons-1.0.jar" "$TmpFolder/modules/"
-cp "$EbmsSeDFolder/scripts/wildfly-10/modules/org.sed.module.xml" "$TmpFolder/modules/"
-cp "$EbmsSeDFolder/scripts/wildfly-10/modules/org.apache.ws.securitymodule.xml" "$TmpFolder/modules/"
+
+ZIP_FILENAME="ebms-sed-$(date +%Y%m%d_%H%M)"
+rm -rf $ZIP_FILENAME
+
+mkdir $ZIP_FILENAME
+mkdir "$ZIP_FILENAME/modules"
+mkdir "$ZIP_FILENAME/deployments"
+mkdir "$ZIP_FILENAME/widlfly-10"
+
+cp "$SED_PROJECT/ebms-sed-libs/ebms-msh-xsd/target/ebms-msh-xsd-1.0.jar" "$ZIP_FILENAME/modules/" 	
+cp "$SED_PROJECT/ebms-sed-libs/ebms-sed-wsdl/target/ebms-sed-wsdl-1.0.jar" "$ZIP_FILENAME/modules/"
+cp "$SED_PROJECT/ebms-sed-libs/ebms-sed-commons/target/ebms-sed-commons-1.0.jar" "$ZIP_FILENAME/modules/"
+cp "$SED_PROJECT/scripts/wildfly-10/modules/org.sed.module.xml" "$ZIP_FILENAME/modules/"
+cp "$SED_PROJECT/scripts/wildfly-10/modules/org.apache.ws.securitymodule.xml" "$ZIP_FILENAME/modules/"
 
 # commons ejbs
-cp "$EbmsSeDFolder/ebms-sed-dao/target/ebms-sed-dao.jar" "$TmpFolder/deployments/"
-cp "$EbmsSeDFolder/ebms-sed-tasks/sed-basic-tasks/target/sed-basic-tasks.jar" "$TmpFolder/deployments/"
+cp "$SED_PROJECT/ebms-sed-dao/target/ebms-sed-dao.jar" "$ZIP_FILENAME/deployments/"
+cp "$SED_PROJECT/ebms-sed-tasks/sed-basic-tasks/target/sed-basic-tasks.jar" "$ZIP_FILENAME/deployments/"
 # modules
-cp "$EbmsSeDFolder/ebms-msh-module/ebms-msh-ear/target/ebms-msh.ear" "$TmpFolder/deployments/"
-cp "$EbmsSeDFolder/ebms-sed-module/ebms-sed-ws/target/ebms-sed-ws.war"  "$TmpFolder/deployments/"
-cp "$EbmsSeDFolder/ebms-sed-module/ebms-sed-web/target/ebms-sed-webgui.war"  "$TmpFolder/deployments/"
-cp "$EbmsSeDFolder/ebms-sed-plugins/ebms-sed-zpp-plugin/target/plugin-zpp.war"  "$TmpFolder/deployments/"
+cp "$SED_PROJECT/ebms-msh-module/ebms-msh-ear/target/ebms-msh.ear" "$ZIP_FILENAME/deployments/"
+cp "$SED_PROJECT/ebms-sed-module/ebms-sed-ws/target/ebms-sed-ws.war"  "$ZIP_FILENAME/deployments/"
+cp "$SED_PROJECT/ebms-sed-module/ebms-sed-web/target/ebms-sed-webgui.war"  "$ZIP_FILENAME/deployments/"
+cp "$SED_PROJECT/ebms-sed-plugins/ebms-sed-zpp-plugin/target/plugin-zpp.war"  "$ZIP_FILENAME/deployments/"
 # configuration file
-cp -r "$EbmsSeDFolder/scripts/wildfly-10/config"  "$TmpFolder/widlfly-10"
+cp -r "$SED_PROJECT/scripts/wildfly-10/config"  "$ZIP_FILENAME/widlfly-10"
 # deploy script
-cp "$EbmsSeDFolder/scripts/wildfly-10/first-deploy.sh" "$TmpFolder/widlfly-10"
-cp "$EbmsSeDFolder/scripts/wildfly-10/sed-first-start.sh" "$TmpFolder/widlfly-10"
+cp "$SED_PROJECT/scripts/wildfly-10/deploy-sed.sh" "$ZIP_FILENAME/widlfly-10"
+cp "$SED_PROJECT/scripts/wildfly-10/start-sed.sh" "$ZIP_FILENAME/widlfly-10"
+cp "$SED_PROJECT/scripts/wildfly-10/deploy-sed.bat" "$ZIP_FILENAME/widlfly-10"
+cp "$SED_PROJECT/scripts/wildfly-10/start-sed.bat" "$ZIP_FILENAME/widlfly-10"
 
 # init data:
-cp -r "$EbmsSeDFolder/scripts/init-sample" "$TmpFolder/sed-home"
+cp -r "$SED_PROJECT/scripts/init-sample" "$ZIP_FILENAME/sed-home"
 
-zip -r "$TmpFolder.zip" $TmpFolder
+zip -r "$ZIP_FILENAME.zip" $ZIP_FILENAME
 
-rm -rf $TmpFolder
+rm -rf $ZIP_FILENAME
 
-
-
-#./standalone.sh -c standalone-ebms.xml -Dsed.home=/opt/servers/wildfly-10.0.0.Final/sed-home -Dorg.sed.msh.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
-
-
-#./standalone.sh -c standalone-ebms.xml -Dsed.home=/opt/servers/wildfly-10.0.0.Final/sed-home -Dorg.sed.msh.hibernate.hbm2ddl.auto=create -Dorg.sed.msh.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect -Dorg.sed.msh.sender.workers.count=7 -Dorg.sed.init.lookups=sed-settings.xml
-
-#org.hibernate.dialect.H2Dialect
-#./standalone.sh -c standalone-ebms.xml -Dsed.home=/opt/servers/wildfly-10.0.0.Final/sed-home -Dorg.sed.msh.hibernate.hbm2ddl.auto=create -Dorg.sed.msh.hibernate.dialect=org.hibernate.dialect.H2Dialect -Dorg.sed.msh.sender.workers.count=7
 
 
 
