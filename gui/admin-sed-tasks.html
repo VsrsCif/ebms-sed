@@ -1,0 +1,80 @@
+<div class ="sidebar" >    
+    <h2>Kazalo:</h2>
+    <ul >
+        <li><a href="#/gui/ebms-sed:application" >Aplikacija ebms-sed</a>
+            <ul style="padding-left: 20px">
+                <li><a href="#gui/ebms-sed:login"  >Prijavno okno</a></li> 
+                <li><a href="#gui/ebms-sed:workspace" >Delavno okolje</a></li> 
+                <li><a href="#gui/ebms-sed:tools" >Sklopi orodij</a></li> 
+            </ul></li>
+        <li><a href="#gui/admin-sed-box:admin" >Administracija: SED-predali</a>
+            <ul style="padding-left: 20px">            
+                <li><a href="#gui/admin-sed-box:add-edit" >Urejanje SED-predala</a></li> 
+                <li><a href="#gui/admin-sed-box:export" >Izvoz dohodne pošte</a></li> 
+                <li><a href="#gui/admin-sed-box:execute" >Izvajanje procesov</a></li> 
+
+            </ul>
+        <li><a href="#gui/admin-sed-user" >Administracija: Uporabniki</a>
+            <ul style="padding-left: 20px">            
+                <li><a href="#gui/admin-sed-user:user" >Seznam uporabnikov</a></li> 
+                <li><a href="#gui/admin-sed-user:add-edit" >Urejanje uporabnika</a></li> 
+            </ul>
+        </li>
+        <li><a href="#gui/admin-keystore" >Administracija: Certifikati</a>
+            <ul style="padding-left: 20px">            
+                <li><a href="#gui/admin-keystore:list" >Seznam shramb</a></li> 
+                <li><a href="#gui/admin-keystore:add-edit" >Urejanje shrambe</a></li> 
+            </ul>
+        </li>
+        <li><a href="#gui/admin-sed-tasks" >Administracija upravil</a>
+            <ul style="padding-left: 20px">            
+                <li><a href="#gui/admin-sed-tasks:list" >Seznam tipov upravil</a></li> 
+                <li><a href="#gui/admin-sed-tasks:add-edit" >Urejanje tipa upravila</a></li> 
+                <li><a href="#gui/admin-sed-tasks:cron" >Urnik upravil</a></li> 
+                <li><a href="#gui/admin-sed-tasks:cron add-edit" >Urejanje urnika upravil</a></li> 
+            </ul>
+        </li>
+        <li><a href="#pmode/pmode" >Administracija: PMODE</a></li>
+    </ul>
+</div>
+<div class="main">
+    <article class='content'>
+       <h1 id="gui/admin-sed-box:admin">Seznam tipov upravil</h1>
+       
+       Administracija <b>upravil</b> (Scheduler) se nahaja v sklopu orodij <b>Nastavitve</b>
+       (Settings) orodje Upravila (Scheduler). Urejanje omogoča spreminjanje in dodajanje 
+       novih tipov upravil, ter določanje urnikov izvajanja upravil. 
+       <h2 id="gui/admin-sed-tasks:list">Seznam tipov upravil</h2>
+       Orodje <b>Upravila</b> prikazuje seznam tipov upravil in urnikov izvajanja upravil.
+       V orodni vrstici seznama so gumbi za dodajanje spreminjanje in brisanje e-predala.<br /><br />
+       <img src="img/gui/task-type-list.png" alt="Task type" width="680"/> <br />
+       <br />
+       Ob kliki na gumb <b>Dodaj</b>(add),  <b>Uredi</b>(Edit) ali dvojnem kliku na izbrano 
+       vstico se prikaže dialog za dodajanje/urejanje tipa upravila.
+       <br /><br />
+       <center>
+        <img src="img/gui/task-type-edit.png" alt="SEDBox admin" width="680"/> <br />
+       </center><br />
+       
+       <h2 id="gui/admin-sed-tasks:add-edit">Dodajanje, urejanje tipa upravila</h2>      
+       Implementacija opravila je v obliki "stateless" EJB,ja ki implementira metodo <b>executeTask(Properties p)</b> vmesnika
+       <code>si.sed.commons.interfaces.TaskExecutionInterface</code>
+       <pre><code>@Local
+public interface TaskExecutionInterface {    
+     public String executeTask(Properties p) throws Exception;
+}</code></pre>
+Arhitektura omogoča poljubno izdelavo opravil, ki se jih namesti tako, da se izgrajeni EJB (jar) namesti v deploy mapo aplikacijskega strežnika.
+V konfiguraciji tipa opravila je tako potrebno navesti JNDI "naslov" do instance tipa opravila. Ob določanju tipa opravila je potrebno 
+navesti tudi parametre, ki jih je pri urniku izvajanja opravila potrebno določiti. 
+       
+       <ul>
+           <li><b>Enolična oznaka tipa opravila: (Type)</b> je enolična oznaka tipa opravila</li>
+           <li><b>Ime tipa opravila: (Name)</b> poimenovanje opravila</li>
+           <li><b>Opis opravila: (Desc)</b> Opis opravila </li>
+           <li><b>JNDI</b>  EJB naslov, npr.:<br /> <code>java:global/sed-basic-tasks/TaskBackup!si.sed.commons.interfaces.TaskExecutionInterface</code></li>
+           
+       </ul>
+       
+
+    </article>  
+</div>
