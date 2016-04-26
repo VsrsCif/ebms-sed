@@ -51,47 +51,64 @@ public class AdminSEDKeyStores extends AbstractAdminJSFView<SEDCertStore> {
     @Override
     public void createEditable() {
         SEDCertStore cs = new SEDCertStore();
-        
+
         setNew(cs);
 
     }
 
-    private DualListModel<SEDCertificate> msbCBDualList = new DualListModel<>();
+   
 
-    public DualListModel<SEDCertificate> getCurrentPickupDualSEDCertList() {
+    public void refreshCurrentKeystore() {
         long l = LOG.logStart();
 
-        List<String> sbIDs = new ArrayList<>();
         if (getEditable() != null) {
-            getEditable().getSEDCertificates().stream().forEach((sb) -> {
-                sbIDs.add(sb.getAlias());
-            });
-        }
-        List<SEDCertificate> src = getEditable().getSEDCertificates();
-        List<SEDCertificate> trg = new ArrayList<>();
 
-        try {
-            KeyStore ks = mku.openKeyStore(getEditable().getFilePath(), getEditable().getType(), getEditable().getPassword().toCharArray());
-            List<SEDCertificate> lstals = mku.getKeyStoreSEDCertificates(ks);
-            for (SEDCertificate als: lstals) {
-                if (!sbIDs.contains(als.getAlias())){
-                    src.add(als);
+            List<SEDCertificate> src = getEditable().getSEDCertificates();
+     
+            try {
+                KeyStore ks = mku.openKeyStore(getEditable().getFilePath(), getEditable().getType(), getEditable().getPassword().toCharArray());
+                List<SEDCertificate> lstals = mku.getKeyStoreSEDCertificates(ks);
+                
+                
+                for (SEDCertificate ksc : lstals) {
+                    SEDCertificate sc  = existsCertInList(src, ksc);
+                    if (sc!=null){
+                        sc.setStatus("OK");                        
+                    } else {
+                        ksc.setStatus("NEW");
+                        src.add(ksc);                        
+                    }               
                 }
+                for (SEDCertificate sc: src) {
+                    SEDCertificate ksc  = existsCertInList(src, sc);
+                    if (ksc==null){
+                        sc.setStatus("DEL");
+                    }                    
+                }
+                getEditable().setStatus("SUCCESS");
+            } catch (SEDSecurityException ex) {
+                getEditable().setStatus("ERROR");
+                LOG.logWarn(l, getEditable().getFilePath(), ex);
             }
-
-        } catch (SEDSecurityException ex) {
-            LOG.logWarn(l,getEditable().getFilePath(), ex);            
         }
 
-        LOG.logEnd(l);
-        return msbCBDualList = new DualListModel<>(src, trg);
     }
+     public SEDCertificate  existsCertInList(List<SEDCertificate> lst, SEDCertificate sc){
+         for (SEDCertificate c: lst){
+             if (stringEquals(c.getAlias(), c.getAlias()) 
+                     && stringEquals(c.getIssuerDN(), sc.getIssuerDN() )
+                     && stringEquals(c.getSubjectDN(), sc.getSubjectDN() )
+                     && c.getSerialNumber().equals(sc.getSerialNumber()))
+                     return c;         
+         }
+         return null;   
+     }
+     
+     public boolean stringEquals(String s1, String s2){
+         return s1!=null &&s2!=null && s1.equals(s2) || s2==null && s2==null; 
+     }
 
-    public void setCurrentPickupDualSEDCertList(DualListModel<SEDCertificate> dl) {
-        msbCBDualList = dl;
-    }
-
-    @Override
+   @Override
     public List<SEDCertStore> getList() {
         long l = LOG.logStart();
         List<SEDCertStore> lst = mdbLookups.getSEDCertStore();
@@ -113,12 +130,8 @@ public class AdminSEDKeyStores extends AbstractAdminJSFView<SEDCertStore> {
     @Override
     public void persistEditable() {
         SEDCertStore ecj = getEditable();
-        if (ecj != null) {
-            mdbLookups.addSEDCertStore(ecj);
-            ecj.getSEDCertificates().clear();
-             if (msbCBDualList.getTarget() != null && !msbCBDualList.getTarget().isEmpty()) {                 
-                ecj.getSEDCertificates().addAll(msbCBDualList.getTarget());
-            }
+         if (ecj != null) {
+           mdbLookups.addSEDCertStore(ecj);         
         }
     }
 

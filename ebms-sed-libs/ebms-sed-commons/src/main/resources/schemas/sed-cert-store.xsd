@@ -46,6 +46,7 @@ Copyright 2016, Supreme Court Republic of Slovenia
 		</xs:attribute>
 		<xs:attribute name="type" use="required"/>
 		<xs:attribute name="password" use="required"/>
+                <xs:attribute name="status" use="optional"/>
 	</xs:complexType>
 	<xs:complexType name="SEDCertificate">
 		<xs:annotation>
@@ -67,5 +68,6 @@ Copyright 2016, Supreme Court Republic of Slovenia
                 <xs:attribute name="type" type="xs:string" use="required"/>
                 <xs:attribute name="keyEntry" type="xs:boolean" use="required"/>
 		<xs:attribute name="keyPassword"/>
+                <xs:attribute name="status" use="optional"/>
 	</xs:complexType>
 </xs:schema>
