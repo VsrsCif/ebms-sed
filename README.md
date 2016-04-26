@@ -2,22 +2,18 @@
 [Travis build](https://travis-ci.org/VsrsCif/ebms-sed)
 
 
-  
-
-Aplikacija ebms-sed je demo aplikacije za varno elektronsko izmenjavo po ebms 3.0 (AS 4) 
-protokolu. Namen aplikacije je primer implementacije za izmenjavo sporočil (koreografija SVEV 2.0) za 
-vročanje pošiljk, kot to določa Pravilnik o elektronskem poslovanju v civilnih sodnih
+Aplikacija ebms-sed je demo aplikacije za varno elektronsko izmenjavo sporočil po standardu ebMS 3.0 (AS4 profil). 
+Aplikacija služi kot primer implementacije protokola SVEV 2.0  za elektronsko vročanje sodnih pošiljk, 
+kot to določa Pravilnik o elektronskem poslovanju v civilnih sodnih
 postopkih (Ur.l. RS, št. 64/10 in 23/11, v nadaljevanju PEPCSP). Namen aplikacije je 
 zmanjšati tehnične in stroškovne ovire izvajalcem logističnih storitev (vročanje izhodne 
 pošte, kuvertiranje, skeniranje dohodne pošte) in uporabnikom storitev sodišča 
 za prehod na elektronsko poslovanje.
 
-Cilj aplikacije je primer izvorne kode delujoče aplikacije za izmenjavo dokumentov po 
-ebms 3.0 standardu (AS 4 profil). Aplikacija omogoča zagotavljanje varnosti (podpisovanje in šifriranje),
+Cilj aplikacije je izdelati delujoči primer izvorne kode aplikacije za izmenjavo dokumentov po 
+ebMS 3.0 standardu. Aplikacija omogoča zagotavljanje varnosti (podpisovanje in šifriranje),
 zanesljivost prenosa, preverjanje vsebin na standardni način. Ravno tako omogoča nastavljivo 
-koreografijo izmenjavo sporočil (primer SVEV 2.0). Izvorno kodo in aplikacijo se lahko na lastno odgovornost 
-uporabi za izmenjavo sporočil s sodišči ali drugimi strankami.
-
+koreografijo izmenjavo sporočil (primer SVEV 2.0).
 
 Sestava embs-sed projekta:
 - ebms-sed: osnovni projekt določa vse plugin-e in verzije odvisnih knjižnic;
