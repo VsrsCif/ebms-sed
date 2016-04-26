@@ -1,0 +1,85 @@
+<div class ="sidebar" >    
+    <h2>Kazalo:</h2>
+    <ul >
+        <li><a href="#/gui/ebms-sed:application" >Aplikacija ebms-sed</a>
+            <ul style="padding-left: 20px">
+                <li><a href="#gui/ebms-sed:login"  >Prijavno okno</a></li> 
+                <li><a href="#gui/ebms-sed:workspace" >Delavno okolje</a></li> 
+                <li><a href="#gui/ebms-sed:tools" >Sklopi orodij</a></li> 
+            </ul></li>
+        <li><a href="#gui/admin-sed-box:admin" >Administracija: SED-predali</a>
+            <ul style="padding-left: 20px">            
+                <li><a href="#gui/admin-sed-box:add-edit" >Urejanje SED-predala</a></li> 
+                <li><a href="#gui/admin-sed-box:export" >Izvoz dohodne pošte</a></li> 
+                <li><a href="#gui/admin-sed-box:execute" >Izvajanje procesov</a></li> 
+
+            </ul>
+        <li><a href="#gui/admin-sed-user" >Administracija: Uporabniki</a>
+            <ul style="padding-left: 20px">            
+                <li><a href="#gui/admin-sed-user:user" >Seznam uporabnikov</a></li> 
+                <li><a href="#gui/admin-sed-user:add-edit" >Urejanje uporabnika</a></li> 
+            </ul>
+        </li>
+        <li><a href="#pmode/pmode" >Administracija: PMODE</a>
+            <ul style="padding-left: 20px">            
+                <li><a href="#/pmode/pmode:Link11521388">PModes</a></li>
+                <li><a href="#/pmode/pmode:Link1152FC28">BusinessInfo</a></li>
+                <li><a href="#/pmode/pmode:Link1153A338">Certificate</a></li>
+                <li><a href="#/pmode/pmode:Link11528080">Leg</a></li>
+                <li><a href="#/pmode/pmode:Link11525BA8">Party</a></li>
+                <li><a href="#/pmode/pmode:Link115219C8">PMode</a></li>
+                <li><a href="#/pmode/pmode:Link11535D18">Property</a></li>
+                <li><a href="#/pmode/pmode:Link11529EA0">Protocol</a></li>
+                <li><a href="#/pmode/pmode:Link11535288">ReceiptType</a></li>
+                <li><a href="#/pmode/pmode:Link11540FE8">ReceptionAwareness</a></li>
+                <li><a href="#/pmode/pmode:Link1153FA48">References</a></li>
+                <li><a href="#/pmode/pmode:Link11536638">Security</a></li>
+                <li><a href="#/pmode/pmode:Link1153AB78">X509</a></li>
+            </ul>
+        </li>
+    </ul>
+</div>
+<div class="main">
+    <article class='content'>
+        <h1 id="gui/ebms-sed:application">Aplikacija ebms-sed</h1>
+        Uporabniški vmesnik (GUI )aplikacija ebms-sed omogoča pregled dohodne 
+        in izhodne pošte ter spreminjanje nastavitev aplikacije ebms-sed. 
+        Za namene testiranja povezav je v aplikacijo doddana tudi možnost 
+        generiranja enostavnih sporočil. 
+
+        <h2 id="gui/ebms-sed:login">Prijava</h2>
+        Demo nastavitev ima izdelana dva uporabnika:<br /><br />
+        <table class="styled-table">
+            <tr><th>Uporabniško ime</th><th>geslo</th><th>vloge</th></tr>
+            <tr><td>sed</td><td>sed1234</td><td>USER</td></tr>
+            <tr><td>admin</td><td>admin1234</td><td>USER,ADMIN</td></tr>
+        </table>
+        <br />
+        <img src="img/gui/app-login.png" alt="GUI Login" width="680"/> 
+
+        <h2 id="gui/ebms-sed:workspace">Delavno okolje</h2>
+        Delovno okolje je sestaljeno iz:
+        <ul>
+            <li>Orodna vrstica: gumbi za proženje akcij</li>
+            <li>Izbira sklopa orodij (Izhodna pošta, dohodna pošta, pmode nastavitve, administracija vtičnikov (plugin) itd.)</li>
+            <li>Glavna delovna površina (seznam pošiljk in podrobnosti pošiljk.) </li>
+        </ul><br />
+        <img src="img/gui/app-workspace.png" alt="GUI workspace" width="680"/>
+
+        <h2 id="gui/ebms-sed:tools">Sklopi orodij</h2>
+
+        Sklopi orodij se nahajajo na levi strani zaslona. Ob izbiri sklopa orodij  se prikaže seznam orodij :
+        <ul>
+            <li><b>Dohodna pošta</b>: seznam dohodne pošte omogoča pregled nad dogodki in metapodatki dohodne pošte.</li>
+            <li><b>Izhodna pošta</b>: seznam izhodne pošte omogoča preglede nad dogodki in metapodatki izhodne pošte.</li>
+            <li><b>PMode nastavitve</b>: konfiguracija poslovnih transakcij, varnosti in zaneljivosti prenosa.  </li>
+            <li><b>Vtičniki</b>: konfiguracija vtičnikov (pluginov) za avtomatski sprejem, obdelavo in pošiljanje dohodne in izhodne pošte</li>
+            <li><b>Nastavitve</b>: nastavitve sed-predalov, uporabnikov, certifikatov in dnevniških opravil.</li>   
+
+        </ul><br />
+        <img  style="float: right" src="img/gui/app-tools.png" alt="GUI workspace" width="300"/>
+
+
+
+    </article>  
+</div>

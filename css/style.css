@@ -389,6 +389,10 @@ footer[role="contentinfo"] .inner p#copyright{
 
 .styled-table  th {
     border: 1px solid #444 ; 
-    background-color: lightsteelblue;
-    
+    background-color: lightsteelblue;   
+}
+
+
+.dateField input {
+  width: 80px;
 }

@@ -200,6 +200,8 @@ BUILD SUCCESS
 
 
             <h1 id="install:wildfly">Namestitev na aplikacijski strežnik wildfly-10.0.0.Final</h1>
+            Navodila opisujejo posamezne korake, ki jih jih potrebno narediti pri namestitvi aplikacije <b>ebms-sed</b>
+            
             Na povezavi <a href="http://wildfly.org/downloads/">wildfly downloads</a>  prenesi aplikacijski 
             strežnik <b>Java EE7 Full & Web Distribution</b> 10.x.x.Final. Arhiv odpakiraj v namestitveno mapo(npr.:
             c:\temp\wildfly-10.0.0.Final):
@@ -260,7 +262,8 @@ BUILD SUCCESS
                 &lt;jms-queue name="ExpiryQueue" entries="java:/jms/queue/ExpiryQueue"/>
                 &lt;jms-queue name="DLQ" entries="java:/jms/queue/DLQ"/>
 		&lt;jms-queue name="MSHQueue" entries="java:/jms/queue/MSHQueue"/>
-
+                &lt;jms-queue name="SEDExecutionQueue" entries="java:/jms/queue/SEDExecutionQueue"/>
+                &lt;jms-queue name="SEDScheduleQueue" entries="java:/jms/queue/SEDScheduleQueue"/>
                 &lt;connection-factory name="InVmConnectionFactory" connectors="in-vm" entries="java:jboss/ConnectionFactory"/>
                 &lt;connection-factory name="RemoteConnectionFactory" connectors="http-connector" entries="java:jboss/exported/jms/RemoteConnectionFactory"/>
                 &lt;pooled-connection-factory name="activemq-ra" transaction="xa" connectors="in-vm" entries="java:/JmsXA java:jboss/DefaultJMSConnectionFactory"/>
@@ -272,12 +275,43 @@ BUILD SUCCESS
     &lt;resource-adapter-ref resource-adapter-name="${ejb.resource-adapter-name:activemq-ra.rar}"/>
     &lt;bean-instance-pool-ref pool-name="mdb-strict-max-pool"/>
 &lt;/mdb></code></pre>
-
+            
+            <h3 id="install:wf-users">Določanje uporabnikov</h3>
+            V razdelek <code>&lt;subsystem xmlns="urn:jboss:domain:security:1.2"></code> dodaj
+            <b>sed-realm</b> varnostno domeno. 
+            <pre><code>
+&lt;security-domain name="sed-realm" cache-type="default">
+    &lt;authentication>
+        &lt;login-module code="org.jboss.security.auth.spi.UsersRolesLoginModule" flag="required">
+            &lt;module-option name="usersProperties" value="${jboss.server.config.dir}/sed-users.properties"/>
+            &lt;module-option name="rolesProperties" value="${jboss.server.config.dir}/sed-roles.properties"/>
+        &lt;/login-module>
+    &lt;/authentication>
+&lt;/security-domain>
+            </code></pre>
+            ter v mapo <code> wildfly-10.0.0.Final/standalone/configuration</code>
+            naredi tekstovni datoteki:<br /> 
+            
+            sed-users.properties
+            <pre><code>
+#uporabnisko ime=geslo
+sed=sed1234
+admin=admin1234</code></pre>
+            sed-roles.properties
+            <pre><code>
+#uporabnisko ime=role1,rola1
+sed=USER
+admin=ADMIN,USER</code></pre>
+            
+            
+            
             <h3>Dodajanje jdbc knjižnice  in bazne povezave za postgres</h3>
             Na spletni strani „https://jdbc.postgresql.org/download.html“ pridobi primereno jdbc knjižnico za nameščeno postgresql bazo. <br />
             Posgresql driver se bo namestil s pomočjo jboss-cli ukazov, zato v mapi: <br />
             <code>wildfly-10.0.0.Final/bin</code>določi widlfly admin uporabnika tako da poženem skripto (in izbereš  userType: a) Management User):<br />
             <code>./add-user.(sh|bat)</code><br /><br />
+            
+            
 
             Nato poženi aplikacijski strežnik:<br />
             <code>./standalone.(sh|bat) -c standalone-ebms.xml</code>
