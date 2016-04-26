@@ -36,7 +36,6 @@ import org.sed.ebms.outbox.payload.OutPart;
 import org.sed.ebms.outbox.payload.OutPayload;
 import si.sed.commons.MimeValues;
 import si.sed.commons.SEDSystemProperties;
-import si.sed.commons.SEDValues;
 import si.sed.msh.test.db.MockUserTransaction;
 import static org.junit.Assert.*;
 import org.junit.BeforeClass;
@@ -63,7 +62,6 @@ import si.sed.commons.exception.HashException;
 import si.sed.commons.exception.SVEVReturnValue;
 import si.sed.commons.exception.StorageException;
 import si.sed.commons.utils.HashUtils;
-import si.sed.commons.utils.SEDLookups;
 import si.sed.commons.utils.StorageUtils;
 import si.sed.commons.utils.Utils;
 

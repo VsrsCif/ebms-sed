@@ -26,6 +26,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringWriter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -36,6 +38,7 @@ import javax.xml.bind.util.JAXBSource;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
@@ -54,7 +57,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.ls.DOMImplementationLS;
 import org.w3c.dom.ls.LSSerializer;
 import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
 
 /**
  *
@@ -222,7 +224,7 @@ public class XMLUtils {
             Source xml = new JAXBSource(jbc, jabxObj);
             res = validateBySchema(xml, schXsd, xsdResourceFolder);
         } catch (JAXBException ex) {
-            
+
             res += "SchemaValidationError 2:" + ex.getMessage() + "\n";
         }
         return res;
@@ -243,13 +245,31 @@ public class XMLUtils {
             Validator validator = schema.newValidator();
             validator.validate(xml);
             res = se.getErrorAsString();
-        } catch ( SAXException | IOException ex) {
-            
+        } catch (SAXException | IOException ex) {
+
             res += "SchemaValidationError:" + ex.getMessage() + "\n";
         }
 
         return res;
 
+    }
+
+    public static String format(String unformattedXml) {
+        String xmlString= null;
+        try {
+            Transformer transformer = TransformerFactory.newInstance().newTransformer();
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+//initialize StreamResult with File object to save to file
+            StreamResult result = new StreamResult(new StringWriter());
+            
+
+            DOMSource source = new DOMSource(deserializeToDom(unformattedXml));
+            transformer.transform(source, result);
+            xmlString = result.getWriter().toString();      
+        } catch (IOException | ParserConfigurationException | SAXException | TransformerException ex) {
+            Logger.getLogger(XMLUtils.class.getName()).log(Level.SEVERE, null, ex);        
+        }
+        return xmlString;
     }
 
 }

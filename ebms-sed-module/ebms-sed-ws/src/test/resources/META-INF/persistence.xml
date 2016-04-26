@@ -10,7 +10,7 @@
         <mapping-file>shared/hbm/outbox-mail.hbm.xml</mapping-file>
         <mapping-file>shared/hbm/outbox-payload.hbm.xml</mapping-file>
         <properties>
-            <property name="javax.persistence.jdbc.url" value="jdbc:derby:msh/db/msh-as4;create=true"/>
+            <property name="javax.persistence.jdbc.url" value="jdbc:derby:target/msh/db/msh-as4;create=true"/>
             <property name="javax.persistence.jdbc.driver" value="org.apache.derby.jdbc.EmbeddedDriver"/>            
             <property name="hibernate.hbm2ddl.auto" value="create-drop"/>
             <property name="hibernate.cache.provider_class" value="org.hibernate.cache.NoCacheProvider"/>

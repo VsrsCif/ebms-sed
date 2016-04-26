@@ -30,16 +30,16 @@
                      scrollHeight="200px"                         
                      >
             <p:ajax event="rowDblselect" listener="#{adminSEDBoxView.startEditSelected()}" 
-                    update=":dialogs:sedboxDialogForm:sedboxDetails"  
+                    update=":dlgsedbox:sedboxDialogForm:sedboxDetails"  
                     oncomplete="PF('sedboxDialog').show()"/>
          
             <f:facet name="header">
                 <p:commandButton value="Add" styleClass="toolbar-Button" icon="ui-icon-sed-add" 
-                                 update=":dialogs:sedboxDialogForm:sedboxDetails" 
+                                 update=":dlgsedbox:sedboxDialogForm:sedboxDetails" 
                                  actionListener="#{adminSEDBoxView.createEditable()}"
                                  oncomplete="PF('sedboxDialog').show()"  />
                 <p:commandButton value="Edit" styleClass="toolbar-Button" icon="ui-icon-sed-edit" 
-                                 update=":dialogs:sedboxDialogForm:sedboxDetails" 
+                                 update=":dlgsedbox:sedboxDialogForm:sedboxDetails" 
                                  actionListener="#{adminSEDBoxView.startEditSelected()}"
                                  oncomplete="PF('sedboxDialog').show()" />
                 <p:commandButton value="Delete" styleClass="toolbar-Button" icon="ui-icon-sed-remove" 

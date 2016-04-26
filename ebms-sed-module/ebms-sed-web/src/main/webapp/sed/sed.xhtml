@@ -60,6 +60,18 @@
                                              actionListener="#{OutMailDataView.deleteSelectedMail()}" 
                                              update=":forms:MainPanel"
                                              ajax="true"/>
+                            
+                              <p:commandButton value="Save" styleClass="toolbar-Button"  
+                                             icon="ui-icon-sed-save"
+                                             rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_SETT_PMODE)}" 
+                                             actionListener="#{pModeView.savePMode()}" 
+                                             update=":forms:MainPanel :forms:messages"
+                                             ajax="true"/>
+                              <p:commandButton value="Format" styleClass="toolbar-Button"                                               
+                                             rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_SETT_PMODE)}" 
+                                             actionListener="#{pModeView.formatPMode()}" 
+                                             update=":forms:MainPanel :forms:messages"
+                                             ajax="true"/>
                               
                             
                         </f:facet>
@@ -82,16 +94,13 @@
                     </p:toolbar>
                 </p:layoutUnit>
                 <p:layoutUnit  position="center"  gutter="0" >
-
                     <h:panelGroup id="MainPanel">
-
-
                         <sui:mail-table-in id="InMailPanel" rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_INBOX)  }"  />
                         <sui:mail-table-out id="OutMailPanel" rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_OUTBOX)}"  />
                         <sui:settings-keystore id="SettingsCertPanel" rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_SETT_CERTS)}"  />
                         <sui:settings-custom id="SettingsCustomPanel" rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_SETT_CUSTOM)}"  />
                         <!--sui:settings-pmode id="SettingsPModes" rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_SETT_PMODE)}"  / -->                        
-                        <sui:pmode_bt id="SettingsPModesBT" rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_PMODE_BT)}"  />
+                        <sui:settings-pmode id="SettingsPModes" rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_SETT_PMODE)}"  />
                         <sui:settings-users id="SettingsUsers" rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_ADMIN_USERS)}"  />
                         <sui:settings-eboxes id="SettingsSEDBoxes" rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_ADMIN_EBOXES)}"  />
                         <sui:settings-cron id="SettingsCron" rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_ADMIN_CRON)}"  />
@@ -200,10 +209,10 @@
                                 <h:outputText value="P-Modes" />                                 
                             </f:facet>
                             <p:menu class="ui-accordion-button">
-                                <p:menuitem value="Business transaction" 
+                                <p:menuitem value="PMode settings" 
                                             actionListener="#{MainWindow.onToolbarButtonAction}" 
                                             update="forms:MainPanel">
-                                    <f:attribute name="panel" value="PANEL_PMODE_BT" />
+                                    <f:attribute name="panel" value="PANEL_SETT_PMODE" />
                                 </p:menuitem>
                             </p:menu>
                         </p:tab>
@@ -230,18 +239,21 @@
                                 <h:outputText value="Settings" />                                 
                             </f:facet>
                             <p:menu class="ui-accordion-button">
+                                <p:menuitem value="SED-Boxes"  actionListener="#{MainWindow.onToolbarButtonAction}"  update="forms:MainPanel">
+                                    <f:attribute name="panel" value="PANEL_ADMIN_EBOXES" />
+                                </p:menuitem>
+                                <p:menuitem value="Users"  actionListener="#{MainWindow.onToolbarButtonAction}"  update="forms:MainPanel">
+                                    <f:attribute name="panel" value="PANEL_ADMIN_USERS" />
+                                </p:menuitem>
+                                
                                 <p:menuitem value="Custom"  actionListener="#{MainWindow.onToolbarButtonAction}"  update="forms:MainPanel">
                                     <f:attribute name="panel" value="PANEL_SETT_CUSTOM" />
                                 </p:menuitem>
                                 <p:menuitem value="Certificates"  actionListener="#{MainWindow.onToolbarButtonAction}"  update="forms:MainPanel">
                                     <f:attribute name="panel" value="PANEL_SETT_CERTS" />
                                 </p:menuitem>
-                                <p:menuitem value="SED-Boxes"  actionListener="#{MainWindow.onToolbarButtonAction}"  update="forms:MainPanel">
-                                    <f:attribute name="panel" value="PANEL_ADMIN_EBOXES" />
-                                </p:menuitem>
-                                <p:menuitem value="Users"  actionListener="#{MainWindow.onToolbarButtonAction}"  update="forms:MainPanel">
-                                    <f:attribute name="panel" value="PANEL_ADMIN_USERS" />
-                                </p:menuitem>                                
+                                
+                                                                
                                 <p:menuitem value="Scheduler"  actionListener="#{MainWindow.onToolbarButtonAction}"  update="forms:MainPanel">
                                     <f:attribute name="panel" value="PANEL_ADMIN_CRON" />
                                 </p:menuitem>
@@ -257,6 +269,7 @@
         <dlg:dlg-compose id="dlgCompose" />
         <dlg:dlg-tasktype id="dlgTaskType" />
         <dlg:dlg-keystore id="dlgKeyStore" />
+        <dlg:dlg-sedbox id="dlgsedbox" />
         
     </h:body>
 </html>

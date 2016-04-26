@@ -102,3 +102,8 @@
     height:  22px !important;
     background-image: url('../images/search.png') !important;
 }
+.ui-icon-sed-save{
+    width:  22px !important;
+    height:  22px !important;
+    background-image: url('../images/save.png') !important;
+}
