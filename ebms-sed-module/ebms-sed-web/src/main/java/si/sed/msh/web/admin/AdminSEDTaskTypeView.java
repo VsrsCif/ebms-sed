@@ -16,17 +16,22 @@
  */
 package si.sed.msh.web.admin;
 
+import java.util.Calendar;
 import si.sed.msh.web.abst.AbstractAdminJSFView;
 import java.util.List;
+import java.util.Properties;
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import org.sed.ebms.cron.SEDTaskType;
 import org.sed.ebms.cron.SEDTaskTypeProperty;
 
 import si.sed.commons.SEDJNDI;
 import si.sed.commons.interfaces.SEDLookupsInterface;
 import si.sed.commons.interfaces.SEDSchedulerInterface;
+import si.sed.commons.interfaces.TaskExecutionInterface;
 
 import si.sed.commons.utils.SEDLogger;
 
@@ -57,16 +62,38 @@ public class AdminSEDTaskTypeView extends AbstractAdminJSFView<SEDTaskType> {
         while (mdbLookups.getSEDTaskTypeByType(String.format(type, i)) != null) {
             i++;
         }
-
+        ecj.setJndi("java:global[/application name]/module name/enterprise bean name[/interface name]");
         ecj.setType(String.format(type, i));
-        ecj.setName("emailReport");
-        ecj.setDescription("Posiljanje porocil");
-        ecj.getSEDTaskTypeProperties().add(createTypeProperty("sedbox", "SED-Predal", true));
-        ecj.getSEDTaskTypeProperties().add(createTypeProperty("email", "Prejemnikov naslov", true));
-        ecj.getSEDTaskTypeProperties().add(createTypeProperty("send-mail", "pošiljateljev email", true));
-        ecj.getSEDTaskTypeProperties().add(createTypeProperty("subject", "[EMBS-SED] sedpredal", true));
+        ecj.setName("");
+        ecj.setDescription("Enter JNDI and refresh data from EJB task!");
+     
 
         setNew(ecj);
+    }
+    
+    public void refreshDataFromEJB(){
+        if (getEditable() ==null || getEditable().getJndi()==null || getEditable().getJndi().isEmpty())  {
+            return;
+        }
+        
+         try {
+            TaskExecutionInterface tproc = InitialContext.doLookup(getEditable().getJndi());
+            getEditable().setDescription(tproc.getDesc());
+            getEditable().setName(tproc.getName());
+            getEditable().setType(tproc.getType());
+            getEditable().getSEDTaskTypeProperties().clear();
+            if (tproc.getProperties()!= null){
+                Properties p = tproc.getProperties();
+                for (String  key: p.stringPropertyNames()) {
+                    SEDTaskTypeProperty tp = createTypeProperty(key, p.getProperty(key), true);
+                    getEditable().getSEDTaskTypeProperties().add(tp);
+                }
+            }
+        } catch (NamingException ex) {
+        
+            return;
+        }
+        
     }
 
     @Override
@@ -74,8 +101,9 @@ public class AdminSEDTaskTypeView extends AbstractAdminJSFView<SEDTaskType> {
         if (getSelected() != null) {
             mdbLookups.removeSEDTaskType(getSelected());
             setSelected(null);
-
         }
+        
+      
     }
     @Override
     public void persistEditable() {
@@ -90,7 +118,6 @@ public class AdminSEDTaskTypeView extends AbstractAdminJSFView<SEDTaskType> {
         SEDTaskType ecj = getEditable();
         if (ecj != null) {
             mdbLookups.updateSEDTaskType(ecj);
-
         }
     }
 

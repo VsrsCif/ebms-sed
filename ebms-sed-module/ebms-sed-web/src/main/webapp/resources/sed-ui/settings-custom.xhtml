@@ -47,41 +47,6 @@
             </p:column>
         </p:dataTable>
 
-
-
-        <!-- p:fieldset legend="CUSTOM" style="margin-bottom:20px" >
-            <table style=" width: 100%" >
-                <tr>
-                    <td align="right" width="120">Home path</td> 
-                    <td align="left"><h:inputText value="#{ApplicationData.homeFolder}"  style="width:100%;"  readonly='true' /></td>
-                    <td align="right" width="120">Storage folder:</td> 
-                    <td align="left"><h:inputText value="#{ApplicationData.storageFolder}"  style="width:100%;"  readonly='true' /></td>
-                    <td align="right" width="180">Plugins folder</td> 
-                    <td align="left"><h:inputText value="#{ApplicationData.pluginsFolder}"  style="width:100%;"  readonly='true' /></td>
-
-
-                </tr>
-                <tr>
-                    <td align="right" width="180">PMode:</td> 
-                    <td align="left"><h:inputText value="#{ApplicationData.PModeFileName}"  style="width:100%;"  readonly='true' /></td>
-                    <td align="right" width="180">Security</td> 
-                    <td align="left"><h:inputText value="#{ApplicationData.securityFileName}"  style="width:100%;"  readonly='true' /></td>
-                    <td align="right" width="180">Key passwords</td> 
-                    <td align="left"><h:inputText value="#{ApplicationData.keyPasswordFilename}"  style="width:100%;"  readonly='true' /></td>
-                </tr>
-            </table>
-
-        </p:fieldset -->
-
-        <h1>SED Plugins</h1>
-        <p:dataList value="#{ApplicationData.plugins}" var="plugin">
-            <f:facet name="header">
-                Plugins
-            </f:facet>
-            #{plugin}
-        </p:dataList>
-
-
     </composite:implementation>
 
 </html>

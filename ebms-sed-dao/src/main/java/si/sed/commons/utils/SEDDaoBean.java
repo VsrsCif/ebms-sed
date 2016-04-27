@@ -382,7 +382,7 @@ public class SEDDaoBean implements SEDDaoInterface {
                         continue;
                     }
 
-                    if (fieldName.endsWith("List") && searchValue instanceof List) {
+                    if (fieldName.endsWith("List") && searchValue instanceof List && !((List)searchValue).isEmpty() ) {
                         lstPredicate.add(om.get(fieldName.substring(0, fieldName.lastIndexOf("List"))).in(((List) searchValue).toArray()));
                         System.out.println("Add  predicat: " + searchValue);
                     } else {

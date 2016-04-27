@@ -30,17 +30,17 @@
                      >
 
              <p:ajax event="rowDblselect" listener="#{adminSEDUserView.startEditSelected()}" 
-                    update=":dialogs:userDialogForm:userDetails"
+                    update=":dlguser:userDialogForm:userDetails"
                     oncomplete="PF('userDialog').show()"/>
             
             <f:facet name="header">
                 <p:commandButton value="Add" styleClass="toolbar-Button" icon="ui-icon-sed-add" 
-                                 update=":dialogs:userDialogForm:userDetails" 
+                                 update=":dlguser:userDialogForm:userDetails" 
                                  actionListener="#{adminSEDUserView.createEditable()}"
                                  oncomplete="PF('userDialog').show()" />
                 <p:commandButton value="Edit" styleClass="toolbar-Button" icon="ui-icon-sed-edit" 
                                  actionListener="#{adminSEDUserView.startEditSelected()}"
-                                 update=":dialogs:userDialogForm:userDetails" 
+                                 update=":dlguser:userDialogForm:userDetails" 
                                  oncomplete="PF('userDialog').show()" />
                 <p:commandButton value="Delete" styleClass="toolbar-Button" icon="ui-icon-sed-remove" 
                                  actionListener="#{adminSEDUserView.removeSelected()}" update=":forms:SettingsUsers:TblSedUser" />

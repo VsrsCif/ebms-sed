@@ -188,11 +188,32 @@
 
 
 .searchDate input {
-    width: 120px;
+    width: 80px;
 
 }
+.dialogButtonBar {
+    background-color: gray; 
+    height: 30px !important; 
+    padding: 3px !important; 
+    border-style: solid !important; 
+    border-width: 2px!important; 
+    border-color: black !important;    
+}
 
+.dialogButtonBar button{    
+    width: 90px !important;     
+}
 
+.ui-dialog .ui-widget-header {
+    text-align: left !important;
+    height: 28px !important;
+    vertical-align: middle !important;
+    
+}
+
+.ui-picklist.ui-picklist-responsive .ui-picklist-list-wrapper {
+    width: 45%;
+}
 
 
 

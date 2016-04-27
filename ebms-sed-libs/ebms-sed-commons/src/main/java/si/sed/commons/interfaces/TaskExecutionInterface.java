@@ -15,6 +15,12 @@ import javax.ejb.Local;
 @Local
 public interface TaskExecutionInterface {
     
-     public String executeTask(Properties p) throws Exception;
+     String executeTask(Properties p) throws Exception;
+     String getType();
+     String getName();
+     String getDesc();
+     Properties getProperties();
+     
+     
 
 }

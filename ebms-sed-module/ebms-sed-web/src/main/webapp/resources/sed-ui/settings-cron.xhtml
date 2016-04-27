@@ -30,7 +30,7 @@
                      
                      >
              <p:ajax event="rowDblselect" listener="#{adminSEDTaskTypeView.startEditSelected()}" 
-                    update=":dialogs:cronDialogForm:cronJob"
+                    update=":dlgTaskType:cronDialogForm:taskType"
                     oncomplete="PF('taskTypeDialog').show()"/>
 
             <f:facet name="header">
@@ -85,20 +85,20 @@
                      scrollHeight="400"                     
                      >
              <p:ajax event="rowDblselect" listener="#{adminSEDCronJobView.startEditSelected()}" 
-                    update=":dialogs:cronDialogForm:cronJob"
+                    update=":dlgcron:cronDialogForm:cronJob"
                     oncomplete="PF('cronDialog').show()"/>
 
             <f:facet name="header">
                 <p:commandButton value="Add"  styleClass="toolbar-Button" icon="ui-icon-sed-add" 
                                  actionListener="#{adminSEDCronJobView.createEditable()}"
                                  oncomplete="PF('cronDialog').show()" 
-                                 update=":dialogs:cronDialogForm:cronJob"
+                                 update=":dlgcron:cronDialogForm:cronJob"
                                  
                                  />
                 <p:commandButton value="Edit"  styleClass="toolbar-Button" icon="ui-icon-sed-edit" 
                                  oncomplete="PF('cronDialog').show()"                                                                   
                                  actionListener="#{adminSEDCronJobView.startEditSelected()}"
-                                 update=":dialogs:cronDialogForm:cronJob"
+                                 update=":dlgcron:cronDialogForm:cronJob"
                                  />
                 <p:commandButton value="Delete" styleClass="toolbar-Button" icon="ui-icon-sed-remove" 
                                  actionListener="#{adminSEDCronJobView.removeSelected()}" update=":forms:SettingsCron:TblCron" />

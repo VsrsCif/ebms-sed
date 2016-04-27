@@ -23,6 +23,31 @@ public class TaskEmailReport implements TaskExecutionInterface {
 
     @Override
     public String executeTask(Properties p) throws Exception {
-        return "suc";
+        return "sedboxreport";
+    }
+      @Override
+    public String getType() {
+        return "sedboxreport";
+    }
+
+    @Override
+    public String getName() {
+        return "Report";
+    }
+
+    @Override
+    public String getDesc() {
+        return "Incoming outcomming report";
+    }
+
+    @Override
+    public Properties getProperties() {
+        Properties p = new Properties();
+        p.setProperty("sedbox", "sedbox");
+        p.setProperty("to", "email address to");
+        p.setProperty("from", "email address to");
+        p.setProperty("subject", "email address to");
+        return p;
     }
 }
+

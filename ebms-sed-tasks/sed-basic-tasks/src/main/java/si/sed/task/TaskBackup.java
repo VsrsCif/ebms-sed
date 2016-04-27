@@ -120,5 +120,27 @@ public class TaskBackup implements TaskExecutionInterface {
             
         }
     }
+    
+    @Override
+    public String getType() {
+        return "backup";
+    }
+
+    @Override
+    public String getName() {
+        return "Backup data";
+    }
+
+    @Override
+    public String getDesc() {
+        return "Backup data and blobs";
+    }
+
+    @Override
+    public Properties getProperties() {
+        Properties p = new Properties();
+        p.setProperty("Folder", "Backup folder");
+        return p;
+    }
 
 }

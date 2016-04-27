@@ -22,7 +22,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
@@ -34,6 +36,7 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.component.UIViewRoot;
 import javax.faces.context.FacesContext;
 import javax.xml.ws.WebServiceContext;
+import org.primefaces.context.RequestContext;
 import org.primefaces.event.RowEditEvent;
 import si.sed.commons.SEDJNDI;
 import si.sed.commons.SEDSystemProperties;
@@ -58,7 +61,7 @@ public class ApplicationData extends AbstractJSFView {
     @EJB (mappedName=SEDJNDI.JNDI_SEDLOOKUPS)
     private SEDLookupsInterface msedLookups;
     
-    
+
 
     public String getHomeFolder() {
         return System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR);

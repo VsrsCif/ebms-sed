@@ -36,6 +36,7 @@
                                              styleClass="toolbar-Button"
                                              update=":forms:MainPanel"
                                              ajax="true" />
+                     
 
 
                             <span class="ui-separator">
@@ -233,7 +234,8 @@
 
 
 
-                        <p:tab id="PANEL_SETT_CUSTOM" rendered="#{userSessionData.user.adminRole}" >
+                        <!-- p:tab id="PANEL_SETT_CUSTOM" rendered="#{userSessionData.user.adminRole}"  -->
+                            <p:tab id="PANEL_SETT_CUSTOM"  >
                             <f:facet name="title">
                                 <h:graphicImage value="resources/images/settings32.png" width="22" height="22" />
                                 <h:outputText value="Settings" />                                 
@@ -248,16 +250,13 @@
                                 <p:menuitem value="Certificates"  actionListener="#{MainWindow.onToolbarButtonAction}"  update="forms:MainPanel">
                                     <f:attribute name="panel" value="PANEL_SETT_CERTS" />
                                 </p:menuitem>
-                                
-                                <p:menuitem value="Custom"  actionListener="#{MainWindow.onToolbarButtonAction}"  update="forms:MainPanel">
-                                    <f:attribute name="panel" value="PANEL_SETT_CUSTOM" />
-                                </p:menuitem>
-                                
-                                
-                                                                
                                 <p:menuitem value="Scheduler"  actionListener="#{MainWindow.onToolbarButtonAction}"  update="forms:MainPanel">
                                     <f:attribute name="panel" value="PANEL_ADMIN_CRON" />
                                 </p:menuitem>
+                                 <p:menuitem value="Custom"  actionListener="#{MainWindow.onToolbarButtonAction}"  update="forms:MainPanel">
+                                    <f:attribute name="panel" value="PANEL_SETT_CUSTOM" />
+                                </p:menuitem>
+                                
                             </p:menu>
 
                         </p:tab>
@@ -266,11 +265,13 @@
                 </p:layoutUnit>
             </p:layout>
         </h:form>
-        <sui:dialogs id="dialogs" />
+        
         <dlg:dlg-compose id="dlgCompose" />
         <dlg:dlg-tasktype id="dlgTaskType" />
         <dlg:dlg-keystore id="dlgKeyStore" />
         <dlg:dlg-sedbox id="dlgsedbox" />
+        <dlg:dlg-user id="dlguser" />
+        <dlg:dlg-cron id="dlgcron" />
         
     </h:body>
 </html>

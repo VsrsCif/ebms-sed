@@ -119,4 +119,28 @@ public class TaskArchive implements TaskExecutionInterface {
         }
     }
 
+    @Override
+    public String getType() {
+        return "archive";
+    }
+
+    @Override
+    public String getName() {
+        return "Archive data";
+    }
+
+    @Override
+    public String getDesc() {
+        return "Archive data and blobs";
+    }
+
+    @Override
+    public Properties getProperties() {
+        Properties p = new Properties();
+        p.setProperty("Folder", "Archive folder");
+        p.setProperty("Offset", "Archive mail older than [offset] days");
+        
+        return p;
+    }
+
 }

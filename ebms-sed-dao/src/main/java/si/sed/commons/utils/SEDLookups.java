@@ -466,6 +466,12 @@ public class SEDLookups implements SEDLookupsInterface {
     
     @Override
     public boolean updateSEDTaskType(SEDTaskType sb) {
+        SEDTaskType st = getSEDTaskTypeByType(sb.getType());
+        for (SEDTaskTypeProperty tp: st.getSEDTaskTypeProperties() ) {
+            System.out.println("Remove task prop" + tp.getId());
+            remove(tp);   
+        }
+        System.out.println("Type task prop" + sb.getSEDTaskTypeProperties().size());
         return update(sb);
     }
     

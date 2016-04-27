@@ -8,11 +8,11 @@
         <property column="NAME" name="Name"  length="128" type="java.lang.String"/>
         <property column="JNDI" name="Jndi"  length="256" type="java.lang.String"/>
         <property column="DESCRIPTION" name="Description"  length="512" type="java.lang.String"/>
-        <bag name="sedTaskTypeProperties"  access="field" cascade="all" lazy="false" order-by="Id asc" >
-            <key not-null="true">
-                <column name="TASK_TYPE" scale="0" />
+        <bag name="sedTaskTypeProperties"  access="field" cascade="all-delete-orphan" lazy="false" order-by="Id asc"  >
+            <key >
+                <column name="TASK_TYPE"  />
             </key>
-            <one-to-many class="org.sed.ebms.cron.SEDTaskTypeProperty" />
+            <one-to-many class="org.sed.ebms.cron.SEDTaskTypeProperty"  />
         </bag>
     </class>    
     

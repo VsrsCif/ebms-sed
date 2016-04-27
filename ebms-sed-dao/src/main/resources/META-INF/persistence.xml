@@ -22,6 +22,8 @@
             <property name="jboss.entity.manager.jndi.name" value="java:/ebMS_MSH_PU"/> 
             <property name="hibernate.dialect" value="${org.sed.msh.hibernate.dialect}" />
             <property name="hibernate.hbm2ddl.auto" value="${org.sed.msh.hibernate.hbm2ddl.auto}" />
+            <property name="hibernate.hbm2ddl.auto" value="${org.sed.msh.hibernate.hbm2ddl.auto}" />
+            <property name = "hibernate.show_sql" value = "true" />
         </properties>
     </persistence-unit>
    
