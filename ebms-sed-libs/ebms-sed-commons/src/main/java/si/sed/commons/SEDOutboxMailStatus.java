@@ -27,7 +27,9 @@ public enum SEDOutboxMailStatus {
     SENT("SENT", "Message is  sent to receiving MSH", "blue"),
     ERROR("ERROR", "Error occured pushing/pulling to receiving MSH", "red"),
     EBMSERROR("EBMSERROR", "EBMS Error occured pushing/pulling to receiving MSH", "darkred"),
-    DELETED("DELETED", "Pošiljka je izbrisana", "black");
+    DELETED("DELETED", "Pošiljka je izbrisana", "black"),
+    CANCELED("CANCELED", "Pošiljnje je preklicano", "yellow"),
+    CANCELING("CANCELING", "Pošiljnje je v postopku preklica", "darkgray");
 
     String mstrVal;
     String mstrDesc;

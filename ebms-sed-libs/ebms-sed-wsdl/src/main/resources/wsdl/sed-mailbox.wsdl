@@ -57,6 +57,8 @@ Copyright 2015, Supreme Court Republic of Slovenia
             <xsd:import namespace="http://ebms.sed.org/" schemaLocation="messages/InMailListResponse.xsd"/>
             <xsd:import namespace="http://ebms.sed.org/" schemaLocation="messages/ModifyInMailRequest.xsd"/>
             <xsd:import namespace="http://ebms.sed.org/" schemaLocation="messages/ModifyInMailResponse.xsd"/>
+            <xsd:import namespace="http://ebms.sed.org/" schemaLocation="messages/ModifyOutMailRequest.xsd"/>
+            <xsd:import namespace="http://ebms.sed.org/" schemaLocation="messages/ModifyOutMailResponse.xsd"/>
             <xsd:import namespace="http://ebms.sed.org/" schemaLocation="messages/InMailEventListRequest.xsd"/>
             <xsd:import namespace="http://ebms.sed.org/" schemaLocation="messages/InMailEventListResponse.xsd"/>
             <xsd:import namespace="http://ebms.sed.org/" schemaLocation="messages/GetInMailRequest.xsd"/>
@@ -102,6 +104,12 @@ Copyright 2015, Supreme Court Republic of Slovenia
     </message>
     <message name="ModifyInMailResponse">
         <part name="ModifyInMailResponse" element="tns:ModifyInMailResponse"/>
+    </message>
+      <message name="ModifyOutMailRequest">
+        <part name="ModifyOutMailRequest" element="tns:ModifyOutMailRequest"/>
+    </message>
+    <message name="ModifyOutMailResponse">
+        <part name="ModifyOutMailResponse" element="tns:ModifyOutMailResponse"/>
     </message>
     <message name="GetInMailRequest">
         <part name="GetInMailRequest" element="tns:GetInMailRequest"/>
@@ -158,6 +166,16 @@ Copyright 2015, Supreme Court Republic of Slovenia
             <output message="tns:ModifyInMailResponse"/>
             <fault name="SEDException" message="tns:SEDException"/>
         </operation>
+        
+        <operation name="modifyOutMail">
+            <documentation>
+                Zaklepanje in prevzemanje dohodne pošte
+            </documentation>
+            <input message="tns:ModifyOutMailRequest"/>
+            <output message="tns:ModifyOutMailResponse"/>
+            <fault name="SEDException" message="tns:SEDException"/>
+        </operation>
+        
         <operation name="getInMail">
             <documentation>
                 Pridobivanje binarne vsebine dohodne pošiljke
@@ -206,7 +224,7 @@ Copyright 2015, Supreme Court Republic of Slovenia
             </fault>
         </operation>
         <operation name="getInMailEventList">
-            <soap:operation soapAction="http://ebms.sed.org/getInMailList"/>
+            <soap:operation soapAction="http://ebms.sed.org/getInMailEventList"/>
             <input>
                 <soap:body use="literal"/>
             </input>
@@ -218,7 +236,7 @@ Copyright 2015, Supreme Court Republic of Slovenia
             </fault>
         </operation>
         <operation name="getOutMailEventList">
-            <soap:operation soapAction="http://ebms.sed.org/getInMailList"/>
+            <soap:operation soapAction="http://ebms.sed.org/getOutMailEventList"/>
             <input>
                 <soap:body use="literal"/>
             </input>
@@ -230,7 +248,19 @@ Copyright 2015, Supreme Court Republic of Slovenia
             </fault>
         </operation>
         <operation name="modifyInMail">
-            <soap:operation soapAction="http://ebms.sed.org/getInMailList"/>
+            <soap:operation soapAction="http://ebms.sed.org/modifyInMail"/>
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+            <fault name="SEDException">
+                <soap:fault name="SEDException" use="literal"/>
+            </fault>
+        </operation>
+         <operation name="modifyOutMail">
+            <soap:operation soapAction="http://ebms.sed.org/modifyOutMail"/>
             <input>
                 <soap:body use="literal"/>
             </input>
@@ -242,7 +272,7 @@ Copyright 2015, Supreme Court Republic of Slovenia
             </fault>
         </operation>
         <operation name="getInMail">
-            <soap:operation soapAction="http://ebms.sed.org/getInMailList"/>
+            <soap:operation soapAction="http://ebms.sed.org/getInMail"/>
             <input>
                 <soap:body use="literal"/>
             </input>

@@ -105,6 +105,7 @@
                         <sui:settings-users id="SettingsUsers" rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_ADMIN_USERS)}"  />
                         <sui:settings-eboxes id="SettingsSEDBoxes" rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_ADMIN_EBOXES)}"  />
                         <sui:settings-cron id="SettingsCron" rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_ADMIN_CRON)}"  />
+                        <sui:cron-execution-table id="CronExecutions" rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_CRON_EXEC)}"  />
                         <p:outputPanel id="PluginFrame" rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_PLUGIN)}" 
                                        style="width: 100%;height: 100%">  
                             <iframe id="iframeCenter" src="http://localhost:8080/zpp-plugin/" width="100%"  
@@ -252,6 +253,9 @@
                                 </p:menuitem>
                                 <p:menuitem value="Scheduler"  actionListener="#{MainWindow.onToolbarButtonAction}"  update="forms:MainPanel">
                                     <f:attribute name="panel" value="PANEL_ADMIN_CRON" />
+                                </p:menuitem>
+                                <p:menuitem value="Cron executions"  actionListener="#{MainWindow.onToolbarButtonAction}"  update="forms:MainPanel">
+                                    <f:attribute name="panel" value="PANEL_CRON_EXEC" />
                                 </p:menuitem>
                                  <p:menuitem value="Custom"  actionListener="#{MainWindow.onToolbarButtonAction}"  update="forms:MainPanel">
                                     <f:attribute name="panel" value="PANEL_SETT_CUSTOM" />
