@@ -18,4 +18,6 @@ public class ZPPConstants {
      public static String SVEV_FOLDER="SVEV";
      public static String XSLT_FOLDER="xslt";
     public static String FOP_CONFIG_FILENAME="fop.xconf";
+    
+    public static String LOCK_STATUS="ZPPLock";
 }

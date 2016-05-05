@@ -21,7 +21,8 @@ package si.sed.commons;
  * @author Joze Rihtarsic <joze.rihtarsic@sodisce.si>
  */
 public enum SEDTaskStatus {
-    PROGRESS("PROGRESS", "Task is in progress.", "gray")
+    INIT("INIT", "Task initialize.", "orange")
+    ,PROGRESS("PROGRESS", "Task is in progress.", "gray")
     ,SUCCESS("SUCCESS", "Task ended successfully", "blue")    
     ,ERROR("ERROR", "Error occured ", "red")
     ;

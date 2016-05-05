@@ -117,6 +117,25 @@ public class StorageUtils {
     public static  synchronized void copyInFile(String strInFileName , File destFile) throws IOException, StorageException {
         copyFile(getFile(strInFileName), destFile);        
     }
+    
+    public static  synchronized void removeFile(String strInFileName ) throws IOException, StorageException {
+        File f = getFile(strInFileName);
+        f.delete();
+    }
+    
+    
+    public static  synchronized void copyFileToFolder(String storageFilePath, File folder) throws IOException, StorageException {
+        if (!folder.exists() && !folder.mkdirs()) { 
+            throw new IOException("Could not create export folder: " + folder.getAbsolutePath());
+        }
+        File destFile = new File(folder, storageFilePath);
+        File pf = destFile.getParentFile();
+        if (!pf.exists() && !pf.mkdirs()) { 
+            throw new IOException("Could not create folder: " + pf.getAbsolutePath());
+        }
+        
+        copyFile(getFile(storageFilePath), destFile);        
+    }
 
     public static File getNewStorageFile(String suffix, String prefix) throws StorageException {
         File fStore;

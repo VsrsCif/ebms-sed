@@ -57,7 +57,7 @@ import si.sed.commons.interfaces.JMSManagerInterface;
 @Stateless
 @Local(SEDDaoInterface.class)
 @TransactionManagement(TransactionManagementType.BEAN)
-public class SEDDaoBean implements SEDDaoInterface {
+public class SEDReportBean implements SEDDaoInterface {
 
     @Resource
     public UserTransaction mutUTransaction;
@@ -70,7 +70,7 @@ public class SEDDaoBean implements SEDDaoInterface {
 
     protected Queue mqMSHQueue = null;
 
-    protected static SEDLogger LOG = new SEDLogger(SEDDaoBean.class);
+    protected static SEDLogger LOG = new SEDLogger(SEDReportBean.class);
 
     @Override
     public SEDUser getSEDUser(String username) {
@@ -299,7 +299,7 @@ public class SEDDaoBean implements SEDDaoInterface {
             try {
                 mutUTransaction.rollback();
             } catch (IllegalStateException | SecurityException | SystemException ex1) {
-                Logger.getLogger(SEDDaoBean.class.getName()).log(Level.SEVERE, null, ex1);
+                Logger.getLogger(SEDReportBean.class.getName()).log(Level.SEVERE, null, ex1);
             }
         }
 

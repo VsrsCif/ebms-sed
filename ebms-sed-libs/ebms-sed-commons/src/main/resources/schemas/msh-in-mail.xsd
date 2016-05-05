@@ -28,10 +28,12 @@ Copyright 2015, Supreme Court Republic of Slovenia
            xmlns:ns1="http://ebms.msh.org/inbox/mail" 
            xmlns:ns2="http://ebms.msh.org/inbox/payload" 
            xmlns:ns3="http://ebms.msh.org/inbox/property"
+           xmlns:ns4="http://ebms.msh.org/inbox/event"
            targetNamespace="http://ebms.msh.org/inbox/mail"
            elementFormDefault="qualified" attributeFormDefault="unqualified">
     <xs:import namespace="http://ebms.msh.org/inbox/property" schemaLocation="./msh-in-property.xsd"/>
     <xs:import namespace="http://ebms.msh.org/inbox/payload" schemaLocation="./msh-in-payload.xsd"/>	
+    <xs:import namespace="http://ebms.msh.org/inbox/event" schemaLocation="./msh-in-event.xsd"/>	
     <xs:element name="MSHInMail" type="ns1:MSHInMailType" />
     <xs:complexType name="MSHInMailType">
         <xs:annotation>
@@ -46,6 +48,7 @@ Copyright 2015, Supreme Court Republic of Slovenia
         <xs:sequence>
             <xs:element ref="ns3:MSHInProperties" minOccurs="0"/>
             <xs:element ref="ns2:MSHInPayload" minOccurs="0"/>
+            <xs:element ref="ns4:MSHInEvent" minOccurs="0" maxOccurs="unbounded" />
         </xs:sequence>
         <xs:attribute name="messageId" use="optional">
             <xs:annotation>

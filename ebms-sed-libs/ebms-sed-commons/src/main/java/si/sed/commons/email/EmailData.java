@@ -14,6 +14,7 @@ import java.util.List;
  * @author sluzba
  */
 public class EmailData {
+    String mstrEmailSenderAddress;
     String mstrEmailAddresses;
     String mstrEmailCCAddresses;
     String mstrSubject;
@@ -44,6 +45,16 @@ public class EmailData {
     public void setEmailCCAddresses(String mstrEmailCCAddresses) {
         this.mstrEmailCCAddresses = mstrEmailCCAddresses;
     }
+
+    public String getEmailSenderAddress() {
+        return mstrEmailSenderAddress;
+    }
+
+    public void setEmailSenderAddress(String mstrEmailSenderAddress) {
+        this.mstrEmailSenderAddress = mstrEmailSenderAddress;
+    }
+    
+    
 
     public String getSubject() {
         return mstrSubject;

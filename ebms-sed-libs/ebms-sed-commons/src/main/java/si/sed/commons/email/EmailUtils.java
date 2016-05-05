@@ -16,6 +16,7 @@ import java.util.UUID;
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.activation.FileDataSource;
+import javax.ejb.EJB;
 import javax.mail.Address;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
@@ -31,6 +32,8 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.rmi.PortableRemoteObject;
 import org.apache.log4j.Logger;
+import si.sed.commons.SEDJNDI;
+import si.sed.commons.interfaces.SEDDaoInterface;
 
 
 /**
@@ -39,25 +42,30 @@ import org.apache.log4j.Logger;
  */
 public class EmailUtils {
 
-    private static final String SMAIL_JNDI = "sed-mail";
-    
+        
     private static final String S_MIME_TXT = "text/plain";
-    private static final String S_OUTMAIL_ADDRESS = "nobody@sodisce.si";
+    //private static final String S_OUTMAIL_ADDRESS = "nobody@sodisce.si";
     //do no use DCLogger -> cyclic dependecy.. 
     private static final Logger mlgLogger = Logger.getLogger(EmailUtils.class.getName());
 
     static CharsetEncoder asciiEncoder = Charset.forName("US-ASCII").newEncoder();
 
-    public void sendMailMessage(String emailAddress, String subject, String body) throws MessagingException, NamingException, IOException {
+    
+    
+    
+
+    public void sendMailMessage(String emailAddress, String subject, String body,String mailConfig) throws MessagingException, NamingException, IOException {
         
-        sendMailMessage(new EmailData(emailAddress,null, subject, body));
+        sendMailMessage(new EmailData(emailAddress,null, subject, body),mailConfig);
        
     }
+    
+    
 
-    public void sendMailMessage(EmailData eml) throws MessagingException, NamingException, IOException {
+    public void sendMailMessage(EmailData eml, String mailConfig) throws MessagingException, NamingException, IOException {
         mlgLogger.info("EmailUtils.sendMailMessage: " + eml.toString());
         long l = Calendar.getInstance().getTimeInMillis();
-        Session session = (Session) PortableRemoteObject.narrow(new InitialContext().lookup(SMAIL_JNDI), Session.class);
+        Session session = (Session)new InitialContext().lookup(mailConfig);
         String emailid = "sed-" + UUID.randomUUID().toString();
         MimeMessage m = new EVIPMimeMessage(session, emailid);
 
@@ -66,8 +74,8 @@ public class EmailUtils {
         m.addHeader("sed-id", emailid);
 
         Address[] to = getAddresses(eml.getEmailAddresses());
-        m.setFrom(new InternetAddress(S_OUTMAIL_ADDRESS));
-        m.setSender(new InternetAddress(S_OUTMAIL_ADDRESS));
+        m.setFrom(new InternetAddress(eml.getEmailSenderAddress()));
+        m.setSender(new InternetAddress(eml.getEmailSenderAddress()));
         m.setRecipients(javax.mail.Message.RecipientType.TO, to);
         if (eml.getEmailCCAddresses() != null) {
             Address[] toCC = getAddresses(eml.getEmailCCAddresses());
@@ -97,6 +105,7 @@ public class EmailUtils {
         }
         // Put parts in message
         m.setContent(multipart);
+                 
 
         Transport.send(m);
         mlgLogger.info("EmailUtils.sendMailMessage: " + eml.toString() + " - END ( " + (Calendar.getInstance().getTimeInMillis() - l) + " ms)");

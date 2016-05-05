@@ -195,7 +195,12 @@ public class ZPPInInterceptor implements SoapInterceptorInterface {
 
     public void processInZPPDelivery(MSHInMail mInMail, PMode pmd) throws FOPException, HashException {
         long l = mlog.logStart();
-        // create delivery advice 
+        
+        mInMail.setStatus(ZPPConstants.LOCK_STATUS);
+        mInMail.setStatusDate(Calendar.getInstance().getTime());
+        mDB.updateInMail(mInMail, "DeliveryAdviceGenerated and submited to sender");
+        
+      /*  // create delivery advice 
         File fDNViz = null;
         File fDA = null;
         try {
@@ -256,7 +261,7 @@ public class ZPPInInterceptor implements SoapInterceptorInterface {
 
         } catch (IOException | SEDSecurityException ex) {
             mlog.logError(l, ex);
-        }
+        }*/
         mlog.logEnd(l);
     }
 

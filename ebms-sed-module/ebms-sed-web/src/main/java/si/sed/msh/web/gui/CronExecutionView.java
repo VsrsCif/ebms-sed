@@ -27,6 +27,7 @@ import org.primefaces.event.UnselectEvent;
 import org.sed.ebms.cron.SEDTaskExecution;
 
 import si.sed.commons.SEDJNDI;
+import si.sed.commons.SEDTaskStatus;
 import si.sed.commons.interfaces.SEDDaoInterface;
 
 /**
@@ -38,52 +39,49 @@ import si.sed.commons.interfaces.SEDDaoInterface;
 public class CronExecutionView implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    
-    @EJB (mappedName=SEDJNDI.JNDI_SEDDAO)
+
+    @EJB(mappedName = SEDJNDI.JNDI_SEDDAO)
     SEDDaoInterface mDB;
 
     @ManagedProperty(value = "#{userSessionData}")
     private UserSessionData userSessionData;
-    
-    protected CronExecutionModel mMailModel = null;
-    protected SEDTaskExecution mcurrent;    
 
-    
-      @PostConstruct
-    private void init(){
-        mMailModel = new CronExecutionModel (SEDTaskExecution.class, userSessionData, mDB);
+    protected CronExecutionModel mMailModel = null;
+    protected SEDTaskExecution mcurrent;
+
+    @PostConstruct
+    private void init() {
+        mMailModel = new CronExecutionModel(SEDTaskExecution.class, userSessionData, mDB);
     }
-    
 
     public void setUserSessionData(UserSessionData messageBean) {
         this.userSessionData = messageBean;
     }
 
     public UserSessionData getUserSessionData() {
-        return this.userSessionData ;
+        return this.userSessionData;
     }
-    
-     public SEDTaskExecution getCurrent() {
+
+    public SEDTaskExecution getCurrent() {
         return mcurrent;
     }
 
     public void setCurrent(SEDTaskExecution mail) {
         this.mcurrent = mail;
     }
-    
-    
-     public int rowIndex(SEDTaskExecution om) {
+
+    public int rowIndex(SEDTaskExecution om) {
         return mMailModel.getRowIndex();
     }
-    
-    public CronExecutionModel getModel(){
-        return (CronExecutionModel)mMailModel;
+
+    public CronExecutionModel getModel() {
+        return (CronExecutionModel) mMailModel;
     }
 
-     public void onRowSelect(SelectEvent event) {
-        if (event!=null) {
+    public void onRowSelect(SelectEvent event) {
+        if (event != null) {
             setCurrent((SEDTaskExecution) event.getObject());
-        }else {
+        } else {
             setCurrent(null);
         }
     }
@@ -91,10 +89,9 @@ public class CronExecutionView implements Serializable {
     public void onRowUnselect(UnselectEvent event) {
         setCurrent(null);
     }
-    
-    public String getStatusColor(String status){
-        return "blue";
+
+    public String getStatusColor(String status) {
+        return SEDTaskStatus.getColor(status);
     }
-    
 
 }

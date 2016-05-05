@@ -25,9 +25,14 @@ Copyright 2015, Supreme Court Republic of Slovenia
  See the Licence for the specific language governing permissions and  
  limitations under the Licence.
 -->
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ns1="http://ebms.msh.org/outbox/mail" xmlns:ns2="http://ebms.msh.org/outbox/payload" xmlns:ns3="http://ebms.msh.org/outbox/property" targetNamespace="http://ebms.msh.org/outbox/mail" elementFormDefault="qualified" attributeFormDefault="unqualified">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ns1="http://ebms.msh.org/outbox/mail" 
+           xmlns:ns2="http://ebms.msh.org/outbox/payload" 
+           xmlns:ns3="http://ebms.msh.org/outbox/property" 
+           xmlns:ns4="http://ebms.msh.org/outbox/event" 
+           targetNamespace="http://ebms.msh.org/outbox/mail" elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<xs:import namespace="http://ebms.msh.org/outbox/property" schemaLocation="./msh-out-property.xsd"/>
 	<xs:import namespace="http://ebms.msh.org/outbox/payload" schemaLocation="./msh-out-payload.xsd"/>
+        <xs:import namespace="http://ebms.msh.org/outbox/event" schemaLocation="./msh-out-event.xsd"/>
 	<xs:element name="MSHOutMail" type="ns1:MSHOutMailType"/>
 	<xs:complexType name="MSHOutMailType">
 		<xs:annotation>
@@ -42,6 +47,7 @@ Copyright 2015, Supreme Court Republic of Slovenia
 		<xs:sequence>
 			<xs:element ref="ns3:MSHOutProperties" minOccurs="0"/>
 			<xs:element ref="ns2:MSHOutPayload" minOccurs="0"/>
+                        <xs:element ref="ns4:MSHOutEvent" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:sequence>
 		<xs:attribute name="messageId" use="optional">
 			<xs:annotation>

@@ -29,6 +29,7 @@ import org.sed.ebms.cron.SEDTaskProperty;
 import org.sed.ebms.cron.SEDTaskType;
 
 import si.sed.commons.SEDJNDI;
+import si.sed.commons.SEDTaskStatus;
 import si.sed.commons.interfaces.SEDDaoInterface;
 import si.sed.commons.interfaces.SEDLookupsInterface;
 import si.sed.commons.interfaces.TaskExecutionInterface;
@@ -69,7 +70,7 @@ public class MSHScheduler implements SEDSchedulerInterface {
         BigInteger bi = (BigInteger) (timer.getInfo());
         SEDTaskExecution te = new SEDTaskExecution();
         te.setCronId(bi);
-        te.setStatus("INIT");
+        te.setStatus(SEDTaskStatus.INIT.getValue());
         te.setStartTimestamp(Calendar.getInstance().getTime());
         mdbDao.addExecutionTask(te);
 
@@ -77,8 +78,9 @@ public class MSHScheduler implements SEDSchedulerInterface {
         SEDCronJob mj = mdbLookups.getSEDCronJobById(bi);
 
         te.setName(mj.getSEDTask().getTaskType());
+        te.setType(mj.getSEDTask().getTaskType());
         if (!mj.getActive()) {
-            te.setStatus("ERROR");
+            te.setStatus(SEDTaskStatus.ERROR.getValue());
             te.setResult(String.format("Task cron id:  %d  not active!", bi));
             te.setEndTimestamp(Calendar.getInstance().getTime());
             mdbDao.updateExecutionTask(te);
@@ -90,35 +92,36 @@ public class MSHScheduler implements SEDSchedulerInterface {
         try {
             tproc = InitialContext.doLookup(tt.getJndi());
         } catch (NamingException ex) {
-            te.setStatus("ERROR");
+            te.setStatus(SEDTaskStatus.ERROR.getValue());
             te.setResult(String.format("Error getting taskexecutor: %s. ERROR: %s", tt.getJndi(), ex.getMessage()));
             te.setEndTimestamp(Calendar.getInstance().getTime());
             mdbDao.updateExecutionTask(te);
             return;
         }
         Properties p = new Properties();
-        for (SEDTaskProperty tp: mj.getSEDTask().getSEDTaskProperties()){
-            p.setProperty(tp.getKey(), tp.getValue());
+        for (SEDTaskProperty tp : mj.getSEDTask().getSEDTaskProperties()) {
+            if (tp.getValue()!=null) {
+                p.setProperty(tp.getKey(), tp.getValue());
+            }
         }
-        
-        
-         te.setStatus("PROCCESS");
-         mdbDao.updateExecutionTask(te);
-         
+
+        te.setStatus(SEDTaskStatus.PROGRESS.getValue());
+        mdbDao.updateExecutionTask(te);
+
         try {
-           String result =  tproc.executeTask(p);
-            te.setStatus("SUCCESS");
+            String result = tproc.executeTask(p);
+            te.setStatus(SEDTaskStatus.SUCCESS.getValue());
             te.setResult(result);
             te.setEndTimestamp(Calendar.getInstance().getTime());
-            
+
             mdbDao.updateExecutionTask(te);
         } catch (Exception ex) {
-             te.setStatus("ERROR");
-            te.setResult(String.format("Error getting taskexecutor: %s. ERROR: %s", tt.getJndi(), ex.getMessage()));
+
+            te.setStatus(SEDTaskStatus.ERROR.getValue());
+            te.setResult(String.format("TASK ERROR: %s. Err. desc: %s", tt.getJndi(), ex.getMessage()));
             te.setEndTimestamp(Calendar.getInstance().getTime());
             mdbDao.updateExecutionTask(te);
         }
-       
 
     }
 

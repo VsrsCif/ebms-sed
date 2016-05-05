@@ -7,6 +7,7 @@ package si.sed.commons.interfaces;
 
 import java.util.Properties;
 import javax.ejb.Local;
+import si.sed.commons.interfaces.exception.TaskException;
 
 /**
  *
@@ -15,12 +16,10 @@ import javax.ejb.Local;
 @Local
 public interface TaskExecutionInterface {
     
-     String executeTask(Properties p) throws Exception;
+     String executeTask(Properties p) throws TaskException;
      String getType();
      String getName();
      String getDesc();
      Properties getProperties();
-     
-     
 
 }

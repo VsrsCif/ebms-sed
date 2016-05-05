@@ -39,4 +39,5 @@ public interface SEDDaoInterface {
     boolean addExecutionTask(SEDTaskExecution ad);
     boolean updateExecutionTask(SEDTaskExecution ad);
     <T> void removeMail(Class<T> type, List<T> lst);
+    <T,E> void removeMail(Class<T> type, Class<E> typeEvent, BigInteger bi);
 }
