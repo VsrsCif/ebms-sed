@@ -22,6 +22,7 @@
                                  selectionMode="single" 
                                  selection="#{InMailDataView.currentMail}" 
                                  rowKey="#{inMail.id}"
+                                 currentPageReportTemplate="#{msg['Showing']} {startRecord}-{endRecord} #{msg['OutOf']} {totalRecords}"
                                  paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                                  rowsPerPageTemplate="25,50,100,200" 
                                  paginator="true" 
@@ -35,32 +36,32 @@
                                  >
                         <p:ajax event="rowSelect" listener="#{InMailDataView.onRowSelect}" 
                                 update="forms:InMailPanel:InMailTab" />                        
-                        <p:column width="60" headerText="No.">
+                        <p:column width="60" headerText="#{msg['Nu']}">
                             <h:outputText value="#{InMailDataView.rowIndex(inMail) + 1}" />
                         </p:column>
-                        <p:column width="60" headerText="Id" >
+                        <p:column width="60" headerText="#{msg['Id']}" >
                             <h:outputText value="#{inMail.id}" />
                         </p:column>
 
                         <p:column width="15" style="background-color:#{InMailDataView.getStatusColor(inMail.status)}"
-                                  headerText="St.">
+                                  headerText="#{msg['St']}">
                             <h:outputText value=" " />
                         </p:column>
-                          <p:column width="130" headerText="Rec. date">
+                          <p:column width="130" headerText="#{msg['RecDate']}">
                               <h:outputText value="#{inMail.receivedDate}"  ><f:convertDateTime pattern="dd.MM.yyyy hh:mm" timeZone="CET" /></h:outputText>
                         </p:column>
 
-                        <p:column headerText="Sender">
+                        <p:column headerText="#{msg['Sender']}">
                             <h:outputText value="#{inMail.senderName}" />
                         </p:column>
 
-                        <p:column headerText="Receiver">
+                        <p:column headerText="#{msg['Receiver']}">
                             <h:outputText value="#{inMail.receiverName}" />
                         </p:column>
-                        <p:column width="150"  headerText="Service">
+                        <p:column width="150"  headerText="#{msg['Service']}">
                             <h:outputText value="#{inMail.service}" />
                         </p:column>
-                        <p:column width="150"  headerText="Action">
+                        <p:column width="150"  headerText="#{msg['Action']}">
                             <h:outputText value="#{inMail.action}" />
                         </p:column>
                     </p:dataTable>
@@ -71,48 +72,48 @@
                            gutter="0">
                 <p:tabView id="InMailTab" style="height: 100%" activeIndex="#{InMailDataView.tabActiveIndex}">
                     <p:ajax event="tabChange" listener="#{InMailDataView.onTabChange}"/> 
-                    <p:tab   id="InMailDataTab" title="Podatki">
+                    <p:tab   id="InMailDataTab" title="#{msg['MailData']}">
                         <f:facet name="title">
                             <h:graphicImage value="resources/images/mail32.png" width="22" height="22" />
-                            <h:outputText value="Podatki" />
+                            <h:outputText value="#{msg['MailData']}" />
                         </f:facet>
 
                         <p:outputPanel id="InMailData" >
                             <table style=" width: 100%" >
                                 <tr>
-                                    <td align="right" width="120">Id:</td> 
+                                    <td align="right" width="120">#{msg['Id']}:</td> 
                                     <td align="left"><h:inputText value="#{InMailDataView.currentMail.id}"  style="width:100%;"  readonly='true' /></td>
-                                    <td align="right" width="180">Receiver name:</td> 
+                                    <td align="right" width="180">#{msg['Receiver']}:</td> 
                                     <td align="left"><h:inputText value="#{InMailDataView.currentMail.receiverName}"  style="width:100%;"  readonly='true' /></td>
-                                    <td align="right" width="180">Receiver e-box:</td> 
+                                    <td align="right" width="180">#{msg['Receiver-Box']}:</td> 
                                     <td align="left"><h:inputText value="#{InMailDataView.currentMail.receiverEBox}"  style="width:100%;"  readonly='true' /></td>
-                                    <td align="right" width="180">Submit date:</td> 
+                                    <td align="right" width="180">#{msg['SubmitDate']}:</td> 
                                     <td align="left"><h:inputText value="#{InMailDataView.currentMail.submittedDate}"  style="width:100%;"  readonly='true' /></td>
                                 </tr>
                                 <tr>
-                                    <td align="right">Sender id:</td> 
+                                    <td align="right">#{msg['SenderMailId']}:</td> 
                                     <td align="left"><h:inputText value="#{InMailDataView.currentMail.senderMessageId}"  style="width:100%;"  readonly='true' /></td>
-                                    <td align="right">Sender name:</td> 
+                                    <td align="right">#{msg['Sender']}:</td> 
                                     <td align="left"><h:inputText value="#{InMailDataView.currentMail.senderName}"  style="width:100%;"  readonly='true' /></td>
-                                    <td align="right">Sender e-box:</td> 
+                                    <td align="right">#{msg['Sender-Box']}:</td> 
                                     <td align="left"><h:inputText value="#{InMailDataView.currentMail.senderEBox}"  style="width:100%;"  readonly='true' /></td>
-                                    <td align="right">Sent date:</td> 
+                                    <td align="right">#{msg['SentDate']}:</td> 
                                     <td align="left"><h:inputText value="#{InMailDataView.currentMail.sentDate}"  style="width:100%;"  readonly='true' /></td>
                                 </tr>
                                 <tr>
-                                    <td align="right">Service:</td> 
+                                    <td align="right">#{msg['Service']}:</td> 
                                     <td align="left"><h:inputText value="#{InMailDataView.currentMail.service}" style="width:100%;"  readonly='true' /></td>
-                                    <td align="right">Action:</td> 
+                                    <td align="right">#{msg['Action']}:</td> 
                                     <td align="left"><h:inputText value="#{InMailDataView.currentMail.action}"  style="width:100%;"  readonly='true' /></td>
-                                    <td align="right">Transaction:</td> 
+                                    <td align="right">#{msg['Transaction']}:</td> 
                                     <td align="left"><h:inputText value="#{InMailDataView.currentMail.conversationId}"  style="width:100%;"  readonly='true' /></td>
-                                    <td align="right">Received date:</td> 
+                                    <td align="right">#{msg['ReceivedDate']}:</td> 
                                     <td align="left"><h:inputText value="#{InMailDataView.currentMail.receivedDate}"  style="width:100%;"  readonly='true' /></td>
                                 </tr>
                                 <tr>
-                                    <td align="right">Subject:</td> 
+                                    <td align="right">#{msg['Subject']}:</td> 
                                     <td align="left" colspan="5"><h:inputText value="#{InMailDataView.currentMail.subject}"  style="width:100%;"  readonly='true' /></td>                                    
-                                    <td align="right">Delivered date:</td> 
+                                    <td align="right">#{msg['DeliveredDate']}:</td> 
                                     <td align="left"><h:inputText value="#{InMailDataView.currentMail.deliveredDate}" style="width:100%;"  readonly='true' /></td>
                                 </tr>
                             </table>
@@ -121,7 +122,7 @@
                     <p:tab >
                         <f:facet name="title">
                             <h:graphicImage value="resources/images/document22.png" width="22" height="22" />
-                            <h:outputText value="Payloads" />
+                            <h:outputText value="#{msg['Payloads']}" />
                         </f:facet>
 
                         <p:outputPanel id="InMailDocuments" style="text-align:center;">
@@ -131,22 +132,22 @@
                                          value="#{InMailDataView.currentMail.MSHInPayload.MSHInParts}"
                                          scrollable="true"
                                      scrollHeight="135">
-                                <p:column width="60" headerText="Id">
+                                <p:column width="60" headerText="#{msg['Id']}">
                                     <h:outputText value="#{plpart.id}" />
                                 </p:column>
-                                <p:column width="60" headerText="Download">
-                                    <p:commandButton ajax="false" value="Download"
+                                <p:column width="60" headerText="#{msg['Download']}">
+                                    <p:commandButton ajax="false" value="#{msg['Download']}"
                                             onclick="PrimeFaces.monitorDownload(start, stop);" icon="ui-icon-arrowthick-1-s">
                                         <p:fileDownload value="#{InMailDataView.getFile(plpart.id)}" />
                                     </p:commandButton>
                                 </p:column>
-                                <p:column headerText="Filename">
+                                <p:column headerText="#{msg['Filename']}">
                                     <h:outputText value="#{plpart.filename}" />
                                 </p:column>
-                                <p:column headerText="Description">
+                                <p:column headerText="#{msg['Description']}">
                                     <h:outputText value="#{plpart.description}" />
                                 </p:column>
-                                <p:column headerText="MimeType">
+                                <p:column headerText="#{msg['MimeType']}">
                                     <h:outputText value="#{plpart.mimeType}" />
                                 </p:column>
 
@@ -157,7 +158,7 @@
                     <p:tab >
                         <f:facet name="title">
                             <h:graphicImage value="resources/images/events22.png" width="22" height="22" />
-                            <h:outputText value="Events" />                                 
+                            <h:outputText value="#{msg['Events']}" />                                 
                         </f:facet>
                         <p:outputPanel id="InMailEvents" style="text-align:center;">
 
@@ -165,20 +166,20 @@
                             <p:dataTable var="mailEvents" value="#{InMailDataView.mailEvents}"
                                        scrollable="true"
                                        scrollHeight="135" >
-                                <p:column width="60" headerText="Id">
+                                <p:column width="60" headerText="#{msg['Id']}">
                                     <h:outputText value="#{mailEvents.id}" />
                                 </p:column>
-                                <p:column headerText="Status" width="15" style="background-color:#{InMailDataView.getStatusColor(mailEvents.status)}" >
+                                <p:column headerText="#{msg['Status']}" width="15" style="background-color:#{InMailDataView.getStatusColor(mailEvents.status)}" >
                                     <h:outputText value=" " />
                                 </p:column>
-                                <p:column width="140" headerText="Date">
+                                <p:column width="140" headerText="#{msg['Date']}">
                                     <h:outputText value="#{mailEvents.date}"  ><f:convertDateTime pattern="dd.MM.yyyy hh:mm:ss" timeZone="CET" /></h:outputText>
                                     
                                 </p:column>
-                                <p:column headerText="Description">
+                                <p:column headerText="#{msg['Description']}">
                                     <h:outputText value="#{mailEvents.description}" />
                                 </p:column>
-                                <p:column headerText="UsersId">
+                                <p:column headerText="#{msg['UsersId']}">
                                     <h:outputText value="#{mailEvents.userId}" />
                                 </p:column>
 

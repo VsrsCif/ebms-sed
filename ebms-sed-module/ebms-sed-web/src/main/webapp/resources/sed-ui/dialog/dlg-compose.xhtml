@@ -12,14 +12,15 @@
 
     <composite:implementation >
         <!-- sed-box ADD/EDIT dialog! -->
-        <p:dialog  header="Mail compose" widgetVar="mailComposeDialog" modal="true" hideEffect="fade" resizable="false"  appendTo="@(body)" width="650" >
+        <p:dialog  header="#{msg['MailCompose']}" widgetVar="mailComposeDialog" modal="true" hideEffect="fade" resizable="false"  appendTo="@(body)"
+                   width="650" >
             <h:form id="mailComposeForm" >
                 <p:layout id="sedboxDetails" style="min-width:600px;min-height:400px;">
                     <p:layoutUnit position="north"   >
                         <p:panelGrid style="width: 100%">
                             <p:row>
                                 <p:column>
-                                    <h:outputText value="Sender box" />
+                                    <h:outputText value="#{msg['SenderBox']}" />
                                 </p:column>
                                 <p:column>
                                     <p:selectOneMenu id="ebox" value="#{OutMailDataView.newOutMail.senderEBox}" style="width:150px" >
@@ -28,15 +29,15 @@
                                         <f:selectItems value="#{userSessionData.userEBoxes}" />
                                     </p:selectOneMenu>                                    
                                 </p:column>
-                                <p:column><h:outputText value="Receiver box" /></p:column>
+                                <p:column><h:outputText value="#{msg['ReceiverBox']}" /></p:column>
                                 <p:column><h:inputText value="#{OutMailDataView.newOutMail.receiverEBox}" style="width: 100%"/></p:column>
                             </p:row><p:row>
-                                <p:column><h:outputText value="Service" /></p:column>
+                                <p:column><h:outputText value="#{msg['Service']}" /></p:column>
                                 <p:column><h:inputText value="#{OutMailDataView.newOutMail.service}" style="width: 100%"/></p:column>                     
-                                <p:column><h:outputText value="Action" /></p:column>
+                                <p:column><h:outputText value="#{msg['Action']}" /></p:column>
                                 <p:column><h:inputText value="#{OutMailDataView.newOutMail.action}" style="width: 100%"/></p:column>
                             </p:row><p:row>
-                                <p:column><h:outputText value="Subject" /></p:column>
+                                <p:column><h:outputText value="#{msg['Subject']}" /></p:column>
                                 <p:column colspan="3"><h:inputText value="#{OutMailDataView.newOutMail.subject}" style="width: 100%"/></p:column>
                             </p:row>
 
@@ -54,12 +55,12 @@
                         <p:toolbar 
                             styleClass="dialogButtonBar" >
                             <f:facet name="right"  >
-                        <p:commandButton value="Ok" update=":forms:MainPanel" 
+                        <p:commandButton value="#{msg['Ok']}" update=":forms:MainPanel" 
                                          styleClass="toolbar-Button" 
                                          icon="ui-icon-sed-ok"                                          
                                          actionListener="#{OutMailDataView.sendComposedMail()}" 
                                          oncomplete="PF('mailComposeDialog').hide()"   />
-                        <p:commandButton value="Cancel" styleClass="toolbar-Button" 
+                        <p:commandButton value="#{msg['Cancel']}" styleClass="toolbar-Button" 
                                          icon="ui-icon-sed-cancel" 
                                          oncomplete="PF('mailComposeDialog').hide()" />
                     </f:facet>

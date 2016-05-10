@@ -54,7 +54,7 @@
 
                     Properties
                     <p:dataTable var="prpt" value="#{PModeView.currentPModeForeChannel.businessInfo.properties.properties}" >
-                        <p:column headerText="Type">
+                        <p:column headerText="#{msg['Type']}">
                             <h:outputText value="#{prpt.name}" />
                         </p:column>
                         <p:column headerText="Value">

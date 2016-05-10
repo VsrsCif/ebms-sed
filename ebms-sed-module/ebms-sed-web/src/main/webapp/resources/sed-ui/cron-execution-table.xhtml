@@ -22,6 +22,7 @@
                                  selectionMode="single" 
                                  selection="#{CronExecutionView.current}" 
                                  rowKey="#{taskExec.id}"
+                                 currentPageReportTemplate="#{msg['Showing']} {startRecord}-{endRecord} #{msg['OutOf']} {totalRecords}"
                                  paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                                  rowsPerPageTemplate="25,50,100,200" 
                                  paginator="true" 
@@ -35,10 +36,10 @@
                                  >
                         <p:ajax event="rowSelect" listener="#{CronExecutionView.onRowSelect}" 
                                 update="forms:InMailPanel:InMailTab" />                        
-                        <p:column width="60" headerText="No.">
+                        <p:column width="60" headerText="#{msg['Nu']}">
                             <h:outputText value="#{CronExecutionView.rowIndex(taskExec) + 1}" />
                         </p:column>
-                        <p:column width="60" headerText="Id" >
+                        <p:column width="60" headerText="#{msg['Id']}" >
                             <h:outputText value="#{taskExec.id}" />
                         </p:column>
 
@@ -46,21 +47,21 @@
                                   headerText="St.">
                             <h:outputText value=" " />
                         </p:column>
-                          <p:column width="150" headerText="Start. date">
+                          <p:column width="150" headerText="#{msg['StartDate']}">
                               <h:outputText value="#{taskExec.startTimestamp}"  ><f:convertDateTime pattern="dd.MM.yyyy hh:mm:ss.SSS" timeZone="CET" /></h:outputText>
                         </p:column>
-                        <p:column width="150" headerText="End. date">
+                        <p:column width="150" headerText="#{msg['EndDate']}">
                               <h:outputText value="#{taskExec.endTimestamp}"  ><f:convertDateTime pattern="dd.MM.yyyy hh:mm:ss.SSS" timeZone="CET" /></h:outputText>
                         </p:column>
 
-                        <p:column headerText="Type"  width="130" >
+                        <p:column headerText="#{msg['Type']}"  width="130" >
                             <h:outputText value="#{taskExec.type}" />
                         </p:column>
 
-                        <p:column headerText="Name"  width="150" >
+                        <p:column headerText="#{msg['Name']}"  width="150" >
                             <h:outputText value="#{taskExec.name}" />
                         </p:column>
-                        <p:column   headerText="Result">
+                        <p:column   headerText="#{msg['Result']}">
                             <h:outputText value="#{taskExec.result}" />
                         </p:column>
                         

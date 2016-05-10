@@ -11,10 +11,10 @@
     </composite:interface>
 
     <composite:implementation >
-        <h1>Users</h1>
-        <p:panel id="horizontal" toggleTitle="INFO" header="Sed-User Administration info" 
+        <h1>#{msg['Users']}</h1>
+        <p:panel id="horizontal" toggleTitle="#{msg['INFO']}" header="#{msg['Users']}" 
                  toggleable="true"  collapsed="true">
-            <h:outputText value="Administration of SED Users. "></h:outputText>
+            <h:outputText value="#{msg['SEDUserDefDesc']}"></h:outputText>
         </p:panel>
 
         <p:dataTable id="TblSedUser" 
@@ -34,15 +34,15 @@
                     oncomplete="PF('userDialog').show()"/>
             
             <f:facet name="header">
-                <p:commandButton value="Add" styleClass="toolbar-Button" icon="ui-icon-sed-add" 
+                <p:commandButton value="#{msg['Add']}" styleClass="toolbar-Button" icon="ui-icon-sed-add" 
                                  update=":dlguser:userDialogForm:userDetails" 
                                  actionListener="#{adminSEDUserView.createEditable()}"
                                  oncomplete="PF('userDialog').show()" />
-                <p:commandButton value="Edit" styleClass="toolbar-Button" icon="ui-icon-sed-edit" 
+                <p:commandButton value="#{msg['Edit']}" styleClass="toolbar-Button" icon="ui-icon-sed-edit" 
                                  actionListener="#{adminSEDUserView.startEditSelected()}"
                                  update=":dlguser:userDialogForm:userDetails" 
                                  oncomplete="PF('userDialog').show()" />
-                <p:commandButton value="Delete" styleClass="toolbar-Button" icon="ui-icon-sed-remove" 
+                <p:commandButton value="#{msg['Delete']}" styleClass="toolbar-Button" icon="ui-icon-sed-remove" 
                                  actionListener="#{adminSEDUserView.removeSelected()}" update=":forms:SettingsUsers:TblSedUser" />
 
             </f:facet>
@@ -50,13 +50,13 @@
             <p:column style="width:16px">
                 <p:rowToggler />
             </p:column>
-            <p:column headerText="Username" width="250">
+            <p:column headerText="#{msg['Username']}" width="250">
                 <h:outputText value="#{sp.userId}" />
             </p:column>              
-            <p:column headerText="Active from date" width="60">
+            <p:column headerText="#{msg['ActiveFromDate']}" width="60">
                 <h:outputText value="#{sp.activeFromDate}" ><f:convertDateTime pattern="dd.MM.yyyy"  timeZone="CET" /></h:outputText>                
             </p:column>
-            <p:column headerText="Active to date" width="60">
+            <p:column headerText="#{msg['ActiveToDate']}" width="60">
                 <h:outputText value="#{sp.activeToDate}" ><f:convertDateTime pattern="dd.MM.yyyy" timeZone="CET" /></h:outputText>                
             </p:column>
             <p:rowExpansion>

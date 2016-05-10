@@ -12,10 +12,10 @@
 
     <composite:implementation >
         
-        <h1>Task definitions</h1>
-        <p:panel id="TaskDesc" toggleTitle="INFO" header="Task definitions" 
+        <h1>#{msg['TaskDefinitions']}</h1>
+        <p:panel id="TaskDesc" toggleTitle="#{msg['INFO']}" header="#{msg['TaskDefinitions']}" 
                  toggleable="true"  collapsed="true">
-            <h:outputText value="Administration of Task definitions. "></h:outputText>
+            <h:outputText value="#{msg['TaskDefDesc']}"></h:outputText>
         </p:panel>
         <p:dataTable id="TblTaskType" 
                      var="sp" 
@@ -34,31 +34,31 @@
                     oncomplete="PF('taskTypeDialog').show()"/>
 
             <f:facet name="header">
-                <p:commandButton value="Add"  styleClass="toolbar-Button" icon="ui-icon-sed-add" 
+                <p:commandButton value="#{msg['Add']}"  styleClass="toolbar-Button" icon="ui-icon-sed-add" 
                                  actionListener="#{adminSEDTaskTypeView.createEditable()}"
                                  oncomplete="PF('taskTypeDialog').show()" 
                                  update=":dlgTaskType:cronDialogForm:taskType"
                                  
                                  />
-                <p:commandButton value="Edit"  styleClass="toolbar-Button" icon="ui-icon-sed-edit" 
+                <p:commandButton value="#{msg['Edit']}"  styleClass="toolbar-Button" icon="ui-icon-sed-edit" 
                                  oncomplete="PF('taskTypeDialog').show()"                                                                   
                                  actionListener="#{adminSEDTaskTypeView.startEditSelected()}"
                                  update=":dlgTaskType:cronDialogForm:taskType"
                                  />
-                <p:commandButton value="Delete" styleClass="toolbar-Button" icon="ui-icon-sed-remove" 
+                <p:commandButton value="#{msg['Delete']}" styleClass="toolbar-Button" icon="ui-icon-sed-remove" 
                                  actionListener="#{adminSEDTaskTypeView.removeSelected()}" update=":forms:SettingsCron:TblTaskType" />
  
             </f:facet>
-             <p:column headerText="Type" width="120">
+             <p:column headerText="#{msg['Type']}" width="120">
                 <h:outputText value="#{sp.type}" />
             </p:column>
-            <p:column headerText="Name" width="160">
+            <p:column headerText="#{msg['Name']}" width="160">
                 <h:outputText value="#{sp.name}"></h:outputText>                
             </p:column>
-            <p:column headerText="JNDI">
+            <p:column headerText="#{msg['JNDI']}">
                 <h:outputText value="#{sp.jndi}"></h:outputText>                
             </p:column>
-            <p:column headerText="Description">
+            <p:column headerText="#{msg['Description']}">
                 <h:outputText value="#{sp.description}" ></h:outputText>                
             </p:column>
             
@@ -68,10 +68,10 @@
         
         
         
-        <h1>Cron jobs</h1>
-        <p:panel id="CronDesc" toggleTitle="INFO" header="Sed-Box Cron job" 
+        <h1>#{msg['CronJobs']}</h1>
+        <p:panel id="CronDesc" toggleTitle="INFO" header="#{msg['CronJobs']}" 
                  toggleable="true"  collapsed="true">
-            <h:outputText value="Administration of SED Cron. "></h:outputText>
+            <h:outputText value="#{msg['CronDefDesc']}"></h:outputText>
         </p:panel>
         <p:dataTable id="TblCron" 
                      var="sp" 
@@ -89,45 +89,45 @@
                     oncomplete="PF('cronDialog').show()"/>
 
             <f:facet name="header">
-                <p:commandButton value="Add"  styleClass="toolbar-Button" icon="ui-icon-sed-add" 
+                <p:commandButton value="#{msg['Add']}"  styleClass="toolbar-Button" icon="ui-icon-sed-add" 
                                  actionListener="#{adminSEDCronJobView.createEditable()}"
                                  oncomplete="PF('cronDialog').show()" 
                                  update=":dlgcron:cronDialogForm:cronJob"
                                  
                                  />
-                <p:commandButton value="Edit"  styleClass="toolbar-Button" icon="ui-icon-sed-edit" 
+                <p:commandButton value="#{msg['Edit']}"  styleClass="toolbar-Button" icon="ui-icon-sed-edit" 
                                  oncomplete="PF('cronDialog').show()"                                                                   
                                  actionListener="#{adminSEDCronJobView.startEditSelected()}"
                                  update=":dlgcron:cronDialogForm:cronJob"
                                  />
-                <p:commandButton value="Delete" styleClass="toolbar-Button" icon="ui-icon-sed-remove" 
+                <p:commandButton value="#{msg['Delete']}" styleClass="toolbar-Button" icon="ui-icon-sed-remove" 
                                  actionListener="#{adminSEDCronJobView.removeSelected()}" update=":forms:SettingsCron:TblCron" />
  
             </f:facet>
-            <p:column headerText="Id">
+            <p:column headerText="#{msg['Id']}">
                 <h:outputText value="#{sp.id}" /></p:column>
-            <p:column headerText="Active">
+            <p:column headerText="#{msg['Active']}">
                 <h:selectBooleanCheckbox value="#{sp.active}" disabled="true" />
             </p:column>
-            <p:column headerText="Second">
+            <p:column headerText="#{msg['Second']}">
                 <h:outputText value="#{sp.second}"></h:outputText>                
             </p:column>
-            <p:column headerText="Minute">
+            <p:column headerText="#{msg['Minute']}">
                 <h:outputText value="#{sp.minute}"></h:outputText>                
             </p:column>
-            <p:column headerText="Hour">
+            <p:column headerText="#{msg['Hour']}">
                 <h:outputText value="#{sp.hour}" ></h:outputText>                
             </p:column>
-            <p:column headerText="Day of month">
+            <p:column headerText="#{msg['DayOfMonth']}">
                 <h:outputText value="#{sp.dayOfMonth}" ></h:outputText>                
             </p:column>
-            <p:column headerText="Month">
+            <p:column headerText="#{msg['Month']}">
                 <h:outputText value="#{sp.month}" ></h:outputText>                
             </p:column>
-            <p:column headerText="Day of week">
+            <p:column headerText="#{msg['DayOfWeek']}">
                 <h:outputText value="#{sp.dayOfWeek}" ></h:outputText>                
             </p:column>
-            <p:column headerText="Task type">
+            <p:column headerText="#{msg['TaskType']}">
                 <h:outputText value="#{sp.SEDTask.taskType}" ></h:outputText>                
             </p:column>
         </p:dataTable>

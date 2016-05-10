@@ -12,39 +12,40 @@
 
     <composite:implementation >
 
-        <p:dialog  header="SEDTaskType detail" widgetVar="taskTypeDialog" 
+        <p:dialog  header="#{msg['SEDTaskTypeDialog']}" widgetVar="taskTypeDialog" 
                    modal="true" hideEffect="fade" resizable="false" appendTo="@(body)" height="370" width="600">
 
             <h:form id="cronDialogForm" >
                 <p:layout id="taskType" style="min-width:400px; height:370px; "  >
-                    <p:layoutUnit header="Task type" position="center"   >
+                    <p:layoutUnit header="#{msg['TaskType']}" position="center"   >
                         <p:panelGrid rendered="#{not empty adminSEDTaskTypeView.editable}" style="width:100%; " >
                             <p:row> 
-                                <p:column><h:outputText value="JNDI:" /></p:column>
-                                <p:column><p:commandButton value="Update task type" icon="ui-icon-sed-refresh" 
+                                <p:column><h:outputText value="#{msg['JNDI']}:" /></p:column>
+                                <p:column><p:commandButton value="#{msg['UpdateTaskType']}" icon="ui-icon-sed-refresh" 
                                                            style="width: 100%; height: 28px " 
                                                            actionListener="#{adminSEDTaskTypeView.refreshDataFromEJB}"
                                                            update=":dlgTaskType:cronDialogForm:taskType"/></p:column>
                             </p:row>
                             <p:row> 
-                                <p:column colspan="2"><p:inputTextarea  value="#{adminSEDTaskTypeView.editable.jndi}" rows="4" style="width: 95%" /></p:column>
+                                <p:column colspan="2"><p:inputTextarea  value="#{adminSEDTaskTypeView.editable.jndi}" rows="4" style="width: 95%" />
+                                </p:column>
                             </p:row>
                             <p:row> 
-                                <p:column><h:outputText value="Type:" /></p:column>
+                                <p:column><h:outputText value="#{msg['Type']}:" /></p:column>
                                 <p:column><p:inputText readonly="true" value="#{adminSEDTaskTypeView.editable.type}" style="width: 95%" /></p:column>
                             </p:row>
                             <p:row> 
-                                <p:column><h:outputText value="Name:" /></p:column>
+                                <p:column><h:outputText value="#{msg['Name']}:" /></p:column>
                                 <p:column><p:inputText readonly="true" value="#{adminSEDTaskTypeView.editable.name}" style="width: 95%" /></p:column>
                             </p:row>
                             <p:row> 
-                                <p:column><h:outputText value="Desc:" /></p:column>
+                                <p:column><h:outputText value="#{msg['Description']}:" /></p:column>
                                 <p:column><p:inputTextarea  readonly="true" value="#{adminSEDTaskTypeView.editable.description}" rows="4" style="width: 95%" /></p:column>
                             </p:row>
                         </p:panelGrid>
                         <p:outputLabel  rendered="#{empty adminSEDTaskTypeView.editable}">Select task</p:outputLabel>
                     </p:layoutUnit>                    
-                    <p:layoutUnit position="east" header="Task properties" rendered="#{not empty adminSEDTaskTypeView.editable}"
+                    <p:layoutUnit position="east" header="#{msg['TaskProperties']}" rendered="#{not empty adminSEDTaskTypeView.editable}"
                                   size="250" minSize="250" maxSize="250">
                         <p:dataTable id="TblTaskTypeProp" 
                                      var="sp" 
@@ -54,13 +55,13 @@
                                      scrollHeight="100%"
                                      >
 
-                            <p:column headerText="Key">
+                            <p:column headerText="#{msg['Key']}">
                                 <p:cellEditor>
                                     <f:facet name="output"><h:outputText value="#{sp.key}" /></f:facet>
                                     <f:facet name="input"><p:inputText value="#{sp.key}" /></f:facet>
                                 </p:cellEditor>
                             </p:column>
-                            <p:column headerText="Desc">
+                            <p:column headerText="#{msg['Description']}">
                                 <p:cellEditor>
                                     <f:facet name="output"><h:outputText value="#{sp.description}" /></f:facet>
                                     <f:facet name="input"><p:inputText value="#{sp.description}" /></f:facet>
@@ -73,13 +74,13 @@
                         <p:toolbar 
                             styleClass="dialogButtonBar" >
                             <f:facet name="right"  >
-                                <p:commandButton value="Ok"  styleClass="toolbar-Button" 
+                                <p:commandButton value="#{msg['Ok']}"  styleClass="toolbar-Button" 
                                                  icon="ui-icon-sed-ok" 
                                                  action="#{adminSEDTaskTypeView.addOrUpdateEditable()}"
                                                  oncomplete="PF('taskTypeDialog').hide()" 
                                                  update=":forms:SettingsCron:TblTaskType"
                                                  />
-                                <p:commandButton value="Cancel" styleClass="toolbar-Button" 
+                                <p:commandButton value="#{msg['Cancel']}" styleClass="toolbar-Button" 
                                                  icon="ui-icon-sed-cancel"
                                                  oncomplete="PF('taskTypeDialog').hide()" 
                                                  />

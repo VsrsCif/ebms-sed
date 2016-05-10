@@ -11,10 +11,11 @@
     </composite:interface>
 
     <composite:implementation >
-          <p:commandButton value="Export" styleClass="toolbar-Button" icon="ui-icon-sed-export"                                 
+          <p:commandButton value="#{msg['Export']}" styleClass="toolbar-Button" icon="ui-icon-sed-export"                                 
                                  actionListener="#{ApplicationData.exportLookups()}"
                                  />
-        <h1>Environment Properties</h1>
+        
+        <h1>#{msg['EnvironmentProperties']}</h1>
         <p:dataTable var="sp" 
                      value="#{ApplicationData.systemPropertyKeys}"
                      rowKey="sp"
@@ -23,14 +24,14 @@
                      scrollHeight="150"
 
                      >
-            <p:column headerText="Key">
+            <p:column headerText="#{msg['Key']}">
                 <h:outputText value="#{sp}" />
             </p:column>
-            <p:column headerText="Value">
+            <p:column headerText="#{msg['Value']}">
                 <h:outputText value="#{ApplicationData.getSystemPropertyValue(sp)}" />
             </p:column>
         </p:dataTable>
-        <h1>SED Settings</h1>
+        <h1>#{msg['SEDSettings']}</h1>
         <p:dataTable var="sp" 
                      value="#{ApplicationData.SEDPropertyKeys}"
                      rowKey="sp"
@@ -39,10 +40,10 @@
                      scrollHeight="150"
 
                      >
-            <p:column headerText="Key">
+            <p:column headerText="#{msg['Key']}">
                 <h:outputText value="#{sp}" />
             </p:column>
-            <p:column headerText="Value">
+            <p:column headerText="#{msg['Value']}">
                 <h:outputText value="#{ApplicationData.getSEDPropertyValue(sp)}" />
             </p:column>
         </p:dataTable>
