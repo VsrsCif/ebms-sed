@@ -1,44 +1,47 @@
 
-<SedLookups xmlns:ns2="http://ebms.sed.org/cron/" xmlns:ns3="http://ebms.sed.org/ebox" xmlns:ns4="http://ebms.sed.org/plugin" xmlns:ns5="http://ebms.sed.org/property" xmlns:ns6="http://ebms.sed.org/user" xmlns:ns7="http://ebms.sed.org/cert" exportDate="2016-04-21T23:12:44.404+02:00">
+<SedLookups xmlns:ns2="http://ebms.sed.org/cron/" xmlns:ns3="http://ebms.sed.org/ebox" xmlns:ns4="http://ebms.sed.org/plugin" xmlns:ns5="http://ebms.sed.org/property" xmlns:ns6="http://ebms.sed.org/user" xmlns:ns7="http://ebms.sed.org/cert" exportDate="2016-05-11T10:43:38.908+02:00">
     <SEDCronJobs>
         <ns2:SEDCronJob id="6" active="true" second="*/20" minute="*" hour="*" dayOfMonth="*" month="*" dayOfWeek="*">
             <ns2:SEDTask taskType="archive">
-                <ns2:SEDTaskProperty id="118" key="export_folder">${sed.home}/archive/</ns2:SEDTaskProperty>
-                <ns2:SEDTaskProperty id="119" key="date_offset">1</ns2:SEDTaskProperty>
+                <ns2:SEDTaskProperty id="7" key="export_folder">${sed.home}/archive/</ns2:SEDTaskProperty>
+                <ns2:SEDTaskProperty id="8" key="date_offset">1</ns2:SEDTaskProperty>
             </ns2:SEDTask>
         </ns2:SEDCronJob>
-        <ns2:SEDCronJob id="218" active="true" second="*/20" minute="*" hour="*" dayOfMonth="*" month="*" dayOfWeek="*">
+        <ns2:SEDCronJob id="9" active="true" second="*/20" minute="*" hour="*" dayOfMonth="*" month="*" dayOfWeek="*">
             <ns2:SEDTask taskType="backup">
-                <ns2:SEDTaskProperty id="219" key="export_folder">${sed.home}/backup/</ns2:SEDTaskProperty>
-                <ns2:SEDTaskProperty id="220" key="email"/>
-                <ns2:SEDTaskProperty id="221" key="send-mail"/>
+                <ns2:SEDTaskProperty id="10" key="export_folder">${sed.home}/backup/</ns2:SEDTaskProperty>
+                <ns2:SEDTaskProperty id="11" key="email"></ns2:SEDTaskProperty>
+                <ns2:SEDTaskProperty id="12" key="send-mail"></ns2:SEDTaskProperty>
             </ns2:SEDTask>
         </ns2:SEDCronJob>
-        <ns2:SEDCronJob id="240" active="true" second="*/20" minute="*" hour="*" dayOfMonth="*" month="*" dayOfWeek="*">
-            <ns2:SEDTask taskType="mailReport">
-                <ns2:SEDTaskProperty id="241" key="sedbox">izvrsba@sed-court.si</ns2:SEDTaskProperty>
-                <ns2:SEDTaskProperty id="242" key="email">receiver@mail.change.com</ns2:SEDTaskProperty>
-                <ns2:SEDTaskProperty id="243" key="send-mail">sender@mail.change.si</ns2:SEDTaskProperty>
-                <ns2:SEDTaskProperty id="244" key="subject">[SED REPORT]  - Izvrsba</ns2:SEDTaskProperty>
+        <ns2:SEDCronJob id="13" active="true" second="*/20" minute="*" hour="*" dayOfMonth="*" month="*" dayOfWeek="*">
+            <ns2:SEDTask taskType="sedboxreport">
+                <ns2:SEDTaskProperty id="14" key="sedbox">k-register@sed-court.si</ns2:SEDTaskProperty>
+                <ns2:SEDTaskProperty id="15" key="email.from">jrihtarsic1@gmail.com</ns2:SEDTaskProperty>
+                <ns2:SEDTaskProperty id="16" key="email.subject">[REPORT] sed - k-register</ns2:SEDTaskProperty>
+                <ns2:SEDTaskProperty id="17" key="mail.config.jndi">java:jboss/mail/Default</ns2:SEDTaskProperty>
+                <ns2:SEDTaskProperty id="18" key="email.to">joze_rihtarsic@t-2.net</ns2:SEDTaskProperty>
             </ns2:SEDTask>
         </ns2:SEDCronJob>
     </SEDCronJobs>
     <SEDTaskTypes>
         <ns2:SEDTaskType type="archive" name="Daily archive" jndi="java:global/sed-basic-tasks/TaskArchive!si.sed.commons.interfaces.TaskExecutionInterface" description="Daily archive">
-            <ns2:SEDTaskTypeProperty id="8" key="export_folder" description="Export folder" mandatory="false"/>
-            <ns2:SEDTaskTypeProperty id="117" key="date_offset" description="date to from today" mandatory="true"/>
+            <ns2:SEDTaskTypeProperty id="19" key="export_folder" description="Export folder" mandatory="false"/>
+            <ns2:SEDTaskTypeProperty id="20" key="date_offset" description="date to from today" mandatory="true"/>
         </ns2:SEDTaskType>
         <ns2:SEDTaskType type="backup" name="Backup" jndi="java:global/sed-basic-tasks/TaskBackup!si.sed.commons.interfaces.TaskExecutionInterface" description="Backup database">
-            <ns2:SEDTaskTypeProperty id="215" key="export_folder" description="Export folder" mandatory="true"/>
-            <ns2:SEDTaskTypeProperty id="216" key="email" description="Prejemnikov naslov" mandatory="true"/>
-            <ns2:SEDTaskTypeProperty id="217" key="send-mail" description="pošiljateljev email" mandatory="true"/>
+            <ns2:SEDTaskTypeProperty id="21" key="export_folder" description="Export folder" mandatory="true"/>
+            <ns2:SEDTaskTypeProperty id="22" key="email" description="Prejemnikov naslov" mandatory="true"/>
+            <ns2:SEDTaskTypeProperty id="23" key="send-mail" description="pošiljateljev email" mandatory="true"/>
         </ns2:SEDTaskType>
-        <ns2:SEDTaskType type="mailReport" name="Report send by mail" jndi="java:global/sed-basic-tasks/TaskEmailReport!si.sed.commons.interfaces.TaskExecutionInterface" description="Delivery report">
-            <ns2:SEDTaskTypeProperty id="9" key="sedbox" description="SED-Predal" mandatory="true"/>
-            <ns2:SEDTaskTypeProperty id="10" key="email" description="Prejemnikov naslov" mandatory="true"/>
-            <ns2:SEDTaskTypeProperty id="11" key="send-mail" description="pošiljateljev email" mandatory="true"/>
-            <ns2:SEDTaskTypeProperty id="12" key="subject" description="[EMBS-SED] sedpredal" mandatory="true"/>
+        <ns2:SEDTaskType type="sedboxreport" name="Report" jndi="java:global/sed-basic-tasks/TaskEmailReport!si.sed.commons.interfaces.TaskExecutionInterface" description="Incoming outcomming mail report from sed box">
+            <ns2:SEDTaskTypeProperty id="24" key="sedbox" description="Sedbox" mandatory="true"/>
+            <ns2:SEDTaskTypeProperty id="25" key="email.from" description="Email address from" mandatory="true"/>
+            <ns2:SEDTaskTypeProperty id="26" key="email.subject" description="Email subject" mandatory="true"/>
+            <ns2:SEDTaskTypeProperty id="27" key="mail.config.jndi" description="Mail config jndi(def: java:jboss/mail/Default)" mandatory="true"/>
+            <ns2:SEDTaskTypeProperty id="28" key="email.to" description="Email address to." mandatory="true"/>
         </ns2:SEDTaskType>
+        <ns2:SEDTaskType type="zpp-plugin" name="ZPP plugin" jndi="java:global/plugin-zpp/ZPPTask!si.sed.commons.interfaces.TaskExecutionInterface" description="Sign deliveryadvice for incomming mail "/>
     </SEDTaskTypes>
     <SEDBoxes>
         <ns3:SEDBox boxName="eINS-vpisnik@sed-court.si" activeFromDate="2016-04-20+02:00">
@@ -49,7 +52,9 @@
         </ns3:SEDBox>
         <ns3:SEDBox boxName="k-vpisnik@sed-court.si" activeFromDate="2016-04-20+02:00"/>
     </SEDBoxes>
-    <SEDPlugins/>
+    <SEDPlugins>
+        <ns4:SEDPlugin webContext="/zpp-plugin" type="LegalZPP" name="ZPP plugin" description="ZPP - e-delivery: SVEV 2.0 service implementation" jndiInInterceptor="java:global/plugin-zpp/ZPPOutInterceptor!si.sed.commons.interfaces.SoapInterceptorInterface" jndiOutInterceptor="java:global/plugin-zpp/ZPPOutInterceptor!si.sed.commons.interfaces.SoapInterceptorInterface" tasksJNDIs="java:global/plugin-zpp/ZPPTask!si.sed.commons.interfaces.TaskExecutionInterface" jndi="java:global/plugin-zpp/ZPPPluginDescription!si.sed.commons.interfaces.PluginDescriptionInterface"/>
+    </SEDPlugins>
     <SEDProperties>
         <ns5:SEDProperty key="sed.domain" value="sed-domain.org" group="SED"/>
         <ns5:SEDProperty key="org.sed.pmode" value="pmode-conf.xml" group="SYSTEM"/>

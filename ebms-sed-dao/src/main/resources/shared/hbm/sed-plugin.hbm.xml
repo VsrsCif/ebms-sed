@@ -3,18 +3,15 @@
 <hibernate-mapping>    
     <class name="org.sed.ebms.plugin.SEDPlugin"
            table="SED_PLUGIN">
-        <id name="Id" type="java.math.BigInteger" >
-            <column name="ID" scale="0" />
-            <generator class="sequence">
-                <param name="sequence">SEQ_SED_PLUGIN</param>
-            </generator>
-        </id>                  
+        <id column="TYPE" name="Type" length="64" type="java.lang.String" />                          
         <property column="ACTIVE" name="Active"   type="java.lang.Boolean"/>        
         <property column="NAME" name="Name"  length="128" type="java.lang.String"/>
-        <property column="DESCRIPTION" name="Desc"  length="1024" type="java.lang.String"/>
+        <property column="DESCRIPTION" name="description"  length="1024" type="java.lang.String"/>
         <property column="JNDI_IN_INTERCEPTOR" name="JndiInInterceptor"  length="128" type="java.lang.String"/>
         <property column="JNDI_OUT_INTERCEPTOR" name="JndiOutInterceptor"  length="128" type="java.lang.String"/>
-        <property column="SETTINGS_URL" name="SettingsUrl"  length="512" type="java.lang.String"/>
+        <property column="TASK_TYPE_JNDI_LIST" name="tasksJNDIs"  length="1024" type="java.lang.String"/>
+        <property column="WEB_CONTEXT" name="WebContext"  length="512" type="java.lang.String"/>
+        <property column="JNDI" name="Jndi"  length="512" type="java.lang.String"/>
         
         
     </class>    

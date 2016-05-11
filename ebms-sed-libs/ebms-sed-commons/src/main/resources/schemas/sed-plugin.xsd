@@ -33,21 +33,20 @@ Copyright 2016, Supreme Court Republic of Slovenia
 		<xs:annotation>
 			<xs:documentation xml:lang="sl">Plugin data</xs:documentation>
 		</xs:annotation>		
-                <xs:attribute name="id" type="xs:integer">
-			<xs:annotation>
-				<xs:documentation>plugin id</xs:documentation>
-			</xs:annotation>
-		</xs:attribute>
-		<xs:attribute name="settingsUrl" type="xs:string" use="required">
+               
+		<xs:attribute name="webContext" type="xs:string" use="required">
 			<xs:annotation>
 				<xs:documentation xml:lang="sl">Url address</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
                 <xs:attribute name="active"  type="xs:boolean"  />
+                <xs:attribute name="type" type="xs:string" use="required"/>
                 <xs:attribute name="name" type="xs:string" use="required"/>
-                <xs:attribute name="desc" type="xs:string" use="required"/>                
+                <xs:attribute name="description" type="xs:string" use="required"/>                
 		<xs:attribute name="jndiInInterceptor" type="xs:string" use="required"/>
 		<xs:attribute name="jndiOutInterceptor" type="xs:string" use="required"/>
+                <xs:attribute name="tasksJNDIs" type="xs:string" />
+                <xs:attribute name="jndi" type="xs:string" use="required"/>
 	</xs:complexType>
 	
 </xs:schema>

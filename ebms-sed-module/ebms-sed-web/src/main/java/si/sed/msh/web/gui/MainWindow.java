@@ -45,10 +45,9 @@ public class MainWindow {
     }
 
     public void onToolbarButtonAction(ActionEvent event) {
-        if (event!=null) {
-        String res = (String) event.getComponent().getAttributes().get("panel");
-        System.out.println("Res:" + res);
-        mstrWindowShow = res;
+        if (event != null) {
+            String res = (String) event.getComponent().getAttributes().get("panel");            
+            mstrWindowShow = res;
         }
     }
 

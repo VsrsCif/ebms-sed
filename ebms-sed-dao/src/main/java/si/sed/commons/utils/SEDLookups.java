@@ -266,6 +266,20 @@ public class SEDLookups implements SEDLookupsInterface {
         return null;
     }
     
+     @Override
+    public SEDPlugin getSEDPluginByType(String type) {
+        if (type != null) {
+
+            List<SEDPlugin> lst = getSEDPlugin();
+            for (SEDPlugin sb : lst) {
+                if (type.equals(sb.getType())) {
+                    return sb;
+                }
+            }
+        }
+        return null;
+    }
+    
     @Override
     public List<SEDTaskType> getSEDTaskTypes() {
         return getLookup(SEDTaskType.class);
@@ -331,9 +345,10 @@ public class SEDLookups implements SEDLookupsInterface {
 
                 if (cls.getSEDPlugins() != null && !cls.getSEDPlugins().getSEDPlugins().isEmpty()) {
                     cls.getSEDPlugins().getSEDPlugins().stream().forEach((cb) -> {
-                        cb.setId(null);
+                      if (getSEDUserByUserId(cb.getType()) == null) {
+                            add(cb);
+                        }
                         
-                        add(cb);
                     });
                 }
 

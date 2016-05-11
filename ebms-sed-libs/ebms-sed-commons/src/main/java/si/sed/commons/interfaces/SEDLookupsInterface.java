@@ -37,6 +37,7 @@ public interface SEDLookupsInterface {
     SEDCronJob getSEDCronJobById(BigInteger id);
     SEDTaskType getSEDTaskTypeByType(String type);
     SEDUser getSEDUserByUserId(String userId);
+    SEDPlugin getSEDPluginByType(String type);
     
     List<SEDBox> getSEDBoxes();
     List<SEDCertStore> getSEDCertStore();    

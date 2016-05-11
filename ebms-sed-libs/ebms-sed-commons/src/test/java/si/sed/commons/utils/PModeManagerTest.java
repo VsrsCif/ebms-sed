@@ -34,6 +34,9 @@ import si.sed.commons.utils.xml.XMLUtils;
 public class PModeManagerTest {
 
     public PModeManagerTest() {
+        System.out.println("******************************");
+        System.out.println("IPETU: " + Integer.parseInt("IPETU", 32));
+        
         ConsoleAppender console = new ConsoleAppender(); //create appender
         //configure the appender
         String PATTERN = "%d [%p|%c|%C{1}] %m%n";
