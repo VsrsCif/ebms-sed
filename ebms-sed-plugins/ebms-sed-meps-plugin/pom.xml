@@ -45,11 +45,7 @@
         <war.final.name>plugin-meps</war.final.name>
     </properties>
     <build>
-        <plugins>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>jaxb2-maven-plugin</artifactId>
-            </plugin>
+        <plugins>            
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
             </plugin>           
