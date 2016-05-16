@@ -23,6 +23,8 @@ public class MEPSOutInterceptor implements SoapInterceptorInterface {
 
      @Override
     public void handleMessage(SoapMessage msg) {
+        // create one pdf with white pages
+        // file message 
 
     }
 

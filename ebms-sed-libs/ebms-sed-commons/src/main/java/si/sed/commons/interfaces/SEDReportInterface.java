@@ -6,6 +6,7 @@
 package si.sed.commons.interfaces;
 
 import javax.ejb.Local;
+import org.sed.ebms.report.SEDReportBoxStatus;
 
 
 
@@ -16,4 +17,6 @@ import javax.ejb.Local;
 @Local
 public interface SEDReportInterface {
     
+    
+    SEDReportBoxStatus getStatusReport(String strSedBox);
 }

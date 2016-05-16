@@ -17,5 +17,7 @@ public class SEDJNDI {
     public static final String JNDI_SEDLOOKUPS="java:global/ebms-sed-dao/SEDLookups!si.sed.commons.interfaces.SEDLookupsInterface";
     public static final String JNDI_SEDSCHEDLER="java:global/ebms-sed-dao/MSHScheduler!si.sed.commons.interfaces.SEDSchedulerInterface";
     
+    public static final String JNDI_SEDREPORTS = "java:global/ebms-sed-dao/SEDReportBean!si.sed.commons.interfaces.SEDReportInterface";
+    
     
 }

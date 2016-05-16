@@ -29,12 +29,18 @@ Copyright 2016, Supreme Court Republic of Slovenia
 	<xs:element name="SEDReportBoxStatus" type="ns1:SEDReportBoxStatus"/>
 	<xs:complexType name="SEDReportBoxStatus">
 		<xs:sequence>
-			<xs:element name="mail" minOccurs="0" maxOccurs="unbounded">
+			<xs:element name="InMail" minOccurs="0" maxOccurs="1">
 				<xs:complexType>
 					<xs:sequence>
 						<xs:element ref="ns1:Status" minOccurs="0" maxOccurs="unbounded"/>
 					</xs:sequence>
-					<xs:attribute name="type" use="required"/>
+				</xs:complexType>
+			</xs:element>
+                        <xs:element name="OutMail" minOccurs="0" maxOccurs="1">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element ref="ns1:Status" minOccurs="0" maxOccurs="unbounded"/>
+					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
 		</xs:sequence>

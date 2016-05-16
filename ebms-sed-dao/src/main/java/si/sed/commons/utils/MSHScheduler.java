@@ -7,6 +7,7 @@ package si.sed.commons.utils;
 
 import java.math.BigInteger;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Properties;
 import si.sed.commons.interfaces.SEDSchedulerInterface;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -16,10 +17,12 @@ import javax.ejb.EJB;
 import javax.ejb.Local;
 import javax.ejb.Lock;
 import javax.ejb.LockType;
+import javax.ejb.ScheduleExpression;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.ejb.Timeout;
 import javax.ejb.Timer;
+import javax.ejb.TimerConfig;
 import javax.ejb.TimerService;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -58,10 +61,20 @@ public class MSHScheduler implements SEDSchedulerInterface {
 
     @PostConstruct
     private void construct() {
-        // read from 
-
-        //final TimerConfig checkTest = new TimerConfig("checkTest", false);
-        //timerService.createCalendarTimer(new ScheduleExpression().second("*/5").minute("*").hour("*"), checkTest);
+        List<SEDCronJob> lst = mdbLookups.getSEDCronJobs();
+        for (SEDCronJob ecj : lst) {
+            if (ecj.getActive() != null && ecj.getActive()) {
+                ScheduleExpression se = new ScheduleExpression()
+                        .second(ecj.getSecond())
+                        .minute(ecj.getMinute())
+                        .hour(ecj.getHour())
+                        .dayOfMonth(ecj.getDayOfMonth())
+                        .month(ecj.getMonth())
+                        .dayOfWeek(ecj.getDayOfWeek());
+                TimerConfig checkTest = new TimerConfig(ecj.getId(), false);
+                getServices().createCalendarTimer(se, checkTest);
+            }
+        }
     }
 
     @Timeout
@@ -100,7 +113,7 @@ public class MSHScheduler implements SEDSchedulerInterface {
         }
         Properties p = new Properties();
         for (SEDTaskProperty tp : mj.getSEDTask().getSEDTaskProperties()) {
-            if (tp.getValue()!=null) {
+            if (tp.getValue() != null) {
                 p.setProperty(tp.getKey(), tp.getValue());
             }
         }

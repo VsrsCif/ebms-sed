@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd" >
+<hibernate-mapping>    
+    <class name="org.sed.ebms.report.Status" >      
+        <id column="status" name="Status" type="java.lang.String" />        
+        <property column="count" name="Count"   type="java.math.BigInteger" />        
+    </class>    
+    
+    <sql-query name="org.sed.ebms.report.getInMailStatusesByBox">
+        <return  class="org.sed.ebms.report.Status"/>
+        SELECT status, count(id)
+        FROM sed_inbox
+        WHERE receiver_ebox = :sedBox
+        GROUP BY status                 
+    </sql-query>
+     <sql-query name="org.sed.ebms.report.getOutMailStatusesByBox">
+        <return  class="org.sed.ebms.report.Status"/>
+        SELECT status, count(id)
+        FROM sed_outbox
+        WHERE sender_ebox = :sedBox
+        GROUP BY status                 
+    </sql-query>
+
+</hibernate-mapping>

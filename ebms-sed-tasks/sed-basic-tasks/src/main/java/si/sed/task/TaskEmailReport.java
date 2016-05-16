@@ -7,16 +7,23 @@ package si.sed.task;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.text.SimpleDateFormat;
+import java.util.List;
 import java.util.Properties;
 import javax.ejb.EJB;
 import javax.ejb.Local;
 import javax.ejb.Stateless;
 import javax.mail.MessagingException;
 import javax.naming.NamingException;
+import org.msh.ebms.inbox.mail.MSHInMail;
+import org.sed.ebms.report.SEDReportBoxStatus;
+import org.sed.ebms.report.Status;
+import si.sed.commons.SEDInboxMailStatus;
 import si.sed.commons.SEDJNDI;
 import si.sed.commons.email.EmailData;
 import si.sed.commons.email.EmailUtils;
 import si.sed.commons.interfaces.SEDDaoInterface;
+import si.sed.commons.interfaces.SEDReportInterface;
 import si.sed.commons.interfaces.TaskExecutionInterface;
 import si.sed.commons.interfaces.exception.TaskException;
 import si.sed.commons.utils.SEDLogger;
@@ -30,6 +37,7 @@ import si.sed.commons.utils.SEDLogger;
 public class TaskEmailReport implements TaskExecutionInterface {
 
     private static final SEDLogger LOG = new SEDLogger(TaskEmailReport.class);
+    static final SimpleDateFormat SDF_DD_MM_YYY_HH_MI = new SimpleDateFormat("dd.MM.yyyy HH24:mm");
 
     public static String KEY_SEDBOX = "sedbox";
     public static String KEY_EMAIL_TO = "email.to";
@@ -39,6 +47,11 @@ public class TaskEmailReport implements TaskExecutionInterface {
     
     @EJB(mappedName = SEDJNDI.JNDI_SEDDAO)
     SEDDaoInterface mdao;
+    
+    @EJB(mappedName = SEDJNDI.JNDI_SEDREPORTS)
+    SEDReportInterface mdaoReports;
+    
+    
 
     @Override
     public String executeTask(Properties p) throws TaskException {
@@ -80,7 +93,7 @@ public class TaskEmailReport implements TaskExecutionInterface {
             throw new TaskException(TaskException.TaskExceptionCode.InitException,
                     "Missing parameter:  '" + KEY_EMAIL_SUBJECT + "'!");
         } else {
-            emailSubject = p.getProperty(KEY_EMAIL_SUBJECT);
+            emailSubject = p.getProperty(KEY_EMAIL_SUBJECT) + " " +sedbox ;
         }
         
         if (p.containsKey(KEY_MAIL_CONFIG_JNDI)) {           
@@ -90,9 +103,59 @@ public class TaskEmailReport implements TaskExecutionInterface {
         if ( smtpConf== null || smtpConf.trim().isEmpty()) {
             smtpConf = "java:jboss/mail/Default";
         }
+        SEDReportBoxStatus sr =  mdaoReports.getStatusReport(sedbox);
+        sw.append("Got status report " );
+        MSHInMail mi = new MSHInMail();
+        mi.setStatus(SEDInboxMailStatus.RECEIVED.getValue());
+        List<MSHInMail> lstInMail = mdao.getDataList(MSHInMail.class, 0,500, "Id", "ASC", mi);
         
-
-        EmailData ed = new EmailData(emailTo, null, emailSubject, "Mail report");
+        StringWriter swBody = new StringWriter();
+        swBody.append("SED-Predal eBOX: " );
+        swBody.append(sr.getSedbox());
+        swBody.append("\nDate: " );
+        swBody.append(SDF_DD_MM_YYY_HH_MI.format(sr.getReportDate() ) );
+        
+        if (sr.getInMail()!=null && !sr.getInMail().getStatuses().isEmpty() ) {
+            sw.append("in mail: " + sr.getInMail().getStatuses().size() );
+            swBody.append("\n\nStatusi dohodne pošte: \n");
+            for (Status s:  sr.getInMail().getStatuses()){
+                swBody.append(String.format("\t%s: %d\n", s.getStatus(), s.getCount()) );
+            }
+        } else {
+            swBody.append("\n\nZa predal '"+sedbox+"' ni dohodne pošte \n");
+        }
+        if (sr.getOutMail()!=null && !sr.getOutMail().getStatuses().isEmpty() ) {
+            sw.append(", out mail: " + sr.getInMail().getStatuses().size() );
+            swBody.append("\n\nStatusi izhodne pošte: \n");
+            for (Status s:  sr.getOutMail().getStatuses()){
+                swBody.append(String.format("\t%s: %d\n", s.getStatus(), s.getCount()) );
+            }
+        } else {
+            swBody.append("\n\nZa predal '"+sedbox+"' ni izhodne pošte \n");
+        }
+        
+        swBody.append("\n\nSeznam dohodne pošte za prevzem (do 500 pošiljk): \n");
+        swBody.append("St pošiljk: '"+lstInMail.size()+"' \n");
+        sw.append("In mail size: " +lstInMail.size() );
+        swBody.append("st., id, dat  prejema, transakcija ID, Storitev, Akcija, Pošiljatelj, Opis\n");
+        int iVal = 1;
+        for (MSHInMail im: lstInMail){
+            
+            swBody.append((iVal++) +"., ");
+            swBody.append(im.getId().toString() + ", ");
+            swBody.append(SDF_DD_MM_YYY_HH_MI.format(im.getReceivedDate()) + ", ");
+            swBody.append(im.getConversationId()+ ", ");
+            swBody.append(im.getService() + ", ");
+            swBody.append(im.getAction()+ ", ");
+            swBody.append(im.getSenderEBox()+ ", ");
+            swBody.append(im.getSenderName()+ ", ");
+            swBody.append(im.getSubject());
+            swBody.append("\n");
+        }
+        
+        
+        
+        EmailData ed = new EmailData(emailTo, null, emailSubject, swBody.toString());
         ed.setEmailSenderAddress(emailFrom);
         
         try {
