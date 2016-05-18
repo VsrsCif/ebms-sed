@@ -222,8 +222,8 @@ public class MshClient {
         }
 
         if (tls.getTrustCertAlias()!= null && !tls.getTrustCertAlias().trim().isEmpty()) {
-            String trustAlias = tls.getKeyAlias().trim();
-            mlog.log("\t Set truststore:" + tls.getTrustCertAlias() );
+            String trustAlias = tls.getTrustCertAlias().trim();
+            mlog.log("\t Set truststore:" + trustAlias );
             tlsCP = tlsCP==null?new TLSClientParameters():tlsCP;
             SEDCertStore scs =  getLookups().getSEDCertStoreByCertAlias(trustAlias, false);
             
