@@ -10,6 +10,7 @@
                 <param name="sequence">SEQ_SED_CRON</param>
             </generator>
         </id>
+        <property column="NAME" name="name"  length="128" type="java.lang.String"/>
         <property column="ACTIVE" name="Active"   type="java.lang.Boolean"/>
         <property column="SECOND" name="Second"  length="64" type="java.lang.String"/>
         <property column="MINUTE" name="Minute"  length="64" type="java.lang.String"/>
@@ -21,7 +22,7 @@
         
         <component name="SEDTask" class="org.sed.ebms.cron.SEDTask">
             <property column="TASK_TYPE" name="TaskType"  length="64" type="java.lang.String"/>
-            <bag name="sedTaskProperties"  access="field" cascade="all" lazy="false" order-by="Id asc" >
+            <bag name="sedTaskProperties"  access="field" cascade="all, delete-orphan" lazy="false" order-by="Id asc" >
                 <key not-null="true">
                     <column name="CRON_ID" scale="0" />
                 </key>

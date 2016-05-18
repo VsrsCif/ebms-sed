@@ -24,8 +24,11 @@
             </generator>
         </id>		
         <property column="KEY" name="Key"   length="64"  type="java.lang.String"/>
-        <property column="DESCRIPTION" name="Description"  length="512" type="java.lang.String"/>  
+        <property column="DESCRIPTION" name="Description"  />  
         <property column="MANDATORY" name="Mandatory"   type="java.lang.Boolean"/>
+        <property column="TYPE" name="Type"  length="16" type="java.lang.String"/>
+        <property column="VALUE_LIST" name="ValueList"  length="1024" type="java.lang.String"/>
+        <property column="VALUE_FORMAT" name="ValueFormat"  length="512" type="java.lang.String"/>
     </class>
     
     <query name="org.sed.ebms.cron.SEDTaskType.getByType" ><![CDATA[SELECT p FROM SEDTaskType p WHERE p.type = :type]]></query>     

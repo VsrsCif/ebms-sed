@@ -31,6 +31,8 @@ import org.msh.ebms.outbox.event.MSHOutEvent;
 import org.msh.ebms.outbox.mail.MSHOutMail;
 import org.msh.ebms.outbox.mail.MSHOutMailList;
 import org.msh.ebms.outbox.payload.MSHOutPart;
+import org.sed.ebms.cron.SEDTaskType;
+import org.sed.ebms.cron.SEDTaskTypeProperty;
 import si.sed.commons.SEDJNDI;
 import si.sed.commons.exception.StorageException;
 import si.sed.commons.interfaces.SEDDaoInterface;
@@ -113,7 +115,7 @@ public class TaskBackup implements TaskExecutionInterface {
 
         sw.append("- Backup settings and lookups");
         lst = LOG.getTime();
-        mLookups.exportLookups(bckFolder);
+        mLookups.exportLookups(bckFolder, true);
         sw.append(" end: " + (lst - LOG.getTime()) + " ms\n");
 
         sw.append("---------------------\nBackup out mail\n");
@@ -121,7 +123,7 @@ public class TaskBackup implements TaskExecutionInterface {
         String rs = archiveOutMails(null, bckFolder, iChunkSize);
         sw.append(rs);
         sw.append(" end: " + (lst - LOG.getTime()) + " ms\n---------------------\n\n");
-        
+
         sw.append("---------------------\nBackup in mail");
         lst = LOG.getTime();
         rs = archiveInMails(null, bckFolder, iChunkSize);
@@ -168,19 +170,19 @@ public class TaskBackup implements TaskExecutionInterface {
         return bck;
     }
 
-    public String  archiveOutMails(Date to, File f, int iChunkSize) throws TaskException {
+    public String archiveOutMails(Date to, File f, int iChunkSize) throws TaskException {
         StringWriter sw = new StringWriter();
         MSHOutMailList noList = new MSHOutMailList();
         SearchParameters sp = new SearchParameters();
         sp.setSubmittedDateTo(to);
         long l = mdao.getDataListCount(MSHOutMail.class, sp);
         sw.append("\tbackup " + l + " outmail\n");
-        long pages =  l / iChunkSize + 1;
+        long pages = l / iChunkSize + 1;
 
         int iPage = 0;
         while (iPage < pages) {
-            
-            List<MSHOutMail> lst = mdao.getDataList(MSHOutMail.class, (iPage++)*iChunkSize, iChunkSize, "Id", "ASC", sp);
+
+            List<MSHOutMail> lst = mdao.getDataList(MSHOutMail.class, (iPage++) * iChunkSize, iChunkSize, "Id", "ASC", sp);
             if (!lst.isEmpty()) {
                 noList.setCount(lst.size());
                 for (MSHOutMail m : lst) {
@@ -209,32 +211,31 @@ public class TaskBackup implements TaskExecutionInterface {
                     XMLUtils.serialize(noList, fout);
                 } catch (JAXBException | FileNotFoundException ex) {
                     throw new TaskException(TaskException.TaskExceptionCode.ProcessException,
-                            "Error occured while exporting out data : '" + f.getFreeSpace()+ "'!", ex);
+                            "Error occured while exporting out data : '" + f.getFreeSpace() + "'!", ex);
                 }
-                String strVal = "Exported page "+ iPage +  " size: " + lst.size() + " to " + fout.getAbsolutePath();
-                sw.append("\t"+ strVal + "\n");
-                
+                String strVal = "Exported page " + iPage + " size: " + lst.size() + " to " + fout.getAbsolutePath();
+                sw.append("\t" + strVal + "\n");
+
                 LOG.log(strVal);
             }
         }
         return sw.toString();
 
     }
-    
-    
-     public String archiveInMails(Date to, File f, int iChunkSize) throws TaskException {
+
+    public String archiveInMails(Date to, File f, int iChunkSize) throws TaskException {
         StringWriter sw = new StringWriter();
         MSHInMailList noList = new MSHInMailList();
         SearchParameters sp = new SearchParameters();
         sp.setSubmittedDateTo(to);
         long l = mdao.getDataListCount(MSHOutMail.class, sp);
         sw.append("\tbackup " + l + " inmail\n");
-        long pages =  l / iChunkSize + 1;
+        long pages = l / iChunkSize + 1;
 
         int iPage = 0;
         while (iPage < pages) {
 
-            List<MSHInMail> lst = mdao.getDataList(MSHInMail.class, (iPage++)*iChunkSize, iChunkSize, "Id", "ASC", sp);
+            List<MSHInMail> lst = mdao.getDataList(MSHInMail.class, (iPage++) * iChunkSize, iChunkSize, "Id", "ASC", sp);
             if (!lst.isEmpty()) {
                 noList.setCount(lst.size());
                 for (MSHInMail m : lst) {
@@ -263,20 +264,18 @@ public class TaskBackup implements TaskExecutionInterface {
                     XMLUtils.serialize(noList, fout);
                 } catch (JAXBException | FileNotFoundException ex) {
                     throw new TaskException(TaskException.TaskExceptionCode.ProcessException,
-                            "Error occured while exporting out data : '" + f.getFreeSpace()+ "'!", ex);
+                            "Error occured while exporting out data : '" + f.getFreeSpace() + "'!", ex);
                 }
-                String strVal = "Exported page "+ iPage +  " size: " + lst.size() + " to " + fout.getAbsolutePath();
-                sw.append("\t"+ strVal + "\n");
-                LOG.log("Exported page "+ iPage +  " size: " + lst.size() + " to " + fout.getAbsolutePath());
-                
+                String strVal = "Exported page " + iPage + " size: " + lst.size() + " to " + fout.getAbsolutePath();
+                sw.append("\t" + strVal + "\n");
+                LOG.log("Exported page " + iPage + " size: " + lst.size() + " to " + fout.getAbsolutePath());
+
             }
 
         }
-        
+
         return sw.toString();
     }
-    
-   
 
     public static void removeRecursive(Path path) throws IOException {
         Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
@@ -309,7 +308,8 @@ public class TaskBackup implements TaskExecutionInterface {
         });
     }
 
-    @Override
+    /*
+  @Override
     public String getType() {
         return "backup";
     }
@@ -332,6 +332,34 @@ public class TaskBackup implements TaskExecutionInterface {
 
         p.setProperty(KEY_DELETE_OLD, "Clear backup folder (true/false)");
         return p;
+    }*/
+
+    @Override
+    public SEDTaskType getTaskDefinition() {
+        SEDTaskType tt = new SEDTaskType();
+        tt.setType("backup");
+        tt.setName("Backup data");
+        tt.setDescription("Backup data to 'xml' and files to backup-storage");
+        tt.getSEDTaskTypeProperties().add(createTTProperty(KEY_EXPORT_FOLDER, "Archive folder"));
+        tt.getSEDTaskTypeProperties().add(createTTProperty(KEY_CHUNK_SIZE, "Max mail count in chunk", true, "int", null, null));
+        tt.getSEDTaskTypeProperties().add(createTTProperty(KEY_DELETE_OLD, "Clear backup folder (true/false)", true, "boolean", null, null));
+
+        return tt;
+    }
+
+    private SEDTaskTypeProperty createTTProperty(String key, String desc, boolean mandatory, String type, String valFormat, String valList) {
+        SEDTaskTypeProperty ttp = new SEDTaskTypeProperty();
+        ttp.setKey(key);
+        ttp.setDescription(desc);
+        ttp.setMandatory(mandatory);
+        ttp.setType(type);
+        ttp.setValueFormat(valFormat);
+        ttp.setValueList(valList);
+        return ttp;
+    }
+
+    private SEDTaskTypeProperty createTTProperty(String key, String desc) {
+        return createTTProperty(key, desc, true, "string", null, null);
     }
 
 }

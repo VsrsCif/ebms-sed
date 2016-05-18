@@ -7,6 +7,7 @@ package si.sed.commons.interfaces;
 
 import java.util.Properties;
 import javax.ejb.Local;
+import org.sed.ebms.cron.SEDTaskType;
 import si.sed.commons.interfaces.exception.TaskException;
 
 /**
@@ -17,9 +18,11 @@ import si.sed.commons.interfaces.exception.TaskException;
 public interface TaskExecutionInterface {
     
      String executeTask(Properties p) throws TaskException;
-     String getType();
-     String getName();
-     String getDesc();
-     Properties getProperties();
+     //String getType();
+     //String getName();
+     //String getDesc();
+     //Properties getProperties();
+     
+     SEDTaskType getTaskDefinition();
 
 }

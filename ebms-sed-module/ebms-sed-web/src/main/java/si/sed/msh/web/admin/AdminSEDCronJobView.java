@@ -55,7 +55,7 @@ public class AdminSEDCronJobView extends AbstractAdminJSFView<SEDCronJob> {
     private SEDSchedulerInterface mshScheduler;
 
 
-
+/*
     public SEDTaskProperty getEditableProperty(String name) {
         if (getEditable() != null && getEditable().getSEDTask() != null) {
             for (SEDTaskProperty mp : getEditable().getSEDTask().getSEDTaskProperties()) {
@@ -89,16 +89,10 @@ public class AdminSEDCronJobView extends AbstractAdminJSFView<SEDCronJob> {
         }
         pp.setValue(val);
 
-    }
+    }*/
 
     public SEDCronJob getMSHCronJobByName(BigInteger id) {
-        List<SEDCronJob> lst = mdbLookups.getSEDCronJobs();
-        for (SEDCronJob sb : lst) {
-            if (sb.getId().equals(id)) {
-                return sb;
-            }
-        }
-        return null;
+        return  mdbLookups.getSEDCronJobById(id);
     }
 
     @Override
@@ -112,20 +106,7 @@ public class AdminSEDCronJobView extends AbstractAdminJSFView<SEDCronJob> {
         ecj.setMonth("*");
         ecj.setDayOfWeek("*");
 
-        ecj.setSEDTask(new SEDTask());
-        ecj.getSEDTask().setTaskType("DeliveredMail");
-        SEDTaskProperty mtp = new SEDTaskProperty();
-        mtp.setKey("email");
-        mtp.setValue("test@mail.com");
-        ecj.getSEDTask().getSEDTaskProperties().add(mtp);
-        mtp = new SEDTaskProperty();
-        mtp.setKey("subject");
-        mtp.setValue("[SED] Delivered mail");
-        ecj.getSEDTask().getSEDTaskProperties().add(mtp);
-        mtp = new SEDTaskProperty();
-        mtp.setKey("NotifyOnEmptyBox");
-        mtp.setValue("true");
-        ecj.getSEDTask().getSEDTaskProperties().add(mtp);
+        ecj.setSEDTask(new SEDTask());       
         setNew(ecj);
 
     }
@@ -203,7 +184,7 @@ public class AdminSEDCronJobView extends AbstractAdminJSFView<SEDCronJob> {
         lst.stream().forEach((tsk) -> {
             rstLst.add(tsk.getType());
         });
-        LOG.logEnd(l, lst != null ? lst.size() : "null");
+        LOG.logEnd(l,  lst.size());
         return rstLst;
     }
     
@@ -212,30 +193,22 @@ public class AdminSEDCronJobView extends AbstractAdminJSFView<SEDCronJob> {
         System.out.println("Set task:"  + task);
         SEDCronJob scj = getEditable();
         if (scj !=null){
-            System.out.println("Set task: 1");
             if (scj.getSEDTask()==null 
                     || scj.getSEDTask().getTaskType()==null
-                    || !scj.getSEDTask().getTaskType().equals(task)) {
-                System.out.println("Set task: 2");
+                    || !scj.getSEDTask().getTaskType().equals(task)) {                
                 SEDTaskType sdt =  mdbLookups.getSEDTaskTypeByType(task);
-                if (sdt!= null){
-                    System.out.println("Set task: 3");
+                if (sdt!= null){                    
                     SEDTask  tsk = new SEDTask();
                     tsk.setTaskType(sdt.getType());
                     for (SEDTaskTypeProperty  p: sdt.getSEDTaskTypeProperties()){
                         SEDTaskProperty tp = new SEDTaskProperty();
                         tp.setKey(p.getKey());
                         tsk.getSEDTaskProperties().add(tp);
-                    }
-                    System.out.println("Set task: 4");
+                    }                    
                     scj.setSEDTask(tsk);
                 }
-                
-                
             }
-            
         }
-        
     }
     
     public String getEditableTask(){
@@ -245,4 +218,51 @@ public class AdminSEDCronJobView extends AbstractAdminJSFView<SEDCronJob> {
         return null;
     }
     
+    
+    
+    public String getTypeForEditableTaskProperty(String key) {
+        String strType="string";
+        String task = getEditableTask();
+        if (task!=null && key!= null) {
+            SEDTaskType st = mdbLookups.getSEDTaskTypeByType(task);
+            for (SEDTaskTypeProperty tp: st.getSEDTaskTypeProperties()){
+                if (tp.getKey().equals(key)){
+                    strType = tp.getType();
+                    break;
+                }
+            }
+        }
+        return strType;                
+    }
+    
+    
+    public void setBooleanValueForEditableTaskProperty(String key, boolean bVal) {
+         
+        if (getEditable() != null) {
+            return;
+        }
+        if (getEditable().getSEDTask() != null) {
+            for (SEDTaskProperty mp : getEditable().getSEDTask().getSEDTaskProperties()) {
+                if (mp.getKey().equalsIgnoreCase(key)) {
+                    mp.setValue(bVal?"true":"false");
+                    break;
+                }
+            }
+        }
+        
+    }
+    
+    public boolean getBooleanValueForEditableTaskProperty(String key) {         
+        if (getEditable() != null) {
+            return false;
+        }
+        if (getEditable().getSEDTask() != null) {
+            for (SEDTaskProperty mp : getEditable().getSEDTask().getSEDTaskProperties()) {
+                if (mp.getKey().equalsIgnoreCase(key)) {
+                    return mp.getValue()!=null && mp.getValue().trim().equalsIgnoreCase("true");
+                }
+            }
+        }        
+        return false;
+    }
 }

@@ -173,7 +173,10 @@ public class ApplicationData extends AbstractJSFView {
         return strBuildVer;
     }
     
-    public void exportLookups(){
-        msedLookups.exportLookups(new File(System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR)));
+    public void exportLookupsWithPasswords(){        
+        msedLookups.exportLookups(new File(System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR)), true);
+    }
+    public void exportLookupsWithNoPasswords(){        
+        msedLookups.exportLookups(new File(System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR)), false);
     }
 }

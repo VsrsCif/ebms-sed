@@ -25,6 +25,7 @@ public enum SEDInboxMailStatus {
     RECEIVED("RECEIVED", "Message is sucessfuly received to MSH.", "green"),
     PROCESS("PROCESS", "Message is locked by plugin", "gray"),
     LOCKED("LOCKED", "Message is locked by consumer", "lightgray"),
+    PLUGINLOCKED("PLGLOCKED", "Message is locked by plugin", "lightgray"),
     DELIVERED("DELIVERED", "Message is consumed", "Blue"),
     ERROR("ERROR", "Error occured receiving, processing MSH", "red"),
     DELETED("DELETED", "Pošiljka je izbrisana", "black");

@@ -20,10 +20,14 @@ import si.sed.msh.web.abst.AbstractMailView;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
@@ -36,11 +40,13 @@ import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.SessionScoped;
 import javax.jms.JMSException;
 import javax.naming.NamingException;
+import org.msh.ebms.inbox.mail.MSHInMail;
 import org.msh.ebms.outbox.event.MSHOutEvent;
 import org.msh.ebms.outbox.mail.MSHOutMail;
 import org.msh.ebms.outbox.payload.MSHOutPart;
 import org.msh.ebms.outbox.payload.MSHOutPayload;
 import org.primefaces.model.DefaultStreamedContent;
+import org.primefaces.model.DualListModel;
 import org.primefaces.model.StreamedContent;
 import si.sed.commons.SEDJNDI;
 
@@ -50,8 +56,10 @@ import si.sed.commons.exception.StorageException;
 import si.sed.commons.interfaces.JMSManagerInterface;
 import si.sed.commons.interfaces.SEDDaoInterface;
 import si.sed.commons.utils.HashUtils;
+import si.sed.commons.utils.ReflectUtils;
 import si.sed.commons.utils.SEDLogger;
 import si.sed.commons.utils.StorageUtils;
+import si.sed.commons.utils.StringFormater;
 import si.sed.commons.utils.Utils;
 import si.sed.msh.web.admin.AdminSEDUserView;
 
@@ -85,6 +93,8 @@ public class OutMailDataView extends AbstractMailView<MSHOutMail, MSHOutEvent> i
     private void init() {
         mMailModel = new OutMailDataModel(MSHOutMail.class, getUserSessionData(), mDB);
     }
+
+    
 
     public void setUserSessionData(UserSessionData messageBean) {
         this.userSessionData = messageBean;
@@ -238,5 +248,10 @@ public class OutMailDataView extends AbstractMailView<MSHOutMail, MSHOutEvent> i
     public void setComposedMailBody(String body) {
         newMailBody = body;
     }
+    
+   
+    
+    
+   
 
 }

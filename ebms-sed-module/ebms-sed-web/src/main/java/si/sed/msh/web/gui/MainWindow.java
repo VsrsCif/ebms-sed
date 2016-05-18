@@ -16,14 +16,17 @@
  */
 package si.sed.msh.web.gui;
 
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
-import javax.servlet.http.HttpSession;
+import org.msh.ebms.inbox.mail.MSHInMail;
 import org.primefaces.event.TabChangeEvent;
+import org.primefaces.model.DualListModel;
+import si.sed.commons.utils.ReflectUtils;
 
 /**
  *
@@ -34,6 +37,7 @@ import org.primefaces.event.TabChangeEvent;
 public class MainWindow {
 
     String mstrWindowShow = AppConstant.S_PANEL_INBOX;
+  
 
     public void onToolbarTabChange(TabChangeEvent event) {
         if (event!=null) {
@@ -59,19 +63,6 @@ public class MainWindow {
         FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, summary, detail);
         FacesContext.getCurrentInstance().addMessage(null, message);
     }
-
-    public void logout() {
-        System.out.println("LOGOUT");
-        try {
-            // FacesContext.getCurrentInstance().getExternalContext().invalidateSession();
-            //this.name = null;
-            FacesContext fc = FacesContext.getCurrentInstance();
-            HttpSession session = (HttpSession) fc.getExternalContext().getSession(false);
-            session.invalidate();
-            FacesContext.getCurrentInstance().getExternalContext().redirect("https://localhost:8080/");
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-        System.out.println("LOGOUT");
-    }
+    
+    
 }

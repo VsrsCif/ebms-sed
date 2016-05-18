@@ -12,6 +12,7 @@ import java.lang.reflect.Modifier;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -48,6 +49,7 @@ import org.sed.ebms.user.SEDUser;
 import si.sed.commons.SEDInboxMailStatus;
 import si.sed.commons.SEDJNDI;
 import si.sed.commons.SEDOutboxMailStatus;
+import si.sed.commons.SEDTaskStatus;
 import si.sed.commons.interfaces.JMSManagerInterface;
 
 /**
@@ -152,22 +154,21 @@ public class SEDDaoBean implements SEDDaoInterface {
 
         LOG.logEnd(l);
     }
-     
-    public <T,E> void removeMail(Class<T> type, Class<E> typeEvent, BigInteger bi) {
+
+    public <T, E> void removeMail(Class<T> type, Class<E> typeEvent, BigInteger bi) {
         long l = LOG.logStart(type);
-        T  mail = getMailById(type, bi);
+        T mail = getMailById(type, bi);
         try {
             mutUTransaction.begin();
-            
-            
+
             // remove events
-            List<E>  lst = getMailEventList(typeEvent, bi);
-            for (E e: lst){
+            List<E> lst = getMailEventList(typeEvent, bi);
+            for (E e : lst) {
                 remove(e);
             }
             //remove mail
             memEManager.remove(mail);
-           
+
             mutUTransaction.commit();
         } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
             {
@@ -416,7 +417,7 @@ public class SEDDaoBean implements SEDDaoInterface {
                         continue;
                     }
 
-                    if (fieldName.endsWith("List") && searchValue instanceof List && !((List)searchValue).isEmpty() ) {
+                    if (fieldName.endsWith("List") && searchValue instanceof List && !((List) searchValue).isEmpty()) {
                         lstPredicate.add(om.get(fieldName.substring(0, fieldName.lastIndexOf("List"))).in(((List) searchValue).toArray()));
                         System.out.println("Add  predicat: " + searchValue);
                     } else {
@@ -528,4 +529,23 @@ public class SEDDaoBean implements SEDDaoInterface {
         }
         return suc;
     }
+
+    @Override
+    public SEDTaskExecution getLastSuccesfullTaskExecution(String type) {
+        SEDTaskExecution dt = null;
+
+        TypedQuery<SEDTaskExecution> tq = memEManager.createNamedQuery("org.sed.ebms.cron.SEDTaskExecution.getByStatusAndType", SEDTaskExecution.class);
+
+        tq.setParameter("status", SEDTaskStatus.SUCCESS.getValue());
+        tq.setParameter("type", type);
+        tq.setMaxResults(1);
+        try {
+            dt = tq.getSingleResult();
+        } catch (NoResultException ign) {
+        }
+
+        return dt;
+
+    }
+;
 }

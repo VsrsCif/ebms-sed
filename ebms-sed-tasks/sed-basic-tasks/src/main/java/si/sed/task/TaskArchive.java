@@ -37,6 +37,8 @@ import org.msh.ebms.outbox.event.MSHOutEvent;
 import org.msh.ebms.outbox.mail.MSHOutMail;
 import org.msh.ebms.outbox.mail.MSHOutMailList;
 import org.msh.ebms.outbox.payload.MSHOutPart;
+import org.sed.ebms.cron.SEDTaskType;
+import org.sed.ebms.cron.SEDTaskTypeProperty;
 import si.sed.commons.SEDJNDI;
 import si.sed.commons.exception.StorageException;
 import si.sed.commons.interfaces.SEDDaoInterface;
@@ -146,7 +148,7 @@ public class TaskArchive implements TaskExecutionInterface {
 
             sw.append("- Arhive settings and lookups");
             lst = LOG.getTime();
-            mLookups.exportLookups(archFolder);
+            mLookups.exportLookups(archFolder, true);
             sw.append(" end: " + (lst - LOG.getTime()) + " ms\n");
 
             sw.append("---------------------\nArhive out mail\n");
@@ -169,34 +171,34 @@ public class TaskArchive implements TaskExecutionInterface {
         // delete record if archive succedded
         if (bDelRecords) {
             try (FileReader fr = new FileReader(fbackMails)) {
-                String line="";
-               while (line!=null){
-                   String data[] = line.split(":");
-                   if (data[0].equals(MSHOutMail.class.getName())) {
+                String line = "";
+                while (line != null) {
+                    String data[] = line.split(":");
+                    if (data[0].equals(MSHOutMail.class.getName())) {
                         mdao.removeMail(MSHOutMail.class, MSHOutEvent.class, new BigInteger(data[1]));
-                   } else if (data[0].equals(MSHInMail.class.getName())) {
+                    } else if (data[0].equals(MSHInMail.class.getName())) {
                         mdao.removeMail(MSHInMail.class, MSHInEvent.class, new BigInteger(data[1]));
-                   } else {
-                       LOG.logError(0, "Unknown object: " +line, null);
-                       continue;
-                   }
+                    } else {
+                        LOG.logError(0, "Unknown object: " + line, null);
+                        continue;
+                    }
                     // delete record()
                     //data[0] class
                     //data[1] id
-                    String[] files =  data[2].split(";");
-                    for (String file: files){
-                       try {
-                           StorageUtils.removeFile(file);
-                       } catch (StorageException ex) {
-                           LOG.logError(0, "Error removing file: " + file, ex);
-                           
-                       }
+                    String[] files = data[2].split(";");
+                    for (String file : files) {
+                        try {
+                            StorageUtils.removeFile(file);
+                        } catch (StorageException ex) {
+                            LOG.logError(0, "Error removing file: " + file, ex);
+
+                        }
                     }
-                    
-               }
+
+                }
                 // delete records
                 // delete files
-            }  catch (IOException ex) {
+            } catch (IOException ex) {
                 Logger.getLogger(TaskArchive.class.getName()).log(Level.SEVERE, null, ex);
             }
 
@@ -392,7 +394,7 @@ public class TaskArchive implements TaskExecutionInterface {
             }
         });
     }
-
+/*
     @Override
     public String getType() {
         return "archive";
@@ -417,6 +419,36 @@ public class TaskArchive implements TaskExecutionInterface {
         p.setProperty(KEY_ARCHIVE_OFFSET, "Archive records older than [n] days");
 
         return p;
+    }
+*/
+    @Override
+    public SEDTaskType getTaskDefinition() {
+        SEDTaskType tt = new SEDTaskType();
+        tt.setType("archive");
+        tt.setName("Archive data");
+        tt.setDescription("Archive data to 'xml' and files to archive-storage");
+        tt.getSEDTaskTypeProperties().add(createTTProperty(KEY_EXPORT_FOLDER, "Archive folder"));        
+        tt.getSEDTaskTypeProperties().add(createTTProperty(KEY_CHUNK_SIZE, "Max mail count in chunk", true, "int", null, null));
+        tt.getSEDTaskTypeProperties().add(createTTProperty(KEY_DELETE_RECORDS, "Delete exported records (true/false)", true, "boolean", null, null));
+        tt.getSEDTaskTypeProperties().add(createTTProperty(KEY_ARCHIVE_OFFSET, "Archive records older than [n] days", true, "int", null, null));
+
+        return tt;
+    }
+    
+    
+    private SEDTaskTypeProperty createTTProperty(String key, String desc, boolean mandatory, String type, String valFormat, String valList) {
+        SEDTaskTypeProperty ttp = new SEDTaskTypeProperty();
+        ttp.setKey(key);
+        ttp.setDescription(desc);
+        ttp.setMandatory(mandatory);
+        ttp.setType(type);
+        ttp.setValueFormat(valFormat);
+        ttp.setValueList(valList);
+        return ttp;
+    }
+
+    private SEDTaskTypeProperty createTTProperty(String key, String desc) {
+        return createTTProperty(key, desc, true, "string", null, null);
     }
 
 }

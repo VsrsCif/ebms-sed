@@ -16,10 +16,8 @@
  */
 package si.sed.msh.web.admin;
 
-import java.util.Calendar;
 import si.sed.msh.web.abst.AbstractAdminJSFView;
 import java.util.List;
-import java.util.Properties;
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
@@ -30,7 +28,6 @@ import org.sed.ebms.cron.SEDTaskTypeProperty;
 
 import si.sed.commons.SEDJNDI;
 import si.sed.commons.interfaces.SEDLookupsInterface;
-import si.sed.commons.interfaces.SEDSchedulerInterface;
 import si.sed.commons.interfaces.TaskExecutionInterface;
 
 import si.sed.commons.utils.SEDLogger;
@@ -78,16 +75,12 @@ public class AdminSEDTaskTypeView extends AbstractAdminJSFView<SEDTaskType> {
         
          try {
             TaskExecutionInterface tproc = InitialContext.doLookup(getEditable().getJndi());
-            getEditable().setDescription(tproc.getDesc());
-            getEditable().setName(tproc.getName());
-            getEditable().setType(tproc.getType());
+            getEditable().setDescription(tproc.getTaskDefinition().getDescription());
+            getEditable().setName(tproc.getTaskDefinition().getName());
+            getEditable().setType(tproc.getTaskDefinition().getType());
             getEditable().getSEDTaskTypeProperties().clear();
-            if (tproc.getProperties()!= null){
-                Properties p = tproc.getProperties();
-                for (String  key: p.stringPropertyNames()) {
-                    SEDTaskTypeProperty tp = createTypeProperty(key, p.getProperty(key), true);
-                    getEditable().getSEDTaskTypeProperties().add(tp);
-                }
+            if (!tproc.getTaskDefinition().getSEDTaskTypeProperties().isEmpty()){
+                getEditable().getSEDTaskTypeProperties().addAll(tproc.getTaskDefinition().getSEDTaskTypeProperties());                
             }
         } catch (NamingException ex) {
         
@@ -163,5 +156,6 @@ public class AdminSEDTaskTypeView extends AbstractAdminJSFView<SEDTaskType> {
     public void setSelectedTaskProperty(SEDTaskTypeProperty prop){
         this.mSelTaksProp = prop;
     }
+    
     
 }

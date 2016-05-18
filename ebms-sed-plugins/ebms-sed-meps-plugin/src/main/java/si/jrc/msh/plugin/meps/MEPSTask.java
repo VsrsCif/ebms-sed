@@ -9,6 +9,8 @@ import java.util.Properties;
 import javax.ejb.EJB;
 import javax.ejb.Local;
 import javax.ejb.Stateless;
+import org.sed.ebms.cron.SEDTaskType;
+import org.sed.ebms.cron.SEDTaskTypeProperty;
 import si.sed.commons.SEDJNDI;
 import si.sed.commons.interfaces.JMSManagerInterface;
 import si.sed.commons.interfaces.SEDDaoInterface;
@@ -27,9 +29,6 @@ import si.sed.commons.utils.StringFormater;
 public class MEPSTask implements TaskExecutionInterface {
 
 private static final SEDLogger LOG = new SEDLogger(MEPSTask.class);
-
-    
-
     
     StringFormater msfFormat = new StringFormater();
 
@@ -51,27 +50,29 @@ private static final SEDLogger LOG = new SEDLogger(MEPSTask.class);
         return null;
     }
 
-    @Override
-    public String getType() {
-        return "meps-plugin";
+    
+      @Override
+    public SEDTaskType getTaskDefinition() {
+        SEDTaskType tt = new SEDTaskType();
+        tt.setType("meps-plugin");
+        tt.setName("MEPS plugin");
+        tt.setDescription("Machine printing and enveloping task");
+        return tt;
     }
 
-    @Override
-    public String getName() {
-        return "MEPS plugin";
+    private SEDTaskTypeProperty createTTProperty(String key, String desc, boolean mandatory, String type, String valFormat, String valList) {
+        SEDTaskTypeProperty ttp = new SEDTaskTypeProperty();
+        ttp.setKey(key);
+        ttp.setDescription(desc);
+        ttp.setMandatory(mandatory);
+        ttp.setType(type);
+        ttp.setValueFormat(valFormat);
+        ttp.setValueList(valList);
+        return ttp;
     }
 
-    @Override
-    public String getDesc() {
-        return "Machine printing and enveloping task";
-    }
-
-    @Override
-    public Properties getProperties() {
-        Properties p = new Properties();
-        
-
-        return p;
+    private SEDTaskTypeProperty createTTProperty(String key, String desc) {
+        return createTTProperty(key, desc, true, "string", null, null);
     }
     
     

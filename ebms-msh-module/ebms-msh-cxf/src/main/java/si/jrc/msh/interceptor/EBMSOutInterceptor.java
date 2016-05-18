@@ -42,6 +42,7 @@ import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.Messaging;
 import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.SignalMessage;
 import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.UserMessage;
 import org.sed.ebms.cert.SEDCertStore;
+import org.sed.ebms.cert.SEDCertificate;
 import si.sed.commons.utils.SEDLogger;
 import si.jrc.msh.utils.EBMSUtils;
 import si.jrc.msh.client.sec.SimplePasswordCallback;
@@ -73,7 +74,7 @@ public class EBMSOutInterceptor extends AbstractEBMSInterceptor {
     @Override
     public void handleMessage(SoapMessage msg) {
         long l = mlog.logStart(msg);
-        mlog.log("handleMessage 1");
+
 
         SoapVersion version = msg.getVersion();
         boolean isRequest = MessageUtils.isRequestor(msg);
@@ -84,16 +85,15 @@ public class EBMSOutInterceptor extends AbstractEBMSInterceptor {
             mlog.logError(l, errmsg, null);
             throw ExceptionUtils.createSoapFault(SOAPExceptionCode.SoapVersionMismatch, sv, errmsg);
         }
-        mlog.log("handleMessage 2");
 
         if (msg.getContent(SOAPMessage.class) == null) {
             String errmsg = "Internal error missing SOAPMessage!";
             mlog.logError(l, errmsg, null);
             throw ExceptionUtils.createSoapFault(SOAPExceptionCode.InternalFailure, sv, errmsg);
         }
-        mlog.log("handleMessage 3");
+        
         PMode pmd = msg.getExchange().get(PMode.class) == null ? (PMode) msg.getExchange().get(PMode.class.getName()) : msg.getExchange().get(PMode.class);
-        mlog.log("handleMessage 4");
+        
         if (pmd == null) {
             String errmsg = "Missing PMode configuration for: " + (isRequest ? "Request" : "Response");
             mlog.logError(l, errmsg, null);
@@ -101,7 +101,7 @@ public class EBMSOutInterceptor extends AbstractEBMSInterceptor {
 
         }
 
-        mlog.log("handleMessage 5");
+        
         MSHOutMail outMail = msg.getExchange().get(MSHOutMail.class) == null ? (MSHOutMail) msg.getExchange().get(MSHOutMail.class.getName()) : msg.getExchange().get(MSHOutMail.class);
 
         SignalMessage signal = msg.getExchange().get(SignalMessage.class);
@@ -111,7 +111,7 @@ public class EBMSOutInterceptor extends AbstractEBMSInterceptor {
         } catch (StorageException ex) {
             mlog.logError(l, "Error adding attachments to soap", ex);
         }
-        mlog.log("handleMessage 6");
+        
 
         // MshIncomingMail inMail = msg.getExchange().get(MshIncomingMail.class);
         //EBMSError err = msg.getExchange().get(EBMSError.class);
@@ -121,7 +121,7 @@ public class EBMSOutInterceptor extends AbstractEBMSInterceptor {
         //boolean isRequestor = isRequestor(msg);
         // if sending usermessage, svevkey or as4 receipt -> pmode is mandatory
         // create  MESSAGING
-        mlog.log("handleMessage 7");
+        
         Messaging msgHeader = mEBMSUtil.createMessaging(version);
         // add user message
         if (outMail != null) {
@@ -135,10 +135,10 @@ public class EBMSOutInterceptor extends AbstractEBMSInterceptor {
 
         // add error signal
         EBMSError err = msg.getExchange().get(EBMSError.class);
-        mlog.log("handleMessage 8 - error: " + err);
+        
         if (err != null) {
             SignalMessage sm = mEBMSUtil.generateErrorSignal(err, getSettings().getDomain(), Calendar.getInstance().getTime());
-            mlog.log("handleMessage 9 - error: " + sm);
+            
             msgHeader.getSignalMessages().add(sm);
         }
         // add svev signal
@@ -225,6 +225,20 @@ public class EBMSOutInterceptor extends AbstractEBMSInterceptor {
             // create signature priperties
             String cpropname = "CP." + UUID.randomUUID().toString();
             SEDCertStore cs = getLookups().getSEDCertStoreByCertAlias(alias, true);
+            SEDCertificate aliasCrt = null;
+            if( cs != null) {
+                for (SEDCertificate crt: cs.getSEDCertificates()){
+                    if(crt.isKeyEntry() &&  alias.equals(crt.getAlias())) {
+                        aliasCrt = crt;
+                        break;
+                    }
+                }
+            }
+            if (cs ==null ||  aliasCrt==null){
+                mlog.logError( l, "Key for alias '"+alias+"' do not exists!", null);
+                // TODO throw error
+                return null;
+            }
             //Properties cp = CertificateUtils.getInstance().getVerifySignProperties();
             Properties cp = KeystoreUtils.getSignProperties(alias, cs);
             //Properties cp = CertificateUtils.getInstance().getSignProperties(alias);
@@ -234,7 +248,8 @@ public class EBMSOutInterceptor extends AbstractEBMSInterceptor {
             outProps.put(WSHandlerConstants.SIGNATURE_PARTS, elmWr.toString());
             outProps.put(WSHandlerConstants.SIGNATURE_USER, alias);
             outProps.put(WSHandlerConstants.USER, alias);
-            outProps.put(WSHandlerConstants.PW_CALLBACK_REF, new SimplePasswordCallback("key1234"));
+            
+            outProps.put(WSHandlerConstants.PW_CALLBACK_REF, new SimplePasswordCallback(aliasCrt.getKeyPassword()));
 
             outProps.put(WSHandlerConstants.SIG_PROP_REF_ID, cpropname);
 

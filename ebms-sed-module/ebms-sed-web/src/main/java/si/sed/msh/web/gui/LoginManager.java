@@ -33,13 +33,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.ejb.EJB;
+import javax.faces.bean.SessionScoped;
 import org.sed.ebms.user.SEDUser;
 import si.sed.commons.utils.SEDLogger;
 import si.sed.commons.SEDGUIConstants;
 import si.sed.commons.SEDJNDI;
 import si.sed.commons.interfaces.SEDDaoInterface;
 
-@ViewScoped
+@SessionScoped
 @ManagedBean(name = "loginManager")
 public class LoginManager {
 

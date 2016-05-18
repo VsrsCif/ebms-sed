@@ -23,6 +23,10 @@ import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.TrustManager;
@@ -46,6 +50,8 @@ import org.apache.cxf.transports.http.configuration.ProxyServerType;
 import org.msh.ebms.outbox.mail.MSHOutMail;
 import org.msh.svev.pmode.PMode;
 import org.msh.svev.pmode.Protocol;
+import org.sed.ebms.cert.SEDCertStore;
+import org.sed.ebms.cert.SEDCertificate;
 import si.jrc.msh.exception.MSHException;
 import si.jrc.msh.exception.MSHExceptionCode;
 
@@ -59,6 +65,10 @@ import si.jrc.msh.utils.SvevUtils;
 import si.sed.commons.utils.Utils;
 import si.jrc.msh.interceptor.MSHPluginInInterceptor;
 import si.jrc.msh.interceptor.MSHPluginOutInterceptor;
+import si.sed.commons.SEDJNDI;
+import si.sed.commons.exception.SEDSecurityException;
+import si.sed.commons.interfaces.SEDLookupsInterface;
+import si.sed.commons.utils.sec.KeystoreUtils;
 
 /**
  *
@@ -67,8 +77,10 @@ import si.jrc.msh.interceptor.MSHPluginOutInterceptor;
 public class MshClient {
 
     protected final SEDLogger mlog = new SEDLogger(MshClient.class);
-    SvevUtils msvevUtils = new SvevUtils();
-
+    
+    SEDLookupsInterface mSedLookups;
+    
+    
     public void sendMessage(MSHOutMail mail, PMode pmode) throws MSHException {
 
         long l = mlog.logStart(mail);
@@ -168,35 +180,54 @@ public class MshClient {
             http.setClient(httpClientPolicy);
 
             //cxfClient.getOutInterceptors().add(new LoggingOutInterceptor());
-        } catch (IOException | GeneralSecurityException th) {
+        } catch (SEDSecurityException | IOException | GeneralSecurityException th) {
             throw new MSHException(MSHExceptionCode.InvalidPMode, pmode.getId(), th.getMessage());
-        }
+        } 
+        
 
         return dispSOAPMsg;
     }
 
     private  void setupTLS(Client client, Protocol.TLS tls)
-            throws FileNotFoundException, IOException, GeneralSecurityException {
+            throws FileNotFoundException, IOException, GeneralSecurityException, SEDSecurityException {
+        long l = mlog.logStart();
         
         HTTPConduit httpConduit = (HTTPConduit) client.getConduit();
         
 
         TLSClientParameters tlsCP = null;
 
-        if (tls.getKeyStorePath()!= null) {
-            mlog.log("\t Set keystore:" + tls.getKeyStorePath() );
+        if (tls.getKeyAlias()!= null && !tls.getKeyAlias().trim().isEmpty()) {
+            String keyAlias = tls.getKeyAlias().trim();
+            SEDCertStore scs =  getLookups().getSEDCertStoreByCertAlias(keyAlias, true);
+            SEDCertificate aliasCrt = null;
+            if( scs != null) {
+                for (SEDCertificate crt: scs.getSEDCertificates()){
+                    if(crt.isKeyEntry() &&  keyAlias.equals(crt.getAlias())) {
+                        aliasCrt = crt;
+                        break;
+                    }
+                }
+            }
+             if (scs ==null ||  aliasCrt==null){
+                 String msg = "Key for alias: '"+keyAlias+"' do not exists!";
+                mlog.logError( l, msg, null);
+               throw new SEDSecurityException(SEDSecurityException.SEDSecurityExceptionCode.KeyForAliasNotExists, keyAlias);
+            }
+            
             tlsCP = tlsCP==null?new TLSClientParameters():tlsCP;
-            KeyStore keyStore = KeyStore.getInstance(tls.getKeyStoreType());
-            keyStore.load(new FileInputStream(Utils.replaceProperties(tls.getKeyStorePath()) ), tls.getKeyStorePassword().toCharArray());
-            KeyManager[] myKeyManagers = getKeyManagers(keyStore, tls.getKeyPassword());
+            KeyStore keyStore = KeystoreUtils.getKeystore(scs);            
+            KeyManager[] myKeyManagers = getKeyManagers(keyStore, aliasCrt.getKeyPassword());
             tlsCP.setKeyManagers(myKeyManagers);
         }
 
-        if (tls.getTrustStoreType()!= null) {
-            mlog.log("\t Set truststore:" + tls.getTrustStoreType() );
+        if (tls.getTrustCertAlias()!= null && !tls.getTrustCertAlias().trim().isEmpty()) {
+            String trustAlias = tls.getKeyAlias().trim();
+            mlog.log("\t Set truststore:" + tls.getTrustCertAlias() );
             tlsCP = tlsCP==null?new TLSClientParameters():tlsCP;
-            KeyStore trustStore = KeyStore.getInstance(tls.getTrustStoreType());
-            trustStore.load(new FileInputStream(Utils.replaceProperties(tls.getTrustStorePath())), tls.getTrustStorePassword().toCharArray());
+            SEDCertStore scs =  getLookups().getSEDCertStoreByCertAlias(trustAlias, false);
+            
+            KeyStore trustStore = KeystoreUtils.getKeystore(scs);            
             TrustManager[] myTrustStoreKeyManagers = getTrustManagers(trustStore);
             tlsCP.setTrustManagers(myTrustStoreKeyManagers);
             
@@ -226,6 +257,21 @@ public class MshClient {
         KeyManagerFactory fac = KeyManagerFactory.getInstance(alg);
         fac.init(keyStore, keyPass);
         return fac.getKeyManagers();
+    }
+    
+    
+     public SEDLookupsInterface getLookups() {
+        long l = mlog.logStart();
+        if (mSedLookups== null) {
+            try {
+                mSedLookups=  InitialContext.doLookup(SEDJNDI.JNDI_SEDLOOKUPS);
+                mlog.logEnd(l);
+            } catch (NamingException ex) {
+                mlog.logError(l, ex);
+            }            
+        }
+      
+        return mSedLookups;
     }
 
 }

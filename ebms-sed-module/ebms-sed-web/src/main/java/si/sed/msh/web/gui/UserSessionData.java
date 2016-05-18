@@ -17,13 +17,17 @@ package si.sed.msh.web.gui;
 * See the Licence for the specific language governing permissions and  
 * limitations under the Licence.
  */
+import java.io.IOException;
 import si.sed.msh.web.abst.AbstractJSFView;
 import javax.faces.bean.ManagedBean;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.faces.application.FacesMessage;
+import javax.faces.bean.ManagedProperty;
 
 import javax.faces.bean.SessionScoped;
 import org.primefaces.event.SelectEvent;
@@ -36,14 +40,27 @@ import si.sed.commons.SEDGUIConstants;
 @SessionScoped
 @ManagedBean(name = "userSessionData")
 public class UserSessionData extends AbstractJSFView {
+    
+    
+    @ManagedProperty(value = "#{loginManager}")
+    private LoginManager loginManager;
 
     private static final SEDLogger LOG = new SEDLogger(UserSessionData.class);
     private String mstrCurrentSEDBox;
 
     public SEDUser getUser() {
+        long l = LOG.logStart();
         FacesContext context = facesContext();
         ExternalContext externalContext = context.getExternalContext();
-        return (SEDUser) externalContext.getSessionMap().get(SEDGUIConstants.SESSION_USER_VARIABLE_NAME);
+        SEDUser su = (SEDUser) externalContext.getSessionMap().get(SEDGUIConstants.SESSION_USER_VARIABLE_NAME);
+        if (su==null){
+            try {
+                loginManager.logout();
+            } catch (IOException ex) {
+                LOG.logError(l, ex);
+            }
+        }
+        return su;
     }
 
     public List<String> getUserEBoxes() {
@@ -94,5 +111,13 @@ public class UserSessionData extends AbstractJSFView {
         FacesContext context = FacesContext.getCurrentInstance();
         context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "List Reordered", null));
     } 
+
+    public LoginManager getLoginManager() {
+        return loginManager;
+    }
+
+    public void setLoginManager(LoginManager loginManager) {
+        this.loginManager = loginManager;
+    }
 
 }

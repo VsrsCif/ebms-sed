@@ -55,19 +55,35 @@ public abstract class AbstractMailDataModel<T> extends LazyDataModel<T> {
     public List<T> load(int startingAt, int maxPerPage, String sortField, SortOrder sortOrder, Map<String, Object> filters) {
         String strSortOrder = "DESC";
         // validate data        
-        mDataList = mDB.getDataList(type, startingAt, maxPerPage, sortField, strSortOrder, externalFilters());
-        long l = mDB.getDataListCount(type, filters);
+        Object filterObject = externalFilters();
+        mDataList = getData(startingAt, maxPerPage, sortField, sortOrder, filterObject);
+        long l = mDB.getDataListCount(type, filterObject);
         setRowCount((int)l);
      
         setPageSize(maxPerPage);
         return mDataList;
     }
 
+    public List<T> getData(int startingAt, int maxPerPage, String sortField, SortOrder sortOrder, Object filters) {
+         String strSortOrder = "DESC";
+        return mDB.getDataList(type, startingAt, maxPerPage, sortField, strSortOrder, filters);
+    }
+    
+    public List<T> getData(int startingAt, int maxPerPage) {
+         String strSortOrder = "DESC";
+        return mDB.getDataList(type, startingAt, maxPerPage, "Id", strSortOrder, externalFilters());
+    }
 
     public List<T> getCurrentData() {
         return mDataList;
     }
     
     abstract public Object externalFilters();
+
+    public Class<T> getType() {
+        return type;
+    }
+    
+    
 
 }

@@ -24,6 +24,8 @@ import org.msh.ebms.outbox.mail.MSHOutMail;
 import org.msh.ebms.outbox.payload.MSHOutPart;
 import org.msh.ebms.outbox.payload.MSHOutPayload;
 import org.sed.ebms.cert.SEDCertStore;
+import org.sed.ebms.cron.SEDTaskType;
+import org.sed.ebms.cron.SEDTaskTypeProperty;
 import si.jrc.msh.plugin.zpp.doc.DocumentSodBuilder;
 import si.jrc.msh.plugin.zpp.utils.FOPUtils;
 import si.jrc.msh.sec.SEDCrypto;
@@ -56,7 +58,10 @@ import si.sed.commons.utils.sec.KeystoreUtils;
 @Local(TaskExecutionInterface.class)
 public class ZPPTask implements TaskExecutionInterface {
 
-private static final SEDLogger LOG = new SEDLogger(ZPPTask.class);
+    private static final SEDLogger LOG = new SEDLogger(ZPPTask.class);
+    private static final String SIGN_ALIAS="zpp.sign.key.alias";
+    private static final String REC_SEDBOX="zpp.sedbox";
+    
 
     SEDCrypto mSedCrypto = new SEDCrypto();
     HashUtils mpHU = new HashUtils();
@@ -66,18 +71,17 @@ private static final SEDLogger LOG = new SEDLogger(ZPPTask.class);
     FOPUtils mfpFop = null;
     StringFormater msfFormat = new StringFormater();
 
-    
     @EJB(mappedName = SEDJNDI.JNDI_SEDDAO)
     SEDDaoInterface mDB;
 
     @EJB(mappedName = SEDJNDI.JNDI_JMSMANAGER)
     JMSManagerInterface mJMS;
-    
+
     @EJB(mappedName = SEDJNDI.JNDI_SEDLOOKUPS)
     SEDLookupsInterface msedLookup;
-    
+
     // TODO externalize
-    String singDAAlias = "msh.e-box-a.si";
+    
 
     @Override
     public String executeTask(Properties p) throws TaskException {
@@ -85,49 +89,71 @@ private static final SEDLogger LOG = new SEDLogger(ZPPTask.class);
         long l = LOG.logStart();
         StringWriter sw = new StringWriter();
         sw.append("Start zpp plugin task: \n");
+        
+        String singDAAlias = "";
+        if (!p.containsKey(SIGN_ALIAS)) {
+            throw new TaskException(TaskException.TaskExceptionCode.InitException, "Missing parameter:  '" + SIGN_ALIAS + "'!");
+        } else {
+            singDAAlias = p.getProperty(SIGN_ALIAS);
+        }
+        
+        String sedBox  = "";
+        if (!p.containsKey(REC_SEDBOX)) {
+            throw new TaskException(TaskException.TaskExceptionCode.InitException, "Missing parameter:  '" + REC_SEDBOX + "'!");
+        } else {
+            sedBox = p.getProperty(REC_SEDBOX);
+        }
+
+        
 
         MSHInMail mi = new MSHInMail();
-        mi.setStatus(ZPPConstants.LOCK_STATUS);
-        List<MSHInMail> lst=  mDB.getDataList(MSHInMail.class,  -1, -1, "Id", "ASC", mi);
-        sw.append("got " + lst.size() + " do deliver");
-        for (MSHInMail m: lst){
+        mi.setStatus(SEDInboxMailStatus.PLUGINLOCKED.getValue());
+        mi.setReceiverEBox(sedBox);
+        
+        List<MSHInMail> lst = mDB.getDataList(MSHInMail.class, -1, -1, "Id", "ASC", mi);
+        sw.append("got " + lst.size() + " mails for sedbox: '"+sedBox+"'!");
+        for (MSHInMail m : lst) {
             try {
-                processInZPPDelivery(m);                
+                processInZPPDelivery(m, singDAAlias);
             } catch (FOPException | HashException ex) {
                 LOG.logError(l, ex);
                 sw.append("Error occurred processing: " + m.getId() + " err: " + ex.getMessage());
             }
         }
-        
+
         sw.append("Endzpp plugin task");
         return sw.toString();
     }
 
     @Override
-    public String getType() {
-        return "zpp-plugin";
-    }
-
-    @Override
-    public String getName() {
-        return "ZPP plugin";
-    }
-
-    @Override
-    public String getDesc() {
-        return "Sign deliveryadvice for incomming mail ";
-    }
-
-    @Override
-    public Properties getProperties() {
-        Properties p = new Properties();
+    public SEDTaskType getTaskDefinition() {
+        SEDTaskType tt = new SEDTaskType();
+        tt.setType("zpp-plugin");
+        tt.setName("ZPP plugin");
+        tt.setDescription("Sign deliveryadvice for incomming mail");
+        tt.getSEDTaskTypeProperties().add(createTTProperty(REC_SEDBOX, "Receiver sedbox."));
+        tt.getSEDTaskTypeProperties().add(createTTProperty(SIGN_ALIAS, "Signature key alias."));        
         
 
-        return p;
+        return tt;
     }
-    
-    
-    public void processInZPPDelivery(MSHInMail mInMail) throws FOPException, HashException {
+
+    private SEDTaskTypeProperty createTTProperty(String key, String desc, boolean mandatory, String type, String valFormat, String valList) {
+        SEDTaskTypeProperty ttp = new SEDTaskTypeProperty();
+        ttp.setKey(key);
+        ttp.setDescription(desc);
+        ttp.setMandatory(mandatory);
+        ttp.setType(type);
+        ttp.setValueFormat(valFormat);
+        ttp.setValueList(valList);
+        return ttp;
+    }
+
+    private SEDTaskTypeProperty createTTProperty(String key, String desc) {
+        return createTTProperty(key, desc, true, "string", null, null);
+    }
+
+    public void processInZPPDelivery(MSHInMail mInMail, String singDAAlias) throws FOPException, HashException {
         long l = LOG.logStart();
         // create delivery advice 
         File fDNViz = null;
@@ -138,8 +164,6 @@ private static final SEDLogger LOG = new SEDLogger(ZPPTask.class);
         } catch (StorageException ex) {
             Logger.getLogger(ZPPInInterceptor.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-         
 
         getFOP().generateVisualization(mInMail, fDNViz, FOPUtils.FopTransformations.AdviceOfDelivery, MimeConstants.MIME_PDF);
         MSHOutMail mout = new MSHOutMail();
@@ -169,11 +193,8 @@ private static final SEDLogger LOG = new SEDLogger(ZPPTask.class);
 
         try (FileOutputStream fos = new FileOutputStream(fDA)) {
 
-            
-            
-            SEDCertStore cs =  msedLookup.getSEDCertStoreByCertAlias(singDAAlias, true);
-            
-            
+            SEDCertStore cs = msedLookup.getSEDCertStoreByCertAlias(singDAAlias, true);
+
             // create signed delivery advice
             dsbSodBuilder.createMail(mout, fos, mkeyUtils.getPrivateKeyEntryForAlias(singDAAlias, cs));
             mp.setDescription("DeliveryAdvice");

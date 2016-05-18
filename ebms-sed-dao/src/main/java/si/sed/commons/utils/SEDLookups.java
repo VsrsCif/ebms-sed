@@ -36,6 +36,7 @@ import javax.xml.bind.JAXBException;
 import org.sed.ebms.cert.SEDCertStore;
 import org.sed.ebms.cert.SEDCertificate;
 import org.sed.ebms.cron.SEDCronJob;
+import org.sed.ebms.cron.SEDTaskProperty;
 import org.sed.ebms.cron.SEDTaskType;
 import org.sed.ebms.cron.SEDTaskTypeProperty;
 
@@ -56,18 +57,17 @@ import si.sed.commons.utils.xml.XMLUtils;
 @Local(SEDLookupsInterface.class)
 @TransactionManagement(TransactionManagementType.BEAN)
 public class SEDLookups implements SEDLookupsInterface {
-
-
+    
     protected static SEDLogger LOG = new SEDLogger(SEDLookups.class);
     // min, sec, milis.
     public static final long S_UPDATE_TIMEOUT = 10 * 60 * 1000; // 10 minutes
     @EJB(mappedName = SEDJNDI.JNDI_DBSETTINGS)
     private DBSettingsInterface mdbSettings;
-
+    
     @PersistenceContext(unitName = "ebMS_SED_PU", name = "ebMS_SED_PU")
     public EntityManager memEManager;
     private final HashMap<Class, List<?>> mlstCacheLookup = new HashMap<>();
-
+    
     private final HashMap<Class, Long> mlstTimeOut = new HashMap<>();
     @Resource
     public UserTransaction mutUTransaction;
@@ -92,7 +92,6 @@ public class SEDLookups implements SEDLookupsInterface {
         return suc;
     }
     
-
     @Override
     public boolean addSEDBox(SEDBox sb) {
         return add(sb);
@@ -102,11 +101,12 @@ public class SEDLookups implements SEDLookupsInterface {
     public boolean addSEDCertStore(SEDCertStore sb) {
         return add(sb);
     }
-
+    
     @Override
     public boolean addSEDCronJob(SEDCronJob sb) {
         return add(sb);
     }
+
     @Override
     public boolean addSEDPlugin(SEDPlugin sb) {
         return add(sb);
@@ -116,7 +116,7 @@ public class SEDLookups implements SEDLookupsInterface {
     public boolean addSEDTaskType(SEDTaskType sb) {
         return add(sb);
     }
-
+    
     @Override
     public boolean addSEDUser(SEDUser sb) {
         return add(sb);
@@ -138,7 +138,7 @@ public class SEDLookups implements SEDLookupsInterface {
     }
     
     @Override
-    public void exportLookups(File f) {
+    public void exportLookups(File f, boolean saveCertPasswords) {
         long l = LOG.logStart();
         SedLookups slps = new SedLookups();
         slps.setExportDate(Calendar.getInstance().getTime());
@@ -157,7 +157,19 @@ public class SEDLookups implements SEDLookupsInterface {
         slps.getSEDTaskTypes().getSEDTaskTypes().addAll(getSEDTaskTypes());
         
         slps.getSEDUsers().getSEDUsers().addAll(getSEDUsers());
-        slps.getSEDCertStores().getSEDCertStores().addAll(getSEDCertStore());
+        List<SEDCertStore> lst = getSEDCertStore();
+        if (!saveCertPasswords) {
+           
+            for (SEDCertStore cs : lst) {
+                cs.setPassword("****");
+                for (SEDCertificate c : cs.getSEDCertificates()) {
+                    c.setKeyPassword("****");
+                }
+            }
+            // refresh data
+            mlstCacheLookup.remove(SEDCertStore.class);
+        }
+        slps.getSEDCertStores().getSEDCertStores().addAll(lst);
         slps.getSEDPlugins().getSEDPlugins().addAll(getSEDPlugin());
         try {
             XMLUtils.serialize(slps, new File(f, "sed-settings.xml"));
@@ -166,6 +178,7 @@ public class SEDLookups implements SEDLookupsInterface {
         }
         LOG.logEnd(l);
     }
+
     private <T> List<T> getFromCache(Class<T> c) {
         return mlstCacheLookup.containsKey(c) ? (List<T>) mlstCacheLookup.get(c) : null;
     }
@@ -205,15 +218,15 @@ public class SEDLookups implements SEDLookupsInterface {
     public List<SEDCertStore> getSEDCertStore() {
         return getLookup(SEDCertStore.class);
     }
-
+    
     @Override
     public SEDCertStore getSEDCertStoreByCertAlias(String alias, boolean isKey) {
-        SEDCertStore rsCS =null;
+        SEDCertStore rsCS = null;
         List<SEDCertStore> lst = getSEDCertStore();
-        for (SEDCertStore cs: lst){
-            for (SEDCertificate c: cs.getSEDCertificates()){
-                if (c.getAlias().equalsIgnoreCase(alias)){
-                    if (c.isKeyEntry() == isKey){
+        for (SEDCertStore cs : lst) {
+            for (SEDCertificate c : cs.getSEDCertificates()) {
+                if (c.getAlias().equalsIgnoreCase(alias)) {
+                    if (c.isKeyEntry() == isKey) {
                         return cs;
                     } else if (!isKey) { // if searching for cert not key but key is fund search on 
                         rsCS = cs; // alias is not repeated in keystore
@@ -225,13 +238,12 @@ public class SEDLookups implements SEDLookupsInterface {
         }
         return rsCS;
         
-        
     }
-
+    
     @Override
     public SEDCronJob getSEDCronJobById(BigInteger id) {
         if (id != null) {
-
+            
             List<SEDCronJob> lst = getSEDCronJobs();
             for (SEDCronJob sb : lst) {
                 if (id.equals(sb.getId())) {
@@ -251,11 +263,11 @@ public class SEDLookups implements SEDLookupsInterface {
     public List<SEDPlugin> getSEDPlugin() {
         return getLookup(SEDPlugin.class);
     }
-
+    
     @Override
     public SEDTaskType getSEDTaskTypeByType(String type) {
         if (type != null) {
-
+            
             List<SEDTaskType> lst = getSEDTaskTypes();
             for (SEDTaskType sb : lst) {
                 if (type.equals(sb.getType())) {
@@ -266,10 +278,10 @@ public class SEDLookups implements SEDLookupsInterface {
         return null;
     }
     
-     @Override
+    @Override
     public SEDPlugin getSEDPluginByType(String type) {
         if (type != null) {
-
+            
             List<SEDPlugin> lst = getSEDPlugin();
             for (SEDPlugin sb : lst) {
                 if (type.equals(sb.getType())) {
@@ -284,6 +296,7 @@ public class SEDLookups implements SEDLookupsInterface {
     public List<SEDTaskType> getSEDTaskTypes() {
         return getLookup(SEDTaskType.class);
     }
+
     @Override
     public SEDUser getSEDUserByUserId(String userId) {
         if (userId != null && !userId.trim().isEmpty()) {
@@ -302,15 +315,15 @@ public class SEDLookups implements SEDLookupsInterface {
     public List<SEDUser> getSEDUsers() {
         return getLookup(SEDUser.class);
     }
-
+    
     @PostConstruct
     void init() {
         long l = LOG.logStart();
-        LOG.log("System property: " +SEDSystemProperties.SYS_PROP_INIT_LOOKUPS + " exists: " +System.getProperties().containsKey(SEDSystemProperties.SYS_PROP_INIT_LOOKUPS) );
+        LOG.log("System property: " + SEDSystemProperties.SYS_PROP_INIT_LOOKUPS + " exists: " + System.getProperties().containsKey(SEDSystemProperties.SYS_PROP_INIT_LOOKUPS));
         if (System.getProperties().containsKey(SEDSystemProperties.SYS_PROP_INIT_LOOKUPS)) {
             
             File f = new File(System.getProperty(SEDSystemProperties.SYS_PROP_INIT_LOOKUPS));
-            LOG.log("Update data from database: " +f.getAbsolutePath());
+            LOG.log("Update data from database: " + f.getAbsolutePath());
             try {
                 SedLookups cls = (SedLookups) XMLUtils.deserialize(f, SedLookups.class);
                 if (cls.getSEDBoxes() != null && !cls.getSEDBoxes().getSEDBoxes().isEmpty()) {
@@ -320,7 +333,7 @@ public class SEDLookups implements SEDLookupsInterface {
                         }
                     });
                 }
-
+                
                 if (cls.getSEDCertStores() != null && !cls.getSEDCertStores().getSEDCertStores().isEmpty()) {
                     cls.getSEDCertStores().getSEDCertStores().stream().forEach((cb) -> {
                         cb.setId(null);
@@ -330,7 +343,7 @@ public class SEDLookups implements SEDLookupsInterface {
                         add(cb);
                     });
                 }
-
+                
                 if (cls.getSEDCronJobs() != null && !cls.getSEDCronJobs().getSEDCronJobs().isEmpty()) {
                     cls.getSEDCronJobs().getSEDCronJobs().stream().forEach((cb) -> {
                         cb.setId(null);
@@ -342,27 +355,27 @@ public class SEDLookups implements SEDLookupsInterface {
                         add(cb);
                     });
                 }
-
+                
                 if (cls.getSEDPlugins() != null && !cls.getSEDPlugins().getSEDPlugins().isEmpty()) {
                     cls.getSEDPlugins().getSEDPlugins().stream().forEach((cb) -> {
-                      if (getSEDUserByUserId(cb.getType()) == null) {
+                        if (getSEDUserByUserId(cb.getType()) == null) {
                             add(cb);
                         }
                         
                     });
                 }
-
+                
                 if (cls.getSEDTaskTypes() != null && !cls.getSEDTaskTypes().getSEDTaskTypes().isEmpty()) {
                     cls.getSEDTaskTypes().getSEDTaskTypes().stream().forEach((cb) -> {
                         if (getSEDTaskTypeByType(cb.getType()) == null) {
-                            for (SEDTaskTypeProperty c: cb.getSEDTaskTypeProperties()){
+                            for (SEDTaskTypeProperty c : cb.getSEDTaskTypeProperties()) {
                                 c.setId(null);
-                             }
+                            }
                             add(cb);
                         }
                     });
                 }
-
+                
                 if (cls.getSEDUsers() != null && !cls.getSEDUsers().getSEDUsers().isEmpty()) {
                     cls.getSEDUsers().getSEDUsers().stream().forEach((cb) -> {
                         if (getSEDUserByUserId(cb.getUserId()) == null) {
@@ -370,17 +383,17 @@ public class SEDLookups implements SEDLookupsInterface {
                         }
                     });
                 }
-
+                
                 if (cls.getSEDProperties() != null && !cls.getSEDProperties().getSEDProperties().isEmpty()) {
                     mdbSettings.setSEDProperties(cls.getSEDProperties().getSEDProperties());
                 }
-
+                
             } catch (JAXBException ex) {
                 LOG.logError(l, ex);
             }
-
+            
         }
-
+        
         LOG.logEnd(l);
     }
     
@@ -466,14 +479,20 @@ public class SEDLookups implements SEDLookupsInterface {
     
     @Override
     public boolean updateSEDCertStore(SEDCertStore sb) {
-       return update(sb);
+        return update(sb);
     }
     
     @Override
     public boolean updateSEDCronJob(SEDCronJob sb) {
+        SEDCronJob st = getSEDCronJobById(sb.getId());
+        if (st.getSEDTask() != null) {
+            for (SEDTaskProperty tp : st.getSEDTask().getSEDTaskProperties()) {
+                remove(tp);                
+            }
+        }
         return update(sb);
     }
-
+    
     @Override
     public boolean updateSEDPlugin(SEDPlugin sb) {
         return update(sb);
@@ -482,11 +501,9 @@ public class SEDLookups implements SEDLookupsInterface {
     @Override
     public boolean updateSEDTaskType(SEDTaskType sb) {
         SEDTaskType st = getSEDTaskTypeByType(sb.getType());
-        for (SEDTaskTypeProperty tp: st.getSEDTaskTypeProperties() ) {
-            System.out.println("Remove task prop" + tp.getId());
-            remove(tp);   
+        for (SEDTaskTypeProperty tp : st.getSEDTaskTypeProperties()) {
+            remove(tp);            
         }
-        System.out.println("Type task prop" + sb.getSEDTaskTypeProperties().size());
         return update(sb);
     }
     
@@ -494,5 +511,5 @@ public class SEDLookups implements SEDLookupsInterface {
     public boolean updateSEDUser(SEDUser sb) {
         return update(sb);
     }
-
+    
 }

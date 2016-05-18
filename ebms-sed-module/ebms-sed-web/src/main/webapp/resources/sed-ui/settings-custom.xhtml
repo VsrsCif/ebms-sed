@@ -11,10 +11,22 @@
     </composite:interface>
 
     <composite:implementation >
-          <p:commandButton value="#{msg['Export']}" styleClass="toolbar-Button" icon="ui-icon-sed-export"                                 
-                                 actionListener="#{ApplicationData.exportLookups()}"
-                                 />
-        
+
+        <h:outputText value="#{msg['ExportLookupsToFile']}: {sed.home}/sed-settings.xml:" />
+        <p:panelGrid  >
+            
+            <p:row> 
+                <p:column><h:outputText value="#{msg['ExportWithPasswords']}:" /></p:column>
+                <p:column><p:commandButton value="#{msg['Export']}" styleClass="toolbar-Button" icon="ui-icon-sed-save"                                 
+                                           actionListener="#{ApplicationData.exportLookupsWithPasswords()}" /></p:column>
+            </p:row>
+            <p:row> 
+                <p:column><h:outputText value="#{msg['ExportWithNoPasswords']}:" /></p:column>
+                <p:column><p:commandButton value="#{msg['Export']}" styleClass="toolbar-Button" icon="ui-icon-sed-save"                                 
+                                           actionListener="#{ApplicationData.exportLookupsWithNoPasswords()}"/></p:column>
+            </p:row>
+        </p:panelGrid>
+
         <h1>#{msg['EnvironmentProperties']}</h1>
         <p:dataTable var="sp" 
                      value="#{ApplicationData.systemPropertyKeys}"

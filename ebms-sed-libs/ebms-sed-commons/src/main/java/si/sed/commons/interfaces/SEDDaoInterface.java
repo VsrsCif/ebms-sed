@@ -6,6 +6,7 @@
 package si.sed.commons.interfaces;
 
 import java.math.BigInteger;
+import java.util.Date;
 import java.util.List;
 import javax.ejb.Local;
 import org.msh.ebms.inbox.mail.MSHInMail;
@@ -40,4 +41,6 @@ public interface SEDDaoInterface {
     boolean updateExecutionTask(SEDTaskExecution ad);
     <T> void removeMail(Class<T> type, List<T> lst);
     <T,E> void removeMail(Class<T> type, Class<E> typeEvent, BigInteger bi);
+    
+    SEDTaskExecution getLastSuccesfullTaskExecution( String type);
 }

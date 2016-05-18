@@ -104,32 +104,39 @@
                                  actionListener="#{adminSEDCronJobView.removeSelected()}" update=":forms:SettingsCron:TblCron" />
  
             </f:facet>
-            <p:column headerText="#{msg['Id']}">
+            <p:column headerText="#{msg['Id']}" width="60">
                 <h:outputText value="#{sp.id}" /></p:column>
-            <p:column headerText="#{msg['Active']}">
-                <h:selectBooleanCheckbox value="#{sp.active}" disabled="true" />
+                
+                
+            <p:column headerText="#{msg['Name']}" >
+                <h:outputText value="#{sp.name}"></h:outputText>                
             </p:column>
-            <p:column headerText="#{msg['Second']}">
-                <h:outputText value="#{sp.second}"></h:outputText>                
-            </p:column>
-            <p:column headerText="#{msg['Minute']}">
-                <h:outputText value="#{sp.minute}"></h:outputText>                
-            </p:column>
-            <p:column headerText="#{msg['Hour']}">
-                <h:outputText value="#{sp.hour}" ></h:outputText>                
-            </p:column>
-            <p:column headerText="#{msg['DayOfMonth']}">
-                <h:outputText value="#{sp.dayOfMonth}" ></h:outputText>                
-            </p:column>
-            <p:column headerText="#{msg['Month']}">
-                <h:outputText value="#{sp.month}" ></h:outputText>                
-            </p:column>
-            <p:column headerText="#{msg['DayOfWeek']}">
-                <h:outputText value="#{sp.dayOfWeek}" ></h:outputText>                
-            </p:column>
-            <p:column headerText="#{msg['TaskType']}">
+             <p:column headerText="#{msg['TaskType']}" width="120">
                 <h:outputText value="#{sp.SEDTask.taskType}" ></h:outputText>                
             </p:column>
+            
+             <p:column headerText="#{msg['Active']}" width="60">
+                <h:selectBooleanCheckbox value="#{sp.active}" disabled="true" />
+            </p:column>
+            <p:column headerText="#{msg['Second']}" width="80">
+                <h:outputText value="#{sp.second}"></h:outputText>                
+            </p:column>
+            <p:column headerText="#{msg['Minute']}" width="80">
+                <h:outputText value="#{sp.minute}"></h:outputText>                
+            </p:column>
+            <p:column headerText="#{msg['Hour']}" width="80">
+                <h:outputText value="#{sp.hour}" ></h:outputText>                
+            </p:column>
+            <p:column headerText="#{msg['DayOfMonth']}" width="80">
+                <h:outputText value="#{sp.dayOfMonth}" ></h:outputText>                
+            </p:column>
+            <p:column headerText="#{msg['Month']}" width="80">
+                <h:outputText value="#{sp.month}" ></h:outputText>                
+            </p:column>
+            <p:column headerText="#{msg['DayOfWeek']}" width="80">
+                <h:outputText value="#{sp.dayOfWeek}" ></h:outputText>                
+            </p:column>
+            
         </p:dataTable>
 
 

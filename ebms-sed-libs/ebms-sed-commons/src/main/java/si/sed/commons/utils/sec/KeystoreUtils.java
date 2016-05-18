@@ -58,7 +58,7 @@ public class KeystoreUtils {
 
     protected final SEDLogger mlog = new SEDLogger(KeystoreUtils.class);
     
-    public KeyStore getKeystore(SEDCertStore sc) throws SEDSecurityException {
+    public static KeyStore getKeystore(SEDCertStore sc) throws SEDSecurityException {
         KeyStore keyStore = null;
         try (FileInputStream fis = new FileInputStream(Utils.replaceProperties(sc.getFilePath()))){
             keyStore = getKeystore(fis, sc.getType(), sc.getPassword().toCharArray());
@@ -68,7 +68,7 @@ public class KeystoreUtils {
         return keyStore;
     }
 
-    public KeyStore getKeystore(InputStream isTrustStore, String trustStoreType, char[] password) throws SEDSecurityException {
+    public static KeyStore getKeystore(InputStream isTrustStore, String trustStoreType, char[] password) throws SEDSecurityException {
         KeyStore keyStore = null;
         try {
             keyStore = KeyStore.getInstance(trustStoreType);

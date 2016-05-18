@@ -191,7 +191,7 @@ public class ZPPInInterceptor implements SoapInterceptorInterface {
     public void processInZPPDelivery(MSHInMail mInMail, PMode pmd) throws FOPException, HashException {
         long l = mlog.logStart();
         
-        mInMail.setStatus(ZPPConstants.LOCK_STATUS);
+        mInMail.setStatus(SEDInboxMailStatus.PLUGINLOCKED.getValue());
         mInMail.setStatusDate(Calendar.getInstance().getTime());
         mDB.updateInMail(mInMail, "DeliveryAdviceGenerated and submited to sender");
         

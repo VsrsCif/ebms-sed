@@ -18,12 +18,10 @@ package si.sed.msh.web.admin;
 
 import si.sed.msh.web.abst.AbstractAdminJSFView;
 import java.util.List;
-import java.util.Properties;
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.event.ActionEvent;
-import javax.faces.event.FacesEvent;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import org.sed.ebms.cron.SEDTaskType;
@@ -119,16 +117,13 @@ public class AdminSEDPluginView extends AbstractAdminJSFView<SEDPlugin> {
             SEDTaskType td = new SEDTaskType();            
             TaskExecutionInterface tproc = InitialContext.doLookup(jndi);
             td.setJndi(jndi);
-            td.setDescription(tproc.getDesc());
-            td.setName(tproc.getName());
-            td.setType(tproc.getType());
+            
+            td.setDescription(tproc.getTaskDefinition().getDescription());
+            td.setName(tproc.getTaskDefinition().getName());
+            td.setType(tproc.getTaskDefinition().getType());
             td.getSEDTaskTypeProperties().clear();
-            if (tproc.getProperties() != null) {
-                Properties p = tproc.getProperties();
-                for (String key : p.stringPropertyNames()) {
-                    SEDTaskTypeProperty tp = createTypeProperty(key, p.getProperty(key), true);
-                    td.getSEDTaskTypeProperties().add(tp);
-                }
+            if (!tproc.getTaskDefinition().getSEDTaskTypeProperties().isEmpty()) {
+                td.getSEDTaskTypeProperties().addAll(tproc.getTaskDefinition().getSEDTaskTypeProperties());              
             }
             return td;
         } catch (NamingException ex) {

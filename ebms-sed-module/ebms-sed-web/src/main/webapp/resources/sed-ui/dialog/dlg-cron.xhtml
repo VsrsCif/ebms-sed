@@ -13,15 +13,19 @@
     <composite:implementation >      
         <!-- Cron ADD/EDIT dialog! -->
         <p:dialog   header="#{msg['SEDCronDialog']}" widgetVar="cronDialog" modal="true" hideEffect="fade" 
-                    resizable="false" appendTo="@(body)" width="650" >
+                    resizable="false" appendTo="@(body)" width="750" >
             <h:form id="cronDialogForm">
-                <p:layout id="cronJob" style="min-width:550px;height:380px;">
+                <p:layout id="cronJob" style="min-width:650px;height:380px;">
                     <p:layoutUnit position="center" rendered="#{empty adminSEDCronJobView.editable}" >
                         <h:outputText value="#{msg['SelectTableRow']}" />
                     </p:layoutUnit>
                     <p:layoutUnit  header="Cron data" position="center" rendered="#{not empty adminSEDCronJobView.editable}"  >
                         <p:panelGrid  columns="2" columnClasses="label,value" style="width:100%; height: 220px ">
 
+                            <h:outputText value="#{msg['Name']}:" />
+                            <p:inputText id="cname" value="#{adminSEDCronJobView.editable.name}" style="width: 120px"  />
+
+                            
                             <h:outputText value="#{msg['Active']}:" />
                             <h:selectBooleanCheckbox id="cActive" value="#{adminSEDCronJobView.editable.active}"  />
 
@@ -73,7 +77,14 @@
                             <p:column headerText="#{msg['Value']}">
                                 <p:cellEditor>
                                     <f:facet name="output"><h:outputText value="#{sp.value}" /></f:facet>
-                                    <f:facet name="input"><p:inputText value="#{sp.value}" /></f:facet>
+                                    <f:facet name="input">
+                                        <p:inputText  value="#{sp.value}" />
+                                        <!-- p:inputText rendered="#{adminSEDCronJobView.getTypeForEditableTaskProperty(sp.key)  eq 'string' }" value="#{sp.value}" />
+                                        <p:selectBooleanCheckbox rendered="#{adminSEDCronJobView.getTypeForEditableTaskProperty(sp.key)  eq 'boolean' }" value="#{sp.value}" />
+                                        <p:spinner rendered="#{adminSEDCronJobView.getTypeForEditableTaskProperty(sp.key)  eq 'int' }" value="#{sp.value}" / -->
+                                        
+                                        
+                                    </f:facet>
                                 </p:cellEditor>
 
                             </p:column>

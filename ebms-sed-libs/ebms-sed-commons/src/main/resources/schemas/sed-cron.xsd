@@ -41,6 +41,11 @@ Copyright 2015, Supreme Court Republic of Slovenia
 				<xs:documentation>Job id</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
+                <xs:attribute name="name" type="xs:string">
+			<xs:annotation>
+				<xs:documentation>Is task active</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 		<xs:attribute name="active" type="xs:boolean">
 			<xs:annotation>
 				<xs:documentation>Is task active</xs:documentation>
@@ -164,6 +169,32 @@ Copyright 2015, Supreme Court Republic of Slovenia
 		</xs:attribute>
 		<xs:attribute name="description"/>
 		<xs:attribute name="mandatory" type="xs:boolean" default="false"/>
+		<xs:attribute name="type" default="string">
+			<xs:simpleType>
+				<xs:restriction base="xs:token">
+					<xs:maxLength value="16"/>
+					<xs:enumeration value="boolean"/>
+					<xs:enumeration value="string"/>
+					<xs:enumeration value="list"/>
+					<xs:enumeration value="int"/>
+					<xs:enumeration value="date"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="valueList">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:maxLength value="1024"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="valueFormat">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:maxLength value="512"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
 	</xs:complexType>
 	<xs:complexType name="SEDTaskExecution">
 		<xs:annotation>

@@ -45,6 +45,22 @@
                                 <span class="ui-separator">
                                     <span class="ui-icon ui-icon-grip-dotted-vertical " />
                                 </span>
+                                <p:commandButton value="#{msg['Export']}" styleClass="toolbar-Button"  
+                                                 rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_OUTBOX)}" 
+                                                 icon="ui-icon-sed-save"
+                                                 
+                                                 update=":dlgExportOutData:exportOutDataDialogForm"
+                                                 oncomplete="PF('exportOutDataDialog').show()"/>
+                                
+                                <p:commandButton value="#{msg['Export']}" styleClass="toolbar-Button"  
+                                                 rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_INBOX)}" 
+                                                 icon="ui-icon-sed-save"                                                 
+                                                 update=":dlgExportInData:exportInDataDialogForm"
+                                                 oncomplete="PF('exportInDataDialog').show()"/>
+
+                                <span class="ui-separator">
+                                    <span class="ui-icon ui-icon-grip-dotted-vertical " />
+                                </span>
                                 <p:commandButton value="#{msg['New']}" styleClass="toolbar-Button"  
                                                  rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_OUTBOX)}" 
                                                  icon="ui-icon-sed-resend"
@@ -232,7 +248,7 @@
                                     <c:forEach items="#{adminSEDPluginView.list}" var="plg">
                                         <p:menuitem value="#{plg.name}" 
                                                     actionListener="#{adminSEDPluginView.onSelectedViewPluginAction}"                                                     
-                                                     update="forms:MainPanel" >
+                                                    update="forms:MainPanel" >
                                             <f:attribute name="panel" value="PANEL_PLUGIN" />
                                             <f:attribute name="pluginItem" value="#{plg}" />
                                         </p:menuitem>
@@ -287,6 +303,8 @@
             <dlg:dlg-user id="dlguser" />
             <dlg:dlg-cron id="dlgcron" />
             <dlg:dlg-plugin id="dlgPlugin" />
+            <dlg:dlg-export-outdata id="dlgExportOutData" />
+            <dlg:dlg-export-indata id="dlgExportInData" />
 
 
         </h:body>

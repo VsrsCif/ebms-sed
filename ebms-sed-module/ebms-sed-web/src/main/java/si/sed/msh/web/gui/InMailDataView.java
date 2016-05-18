@@ -68,6 +68,7 @@ public class InMailDataView extends AbstractMailView<MSHInMail, MSHInEvent> impl
 
     public void setUserSessionData(UserSessionData messageBean) {
         this.userSessionData = messageBean;
+        
     }
 
     public UserSessionData getUserSessionData() {
@@ -122,6 +123,7 @@ public class InMailDataView extends AbstractMailView<MSHInMail, MSHInEvent> impl
     public List<SEDInboxMailStatus> getInStatuses(){
         return Arrays.asList(SEDInboxMailStatus.values());
     }
+    
     
 
 }

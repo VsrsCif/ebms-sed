@@ -30,7 +30,7 @@ public interface SEDLookupsInterface {
     boolean addSEDTaskType(SEDTaskType sb);
     boolean addSEDUser(SEDUser sb);
     
-    void exportLookups(File f);
+    void exportLookups(File f, boolean saveCertPasswords);
     
     SEDBox getSEDBoxByName(String strname);
     SEDCertStore getSEDCertStoreByCertAlias(String alias, boolean isKey);

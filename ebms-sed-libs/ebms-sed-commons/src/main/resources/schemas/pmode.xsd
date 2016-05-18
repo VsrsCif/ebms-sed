@@ -220,13 +220,15 @@
 			</xs:element>
 			<xs:element name="TLS" minOccurs="0">
 				<xs:complexType>
-					<xs:attribute name="keyStorePath" use="optional"/>
+                                        <xs:attribute name="trustCertAlias" use="required"/>
+                                        <xs:attribute name="keyAlias" use="optional"/>
+					<!--xs:attribute name="keyStorePath" use="optional"/>
 					<xs:attribute name="keyStoreType" use="optional" default="JKS"/>
 					<xs:attribute name="keyStorePassword" use="optional"/>
 					<xs:attribute name="keyPassword" use="optional"/>
 					<xs:attribute name="trustStorePath" use="required"/>
 					<xs:attribute name="trustStoreType" use="optional" default="JKS"/>
-					<xs:attribute name="trustStorePassword" use="required"/>
+					<xs:attribute name="trustStorePassword" use="required"/ -->
 				</xs:complexType>
 			</xs:element>
 			<xs:element name="Proxy" minOccurs="0">

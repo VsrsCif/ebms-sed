@@ -179,35 +179,13 @@ public class PModeManager {
                     if (ltrg.getProtocol().getTLS() == null) {
                         ltrg.getProtocol().setTLS(new Protocol.TLS());
                     }
-                    if (isEmpty(ltrg.getProtocol().getTLS().getKeyStorePassword())
-                            && !isEmpty(ltmp.getProtocol().getTLS().getKeyStorePassword())) {
-                        ltrg.getProtocol().getTLS().setKeyStorePassword(ltmp.getProtocol().getTLS().getKeyStorePassword());
+                    if (isEmpty(ltrg.getProtocol().getTLS().getKeyAlias())
+                            && !isEmpty(ltmp.getProtocol().getTLS().getKeyAlias())) {
+                        ltrg.getProtocol().getTLS().setKeyAlias(ltmp.getProtocol().getTLS().getKeyAlias());
                     }
-                    if (isEmpty(ltrg.getProtocol().getTLS().getKeyPassword())
-                            && !isEmpty(ltmp.getProtocol().getTLS().getKeyPassword())) {
-                        ltrg.getProtocol().getTLS().setKeyPassword(ltmp.getProtocol().getTLS().getKeyPassword());
-                    }
-
-                    if (isEmpty(ltrg.getProtocol().getTLS().getKeyStorePath())
-                            && !isEmpty(ltmp.getProtocol().getTLS().getKeyStorePath())) {
-                        ltrg.getProtocol().getTLS().setKeyStorePath(ltmp.getProtocol().getTLS().getKeyStorePath());
-                    }
-                    if (isEmpty(ltrg.getProtocol().getTLS().getKeyStoreType())
-                            && !isEmpty(ltmp.getProtocol().getTLS().getKeyStoreType())) {
-                        ltrg.getProtocol().getTLS().setKeyStoreType(ltmp.getProtocol().getTLS().getKeyStoreType());
-                    }
-
-                    if (isEmpty(ltrg.getProtocol().getTLS().getTrustStorePassword())
-                            && !isEmpty(ltmp.getProtocol().getTLS().getTrustStorePassword())) {
-                        ltrg.getProtocol().getTLS().setTrustStorePassword(ltmp.getProtocol().getTLS().getTrustStorePassword());
-                    }
-                    if (isEmpty(ltrg.getProtocol().getTLS().getTrustStorePath())
-                            && !isEmpty(ltmp.getProtocol().getTLS().getTrustStorePath())) {
-                        ltrg.getProtocol().getTLS().setTrustStorePath(ltmp.getProtocol().getTLS().getTrustStorePath());
-                    }
-                    if (isEmpty(ltrg.getProtocol().getTLS().getTrustStoreType())
-                            && !isEmpty(ltmp.getProtocol().getTLS().getTrustStoreType())) {
-                        ltrg.getProtocol().getTLS().setTrustStoreType(ltmp.getProtocol().getTLS().getTrustStoreType());
+                    if (isEmpty(ltrg.getProtocol().getTLS().getTrustCertAlias())
+                            && !isEmpty(ltmp.getProtocol().getTLS().getTrustCertAlias())) {
+                        ltrg.getProtocol().getTLS().setTrustCertAlias(ltmp.getProtocol().getTLS().getTrustCertAlias());
                     }
 
                 }
