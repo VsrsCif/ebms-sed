@@ -42,6 +42,7 @@ import si.sed.commons.SEDSystemProperties;
 import si.sed.commons.SEDValues;
 import si.sed.commons.utils.PModeManager;
 import si.sed.commons.utils.SEDLogger;
+import si.sed.commons.utils.Utils;
 
 
 /**
@@ -72,6 +73,7 @@ public class MSHExecutionBean implements MessageListener {
         try {
             long t = mlog.logStart();
             String command = msg.getStringProperty(SEDValues.EXEC_COMMAND);
+            command = Utils.replaceProperties(command);
             String param = msg.getStringProperty(SEDValues.EXEC_PARAMS);
             
             ProcessBuilder builder = new ProcessBuilder(command ,  param);
