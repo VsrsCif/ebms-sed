@@ -57,7 +57,6 @@ public class DBSettings implements DBSettingsInterface {
     protected SEDLogger mlog = new SEDLogger(DBSettings.class);
     final protected Properties mprpProperties = newProperties();
 
-
     protected TimerTask mRefreshTask;
     protected Timer mtTimer = new Timer(true);
 
@@ -74,10 +73,6 @@ public class DBSettings implements DBSettingsInterface {
 
     protected static final String S_PROP_SED_DOMAIN = "sed.domain";
     protected static final String S_PROP_SED_DOMAIN_DEF = "sed-domain.org";
-    
-    
-    
-
 
     public DBSettings() {
         this.mRefreshTask = new TimerTask() {
@@ -92,7 +87,7 @@ public class DBSettings implements DBSettingsInterface {
     private void startup() {
         refreshData();
         initialize();
-      //  mtTimer.scheduleAtFixedRate(mRefreshTask, m_iRefreshInterval, m_iRefreshInterval);
+        //  mtTimer.scheduleAtFixedRate(mRefreshTask, m_iRefreshInterval, m_iRefreshInterval);
 
     }
 
@@ -100,7 +95,7 @@ public class DBSettings implements DBSettingsInterface {
         long l = mlog.logStart();
         //----------------------------------
         // SEDProperty
-        
+
         List<SEDProperty> lst = getSEDProperties();
         synchronized (mprpProperties) {
             mprpProperties.clear();
@@ -119,8 +114,8 @@ public class DBSettings implements DBSettingsInterface {
                 }
             }
         }
-       mlog.logEnd(l);
-     }
+        mlog.logEnd(l);
+    }
 
     @Override
     public void initialize() {
@@ -147,8 +142,8 @@ public class DBSettings implements DBSettingsInterface {
     public String getPModeFileName() {
         return getData(SEDSystemProperties.SYS_PROP_PMODE);
     }
-    
-     @Lock(LockType.READ)
+
+    @Lock(LockType.READ)
     @Override
     public String getDomain() {
         return getData(S_PROP_SED_DOMAIN);
@@ -319,18 +314,18 @@ public class DBSettings implements DBSettingsInterface {
     public Properties getProperties() {
         return mprpProperties;
     }
+
     @Override
-    public List<SEDProperty> getSEDProperties(){
+    public List<SEDProperty> getSEDProperties() {
         TypedQuery<SEDProperty> q = getEntityManager().createNamedQuery("SEDProperty.getAll", SEDProperty.class);
         return q.getResultList();
     }
-    
-    
-    @Override 
-    public void setSEDProperties(List<SEDProperty> prps){
-        if (prps!=null && !prps.isEmpty()) {
-            for (SEDProperty sp: prps){
-                setData(sp.getKey(), sp.getValue(),sp.getGroup());
+
+    @Override
+    public void setSEDProperties(List<SEDProperty> prps) {
+        if (prps != null && !prps.isEmpty()) {
+            for (SEDProperty sp : prps) {
+                setData(sp.getKey(), sp.getValue(), sp.getGroup());
             }
         }
     }

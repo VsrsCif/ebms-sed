@@ -1,8 +1,20 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+* Copyright 2015, Supreme Court Republic of Slovenia 
+*
+* Licensed under the EUPL, Version 1.1 or – as soon they will be approved by 
+* the European Commission - subsequent versions of the EUPL (the "Licence");
+* You may not use this work except in compliance with the Licence.
+* You may obtain a copy of the Licence at:
+*
+* https://joinup.ec.europa.eu/software/page/eupl
+*
+* Unless required by applicable law or agreed to in writing, software 
+* distributed under the Licence is distributed on an "AS IS" basis, WITHOUT 
+* WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the Licence for the specific language governing permissions and  
+* limitations under the Licence.
  */
+
 package si.sed.task;
 
 import java.io.File;
@@ -52,7 +64,7 @@ import si.sed.commons.utils.xml.XMLUtils;
 
 /**
  *
- * @author sluzba
+ * @author Jože Rihtaršič
  */
 @Stateless
 @Local(TaskExecutionInterface.class)
@@ -175,9 +187,17 @@ public class TaskArchive implements TaskExecutionInterface {
                 while (line != null) {
                     String data[] = line.split(":");
                     if (data[0].equals(MSHOutMail.class.getName())) {
-                        mdao.removeMail(MSHOutMail.class, MSHOutEvent.class, new BigInteger(data[1]));
+                        try {
+                            mdao.removeOutMail(new BigInteger(data[1]));
+                        } catch (StorageException ex) {
+                            LOG.logError(l, "Error removeing archived out mail: " + line , ex);
+                        }
                     } else if (data[0].equals(MSHInMail.class.getName())) {
-                        mdao.removeMail(MSHInMail.class, MSHInEvent.class, new BigInteger(data[1]));
+                        try {
+                            mdao.removeInMail(new BigInteger(data[1]));
+                        } catch (StorageException ex) {
+                            LOG.logError(l, "Error removeing archived out mail: " + line , ex);
+                        }
                     } else {
                         LOG.logError(0, "Unknown object: " + line, null);
                         continue;

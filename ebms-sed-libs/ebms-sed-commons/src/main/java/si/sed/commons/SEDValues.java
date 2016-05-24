@@ -39,4 +39,7 @@ public class SEDValues {
     public static String EXEC_COMMAND = "sed_exec_command";
     public static String EXEC_PARAMS = "sed_exec_params";
     
+    public static final String ENCODING_UTF8 = "UTF-8";
+    public static final String ENCODING_BASE64 = "base64";
+    
 }

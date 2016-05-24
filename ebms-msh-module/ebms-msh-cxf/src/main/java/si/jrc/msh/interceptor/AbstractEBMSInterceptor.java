@@ -22,8 +22,6 @@ import javax.naming.NamingException;
 import org.apache.cxf.binding.soap.SoapMessage;
 import org.apache.cxf.binding.soap.interceptor.AbstractSoapInterceptor;
 import org.apache.cxf.interceptor.Fault;
-import org.msh.ebms.inbox.mail.MSHInMail;
-import org.msh.ebms.outbox.mail.MSHOutMail;
 import si.sed.commons.SEDJNDI;
 import si.sed.commons.interfaces.DBSettingsInterface;
 import si.sed.commons.interfaces.SEDDaoInterface;
@@ -100,15 +98,8 @@ public abstract class AbstractEBMSInterceptor extends AbstractSoapInterceptor {
     @Override
     public abstract void handleMessage(SoapMessage t) throws Fault;
 
-    public void serializeMail(MSHOutMail mail, String userID, String applicationId, String pmodeId) {
-        
-        getDAO().serializeOutMail(mail, userID, applicationId, pmodeId);
-        
+    
 
-    }
-
-    public void serializeInMail(MSHInMail mail) {
-        getDAO().serializeInMail(mail);
-    }
+    
 
 }

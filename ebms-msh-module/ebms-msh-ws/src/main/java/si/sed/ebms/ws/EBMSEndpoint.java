@@ -150,10 +150,14 @@ public class EBMSEndpoint implements Provider<SOAPMessage> {
         mail.setStatusDate(dt);
         mail.setReceivedDate(dt);
 
-        // --------------------
-        // serialize data to db
-        
+        try {
+            // --------------------
+            // serialize data to db
+            
             mDB.setStatusToInMail(mail, SEDInboxMailStatus.RECEIVED, null);
+        } catch (StorageException ex) {
+             LOG.logError(l, "Error setting status ERROR to MSHInMail :'" + mail.getId() + "'!", ex);
+        }
          
             // serialize to file
             Export e = sb.getExport();

@@ -57,10 +57,10 @@ public class KeystoreUtils {
     public static final String SEC_MERLIN_TRUSTSTORE_ALIAS = "org.apache.ws.security.crypto.merlin.truststore.alias";
 
     protected final SEDLogger mlog = new SEDLogger(KeystoreUtils.class);
-    
+
     public static KeyStore getKeystore(SEDCertStore sc) throws SEDSecurityException {
         KeyStore keyStore = null;
-        try (FileInputStream fis = new FileInputStream(Utils.replaceProperties(sc.getFilePath()))){
+        try (FileInputStream fis = new FileInputStream(Utils.replaceProperties(sc.getFilePath()))) {
             keyStore = getKeystore(fis, sc.getType(), sc.getPassword().toCharArray());
         } catch (IOException ex) {
             throw new SEDSecurityException(SEDSecurityException.SEDSecurityExceptionCode.ReadWriteFileException, ex, "Read keystore from stream!" + ex.getMessage());
@@ -118,8 +118,54 @@ public class KeystoreUtils {
         }
         return rsaKey;
     }
-    
-    
+
+    public Key getPrivateKeyForX509Cert(List<SEDCertStore> lst, X509Certificate cert) throws SEDSecurityException {
+
+        // find alias
+        String alias = null;
+        Key k = null;
+        for (SEDCertStore cs : lst) {
+            KeyStore ks = getKeystore(cs);
+            // get alias for private key
+            alias = getPrivateKeyAliasForX509Cert(ks, cert);
+            if (alias != null) {
+                // get key password 
+                for (SEDCertificate c : cs.getSEDCertificates()) {
+                    if (c.getAlias().equals(alias)) {
+                        k = getPrivateKeyForAlias(ks, alias, c.getKeyPassword());
+                        if (k != null) {
+                            break;
+                        }
+                    }
+                }
+            }
+
+        }
+        return k;
+    }
+
+    public String getPrivateKeyAliasForX509Cert(KeyStore ks, X509Certificate cert) throws SEDSecurityException {
+
+        // find alias
+        String alias = null;
+        Enumeration<String> e;
+        try {
+            e = ks.aliases();
+            while (e.hasMoreElements()) {
+                String as = e.nextElement();
+                X509Certificate rsaCert = (X509Certificate) ks.getCertificate(as);
+                if (cert.equals(rsaCert) && ks.isKeyEntry(as)) {
+                    alias = as;
+                    break;
+                }
+            }
+
+        } catch (KeyStoreException ex) {
+            throw new SEDSecurityException(SEDSecurityException.SEDSecurityExceptionCode.CertificateException, ex, ex.getMessage());
+        }
+        return alias;
+
+    }
 
     public Key getPrivateKeyForX509Cert(KeyStore ks, X509Certificate cert, String psswd) throws SEDSecurityException {
 
@@ -147,9 +193,9 @@ public class KeystoreUtils {
     public X509Certificate getTrustedCertForAlias(KeyStore ks, String alias) throws SEDSecurityException {
         X509Certificate cert = null;
         try {
-            if (ks.isCertificateEntry(alias)) {
-                cert = (X509Certificate) ks.getCertificate(alias);
-            }
+
+            cert = (X509Certificate) ks.getCertificate(alias);
+
         } catch (KeyStoreException ex) {
             throw new SEDSecurityException(SEDSecurityException.SEDSecurityExceptionCode.CertificateException, ex, "Exception occured when retrieving: '" + alias + "' cert!");
         }
@@ -228,8 +274,7 @@ public class KeystoreUtils {
         signVerProperties.put(SEC_MERLIN_KEYSTORE_TYPE, cs.getType());
         return signVerProperties;
     }
-    
-    
+
     public KeyStore.PrivateKeyEntry getPrivateKeyEntryForAlias(String alias, SEDCertStore cs) throws SEDSecurityException {
 
         if (alias == null) {
@@ -238,7 +283,7 @@ public class KeystoreUtils {
 
         KeyStore.PrivateKeyEntry rsaKey = null;
         try {
-            for (SEDCertificate c: cs.getSEDCertificates()) {
+            for (SEDCertificate c : cs.getSEDCertificates()) {
                 if (c.isKeyEntry() && c.getAlias().equalsIgnoreCase(alias)) {
                     rsaKey = (KeyStore.PrivateKeyEntry) getKeystore(cs).getEntry(alias, new KeyStore.PasswordProtection(c.getKeyPassword().toCharArray()));
                     break;

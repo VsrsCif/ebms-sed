@@ -20,10 +20,7 @@ import si.sed.msh.web.abst.AbstractMailView;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
@@ -40,14 +37,15 @@ import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.SessionScoped;
 import javax.jms.JMSException;
 import javax.naming.NamingException;
-import org.msh.ebms.inbox.mail.MSHInMail;
 import org.msh.ebms.outbox.event.MSHOutEvent;
 import org.msh.ebms.outbox.mail.MSHOutMail;
 import org.msh.ebms.outbox.payload.MSHOutPart;
 import org.msh.ebms.outbox.payload.MSHOutPayload;
+import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.DefaultStreamedContent;
-import org.primefaces.model.DualListModel;
 import org.primefaces.model.StreamedContent;
+import org.primefaces.model.UploadedFile;
+import si.sed.commons.MimeValues;
 import si.sed.commons.SEDJNDI;
 
 import si.sed.commons.SEDOutboxMailStatus;
@@ -56,10 +54,8 @@ import si.sed.commons.exception.StorageException;
 import si.sed.commons.interfaces.JMSManagerInterface;
 import si.sed.commons.interfaces.SEDDaoInterface;
 import si.sed.commons.utils.HashUtils;
-import si.sed.commons.utils.ReflectUtils;
 import si.sed.commons.utils.SEDLogger;
 import si.sed.commons.utils.StorageUtils;
-import si.sed.commons.utils.StringFormater;
 import si.sed.commons.utils.Utils;
 import si.sed.msh.web.admin.AdminSEDUserView;
 
@@ -74,6 +70,7 @@ public class OutMailDataView extends AbstractMailView<MSHOutMail, MSHOutEvent> i
     private static final SEDLogger LOG = new SEDLogger(AdminSEDUserView.class);
      HashUtils mpHU = new HashUtils();
     StorageUtils msuStorageUtils = new StorageUtils();
+    MSHOutPart selectedNewOutMailAttachment ;
 
     MSHOutMail newOutMail;
     String newMailBody;
@@ -166,10 +163,14 @@ public class OutMailDataView extends AbstractMailView<MSHOutMail, MSHOutEvent> i
         }
     }
 
-    public void deleteSelectedMail() throws IOException {
+    public void deleteSelectedMail()  {
         if (this.mMail != null) {
 
-            mDB.setStatusToOutMail(this.mMail, SEDOutboxMailStatus.DELETED, "Manual deleted by " + getUserSessionData().getUser().getUserId());
+            try {
+                mDB.setStatusToOutMail(this.mMail, SEDOutboxMailStatus.DELETED, "Manual deleted by " + getUserSessionData().getUser().getUserId());
+            } catch (StorageException ex) {
+                Logger.getLogger(OutMailDataView.class.getName()).log(Level.SEVERE, null, ex);
+            }
 
         }
     }
@@ -197,13 +198,77 @@ public class OutMailDataView extends AbstractMailView<MSHOutMail, MSHOutEvent> i
     public void setNewOutMail(MSHOutMail newOutMail) {
         this.newOutMail = newOutMail;
     }
+    
+    public List<MSHOutPart> getNewOutMailAttachmentList() {
+        List<MSHOutPart> lst = new ArrayList<>();
+        if (getNewOutMail()!= null && getNewOutMail().getMSHOutPayload()!=null && !getNewOutMail().getMSHOutPayload().getMSHOutParts().isEmpty() ){
+            lst = getNewOutMail().getMSHOutPayload().getMSHOutParts();            
+        }
+        return lst;
+    }
+
+    public MSHOutPart getSelectedNewOutMailAttachment() {
+        return selectedNewOutMailAttachment;
+    }
+
+    public void setSelectedNewOutMailAttachment(MSHOutPart selectedNewOutMailAttachment) {
+        this.selectedNewOutMailAttachment = selectedNewOutMailAttachment;
+    }
+    
+    public void removeselectedNewOutMailAttachment() {
+        
+        if (selectedNewOutMailAttachment!= null &&getNewOutMail()!= null && getNewOutMail().getMSHOutPayload()!=null  ){
+            boolean bVal = getNewOutMail().getMSHOutPayload().getMSHOutParts().remove(selectedNewOutMailAttachment);
+            LOG.log("MSHOutPart removed staus: "  + bVal );
+            
+        }
+        
+    }
+    
+    public void handleNewOutMailAttachmentUpload(FileUploadEvent event) {
+        long l = LOG.logStart();
+        UploadedFile uf =  event.getFile();
+        StorageUtils su = new StorageUtils();
+        String fileName = uf.getFileName();
+        
+        if (getNewOutMail()== null){
+            LOG.logError(l, "Setting file to null composed mail!",null);
+            return;
+        }
+        if (getNewOutMail().getMSHOutPayload()== null){
+            getNewOutMail().setMSHOutPayload(new MSHOutPayload());
+        }
+        try {
+            File f = su.storeFile("att", fileName.substring(fileName.lastIndexOf(".")) , uf.getInputstream());
+            String name = fileName.substring(0, fileName.lastIndexOf("."));
+                    
+            MSHOutPart mp = new MSHOutPart();
+            mp.setDescription(name);
+            mp.setFilename(fileName);
+            mp.setName(name);
+            mp.setFilepath(StorageUtils.getRelativePath(f));
+            mp.setMimeType(MimeValues.getMimeTypeByFileName(fileName));
+            
+            String strMD5 = mpHU.getMD5Hash(f);
+            mp.setMd5(strMD5);
+            getNewOutMail().getMSHOutPayload().getMSHOutParts().add(mp);
+            
+            
+            
+            
+            
+            //FacesMessage message = new FacesMessage("Succesful", event.getFile().getFileName() + " is uploaded.");
+            //FacesContext.getCurrentInstance().addMessage(null, message);
+        } catch (StorageException | IOException | HashException ex) {
+            Logger.getLogger(OutMailDataView.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 
     public void sendComposedMail() {
         if (newOutMail != null) {
             try {
-                String recDomain = newOutMail.getReceiverEBox().substring(newOutMail.getReceiverEBox().indexOf("@") + 1).trim();
-                String sendDomain = newOutMail.getSenderEBox().substring(newOutMail.getSenderEBox().indexOf("@") + 1).trim();
-                String pmodeId = newOutMail.getService() + ":" + sendDomain + ":" + recDomain;
+                
+                String pmodeId = Utils.getPModeIdFromOutMail(newOutMail);
                 newOutMail.setReceiverName(newOutMail.getReceiverEBox());
                 newOutMail.setSenderName(newOutMail.getSenderEBox());
 
@@ -227,13 +292,17 @@ public class OutMailDataView extends AbstractMailView<MSHOutMail, MSHOutEvent> i
                     p.setFilename(fout.getName());
                 }
                 if (Utils.isEmptyString(p.getName())) {
-                    p.setName(p.getFilename().substring(p.getFilename().lastIndexOf(".")));
+                    p.setName(p.getFilename().substring(0, p.getFilename().lastIndexOf(".")));
                 }
 
-                newOutMail.setMSHOutPayload(new MSHOutPayload());
-                newOutMail.getMSHOutPayload().getMSHOutParts().add(p);
+                if (newOutMail.getMSHOutPayload() == null ){
+                    newOutMail.setMSHOutPayload(new MSHOutPayload());
+                }
+                
+                newOutMail.getMSHOutPayload().getMSHOutParts().add(0, p);
                 
                 newOutMail.setSubmittedDate(Calendar.getInstance().getTime());
+                
                 mDB.serializeOutMail(newOutMail, userSessionData.getUser().getUserId(), "ebms-sed-web", pmodeId);
             } catch (UnsupportedEncodingException | StorageException | HashException ex) {
                 LOG.logError(0, ex);

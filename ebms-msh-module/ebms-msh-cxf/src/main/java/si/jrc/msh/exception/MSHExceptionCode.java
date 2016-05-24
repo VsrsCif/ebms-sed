@@ -25,7 +25,8 @@ public enum MSHExceptionCode {
     EmptyMail("MSH:0001", "EmptyMail", "Empty Mail", 0),
     InvalidMail("MSH:0002", "InvalidMail", "Invalid mail! Errors: %s", 1),
     InvalidPModeId("MSH:0101", "InvalidPModeId", "PMode with id: %s not exists", 1),
-    InvalidPMode("MSH:0102", "InvalidPModeId", "Invalid PMode: %s. Error: %s", 2);
+    InvalidPMode("MSH:0102", "InvalidPModeId", "Invalid PMode: %s. Error: %s", 2),
+    SecuritySettingsException("MSH:0103", "SecuritySettingsException", "Invalid PMode: %s. Error: %s", 3);
 
     String code;
     String name;

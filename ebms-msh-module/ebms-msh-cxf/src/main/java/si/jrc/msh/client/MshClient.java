@@ -16,7 +16,6 @@
  */
 package si.jrc.msh.client;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -61,8 +60,6 @@ import si.jrc.msh.interceptor.EBMSLogOutInterceptor;
 import si.jrc.msh.interceptor.EBMSOutInterceptor;
 import si.sed.commons.utils.SEDLogger;
 
-import si.jrc.msh.utils.SvevUtils;
-import si.sed.commons.utils.Utils;
 import si.jrc.msh.interceptor.MSHPluginInInterceptor;
 import si.jrc.msh.interceptor.MSHPluginOutInterceptor;
 import si.sed.commons.SEDJNDI;
@@ -180,7 +177,9 @@ public class MshClient {
             http.setClient(httpClientPolicy);
 
             //cxfClient.getOutInterceptors().add(new LoggingOutInterceptor());
-        } catch (SEDSecurityException | IOException | GeneralSecurityException th) {
+        } catch (SEDSecurityException ex){
+            throw new MSHException(MSHExceptionCode.InvalidPMode, pmode.getId(), ex.getMessage());
+        }catch( IOException  th) {
             throw new MSHException(MSHExceptionCode.InvalidPMode, pmode.getId(), th.getMessage());
         } 
         
@@ -189,7 +188,7 @@ public class MshClient {
     }
 
     private  void setupTLS(Client client, Protocol.TLS tls)
-            throws FileNotFoundException, IOException, GeneralSecurityException, SEDSecurityException {
+            throws FileNotFoundException, IOException, SEDSecurityException {
         long l = mlog.logStart();
         
         HTTPConduit httpConduit = (HTTPConduit) client.getConduit();
@@ -197,27 +196,34 @@ public class MshClient {
 
         TLSClientParameters tlsCP = null;
 
-        if (tls.getKeyAlias()!= null && !tls.getKeyAlias().trim().isEmpty()) {
-            String keyAlias = tls.getKeyAlias().trim();
-            SEDCertStore scs =  getLookups().getSEDCertStoreByCertAlias(keyAlias, true);
-            SEDCertificate aliasCrt = null;
-            if( scs != null) {
-                for (SEDCertificate crt: scs.getSEDCertificates()){
+        if (tls.getClientKeyAlias()!= null && !tls.getClientKeyAlias().trim().isEmpty()) {
+            String keyAlias = tls.getClientKeyAlias().trim();
+            SEDCertStore scsKey =  getLookups().getSEDCertStoreByCertAlias(keyAlias, true);
+            SEDCertificate aliasKey = null;
+            if( scsKey != null) {
+                for (SEDCertificate crt: scsKey.getSEDCertificates()){
                     if(crt.isKeyEntry() &&  keyAlias.equals(crt.getAlias())) {
-                        aliasCrt = crt;
+                        aliasKey = crt;
                         break;
                     }
                 }
             }
-             if (scs ==null ||  aliasCrt==null){
+             if (scsKey ==null ||  aliasKey==null){
                  String msg = "Key for alias: '"+keyAlias+"' do not exists!";
                 mlog.logError( l, msg, null);
                throw new SEDSecurityException(SEDSecurityException.SEDSecurityExceptionCode.KeyForAliasNotExists, keyAlias);
             }
             
             tlsCP = tlsCP==null?new TLSClientParameters():tlsCP;
-            KeyStore keyStore = KeystoreUtils.getKeystore(scs);            
-            KeyManager[] myKeyManagers = getKeyManagers(keyStore, aliasCrt.getKeyPassword());
+            KeyStore keyStore = KeystoreUtils.getKeystore(scsKey);            
+            KeyManager[] myKeyManagers;
+            try {
+                myKeyManagers = getKeyManagers(keyStore, scsKey.getPassword());
+            } catch (GeneralSecurityException ex) {
+                String msg = "Error retrieving client Key for alias: '"+keyAlias+"'! Check alias/password in store!" + scsKey.getFilePath();
+                mlog.logError( l, msg, ex);
+               throw new SEDSecurityException(SEDSecurityException.SEDSecurityExceptionCode.KeyStoreException,ex,  msg);
+            }
             tlsCP.setKeyManagers(myKeyManagers);
         }
 
@@ -228,7 +234,14 @@ public class MshClient {
             SEDCertStore scs =  getLookups().getSEDCertStoreByCertAlias(trustAlias, false);
             
             KeyStore trustStore = KeystoreUtils.getKeystore(scs);            
-            TrustManager[] myTrustStoreKeyManagers = getTrustManagers(trustStore);
+            TrustManager[] myTrustStoreKeyManagers;
+            try {
+                myTrustStoreKeyManagers = getTrustManagers(trustStore);
+            } catch (NoSuchAlgorithmException | KeyStoreException ex) {
+                String msg = "Error retrieving trust cert for alias: '"+trustAlias+"'! Check alias or  store password for:!" + scs.getFilePath();
+                mlog.logError( l, msg, null);
+               throw new SEDSecurityException(SEDSecurityException.SEDSecurityExceptionCode.CertificateException,ex, msg);
+            }
             tlsCP.setTrustManagers(myTrustStoreKeyManagers);
             
             tlsCP.setDisableCNCheck(true);

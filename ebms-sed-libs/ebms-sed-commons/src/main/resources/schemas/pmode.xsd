@@ -221,7 +221,7 @@
 			<xs:element name="TLS" minOccurs="0">
 				<xs:complexType>
                                         <xs:attribute name="trustCertAlias" use="required"/>
-                                        <xs:attribute name="keyAlias" use="optional"/>
+                                        <xs:attribute name="clientKeyAlias" use="optional"/>
 					<!--xs:attribute name="keyStorePath" use="optional"/>
 					<xs:attribute name="keyStoreType" use="optional" default="JKS"/>
 					<xs:attribute name="keyStorePassword" use="optional"/>

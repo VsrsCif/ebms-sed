@@ -28,6 +28,7 @@ public class EbMSConstants {
     public static final String EBMS_FILE_PROPERTY_MIME = "mime";
     public static final String EBMS_FILE_PROPERTY_ENCODING = "encoding";
     public static final String EBMS_FILE_PROPERTY_TYPE = "type";
+    public static final String EBMS_FILE_PROPERTY_IS_ENCRYPTED = "isEnrypted";
 
     public static final String EBMS_CP_OUT_LOG_SOAP_MESSAGE_FILE = "si.jrc.outgoing.soap.message.file";
     public static final String EBMS_CP_IN_LOG_SOAP_MESSAGE_FILE = "si.jrc.incoming.soap.message.file";

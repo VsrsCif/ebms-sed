@@ -17,6 +17,8 @@
 package si.sed.commons.utils;
 
 import java.util.Random;
+import org.msh.ebms.inbox.mail.MSHInMail;
+import org.msh.ebms.outbox.mail.MSHOutMail;
 
 /**
  *
@@ -82,6 +84,23 @@ public class Utils {
         return strVal;
 
     }
+    
+     public static String getPModeIdFromInMail(MSHInMail mim) {
+        if (mim == null) {
+            return null;
+        }
+        return mim.getService()+":"+getDomainFromAddress(mim.getSenderEBox());        
+    }
+     
+     public static String getPModeIdFromOutMail(MSHOutMail mom) {
+        if (mom == null) {
+            return null;
+        }
+        return mom.getService()+":"+getDomainFromAddress(mom.getReceiverEBox());        
+    }
+    
+    
+    
 
     /**
      * Method is "borrowed" from org.jboss.util.StringPropertyReplacer; Go

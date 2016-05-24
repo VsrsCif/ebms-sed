@@ -8,12 +8,14 @@ package si.jrc.msh.utils;
 import si.sed.commons.utils.PModeManager;
 import java.util.ArrayList;
 import java.util.List;
+import javax.rmi.CORBA.Util;
 import org.msh.ebms.outbox.mail.MSHOutMail;
 import org.msh.ebms.outbox.payload.MSHOutPart;
 
 import org.msh.svev.pmode.PMode;
 import si.jrc.msh.exception.MSHException;
 import si.jrc.msh.exception.MSHExceptionCode;
+import si.sed.commons.utils.Utils;
 
 /**
  *
@@ -84,10 +86,9 @@ public class SvevUtils {
 
     public PMode getPModeForMail(MSHOutMail mail) throws MSHException {
         PMode pmd;
-
-        String targetDomain = mail.getReceiverEBox().substring(mail.getReceiverEBox().indexOf("@") + 1);
-        String sourceDomain = mail.getSenderEBox().substring(mail.getSenderEBox().indexOf("@") + 1);
-        String pmode = mail.getService() + ":" + sourceDomain + ":" + targetDomain;
+        
+        
+        String pmode = Utils.getPModeIdFromOutMail(mail);
         mpmd.reloadPModes();
         // check if exists targeted MSHOut with legal-delivery service
         pmd = mpmd.getPModeById(pmode);

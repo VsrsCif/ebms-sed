@@ -66,4 +66,8 @@
         <![CDATA[SELECT p FROM MSHInMail p where Id=:mailId and ReceiverEBox=:receiverEBox]]>
     </query>
     
+    <query name="org.msh.ebms.inbox.mail.MSHInMail.updateStatus" >
+        <![CDATA[UPDATE MSHInMail p set p.Status = :status, p.StatusDate=:statusDate where p.Id = :id]]>
+    </query>
+    
 </hibernate-mapping>

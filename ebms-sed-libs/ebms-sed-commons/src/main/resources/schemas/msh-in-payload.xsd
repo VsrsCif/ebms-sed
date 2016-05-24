@@ -136,6 +136,8 @@ Copyright 2015, Supreme Court Republic of Slovenia
                         </xs:restriction>
                     </xs:simpleType>
                 </xs:attribute>
+                <xs:attribute name="isEncrypted" type="xs:boolean" default="false" />
+                
             </xs:extension>
         </xs:simpleContent>
     </xs:complexType>

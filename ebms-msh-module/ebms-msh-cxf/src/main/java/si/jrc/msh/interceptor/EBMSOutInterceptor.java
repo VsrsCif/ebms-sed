@@ -1,7 +1,18 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+* Copyright 2015, Supreme Court Republic of Slovenia 
+*
+* Licensed under the EUPL, Version 1.1 or – as soon they will be approved by 
+* the European Commission - subsequent versions of the EUPL (the "Licence");
+* You may not use this work except in compliance with the Licence.
+* You may obtain a copy of the Licence at:
+*
+* https://joinup.ec.europa.eu/software/page/eupl
+*
+* Unless required by applicable law or agreed to in writing, software 
+* distributed under the Licence is distributed on an "AS IS" basis, WITHOUT 
+* WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the Licence for the specific language governing permissions and  
+* limitations under the Licence.
  */
 package si.jrc.msh.interceptor;
 
@@ -48,8 +59,8 @@ import si.jrc.msh.utils.EBMSUtils;
 import si.jrc.msh.client.sec.SimplePasswordCallback;
 import si.jrc.msh.exception.EBMSError;
 //import si.sed.commons.utils.sec.CertificateUtils;
-import si.jrc.msh.exception.ExceptionUtils;
-import si.jrc.msh.exception.SOAPExceptionCode;
+import si.sed.commons.exception.ExceptionUtils;
+import si.sed.commons.exception.SOAPExceptionCode;
 import si.sed.commons.exception.StorageException;
 import si.sed.commons.utils.StorageUtils;
 import si.sed.commons.utils.Utils;
@@ -57,7 +68,7 @@ import si.sed.commons.utils.sec.KeystoreUtils;
 
 /**
  *
- * @author sluzba
+ * @author Jože Rihtaršič
  */
 public class EBMSOutInterceptor extends AbstractEBMSInterceptor {
 

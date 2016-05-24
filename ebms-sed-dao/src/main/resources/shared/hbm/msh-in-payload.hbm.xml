@@ -18,6 +18,7 @@
         <property column="MIME_TYPE" name="MimeType"  length="128" type="java.lang.String" />
         <property column="ENCODING" name="Encoding"  length="128" type="java.lang.String" />
         <property column="MD5" name="Md5"  length="32" type="java.lang.String" />
+        <property column="IS_ENCRYPTED" name="IsEncrypted" type="java.lang.Boolean" />
     </class>    
     
 

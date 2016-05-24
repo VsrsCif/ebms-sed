@@ -60,15 +60,13 @@ import si.sed.commons.utils.xml.XMLUtils;
 public class SEDCrypto {
 
     private static final String ENC_SIMETRIC_KEY_ALG = XMLCipher.RSA_OAEP;
+
     static {
         org.apache.xml.security.Init.init();
     }
 
     public enum SymEncAlgorithms {
-        AES128_CBC("http://www.w3.org/2001/04/xmlenc#aes128-cbc", "AES", 128)
-       ,AES192_CBC("http://www.w3.org/2001/04/xmlenc#aes192-cbc", "AES",  192)
-       ,AES256_CBC("http://www.w3.org/2001/04/xmlenc#aes256-cbc", "AES",  256)
-        ;        
+        AES128_CBC("http://www.w3.org/2001/04/xmlenc#aes128-cbc", "AES", 128), AES192_CBC("http://www.w3.org/2001/04/xmlenc#aes192-cbc", "AES", 192), AES256_CBC("http://www.w3.org/2001/04/xmlenc#aes256-cbc", "AES", 256);
 
         private final String mstrW3_uri;
         private final String mstrJce_name;
@@ -84,8 +82,6 @@ public class SEDCrypto {
             return mstrJce_name;
         }
 
-       
-
         public String getURI() {
             return mstrW3_uri;
         }
@@ -96,7 +92,7 @@ public class SEDCrypto {
 
     }
 
-    public SEDCrypto() {       
+    public SEDCrypto() {
     }
 
     /**
@@ -203,7 +199,6 @@ public class SEDCrypto {
             throw new SEDSecurityException(SEDSecurityException.SEDSecurityExceptionCode.InvalidKey, ex, skey.getAlgorithm(), ex.getMessage());
         }
 
-
         try (CipherOutputStream cos = new CipherOutputStream(os, dcipher)) {
 
             byte[] block = new byte[1024];
@@ -243,7 +238,7 @@ public class SEDCrypto {
 
         XMLCipher keyCipher;
         try {
-            
+
             keyCipher = XMLCipher.getInstance(ENC_SIMETRIC_KEY_ALG);
         } catch (XMLEncryptionException ex) {
             throw new SEDSecurityException(SEDSecurityException.SEDSecurityExceptionCode.NoSuchAlgorithm, ex, ENC_SIMETRIC_KEY_ALG);
@@ -284,8 +279,8 @@ public class SEDCrypto {
         return XMLUtils.serializeToString(keyCipher.martial(encryptedKey), false);
 
     }
-    
-     public Element encryptedKeyWithReceiverPublicKey(Key key, X509Certificate rsaCert, String recipient, String keyId) throws SEDSecurityException {
+
+    public Element encryptedKeyWithReceiverPublicKey(Key key, X509Certificate rsaCert, String recipient, String keyId) throws SEDSecurityException {
 
         // create document factory
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -300,7 +295,7 @@ public class SEDCrypto {
 
         XMLCipher keyCipher;
         try {
-            
+
             keyCipher = XMLCipher.getInstance(ENC_SIMETRIC_KEY_ALG);
         } catch (XMLEncryptionException ex) {
             throw new SEDSecurityException(SEDSecurityException.SEDSecurityExceptionCode.NoSuchAlgorithm, ex, ENC_SIMETRIC_KEY_ALG);
@@ -343,7 +338,7 @@ public class SEDCrypto {
     }
 
     public Key decryptKey(String strKey, Key rsaKey, SymEncAlgorithms targetKeyAlg) throws SEDSecurityException {
-            
+
         Key keyDec = null;
         Document doc;
         try {
@@ -373,7 +368,6 @@ public class SEDCrypto {
         if (rsaKey == null){
             throw new SEDSecurityException(SEDSecurityException.SEDSecurityExceptionCode.CertificateException, "x.509 cert for decrypting Encrypted key not found");
         }*/
-        
 
         XMLCipher chDec;
         try {
@@ -389,11 +383,10 @@ public class SEDCrypto {
         return keyDec;
 
     }
-    
+
     public Key decryptEncryptedKey(Element elKey, Key rsaKey, SymEncAlgorithms targetKeyAlg) throws SEDSecurityException {
-            
+
         Key keyDec = null;
-    
 
         XMLCipher keyCipher;
         try {
@@ -416,7 +409,6 @@ public class SEDCrypto {
         if (rsaKey == null){
             throw new SEDSecurityException(SEDSecurityException.SEDSecurityExceptionCode.CertificateException, "x.509 cert for decrypting Encrypted key not found");
         }*/
-        
 
         XMLCipher chDec;
         try {
@@ -432,17 +424,36 @@ public class SEDCrypto {
         return keyDec;
 
     }
-    
-    public X509Certificate getCertificate(InputStream in) throws SEDSecurityException{
+
+    public X509Certificate getCertificate(InputStream in) throws SEDSecurityException {
         X509Certificate cert;
         try {
             CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
-            cert =  (X509Certificate)certFactory.generateCertificate(in);
+            cert = (X509Certificate) certFactory.generateCertificate(in);
         } catch (CertificateException ex) {
             throw new SEDSecurityException(SEDSecurityException.SEDSecurityExceptionCode.CertificateException, ex, ex.getMessage());
         }
         return cert;
-    
+
+    }
+
+    public EncryptedKey element2SimetricEncryptedKey(Element e) throws SEDSecurityException {
+
+        XMLCipher keyCipher;
+        try {
+            keyCipher = XMLCipher.getInstance(ENC_SIMETRIC_KEY_ALG);
+            keyCipher.init(XMLCipher.UNWRAP_MODE, null);
+        } catch (XMLEncryptionException ex) {
+            throw new SEDSecurityException(SEDSecurityException.SEDSecurityExceptionCode.NoSuchAlgorithm, ex, ENC_SIMETRIC_KEY_ALG);
+        }
+
+        EncryptedKey key;
+        try {
+            key = keyCipher.loadEncryptedKey(e.getOwnerDocument(), e);
+        } catch (XMLEncryptionException ex) {
+            throw new SEDSecurityException(SEDSecurityException.SEDSecurityExceptionCode.EncryptionException, ex, ex.getMessage());
+        }
+        return key;
     }
 
 }

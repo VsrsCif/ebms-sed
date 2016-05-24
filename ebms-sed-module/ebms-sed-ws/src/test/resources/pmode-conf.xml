@@ -100,7 +100,7 @@
 	<DuplicateDetection windowPeriode="P1Y"/>
 </ReceptionAwareness>
 	</PMode>
-	<PMode id="LegalDelivery_ZPP:sed-box.si:sed-box.si" extends="legal-delivery:sed-box">
+	<PMode id="LegalDelivery_ZPP:sed-box.si" extends="legal-delivery:sed-box">
 		<Agreement>www.sodisce.si</Agreement>
 		<Leg>
 			<BusinessInfo>
@@ -108,7 +108,7 @@
 			</BusinessInfo>
 		</Leg>
 	</PMode>
-        <PMode id="TEST_SERVICE:sed-box.si:sed-box.si" extends="legal-delivery:sed-box">
+        <PMode id="TEST_SERVICE:sed-box.si" extends="legal-delivery:sed-box">
 		<Agreement>www.sodisce.si</Agreement>
 		<Leg>
 			<BusinessInfo>

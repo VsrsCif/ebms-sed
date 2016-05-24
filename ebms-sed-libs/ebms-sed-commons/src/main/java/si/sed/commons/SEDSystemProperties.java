@@ -100,15 +100,6 @@ public class SEDSystemProperties {
      */
     public static final String SYS_PROP_CERT_DEF = "security-conf.properties";
 
-    /**
-     * Default value for keystore and trustore pasword file name.
-     *
-     * <p>
-     * If system property is not given, absolute file to pmode file
-     * ${SYS_PROP_HOME_DIR}/pmode-conf.xml
-     * </p>
-     */
-    public static final String SYS_KEY_PASSWD_DEF = "key-passwords.properties";
 
     /**
      * System property for out qeue workers.

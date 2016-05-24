@@ -11,6 +11,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.Local;
 import javax.ejb.Stateless;
 import org.msh.ebms.inbox.mail.MSHInMail;
@@ -19,6 +21,7 @@ import org.sed.ebms.cron.SEDTaskType;
 import org.sed.ebms.report.SEDReportBoxStatus;
 import org.sed.ebms.report.Status;
 import si.sed.commons.SEDInboxMailStatus;
+import si.sed.commons.exception.StorageException;
 import si.sed.commons.interfaces.TaskExecutionInterface;
 import si.sed.commons.interfaces.exception.TaskException;
 import si.sed.task.filter.InMailFilter;
@@ -73,26 +76,25 @@ public class TaskEmailInboxMailReport extends TaskEmailReport {
         InMailFilter miFilter = new InMailFilter();
         miFilter.setStatus(mailStatus);
         if (bNewOnly){
-            SEDTaskExecution te =  mdao.getLastSuccesfullTaskExecution(getTaskDefinition().getType());
+            SEDTaskExecution te = null;
+            try {
+                te = mdao.getLastSuccesfullTaskExecution(getTaskDefinition().getType());
+            } catch (StorageException ex) {
+                LOG.logWarn(0, "ERROR reading task execution", ex);
+            }
             if (te!=null){
                 miFilter.setReceivedDateFrom(recTo);
                 miFilter.setReceivedDateTo(Calendar.getInstance().getTime());
             }
         }
         
-        
-        
-        
         List<MSHInMail> lstInMail = mdao.getDataList(MSHInMail.class, -1, -1, "Id", "ASC", miFilter);
         if (lstInMail.isEmpty()) {
-            
             return null;
         }
         
-        
-        
         StringWriter swBody = new StringWriter();
-        swBody.append("Dohodna pošta za predal:: ");
+        swBody.append("Dohodna pošta za predal: ");
         swBody.append(sedbox);
         swBody.append("\nDate: ");
         swBody.append(SDF_DD_MM_YYY_HH_MI.format(Calendar.getInstance().getTime()));

@@ -18,6 +18,8 @@ import si.sed.commons.interfaces.PluginDescriptionInterface;
 @Stateless
 @Local(PluginDescriptionInterface.class)
 public class ZPPPluginDescription implements PluginDescriptionInterface{
+    
+  
 
     @Override
     public String getSettingUrlContext() {
@@ -41,7 +43,7 @@ public class ZPPPluginDescription implements PluginDescriptionInterface{
 
     @Override
     public String getType() {
-        return "LegalZPP";
+        return ZPPConstants.S_ZPP_PLUGIN_TYPE;
     }
 
     @Override

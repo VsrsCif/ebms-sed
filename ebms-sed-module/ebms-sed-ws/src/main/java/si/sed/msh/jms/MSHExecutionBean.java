@@ -63,10 +63,6 @@ public class MSHExecutionBean implements MessageListener {
     PModeManager mpModeManager = new PModeManager();
 
 
-   
-
-    public MSHExecutionBean() {
-    }
 
     @Override
     public void onMessage(Message msg) {

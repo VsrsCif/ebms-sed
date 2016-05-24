@@ -132,8 +132,12 @@
                                          value="#{InMailDataView.currentMail.MSHInPayload.MSHInParts}"
                                          scrollable="true"
                                      scrollHeight="135">
+                                
                                 <p:column width="60" headerText="#{msg['Id']}">
                                     <h:outputText value="#{plpart.id}" />
+                                </p:column>
+                                <p:column width="60" headerText="#{msg['Encrypted']}">
+                                    <h:outputText value="#{plpart.isEncrypted}" />
                                 </p:column>
                                 <p:column width="60" headerText="#{msg['Download']}">
                                     <p:commandButton ajax="false" value="#{msg['Download']}"

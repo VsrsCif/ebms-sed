@@ -1,5 +1,8 @@
-<PModes xmlns="http://svev.msh.org/pmode" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://svev.msh.org/pmode Z:\sluzba\code\SVEV2.0\ebms-sed\ebms-sed-libs\ebms-sed-commons\src\main\resources\schemas\pmode.xsd">
-	<PMode id="DeliveryWithReceipt:sed-court.si:sed-bk.si" isTemplate="false">
+<?xml version="1.0" encoding="UTF-8"?>
+<PModes xmlns="http://svev.msh.org/pmode" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://svev.msh.org/pmode
+ Z:\sluzba\code\SVEV2.0\ebms-sed\ebms-sed-libs\ebms-sed-commons\src\main\resources\schemas\pmode.xsd">
+	<PMode id="DeliveryWithReceipt:sed-court.si" isTemplate="false">
 		<Agreement>BankaKoper:VrhovnoSodisce:00001</Agreement>
 		<MEP>http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/oneWay</MEP>
 		<MEPbinding>http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/push</MEPbinding>
@@ -11,30 +14,29 @@
 		</Responder>
 		<Leg type="fore-channel">
 			<Protocol>
-				<Address chunked="false" connectionTimeout="120000" receiveTimeout="180000">https://193.41.35.99:8443/ebms-sed/ebms?wsdl</Address>
-				<TLS trustStorePath="${sed.home}/security/ssl-truststore.jks" trustStorePassword="sed1234" />
-				<Proxy port="80" host="proxy.gov.si" />
+				<Address chunked="false" connectionTimeout="120000" receiveTimeout="180000">https://b2g-test.sodisce.si/ebms-sed/ebms?wsdl</Address>
+				<TLS trustCertAlias="b2g-test.sodisce.si"  clientKeyAlias="client-user"  />
 			</Protocol>
 			<BusinessInfo>
 				<Service>DeliveryWithReceipt</Service>
 				<Action direction="out">Delivery</Action>
-				<PayloadProfiles maxSize="10000000" action="Delivery">
+				<PayloadProfiles action="Delivery" maxSize="10000000">
 					<PayloadProfile name="Content" required="true"/>
 				</PayloadProfiles>
 				<MPC>http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/defaultMPC</MPC>
 			</BusinessInfo>
 			<Security WSSVersion="1.1">
 				<X509>
-					<Signature hashFunction="http://www.w3.org/2001/04/xmlenc#sha256" algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha512">
+					<Signature algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha512" hashFunction="http://www.w3.org/2001/04/xmlenc#sha256">
 						<Certificate alias="msh.e-box-a.si"/>
-						<Sign signAttachments="true" signElements="true" signCertAlias="msh.e-box-a.si">
+						<Sign signAttachments="true" signCertAlias="msh.e-box-a.si" signElements="true">
 							<Elements>
 								<XPath xpath="env:Body">
-									<Namespace prefix="env" namespace="http://www.w3.org/2003/05/soap-envelope"/>
+									<Namespace namespace="http://www.w3.org/2003/05/soap-envelope" prefix="env"/>
 								</XPath>
 								<XPath xpath="env:Header/eb3:Messaging">
-									<Namespace prefix="eb3" namespace="http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/"/>
-									<Namespace prefix="env" namespace="http://www.w3.org/2003/05/soap-envelope"/>
+									<Namespace namespace="http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/" prefix="eb3"/>
+									<Namespace namespace="http://www.w3.org/2003/05/soap-envelope" prefix="env"/>
 								</XPath>
 							</Elements>
 						</Sign>
@@ -43,11 +45,11 @@
 			</Security>
 		</Leg>
 		<ReceptionAwareness>
-			<Retry maxRetries="5" period="2000" multiplyPeriod="3"/>
+			<Retry maxRetries="5" multiplyPeriod="3" period="2000"/>
 			<DuplicateDetection windowPeriode="P1Y"/>
 		</ReceptionAwareness>
 	</PMode>
-	<PMode id="DeliveryWithReceipt:sed-court.si:sed-court.si" isTemplate="false">
+	<PMode id="DeliveryWithReceipt:sed-bk.si" isTemplate="false">
 		<Agreement>BankaKoper:00001</Agreement>
 		<MEP>http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/oneWay</MEP>
 		<MEPbinding>http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/push</MEPbinding>
@@ -59,28 +61,29 @@
 		</Responder>
 		<Leg type="fore-channel">
 			<Protocol>
-				<Address chunked="false" connectionTimeout="120000" receiveTimeout="180000">http://localhost:8080/ebms-sed/ebms?wsdl</Address>
+			
+				<Address chunked="false" connectionTimeout="120000" receiveTimeout="180000">http://localhost:8080/ebms-sed/ebms?wsdl</Address>				
 			</Protocol>
 			<BusinessInfo>
 				<Service>DeliveryWithReceipt</Service>
 				<Action direction="out">Delivery</Action>
-				<PayloadProfiles maxSize="10000000" action="Delivery">
+				<PayloadProfiles action="Delivery" maxSize="10000000">
 					<PayloadProfile name="Content" required="true"/>
 				</PayloadProfiles>
 				<MPC>http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/defaultMPC</MPC>
 			</BusinessInfo>
 			<Security WSSVersion="1.1">
 				<X509>
-					<Signature hashFunction="http://www.w3.org/2001/04/xmlenc#sha256" algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha512">
+					<Signature algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha512" hashFunction="http://www.w3.org/2001/04/xmlenc#sha256">
 						<Certificate alias="msh.e-box-a.si"/>
-						<Sign signAttachments="true" signElements="true" signCertAlias="msh.e-box-a.si">
+						<Sign signAttachments="true" signCertAlias="msh.e-box-a.si" signElements="true">
 							<Elements>
 								<XPath xpath="env:Body">
-									<Namespace prefix="env" namespace="http://www.w3.org/2003/05/soap-envelope"/>
+									<Namespace namespace="http://www.w3.org/2003/05/soap-envelope" prefix="env"/>
 								</XPath>
 								<XPath xpath="env:Header/eb3:Messaging">
-									<Namespace prefix="eb3" namespace="http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/"/>
-									<Namespace prefix="env" namespace="http://www.w3.org/2003/05/soap-envelope"/>
+									<Namespace namespace="http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/" prefix="eb3"/>
+									<Namespace namespace="http://www.w3.org/2003/05/soap-envelope" prefix="env"/>
 								</XPath>
 							</Elements>
 						</Sign>
@@ -89,11 +92,68 @@
 			</Security>
 		</Leg>
 		<ReceptionAwareness>
-			<Retry maxRetries="5" period="2000" multiplyPeriod="3"/>
+			<Retry maxRetries="5" multiplyPeriod="3" period="2000"/>
 			<DuplicateDetection windowPeriode="P1Y"/>
 		</ReceptionAwareness>
 	</PMode>
-	<PMode id="LegalDelivery_ZPP:sed-court.si:sed-court.si" isTemplate="false">
+	
+	<PMode id="LegalDelivery_ZPP:sed-court.si" isTemplate="false">
+		<Agreement>VrhovnoSodisce:00002</Agreement>
+		<MEP>http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/oneWay</MEP>
+		<MEPbinding>http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/push</MEPbinding>
+		<Initiator>
+			<Role>si-svev:sender</Role>
+		</Initiator>
+		<Responder>
+			<Role>si-svev:receiver</Role>
+		</Responder>
+		<Leg type="fore-channel">
+			<Protocol>
+				<Address chunked="false" connectionTimeout="120000" receiveTimeout="180000">https://b2g-test.sodisce.si/ebms-sed/ebms?wsdl</Address>
+				<TLS trustCertAlias="b2g-test.sodisce.si" clientKeyAlias="client-user"/>
+			</Protocol>
+			<BusinessInfo>
+				<Service inPlugin="java:global/plugin-zpp/ZPPInInterceptor!si.sed.commons.interfaces.SoapInterceptorInterface" outPlugin="java:global/plugin-zpp/ZPPOutInterceptor!si.sed.commons.interfaces.SoapInterceptorInterface">LegalDelivery_ZPP</Service>
+				<Action direction="out">DeliveryNotification</Action>
+				<Action after="DeliveryNotification" direction="out">FictionNotification</Action>
+				<Action after="DeliveryNotification" direction="in">AdviceOfDelivery</Action>
+				<PayloadProfiles action="DeliveryNotification" maxSize="10000000">
+					<PayloadProfile MIME="application/pdf" name="DeliveryNotification" required="true"/>
+					<PayloadProfile name="Content" required="true"/>
+				</PayloadProfiles>
+				<PayloadProfiles action="AdviceOfDelivery" maxSize="10000000">
+					<PayloadProfile MIME="application/pdf" name="AdviceOfDelivery" required="true"/>
+				</PayloadProfiles>
+				<PayloadProfiles action="FictionNotification" maxSize="10000000">
+					<PayloadProfile MIME="application/pdf" name="FictionNotification" required="true"/>
+				</PayloadProfiles>
+				<MPC>http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/defaultMPC</MPC>
+			</BusinessInfo>
+			<Security WSSVersion="1.1">
+				<X509>
+					<Signature algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha512" hashFunction="http://www.w3.org/2001/04/xmlenc#sha256">
+						<Certificate alias="msh.e-box-a.si"/>
+						<Sign signAttachments="true" signCertAlias="msh.e-box-a.si" signElements="true">
+							<Elements>
+								<XPath xpath="env:Body">
+									<Namespace namespace="http://www.w3.org/2003/05/soap-envelope" prefix="env"/>
+								</XPath>
+								<XPath xpath="env:Header/eb3:Messaging">
+									<Namespace namespace="http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/" prefix="eb3"/>
+									<Namespace namespace="http://www.w3.org/2003/05/soap-envelope" prefix="env"/>
+								</XPath>
+							</Elements>
+						</Sign>
+					</Signature>
+				</X509>
+			</Security>
+		</Leg>
+		<ReceptionAwareness>
+			<Retry maxRetries="5" multiplyPeriod="3" period="2000"/>
+			<DuplicateDetection windowPeriode="P1Y"/>
+		</ReceptionAwareness>
+	</PMode>
+	<PMode id="LegalDelivery_ZPP:sed-bk.si" isTemplate="false">
 		<Agreement>BankaKoper:00002</Agreement>
 		<MEP>http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/oneWay</MEP>
 		<MEPbinding>http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/push</MEPbinding>
@@ -106,37 +166,37 @@
 		<Leg type="fore-channel">
 			<Protocol>
 				<Address chunked="false" connectionTimeout="120000" receiveTimeout="180000">http://localhost:8080/ebms-sed/ebms?wsdl</Address>
+				
 			</Protocol>
 			<BusinessInfo>
-				<Service outPlugin="java:global/plugin-zpp/ZPPOutInterceptor!si.sed.commons.interfaces.SoapInterceptorInterface" 
-                                          inPlugin="java:global/plugin-zpp/ZPPInInterceptor!si.sed.commons.interfaces.SoapInterceptorInterface">LegalDelivery_ZPP</Service>
+				<Service inPlugin="java:global/plugin-zpp/ZPPInInterceptor!si.sed.commons.interfaces.SoapInterceptorInterface" outPlugin="java:global/plugin-zpp/ZPPOutInterceptor!si.sed.commons.interfaces.SoapInterceptorInterface">LegalDelivery_ZPP</Service>
 				<Action direction="out">DeliveryNotification</Action>
-				<Action direction="out" after="DeliveryNotification">FictionNotification</Action>
-				<Action direction="in" after="DeliveryNotification">AdviceOfDelivery</Action>
-				<PayloadProfiles maxSize="10000000" action="DeliveryNotification">
+				<Action after="DeliveryNotification" direction="out">FictionNotification</Action>
+				<Action after="DeliveryNotification" direction="in">AdviceOfDelivery</Action>
+				<PayloadProfiles action="DeliveryNotification" maxSize="10000000">
 					<PayloadProfile MIME="application/pdf" name="DeliveryNotification" required="true"/>
 					<PayloadProfile name="Content" required="true"/>
 				</PayloadProfiles>
-				<PayloadProfiles maxSize="10000000" action="AdviceOfDelivery">
+				<PayloadProfiles action="AdviceOfDelivery" maxSize="10000000">
 					<PayloadProfile MIME="application/pdf" name="AdviceOfDelivery" required="true"/>
 				</PayloadProfiles>
-				<PayloadProfiles maxSize="10000000" action="FictionNotification">
+				<PayloadProfiles action="FictionNotification" maxSize="10000000">
 					<PayloadProfile MIME="application/pdf" name="FictionNotification" required="true"/>
 				</PayloadProfiles>
 				<MPC>http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/defaultMPC</MPC>
 			</BusinessInfo>
 			<Security WSSVersion="1.1">
 				<X509>
-					<Signature hashFunction="http://www.w3.org/2001/04/xmlenc#sha256" algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha512">
+					<Signature algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha512" hashFunction="http://www.w3.org/2001/04/xmlenc#sha256">
 						<Certificate alias="msh.e-box-a.si"/>
-						<Sign signAttachments="true" signElements="true" signCertAlias="msh.e-box-a.si">
+						<Sign signAttachments="true" signCertAlias="msh.e-box-a.si" signElements="true">
 							<Elements>
 								<XPath xpath="env:Body">
-									<Namespace prefix="env" namespace="http://www.w3.org/2003/05/soap-envelope"/>
+									<Namespace namespace="http://www.w3.org/2003/05/soap-envelope" prefix="env"/>
 								</XPath>
 								<XPath xpath="env:Header/eb3:Messaging">
-									<Namespace prefix="eb3" namespace="http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/"/>
-									<Namespace prefix="env" namespace="http://www.w3.org/2003/05/soap-envelope"/>
+									<Namespace namespace="http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/" prefix="eb3"/>
+									<Namespace namespace="http://www.w3.org/2003/05/soap-envelope" prefix="env"/>
 								</XPath>
 							</Elements>
 						</Sign>
@@ -145,63 +205,7 @@
 			</Security>
 		</Leg>
 		<ReceptionAwareness>
-			<Retry maxRetries="5" period="2000" multiplyPeriod="3"/>
-			<DuplicateDetection windowPeriode="P1Y"/>
-		</ReceptionAwareness>
-	</PMode>
-	<PMode id="LegalDelivery_ZPP:sed-bk.si:sed-court.si" isTemplate="false">
-		<Agreement>BankaKoper:VrhovnoSodisce:00002</Agreement>
-		<MEP>http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/oneWay</MEP>
-		<MEPbinding>http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/push</MEPbinding>
-		<Initiator>
-			<Role>si-svev:sender</Role>
-		</Initiator>
-		<Responder>
-			<Role>si-svev:receiver</Role>
-		</Responder>
-		<Leg type="fore-channel">
-			<Protocol>
-<Address chunked="false" connectionTimeout="120000" receiveTimeout="180000">https://b2g-test.sodisce.si/ebms-sed/ebms?wsdl</Address>
-				<TLS trustStorePath="${sed.home}/security/ssl-truststore.jks" trustStorePassword="sed1234" keyStorePath="${sed.home}/security/banka-koper.p12" keyStoreType="PKCS12" keyStorePassword="test1234" keyPassword="test1234"/>
-			</Protocol>
-			<BusinessInfo>
-				<Service outPlugin="ebms-sed-zpp-plugin-1.0.jar!si.jrc.msh.plugin.zpp.ZPPOutInterceptor" inPlugin="ebms-sed-zpp-plugin-1.0.jar!si.jrc.msh.plugin.zpp.ZPPInInterceptor">LegalDelivery_ZPP</Service>
-				<Action direction="out">DeliveryNotification</Action>
-				<Action direction="out" after="DeliveryNotification">FictionNotification</Action>
-				<Action direction="in" after="DeliveryNotification">AdviceOfDelivery</Action>
-				<PayloadProfiles maxSize="10000000" action="DeliveryNotification">
-					<PayloadProfile MIME="application/pdf" name="DeliveryNotification" required="true"/>
-					<PayloadProfile name="Content" required="true"/>
-				</PayloadProfiles>
-				<PayloadProfiles maxSize="10000000" action="AdviceOfDelivery">
-					<PayloadProfile MIME="application/pdf" name="AdviceOfDelivery" required="true"/>
-				</PayloadProfiles>
-				<PayloadProfiles maxSize="10000000" action="FictionNotification">
-					<PayloadProfile MIME="application/pdf" name="FictionNotification" required="true"/>
-				</PayloadProfiles>
-				<MPC>http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/defaultMPC</MPC>
-			</BusinessInfo>
-			<Security WSSVersion="1.1">
-				<X509>
-					<Signature hashFunction="http://www.w3.org/2001/04/xmlenc#sha256" algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha512">
-						<Certificate alias="msh.e-box-a.si"/>
-						<Sign signAttachments="true" signElements="true" signCertAlias="msh.e-box-a.si">
-							<Elements>
-								<XPath xpath="env:Body">
-									<Namespace prefix="env" namespace="http://www.w3.org/2003/05/soap-envelope"/>
-								</XPath>
-								<XPath xpath="env:Header/eb3:Messaging">
-									<Namespace prefix="eb3" namespace="http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/"/>
-									<Namespace prefix="env" namespace="http://www.w3.org/2003/05/soap-envelope"/>
-								</XPath>
-							</Elements>
-						</Sign>
-					</Signature>
-				</X509>
-			</Security>
-		</Leg>
-		<ReceptionAwareness>
-			<Retry maxRetries="5" period="2000" multiplyPeriod="3"/>
+			<Retry maxRetries="5" multiplyPeriod="3" period="2000"/>
 			<DuplicateDetection windowPeriode="P1Y"/>
 		</ReceptionAwareness>
 	</PMode>

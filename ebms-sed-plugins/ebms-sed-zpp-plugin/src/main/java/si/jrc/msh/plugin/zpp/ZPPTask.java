@@ -209,11 +209,12 @@ public class ZPPTask implements TaskExecutionInterface {
             mInMail.setStatus(SEDInboxMailStatus.PROCESS.getValue());
             mInMail.setStatusDate(Calendar.getInstance().getTime());
 //           
-            mDB.updateInMail(mInMail, "DeliveryAdviceGenerated and submited to sender");
+            mDB.updateInMail(mInMail, "DeliveryAdviceGenerated and submited to sender", null);
 
-        } catch (IOException | SEDSecurityException ex) {
+        } catch (IOException | SEDSecurityException | StorageException ex) {
             LOG.logError(l, ex);
-        }
+        } 
+        
         LOG.logEnd(l);
     }
 

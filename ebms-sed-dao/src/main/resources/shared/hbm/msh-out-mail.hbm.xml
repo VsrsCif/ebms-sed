@@ -61,5 +61,8 @@
     <query name="org.msh.ebms.outbox.mail.MSHOutMail.getByMessageIdAndSenderBox" ><![CDATA[SELECT p FROM MSHOutMail p WHERE p.SenderMessageId = :sndMsgId and SenderEBox = :senderBox]]></query>
     <query name="org.msh.ebms.outbox.mail.MSHOutMail.getList" ><![CDATA[SELECT p FROM MSHOutMail p ]]></query>
     
+    <query name="org.msh.ebms.outbox.mail.MSHOutMail.updateStatus" >
+        <![CDATA[UPDATE MSHOutMail p set p.Status = :status, p.StatusDate=:statusDate where p.Id = :id]]>
+    </query>
 
 </hibernate-mapping>

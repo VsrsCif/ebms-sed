@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Properties;
 import si.sed.commons.interfaces.SEDSchedulerInterface;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
@@ -33,9 +35,11 @@ import org.sed.ebms.cron.SEDTaskType;
 
 import si.sed.commons.SEDJNDI;
 import si.sed.commons.SEDTaskStatus;
+import si.sed.commons.exception.StorageException;
 import si.sed.commons.interfaces.SEDDaoInterface;
 import si.sed.commons.interfaces.SEDLookupsInterface;
 import si.sed.commons.interfaces.TaskExecutionInterface;
+import si.sed.commons.interfaces.exception.TaskException;
 
 /**
  *
@@ -80,12 +84,20 @@ public class MSHScheduler implements SEDSchedulerInterface {
     @Timeout
     @Override
     public void timeout(Timer timer) {
+        long l = LOG.logStart();
+
         BigInteger bi = (BigInteger) (timer.getInfo());
         SEDTaskExecution te = new SEDTaskExecution();
         te.setCronId(bi);
         te.setStatus(SEDTaskStatus.INIT.getValue());
         te.setStartTimestamp(Calendar.getInstance().getTime());
-        mdbDao.addExecutionTask(te);
+
+        try {
+            mdbDao.addExecutionTask(te);
+        } catch (StorageException ex) {
+            LOG.logEnd(l, "Error storing task: '" + te.getType() + "' ", ex);
+            return;
+        }
 
         // get cron job
         SEDCronJob mj = mdbLookups.getSEDCronJobById(bi);
@@ -96,7 +108,11 @@ public class MSHScheduler implements SEDSchedulerInterface {
             te.setStatus(SEDTaskStatus.ERROR.getValue());
             te.setResult(String.format("Task cron id:  %d  not active!", bi));
             te.setEndTimestamp(Calendar.getInstance().getTime());
-            mdbDao.updateExecutionTask(te);
+            try {
+                mdbDao.updateExecutionTask(te);
+            } catch (StorageException ex) {
+                LOG.logEnd(l, "Error updating task: '" + te.getType() + "' ", ex);
+            }
             return;
         }
         SEDTaskType tt = mdbLookups.getSEDTaskTypeByType(mj.getSEDTask().getTaskType());
@@ -108,7 +124,11 @@ public class MSHScheduler implements SEDSchedulerInterface {
             te.setStatus(SEDTaskStatus.ERROR.getValue());
             te.setResult(String.format("Error getting taskexecutor: %s. ERROR: %s", tt.getJndi(), ex.getMessage()));
             te.setEndTimestamp(Calendar.getInstance().getTime());
-            mdbDao.updateExecutionTask(te);
+            try {
+                mdbDao.updateExecutionTask(te);
+            } catch (StorageException ex2) {
+                LOG.logEnd(l, "Error updating task: '" + te.getType() + "' ", ex2);
+            }
             return;
         }
         Properties p = new Properties();
@@ -119,7 +139,12 @@ public class MSHScheduler implements SEDSchedulerInterface {
         }
 
         te.setStatus(SEDTaskStatus.PROGRESS.getValue());
-        mdbDao.updateExecutionTask(te);
+        try {
+            mdbDao.updateExecutionTask(te);
+        } catch (StorageException ex2) {
+            LOG.logEnd(l, "Error updating task: '" + te.getType() + "' ", ex2);
+            return;
+        }
 
         try {
             String result = tproc.executeTask(p);
@@ -127,15 +152,26 @@ public class MSHScheduler implements SEDSchedulerInterface {
             te.setResult(result);
             te.setEndTimestamp(Calendar.getInstance().getTime());
 
-            mdbDao.updateExecutionTask(te);
-        } catch (Exception ex) {
+            try {
+                mdbDao.updateExecutionTask(te);
+            } catch (StorageException ex2) {
+                LOG.logEnd(l, "Error updating task: '" + te.getType() + "' ", ex2);
+                return;
+            }
+        } catch (TaskException ex) {
 
             te.setStatus(SEDTaskStatus.ERROR.getValue());
             te.setResult(String.format("TASK ERROR: %s. Err. desc: %s", tt.getJndi(), ex.getMessage()));
             te.setEndTimestamp(Calendar.getInstance().getTime());
-            mdbDao.updateExecutionTask(te);
+            LOG.logEnd(l, "Error updating task: '" + te.getType() + "' ", ex);
+            try {
+                mdbDao.updateExecutionTask(te);
+            } catch (StorageException ex2) {
+                LOG.logEnd(l, "Error updating task: '" + te.getType() + "' ", ex2);
+                return;
+            }
         }
-
+        LOG.logEnd(l);
     }
 
     private void checkTest() {

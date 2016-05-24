@@ -39,6 +39,7 @@ import si.sed.commons.utils.SEDLogger;
 import si.sed.commons.SEDGUIConstants;
 import si.sed.commons.SEDJNDI;
 import si.sed.commons.interfaces.SEDDaoInterface;
+import si.sed.commons.interfaces.SEDLookupsInterface;
 
 @SessionScoped
 @ManagedBean(name = "loginManager")
@@ -53,8 +54,8 @@ public class LoginManager {
     private String mstrPassword = "";
     private String mstrForwardUrl;
 
-    @EJB(mappedName = SEDJNDI.JNDI_SEDDAO)
-    SEDDaoInterface mSedDB;
+    @EJB(mappedName = SEDJNDI.JNDI_SEDLOOKUPS)
+    SEDLookupsInterface mSedLookup;
 
     public String getUsername() {
         return mstrUsername;
@@ -125,7 +126,7 @@ public class LoginManager {
             String userName = getUsername().trim();
             request.login(userName, getPassword().trim());
 
-            SEDUser user = mSedDB.getSEDUser(userName);
+            SEDUser user = mSedLookup.getSEDUserByUserId(userName);
             if (user == null) {
                 String msg = "User '" + userName + "' is not reqistred in ebms-sed";
                 mLog.logWarn(l, getClientIP() + " msg: " + msg, null);

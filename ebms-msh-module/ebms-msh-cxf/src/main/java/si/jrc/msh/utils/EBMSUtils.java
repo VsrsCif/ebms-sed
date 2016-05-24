@@ -72,7 +72,7 @@ public class EBMSUtils {
     public SignalMessage generateErrorSignal(EBMSError ebError, String senderDomain, Date timestamp) {
         SignalMessage sigMsg = new SignalMessage();
         // generate  MessageInfo
-        sigMsg.setMessageInfo(createMessageInfo(senderDomain, ebError.getRefToMessage(),timestamp));
+        sigMsg.setMessageInfo(createMessageInfo(senderDomain, ebError.getRefToMessage(), timestamp));
 
         // get references
         org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.Error er = new org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.Error();
@@ -88,15 +88,13 @@ public class EBMSUtils {
         return sigMsg;
     }
 
-
-
     public SignalMessage generateAS4ReceiptSignal(UserMessage userMessage, String senderDomain, File inboundMail, Date timestamp) {
         SignalMessage sigMsg = new SignalMessage();
         try (FileInputStream fos = new FileInputStream(inboundMail);
                 InputStream isXSLT = getClass().getResourceAsStream("/xslt/soap2AS4Receipt.xsl")) {
 
             // add message infof
-            sigMsg.setMessageInfo(createMessageInfo(senderDomain, userMessage.getMessageInfo().getMessageId(),timestamp));
+            sigMsg.setMessageInfo(createMessageInfo(senderDomain, userMessage.getMessageInfo().getMessageId(), timestamp));
             // generate receipt
             Receipt rcp = new Receipt();
             // generate as4 receipt from xslt
@@ -144,7 +142,7 @@ public class EBMSUtils {
     }
 
     private MessageInfo createMessageInfo(String senderDomain, String refToMessage, Date timestamp) {
-        return createMessageInfo(UUID.randomUUID().toString(), senderDomain, refToMessage,timestamp);
+        return createMessageInfo(UUID.randomUUID().toString(), senderDomain, refToMessage, timestamp);
     }
 
     private MessageInfo createMessageInfo(String msgId, String senderDomain, String refToMessage, Date timestamp) {
@@ -164,7 +162,7 @@ public class EBMSUtils {
         // UserMessage usgMsg = new UserMessage();
         // --------------------------------------
         // generate  MessageInfo 
-        MessageInfo mi = createMessageInfo(mo.getMessageId(), senderDomain, mo.getRefToMessageId(),timestamp);
+        MessageInfo mi = createMessageInfo(mo.getMessageId(), senderDomain, mo.getRefToMessageId(), timestamp);
         usgMsg.setMessageInfo(mi);
 
         // generate from 
@@ -176,7 +174,7 @@ public class EBMSUtils {
         // add sender id
         PartyId piFrom = new PartyId();
         piFrom.setType(EbMSConstants.EBMS_PARTY_TYPE_NAME);
-        piFrom.setValue(mo.getSenderName() == null || mo.getSenderName().isEmpty()?mo.getSenderEBox():mo.getSenderName());
+        piFrom.setValue(mo.getSenderName() == null || mo.getSenderName().isEmpty() ? mo.getSenderEBox() : mo.getSenderName());
         usgMsg.getPartyInfo().getFrom().getPartyIds().add(piFrom);
         piFrom = new PartyId();
         piFrom.setType(EbMSConstants.EBMS_PARTY_TYPE_EBOX);
@@ -187,7 +185,7 @@ public class EBMSUtils {
         usgMsg.getPartyInfo().getTo().setRole(pm.getResponder().getRole()); // get from p-mode
         PartyId piTo = new PartyId();
         piTo.setType(EbMSConstants.EBMS_PARTY_TYPE_NAME);
-        piTo.setValue(mo.getReceiverName() == null || mo.getReceiverName().isEmpty()?mo.getReceiverEBox():mo.getReceiverName());
+        piTo.setValue(mo.getReceiverName() == null || mo.getReceiverName().isEmpty() ? mo.getReceiverEBox() : mo.getReceiverName());
         usgMsg.getPartyInfo().getTo().getPartyIds().add(piTo);
         piTo = new PartyId();
         piTo.setType(EbMSConstants.EBMS_PARTY_TYPE_EBOX);
@@ -283,6 +281,10 @@ public class EBMSUtils {
                     fp.setValue(mp.getType());
                     fileProp.add(fp);
                 }
+                Property fp = new Property();
+                fp.setName(EbMSConstants.EBMS_FILE_PROPERTY_IS_ENCRYPTED);
+                fp.setValue(mp.getIsEncrypted()?"true":"false");
+                fileProp.add(fp);
 
                 if (!fileProp.isEmpty()) {
                     pl.setPartProperties(new PartProperties());
@@ -447,6 +449,9 @@ public class EBMSUtils {
                                     break;
                                 case EbMSConstants.EBMS_FILE_PROPERTY_TYPE:
                                     part.setType(p.getValue());
+                                    break;
+                                    case EbMSConstants.EBMS_FILE_PROPERTY_IS_ENCRYPTED:
+                                    part.setIsEncrypted(p.getValue()!= null && p.getValue().equalsIgnoreCase("true"));
                                     break;
                                 default:
                                     mlog.logWarn(l, "Unknown part property: '" + p.getName() + "' for message: '" + mshmail.getMessageId() + "' ", null);

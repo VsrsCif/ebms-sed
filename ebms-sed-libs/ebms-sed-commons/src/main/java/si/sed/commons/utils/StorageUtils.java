@@ -69,7 +69,7 @@ public class StorageUtils {
     }
 
     public File storeOutFile(String mimeType, File fIn) throws StorageException {
-        if (fIn.exists()) {
+        if (!fIn.exists()) {
             throw new StorageException(String.format("File in message: '%s' not exists ", fIn.getAbsolutePath()));
         }
         File fStore = getNewStorageFile(S_OUT_PREFIX, MimeValues.getSuffixBYMimeType(mimeType));

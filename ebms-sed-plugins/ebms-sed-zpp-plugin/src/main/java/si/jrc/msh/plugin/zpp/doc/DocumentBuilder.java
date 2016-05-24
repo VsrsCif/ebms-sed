@@ -27,7 +27,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import si.sed.commons.exception.SEDSecurityException;
 import si.sed.commons.utils.StorageUtils;
-import si.sed.commons.utils.sec.CertificateUtils;
 import si.sed.commons.utils.sec.XMLSignatureUtils;
 
 /**

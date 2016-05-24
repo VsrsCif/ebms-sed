@@ -12,7 +12,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.security.Key;
 import java.security.KeyStore;
+import java.security.KeyStoreException;
 import java.security.cert.X509Certificate;
+import java.util.Enumeration;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.crypto.SecretKey;
@@ -20,7 +22,8 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import si.sed.commons.SEDSystemProperties;
 import si.sed.commons.exception.SEDSecurityException;
-import si.sed.commons.utils.sec.CertificateUtils;
+import si.sed.commons.utils.sec.KeystoreUtils;
+import static si.sed.commons.utils.sec.KeystoreUtils.getKeystore;
 
 /**
  *
@@ -32,10 +35,9 @@ public class SEDCryptoTest {
     private File mfSecretFile;
     private static final String KEYSTORE_TYPE = "JKS";
     private static final String KEYSTORE_PASSWORD = "test1234";
+    private static final String KEY_PASSWORD = "key1234";
     private static final String KEYSTORE = "/certs/msh.e-box-b-keystore.jks";
-    private static final String TRUSTSTORE_TYPE = "JKS";
-    private static final String TRUSTSORE_PASSWORD = "test1234";
-    private static final String TRUSTSORE = "/certs/msh.e-box-a-truststore.jks";
+
     private static final String SIGN_KEY_ALIAS = "msh.e-box-b.si";
 
     public SEDCryptoTest() {
@@ -51,7 +53,6 @@ public class SEDCryptoTest {
         }
         // set store key password parameters
         System.getProperties().setProperty(SEDSystemProperties.SYS_PROP_HOME_DIR, "src/test/resources/certs");
-        System.getProperties().setProperty(SEDSystemProperties.SYS_KEY_PASSWD_DEF, "key-passwords.properties");
 
     }
 
@@ -80,6 +81,7 @@ public class SEDCryptoTest {
 
     /**
      * Test of encrypt and decrypt file with class SEDCrypto.
+     *
      * @throws java.io.IOException
      * @throws si.sed.commons.exception.SEDSecurityException
      */
@@ -95,22 +97,36 @@ public class SEDCryptoTest {
         fDec.deleteOnExit();
 
         SEDCrypto instance = new SEDCrypto();
-        CertificateUtils cu = CertificateUtils.getInstance();
+        KeystoreUtils cu = new KeystoreUtils();
 
         // generate key
         SecretKey skey = instance.getKey(alg);
         // encrypt file
         instance.encryptFile(mfSecretFile, fEnc, skey);
-        //encrypt key
+
+        KeyStore ks = KeystoreUtils.getKeystore(SEDCryptoTest.class.getResourceAsStream(KEYSTORE), KEYSTORE_TYPE, KEYSTORE_PASSWORD.toCharArray());
+        Enumeration<String> lst;
+        try {
+            lst = ks.aliases(); //encrypt keywhile (lst.hasMoreElements()){
+            
+            while (lst.hasMoreElements()) {
+                System.out.println("Alias: " + lst.nextElement());
+            }
+     
+        } catch (KeyStoreException ex) {
+            Logger.getLogger(SEDCryptoTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        System.out.println("GOT keystore " + ks);
         // sign key cert
-        X509Certificate ca = cu.getTrustedCertForAlias(SIGN_KEY_ALIAS);
-        assertNotNull("Initialize error: cert with alias: '" + SIGN_KEY_ALIAS + "' not found in trustore: '" + TRUSTSORE + "'!", ca);
+        X509Certificate ca = cu.getTrustedCertForAlias(ks, SIGN_KEY_ALIAS);
+        assertNotNull("Initialize error: cert with alias: '" + SIGN_KEY_ALIAS + "' not found in trustore: '" + KEYSTORE + "'!", ca);
         // enc key
         String encKey = instance.encryptKeyWithReceiverPublicKey(skey, ca, "receiver@test.sign.com", "key-id");
         assertNotNull("Encrypting key not succeded!", encKey);
 
         // Decrypting key
-        KeyStore.PrivateKeyEntry ke = cu.getPrivateKeyEntryForAlias(SIGN_KEY_ALIAS);
+        KeyStore.PrivateKeyEntry ke = cu.getPrivateKeyEntryForAlias(ks, SIGN_KEY_ALIAS, KEY_PASSWORD);
         Key decKey = instance.decryptKey(encKey, ke.getPrivateKey(), alg);
         assertNotNull("Decrypting key not succeded!", decKey);
 

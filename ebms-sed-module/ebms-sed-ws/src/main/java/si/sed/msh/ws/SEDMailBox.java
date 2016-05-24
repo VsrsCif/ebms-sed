@@ -110,6 +110,7 @@ import si.sed.commons.utils.PModeManager;
 import si.sed.commons.utils.SEDLogger;
 import si.sed.commons.utils.StorageUtils;
 import si.sed.commons.utils.Utils;
+import static si.sed.commons.utils.Utils.getDomainFromAddress;
 import si.sed.msh.ws.utils.SEDRequestUtils;
 
 /**
@@ -1146,15 +1147,15 @@ public class SEDMailBox implements SEDMailBoxWS {
         if (SEDRequestUtils.isValidMailAddress(mail.getSenderEBox())) {
             throw SEDRequestUtils.createSEDException("Invalid format: SenderEBox", SEDExceptionCode.INVALID_DATA);
         }
+        
+     
 
-        // get pmode
-        String recDomain = mail.getReceiverEBox().substring(mail.getReceiverEBox().indexOf("@") + 1).trim();
-        String sendDomain = mail.getSenderEBox().substring(mail.getSenderEBox().indexOf("@") + 1).trim();
-        String pmodeId = mail.getService() + ":" + sendDomain + ":" + recDomain;
+        // get pmode       
+        String pmodeId =   mail.getService()+":"+getDomainFromAddress(mail.getReceiverEBox());     ;
 
         pm = mpModeManager.getPModeById(pmodeId);
         if (pm == null) {
-            throw SEDRequestUtils.createSEDException(String.format("PMode '%s' not exist! Check PMode configuration. (pmodeId=[service:senderDomain:receiverDomain])", pmodeId), SEDExceptionCode.INVALID_DATA);
+            throw SEDRequestUtils.createSEDException(String.format("PMode '%s' not exist! Check PMode configuration. (pmodeId=[service:receiverDomain])", pmodeId), SEDExceptionCode.INVALID_DATA);
         }
         return pm;
     }

@@ -179,9 +179,9 @@ public class PModeManager {
                     if (ltrg.getProtocol().getTLS() == null) {
                         ltrg.getProtocol().setTLS(new Protocol.TLS());
                     }
-                    if (isEmpty(ltrg.getProtocol().getTLS().getKeyAlias())
-                            && !isEmpty(ltmp.getProtocol().getTLS().getKeyAlias())) {
-                        ltrg.getProtocol().getTLS().setKeyAlias(ltmp.getProtocol().getTLS().getKeyAlias());
+                    if (isEmpty(ltrg.getProtocol().getTLS().getClientKeyAlias())
+                            && !isEmpty(ltmp.getProtocol().getTLS().getClientKeyAlias())) {
+                        ltrg.getProtocol().getTLS().setClientKeyAlias(ltmp.getProtocol().getTLS().getClientKeyAlias());
                     }
                     if (isEmpty(ltrg.getProtocol().getTLS().getTrustCertAlias())
                             && !isEmpty(ltmp.getProtocol().getTLS().getTrustCertAlias())) {

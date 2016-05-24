@@ -58,9 +58,7 @@ public class MEPSPluginData  {
         return SEDSystemProperties.SYS_PROP_CERT_DEF;
     }
 
-    public String getKeyPasswordFilename() {
-        return SEDSystemProperties.SYS_KEY_PASSWD_DEF;
-    }
+
 
     public String getPluginsFolder() {
         return SEDSystemProperties.SYS_PROP_FOLDER_PLUGINS_DEF;
