@@ -6,20 +6,15 @@
 package si.sed.task;
 
 import java.io.StringWriter;
-import java.math.BigInteger;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.ejb.Local;
 import javax.ejb.Stateless;
 import org.msh.ebms.inbox.mail.MSHInMail;
 import org.sed.ebms.cron.SEDTaskExecution;
 import org.sed.ebms.cron.SEDTaskType;
-import org.sed.ebms.report.SEDReportBoxStatus;
-import org.sed.ebms.report.Status;
 import si.sed.commons.SEDInboxMailStatus;
 import si.sed.commons.exception.StorageException;
 import si.sed.commons.interfaces.TaskExecutionInterface;
@@ -96,13 +91,18 @@ public class TaskEmailInboxMailReport extends TaskEmailReport {
         StringWriter swBody = new StringWriter();
         swBody.append("Dohodna pošta za predal: ");
         swBody.append(sedbox);
-        swBody.append("\nDate: ");
+        swBody.append(System.lineSeparator());
+        swBody.append("Date: ");
         swBody.append(SDF_DD_MM_YYY_HH_MI.format(Calendar.getInstance().getTime()));
-        
-        swBody.append("\n\nSeznam dohodne pošte za prevzem (do 500 pošiljk): \n");
-        swBody.append("St pošiljk: '" + lstInMail.size() + "' \n");
+        swBody.append(System.lineSeparator());
+        swBody.append(System.lineSeparator());
+        swBody.append("Seznam dohodne pošte za prevzem (do 500 pošiljk): ");
+        swBody.append(System.lineSeparator());
+        swBody.append("St pošiljk: '" + lstInMail.size() + "' ");
+        swBody.append(System.lineSeparator());
         sw.append("In mail size: " + lstInMail.size());
-        swBody.append("st., id, dat  prejema, transakcija ID, Storitev, Akcija, Pošiljatelj, Opis\n");
+        swBody.append("st., id, dat  prejema, transakcija ID, Storitev, Akcija, Pošiljatelj, Opis");
+        swBody.append(System.lineSeparator());
         int iVal = 1;
         for (MSHInMail im : lstInMail) {
             swBody.append((iVal++) + "., ");
@@ -114,7 +114,7 @@ public class TaskEmailInboxMailReport extends TaskEmailReport {
             swBody.append(im.getSenderEBox() + ", ");
             swBody.append(im.getSenderName() + ", ");
             swBody.append(im.getSubject());
-            swBody.append("\n");
+            swBody.append(System.lineSeparator());
         } 
         return swBody.toString();
     }

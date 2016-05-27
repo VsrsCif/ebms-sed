@@ -22,8 +22,6 @@ import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.net.ssl.KeyManager;
@@ -160,10 +158,15 @@ public class MshClient {
             }
 
             HTTPClientPolicy httpClientPolicy = new HTTPClientPolicy();
-
+            mlog.log("Create client with params: chuking: '"+prt.getAddress().getChunked()
+                    +"'  conTimeOut: '"+prt.getAddress().getConnectionTimeout()+"'"
+                    +"'  recTimeOut: '"+prt.getAddress().getReceiveTimeout()+"'" );
             httpClientPolicy.setConnectionTimeout(prt.getAddress().getConnectionTimeout());
+            httpClientPolicy.setReceiveTimeout(prt.getAddress().getReceiveTimeout());            
             httpClientPolicy.setAllowChunking(prt.getAddress().getChunked());
-            httpClientPolicy.setReceiveTimeout(prt.getAddress().getReceiveTimeout());
+            httpClientPolicy.setChunkingThreshold(4096);
+            httpClientPolicy.setChunkLength(-1);
+            
             
             if (prt.getProxy()!=null) {
                 mlog.log("Dispatching mail using pmode: "+pmode.getId()+" Set proxy: " + prt.getProxy().getHost() +":" + prt.getProxy().getPort());

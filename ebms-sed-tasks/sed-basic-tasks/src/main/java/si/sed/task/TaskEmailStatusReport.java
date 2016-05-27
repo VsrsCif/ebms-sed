@@ -44,32 +44,51 @@ public class TaskEmailStatusReport extends TaskEmailReport {
         mi.setStatus(SEDInboxMailStatus.RECEIVED.getValue());
         List<MSHInMail> lstInMail = mdao.getDataList(MSHInMail.class, 0, 500, "Id", "ASC", mi);
         StringWriter swBody = new StringWriter();
-        swBody.append("SED-Predal eBOX: ");
+        swBody.append("SED-Predal: ");
         swBody.append(sr.getSedbox());
-        swBody.append("\nDate: ");
+        swBody.append(System.lineSeparator());
+        swBody.append("Datum: ");
         swBody.append(SDF_DD_MM_YYY_HH_MI.format(sr.getReportDate()));
         if (sr.getInMail() != null && !sr.getInMail().getStatuses().isEmpty()) {
             sw.append("in mail: " + sr.getInMail().getStatuses().size());
-            swBody.append("\n\nStatusi dohodne pošte: \n");
+            swBody.append(System.lineSeparator());
+            swBody.append(System.lineSeparator());
+            swBody.append("Statusi dohodne pošte:");
+            swBody.append(System.lineSeparator());
             for (Status s : sr.getInMail().getStatuses()) {
-                swBody.append(String.format("\t%s: %d\n", s.getStatus(), s.getCount()));
+                swBody.append(String.format("\t%s: %d", s.getStatus(), s.getCount()));
+                swBody.append(System.lineSeparator());
             }
         } else {
-            swBody.append("\n\nZa predal '" + sedbox + "' ni dohodne pošte \n");
+            swBody.append(System.lineSeparator());
+            swBody.append(System.lineSeparator());
+            swBody.append("Za predal '" + sedbox + "' ni dohodne pošte");
+            swBody.append(System.lineSeparator());
         }
         if (sr.getOutMail() != null && !sr.getOutMail().getStatuses().isEmpty()) {
             sw.append(", out mail: " + sr.getInMail().getStatuses().size());
-            swBody.append("\n\nStatusi izhodne pošte: \n");
+            swBody.append(System.lineSeparator());
+            swBody.append(System.lineSeparator());
+            swBody.append("Statusi izhodne pošte:");
+            swBody.append(System.lineSeparator());
             for (Status s : sr.getOutMail().getStatuses()) {
-                swBody.append(String.format("\t%s: %d\n", s.getStatus(), s.getCount()));
+                swBody.append(String.format("\t%s: %d", s.getStatus(), s.getCount()));
+                swBody.append(System.lineSeparator());
             }
         } else {
-            swBody.append("\n\nZa predal '" + sedbox + "' ni izhodne pošte \n");
+            swBody.append(System.lineSeparator());
+            swBody.append(System.lineSeparator());
+            swBody.append("Za predal '" + sedbox + "' ni izhodne pošte");
+            swBody.append(System.lineSeparator());
         }
-        swBody.append("\n\nSeznam dohodne pošte za prevzem (do 500 pošiljk): \n");
-        swBody.append("St pošiljk: '" + lstInMail.size() + "' \n");
+        swBody.append(System.lineSeparator());
+        swBody.append(System.lineSeparator());
+        swBody.append("Seznam dohodne pošte za prevzem (do 500 pošiljk): ");
+        swBody.append("St pošiljk: '" + lstInMail.size() + "'");
+        swBody.append(System.lineSeparator());
         sw.append("In mail size: " + lstInMail.size());
-        swBody.append("st., id, dat  prejema, transakcija ID, Storitev, Akcija, Pošiljatelj, Opis\n");
+        swBody.append("st., id, dat  prejema, transakcija ID, Storitev, Akcija, Pošiljatelj, Opis");
+        swBody.append(System.lineSeparator());
         int iVal = 1;
         for (MSHInMail im : lstInMail) {
             swBody.append((iVal++) + "., ");
@@ -81,8 +100,9 @@ public class TaskEmailStatusReport extends TaskEmailReport {
             swBody.append(im.getSenderEBox() + ", ");
             swBody.append(im.getSenderName() + ", ");
             swBody.append(im.getSubject());
-            swBody.append("\n");
+            swBody.append(System.lineSeparator());
         }
+        swBody.append(System.lineSeparator());
         return swBody.toString();
     }
     
