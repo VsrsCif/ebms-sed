@@ -74,6 +74,9 @@ public class TaskEmailInboxMailReport extends TaskEmailReport {
             SEDTaskExecution te = null;
             try {
                 te = mdao.getLastSuccesfullTaskExecution(getTaskDefinition().getType());
+                if (te!= null) {
+                    recTo = te.getStartTimestamp();
+                }
             } catch (StorageException ex) {
                 LOG.logWarn(0, "ERROR reading task execution", ex);
             }
@@ -84,7 +87,8 @@ public class TaskEmailInboxMailReport extends TaskEmailReport {
         }
         
         List<MSHInMail> lstInMail = mdao.getDataList(MSHInMail.class, -1, -1, "Id", "ASC", miFilter);
-        if (lstInMail.isEmpty()) {
+        if (lstInMail.isEmpty() && bSkipNoMail) {
+            sw.append("In mail size: " + lstInMail.size() +  "' nothing to submit - !");
             return null;
         }
         

@@ -36,7 +36,7 @@ public abstract class TaskEmailReport implements TaskExecutionInterface {
     public static String KEY_SEDBOX = "sedbox";
 
     protected static final SEDLogger LOG = new SEDLogger(TaskEmailStatusReport.class);
-    static final SimpleDateFormat SDF_DD_MM_YYY_HH_MI = new SimpleDateFormat("dd.MM.yyyy HH24:mm");
+    static final SimpleDateFormat SDF_DD_MM_YYY_HH_MI = new SimpleDateFormat("dd.MM.yyyy HH:mm");
     @EJB(mappedName = SEDJNDI.JNDI_SEDDAO)
     SEDDaoInterface mdao;
     @EJB(mappedName = SEDJNDI.JNDI_SEDREPORTS)
