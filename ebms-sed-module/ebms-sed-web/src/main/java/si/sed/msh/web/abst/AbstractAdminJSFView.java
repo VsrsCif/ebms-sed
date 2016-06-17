@@ -11,68 +11,64 @@ import java.util.List;
  *
  * @author sluzba
  */
-abstract public class AbstractAdminJSFView <T> extends AbstractJSFView {
-    
-    
-    private T mtNew;
-    private T mtEditable;
-    private T mtSelected;
-    
-    abstract public void createEditable();
-    abstract public void removeSelected();    
-    abstract public void persistEditable();
-    abstract public void updateEditable();    
-    abstract public List<T> getList();
+abstract public class AbstractAdminJSFView<T> extends AbstractJSFView {
 
-    public T getSelected() {
-        return mtSelected;
-    }
-    
-    public void setSelected(T slct) {
-        this.mtSelected = slct;
-    }
-        
-    public void startEditSelected(){
-        setEditable(getSelected());
-    }
-    
-    public T getEditable() {
-        return mtEditable;
-    }
-    
-    public void setEditable(T edtbl) {
-        this.mtEditable = edtbl;
-    }
-    
-     public T getNew() {
-        return mtNew;
-    }
-    
-    public void setNew(T edtbl) {
-        this.mtNew = edtbl;
-        setEditable(edtbl);
-    }
-   
-    
-    public void addOrUpdateEditable(){
-        if (isEditableNew()){
+    private T mtEditable;
+    private T mtNew;
+    private T mtSelected;
+
+    public void addOrUpdateEditable() {
+        if (isEditableNew()) {
             persistEditable();
             setNew(null);
         } else {
             updateEditable();
             setEditable(null);
         }
-    };
-    
-    
-     public boolean isEditableNew() {
-        return getEditable()!=null && getEditable() == getNew();
     }
 
-    
-    
-    
-    
-    
-    
+    abstract public void createEditable();
+
+    public T getEditable() {
+        return mtEditable;
+    }
+
+    abstract public List<T> getList();
+
+    public T getNew() {
+        return mtNew;
+    }
+
+    public T getSelected() {
+        return mtSelected;
+    }
+
+    public boolean isEditableNew() {
+        return getEditable() != null && getEditable() == getNew();
+    }
+
+    abstract public void persistEditable();
+
+    abstract public void removeSelected();
+
+    public void setEditable(T edtbl) {
+        this.mtEditable = edtbl;
+    }
+
+    public void setNew(T edtbl) {
+        this.mtNew = edtbl;
+        setEditable(edtbl);
+    }
+
+    public void setSelected(T slct) {
+        this.mtSelected = slct;
+    }
+
+    ;
+    public void startEditSelected() {
+        setEditable(getSelected());
+    }
+
+    abstract public void updateEditable();
+
 }

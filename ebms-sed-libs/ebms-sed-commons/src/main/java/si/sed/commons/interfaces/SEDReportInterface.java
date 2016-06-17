@@ -8,15 +8,12 @@ package si.sed.commons.interfaces;
 import javax.ejb.Local;
 import org.sed.ebms.report.SEDReportBoxStatus;
 
-
-
 /**
  *
  * @author sluzba
  */
 @Local
 public interface SEDReportInterface {
-    
-    
+
     SEDReportBoxStatus getStatusReport(String strSedBox);
 }

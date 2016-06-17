@@ -13,12 +13,12 @@ import java.util.List;
  * @author sluzba
  */
 public class BusinessTransaction {
-    
-    String name;    
+
     String description;
     String initiatorRole;
-    String responderRole;
     List<BTAction> mlstActionList = new ArrayList<>();
+    String name;
+    String responderRole;
 
     public BusinessTransaction(String name, String initiatorRole, String responderRole) {
         this.name = name;
@@ -26,9 +26,6 @@ public class BusinessTransaction {
         this.responderRole = responderRole;
     }
 
-    
-    
-    
     public String getName() {
         return name;
     }
@@ -37,9 +34,4 @@ public class BusinessTransaction {
         this.name = name;
     }
 
-  
-    
-    
-    
-    
 }

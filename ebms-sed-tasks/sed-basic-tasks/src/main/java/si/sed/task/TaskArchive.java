@@ -14,7 +14,6 @@
 * See the Licence for the specific language governing permissions and  
 * limitations under the Licence.
  */
-
 package si.sed.task;
 
 import java.io.File;
@@ -190,13 +189,13 @@ public class TaskArchive implements TaskExecutionInterface {
                         try {
                             mdao.removeOutMail(new BigInteger(data[1]));
                         } catch (StorageException ex) {
-                            LOG.logError(l, "Error removeing archived out mail: " + line , ex);
+                            LOG.logError(l, "Error removeing archived out mail: " + line, ex);
                         }
                     } else if (data[0].equals(MSHInMail.class.getName())) {
                         try {
                             mdao.removeInMail(new BigInteger(data[1]));
                         } catch (StorageException ex) {
-                            LOG.logError(l, "Error removeing archived out mail: " + line , ex);
+                            LOG.logError(l, "Error removeing archived out mail: " + line, ex);
                         }
                     } else {
                         LOG.logError(0, "Unknown object: " + line, null);
@@ -414,7 +413,8 @@ public class TaskArchive implements TaskExecutionInterface {
             }
         });
     }
-/*
+
+    /*
     @Override
     public String getType() {
         return "archive";
@@ -440,22 +440,21 @@ public class TaskArchive implements TaskExecutionInterface {
 
         return p;
     }
-*/
+     */
     @Override
     public SEDTaskType getTaskDefinition() {
         SEDTaskType tt = new SEDTaskType();
         tt.setType("archive");
         tt.setName("Archive data");
         tt.setDescription("Archive data to 'xml' and files to archive-storage");
-        tt.getSEDTaskTypeProperties().add(createTTProperty(KEY_EXPORT_FOLDER, "Archive folder"));        
+        tt.getSEDTaskTypeProperties().add(createTTProperty(KEY_EXPORT_FOLDER, "Archive folder"));
         tt.getSEDTaskTypeProperties().add(createTTProperty(KEY_CHUNK_SIZE, "Max mail count in chunk", true, "int", null, null));
         tt.getSEDTaskTypeProperties().add(createTTProperty(KEY_DELETE_RECORDS, "Delete exported records (true/false)", true, "boolean", null, null));
         tt.getSEDTaskTypeProperties().add(createTTProperty(KEY_ARCHIVE_OFFSET, "Archive records older than [n] days", true, "int", null, null));
 
         return tt;
     }
-    
-    
+
     private SEDTaskTypeProperty createTTProperty(String key, String desc, boolean mandatory, String type, String valFormat, String valList) {
         SEDTaskTypeProperty ttp = new SEDTaskTypeProperty();
         ttp.setKey(key);

@@ -26,17 +26,13 @@ import org.msh.ebms.inbox.mail.MSHInMail;
 import org.msh.ebms.outbox.mail.MSHOutMail;
 import org.msh.svev.pmode.PMode;
 import si.sed.commons.interfaces.SoapInterceptorInterface;
-
 import si.sed.commons.utils.SEDLogger;
-
 
 /**
  *
  * @author sluzba
  */
 public class MSHPluginInInterceptor extends AbstractSoapInterceptor {
-
-
 
     protected final SEDLogger mlog = new SEDLogger(MSHPluginInInterceptor.class);
 
@@ -56,7 +52,7 @@ public class MSHPluginInInterceptor extends AbstractSoapInterceptor {
             String str = pmd.getLegs().get(0).getBusinessInfo().getService().getInPlugin();
             if (str != null) {
                 System.out.println("LOOKUP " + str);
-                
+
                 try {
                     SoapInterceptorInterface example = InitialContext.doLookup(str);
                     example.handleMessage(msg);
@@ -73,7 +69,7 @@ public class MSHPluginInInterceptor extends AbstractSoapInterceptor {
             }
         } else if (pmd != null) {
             String str = pmd.getLegs().get(0).getBusinessInfo().getService().getInPlugin();
-            
+
             if (str != null) {
                 try {
                     SoapInterceptorInterface example = InitialContext.doLookup(str);
@@ -81,7 +77,7 @@ public class MSHPluginInInterceptor extends AbstractSoapInterceptor {
                 } catch (NamingException ex) {
                     ex.printStackTrace();
                 }
-                
+
                 /*String[] lst = str.split("!");
                 String filenamePlugin = lst[0];
                 String classNamePlugin = lst[1];
@@ -92,7 +88,5 @@ public class MSHPluginInInterceptor extends AbstractSoapInterceptor {
         }
         mlog.logEnd(l);
     }
-    
-    
 
 }

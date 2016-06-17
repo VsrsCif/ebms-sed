@@ -16,22 +16,19 @@
  */
 package si.sed.msh.web.admin;
 
-import si.sed.msh.web.abst.AbstractAdminJSFView;
-import java.io.StringWriter;
 import java.util.Calendar;
 import java.util.List;
 import javax.ejb.EJB;
-import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import org.sed.ebms.ebox.Execute;
 import org.sed.ebms.ebox.Export;
 import org.sed.ebms.ebox.SEDBox;
-import org.sed.ebms.user.SEDUser;
 import si.sed.commons.SEDJNDI;
 import si.sed.commons.interfaces.DBSettingsInterface;
 import si.sed.commons.interfaces.SEDLookupsInterface;
 import si.sed.commons.utils.SEDLogger;
+import si.sed.msh.web.abst.AbstractAdminJSFView;
 
 /**
  *
@@ -43,10 +40,10 @@ public class AdminSEDBoxView extends AbstractAdminJSFView<SEDBox> {
 
     private static final SEDLogger LOG = new SEDLogger(AdminSEDBoxView.class);
 
-    @EJB (mappedName=SEDJNDI.JNDI_DBSETTINGS)
+    @EJB(mappedName = SEDJNDI.JNDI_DBSETTINGS)
     private DBSettingsInterface mdbSettings;
 
-    @EJB (mappedName=SEDJNDI.JNDI_SEDLOOKUPS)
+    @EJB(mappedName = SEDJNDI.JNDI_SEDLOOKUPS)
     private SEDLookupsInterface mdbLookups;
 
     public SEDBox getSEDBoxByName(String sedBox) {
@@ -76,24 +73,9 @@ public class AdminSEDBoxView extends AbstractAdminJSFView<SEDBox> {
     public void removeSelected() {
         SEDBox sb = getSelected();
         if (sb != null) {
-            /*if (!sb.getSEDUsers().isEmpty()) {
-                StringWriter sw = new StringWriter();
-                sw.append("Users: ");
-                boolean isFirst = true;
-                for (SEDUser su : sb.getSEDUsers()) {
-                    if (!isFirst) {
-                        sw.append(",");
-                    }
-                    sw.append(su.getUserId());
-                    isFirst = false;
-                }
 
-                FacesMessage msg = new FacesMessage("Box has users! Delete box from users first!", sw.toString());
-                facesContext().addMessage("messages", msg);
-            } else {*/
-                mdbLookups.removeSEDBox(sb);
-                setSelected(null);
-            //}
+            mdbLookups.removeSEDBox(sb);
+            setSelected(null);
 
         }
 
@@ -101,23 +83,22 @@ public class AdminSEDBoxView extends AbstractAdminJSFView<SEDBox> {
 
     @Override
     public void startEditSelected() {
-        if (getSelected() != null && getSelected().getExport()== null) {
+        if (getSelected() != null && getSelected().getExport() == null) {
             getSelected().setExport(new Export());
         }
-        if (getSelected() != null && getSelected().getExecute()== null) {
+        if (getSelected() != null && getSelected().getExecute() == null) {
             getSelected().setExecute(new Execute());
         }
         super.startEditSelected(); //To change body of generated methods, choose Tools | Templates.
     }
-    
 
     @Override
     public void persistEditable() {
-          SEDBox sb = getEditable();
+        SEDBox sb = getEditable();
         if (sb != null) {
             mdbLookups.addSEDBox(sb);
             setEditable(null);
-        }        
+        }
     }
 
     @Override
@@ -133,7 +114,5 @@ public class AdminSEDBoxView extends AbstractAdminJSFView<SEDBox> {
     public List<SEDBox> getList() {
         return mdbLookups.getSEDBoxes();
     }
-
-  
 
 }

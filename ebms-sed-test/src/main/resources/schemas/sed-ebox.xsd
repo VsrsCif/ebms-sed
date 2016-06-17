@@ -26,28 +26,28 @@ Copyright 2016, Supreme Court Republic of Slovenia
  limitations under the Licence.
 -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ns1="http://ebms.sed.org/ebox" xmlns:usr="http://ebms.sed.org/user" targetNamespace="http://ebms.sed.org/ebox" elementFormDefault="qualified" attributeFormDefault="unqualified">
-	<xs:import namespace="http://ebms.sed.org/user" schemaLocation="./sed-user.xsd"/>
-	<xs:element name="SEDBox" type="ns1:SEDBox"/>
-	<xs:complexType name="SEDBox">
-		<xs:annotation>
-			<xs:documentation xml:lang="sl">EBox data</xs:documentation>
-		</xs:annotation>
-		<xs:sequence>
-			<xs:element ref="usr:SEDUser" maxOccurs="unbounded"/>
-			<xs:element name="Export"  type="ns1:Export" minOccurs="0"/>
-		</xs:sequence>
-		<xs:attribute name="boxName" type="xs:string" use="required">
-			<xs:annotation>
-				<xs:documentation xml:lang="sl">Naslov e-predala</xs:documentation>
-			</xs:annotation>
-		</xs:attribute>
-		<xs:attribute name="activeFromDate" type="xs:date" use="required"/>
-		<xs:attribute name="activeToDate" type="xs:date" use="required"/>
-	</xs:complexType>
-	<xs:complexType name="Export">
-                <xs:attribute name="active"  type="xs:boolean"  />
-                <xs:attribute name="exportMetaData"  type="xs:boolean"  />
-		<xs:attribute name="folder" use="required" type="xs:string" />
-		<xs:attribute name="fileMask" use="required" type="xs:string"/>
-	</xs:complexType>
+    <xs:import namespace="http://ebms.sed.org/user" schemaLocation="./sed-user.xsd"/>
+    <xs:element name="SEDBox" type="ns1:SEDBox"/>
+    <xs:complexType name="SEDBox">
+        <xs:annotation>
+            <xs:documentation xml:lang="sl">EBox data</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element ref="usr:SEDUser" maxOccurs="unbounded"/>
+            <xs:element name="Export"  type="ns1:Export" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="boxName" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation xml:lang="sl">Naslov e-predala</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="activeFromDate" type="xs:date" use="required"/>
+        <xs:attribute name="activeToDate" type="xs:date" use="required"/>
+    </xs:complexType>
+    <xs:complexType name="Export">
+        <xs:attribute name="active"  type="xs:boolean"  />
+        <xs:attribute name="exportMetaData"  type="xs:boolean"  />
+        <xs:attribute name="folder" use="required" type="xs:string" />
+        <xs:attribute name="fileMask" use="required" type="xs:string"/>
+    </xs:complexType>
 </xs:schema>

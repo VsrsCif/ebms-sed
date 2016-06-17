@@ -16,13 +16,13 @@ import si.sed.commons.interfaces.exception.TaskException;
  */
 @Local
 public interface TaskExecutionInterface {
-    
-     String executeTask(Properties p) throws TaskException;
-     //String getType();
-     //String getName();
-     //String getDesc();
-     //Properties getProperties();
-     
-     SEDTaskType getTaskDefinition();
+
+    String executeTask(Properties p) throws TaskException;
+    //String getType();
+    //String getName();
+    //String getDesc();
+    //Properties getProperties();
+
+    SEDTaskType getTaskDefinition();
 
 }

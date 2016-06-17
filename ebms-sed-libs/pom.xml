@@ -45,5 +45,6 @@
         <module>ebms-msh-xsd</module>                
         <module>ebms-sed-wsdl</module>        
         <module>ebms-sed-commons</module>
+        <module>ebms-sed-viz</module>
     </modules>
 </project>

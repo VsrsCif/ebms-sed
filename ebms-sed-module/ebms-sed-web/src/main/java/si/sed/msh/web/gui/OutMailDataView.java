@@ -16,7 +16,6 @@
  */
 package si.sed.msh.web.gui;
 
-import si.sed.msh.web.abst.AbstractMailView;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -47,7 +46,6 @@ import org.primefaces.model.StreamedContent;
 import org.primefaces.model.UploadedFile;
 import si.sed.commons.MimeValues;
 import si.sed.commons.SEDJNDI;
-
 import si.sed.commons.SEDOutboxMailStatus;
 import si.sed.commons.exception.HashException;
 import si.sed.commons.exception.StorageException;
@@ -57,6 +55,7 @@ import si.sed.commons.utils.HashUtils;
 import si.sed.commons.utils.SEDLogger;
 import si.sed.commons.utils.StorageUtils;
 import si.sed.commons.utils.Utils;
+import si.sed.msh.web.abst.AbstractMailView;
 import si.sed.msh.web.admin.AdminSEDUserView;
 
 /**
@@ -68,9 +67,9 @@ import si.sed.msh.web.admin.AdminSEDUserView;
 public class OutMailDataView extends AbstractMailView<MSHOutMail, MSHOutEvent> implements Serializable {
 
     private static final SEDLogger LOG = new SEDLogger(AdminSEDUserView.class);
-     HashUtils mpHU = new HashUtils();
+    HashUtils mpHU = new HashUtils();
     StorageUtils msuStorageUtils = new StorageUtils();
-    MSHOutPart selectedNewOutMailAttachment ;
+    MSHOutPart selectedNewOutMailAttachment;
 
     MSHOutMail newOutMail;
     String newMailBody;
@@ -90,8 +89,6 @@ public class OutMailDataView extends AbstractMailView<MSHOutMail, MSHOutEvent> i
     private void init() {
         mMailModel = new OutMailDataModel(MSHOutMail.class, getUserSessionData(), mDB);
     }
-
-    
 
     public void setUserSessionData(UserSessionData messageBean) {
         this.userSessionData = messageBean;
@@ -163,7 +160,7 @@ public class OutMailDataView extends AbstractMailView<MSHOutMail, MSHOutEvent> i
         }
     }
 
-    public void deleteSelectedMail()  {
+    public void deleteSelectedMail() {
         if (this.mMail != null) {
 
             try {
@@ -198,11 +195,11 @@ public class OutMailDataView extends AbstractMailView<MSHOutMail, MSHOutEvent> i
     public void setNewOutMail(MSHOutMail newOutMail) {
         this.newOutMail = newOutMail;
     }
-    
+
     public List<MSHOutPart> getNewOutMailAttachmentList() {
         List<MSHOutPart> lst = new ArrayList<>();
-        if (getNewOutMail()!= null && getNewOutMail().getMSHOutPayload()!=null && !getNewOutMail().getMSHOutPayload().getMSHOutParts().isEmpty() ){
-            lst = getNewOutMail().getMSHOutPayload().getMSHOutParts();            
+        if (getNewOutMail() != null && getNewOutMail().getMSHOutPayload() != null && !getNewOutMail().getMSHOutPayload().getMSHOutParts().isEmpty()) {
+            lst = getNewOutMail().getMSHOutPayload().getMSHOutParts();
         }
         return lst;
     }
@@ -214,49 +211,45 @@ public class OutMailDataView extends AbstractMailView<MSHOutMail, MSHOutEvent> i
     public void setSelectedNewOutMailAttachment(MSHOutPart selectedNewOutMailAttachment) {
         this.selectedNewOutMailAttachment = selectedNewOutMailAttachment;
     }
-    
+
     public void removeselectedNewOutMailAttachment() {
-        
-        if (selectedNewOutMailAttachment!= null &&getNewOutMail()!= null && getNewOutMail().getMSHOutPayload()!=null  ){
+
+        if (selectedNewOutMailAttachment != null && getNewOutMail() != null && getNewOutMail().getMSHOutPayload() != null) {
             boolean bVal = getNewOutMail().getMSHOutPayload().getMSHOutParts().remove(selectedNewOutMailAttachment);
-            LOG.log("MSHOutPart removed staus: "  + bVal );
-            
+            LOG.log("MSHOutPart removed staus: " + bVal);
+
         }
-        
+
     }
-    
+
     public void handleNewOutMailAttachmentUpload(FileUploadEvent event) {
         long l = LOG.logStart();
-        UploadedFile uf =  event.getFile();
+        UploadedFile uf = event.getFile();
         StorageUtils su = new StorageUtils();
         String fileName = uf.getFileName();
-        
-        if (getNewOutMail()== null){
-            LOG.logError(l, "Setting file to null composed mail!",null);
+
+        if (getNewOutMail() == null) {
+            LOG.logError(l, "Setting file to null composed mail!", null);
             return;
         }
-        if (getNewOutMail().getMSHOutPayload()== null){
+        if (getNewOutMail().getMSHOutPayload() == null) {
             getNewOutMail().setMSHOutPayload(new MSHOutPayload());
         }
         try {
-            File f = su.storeFile("att", fileName.substring(fileName.lastIndexOf(".")) , uf.getInputstream());
-            String name = fileName.substring(0, fileName.lastIndexOf("."));
-                    
+            File f = su.storeFile("att", fileName.substring(fileName.lastIndexOf('.')), uf.getInputstream());
+            String name = fileName.substring(0, fileName.lastIndexOf('.'));
+
             MSHOutPart mp = new MSHOutPart();
             mp.setDescription(name);
             mp.setFilename(fileName);
             mp.setName(name);
             mp.setFilepath(StorageUtils.getRelativePath(f));
             mp.setMimeType(MimeValues.getMimeTypeByFileName(fileName));
-            
+
             String strMD5 = mpHU.getMD5Hash(f);
             mp.setMd5(strMD5);
             getNewOutMail().getMSHOutPayload().getMSHOutParts().add(mp);
-            
-            
-            
-            
-            
+
             //FacesMessage message = new FacesMessage("Succesful", event.getFile().getFileName() + " is uploaded.");
             //FacesContext.getCurrentInstance().addMessage(null, message);
         } catch (StorageException | IOException | HashException ex) {
@@ -267,7 +260,7 @@ public class OutMailDataView extends AbstractMailView<MSHOutMail, MSHOutEvent> i
     public void sendComposedMail() {
         if (newOutMail != null) {
             try {
-                
+
                 String pmodeId = Utils.getPModeIdFromOutMail(newOutMail);
                 newOutMail.setReceiverName(newOutMail.getReceiverEBox());
                 newOutMail.setSenderName(newOutMail.getSenderEBox());
@@ -276,11 +269,8 @@ public class OutMailDataView extends AbstractMailView<MSHOutMail, MSHOutEvent> i
                 p.setEncoding("UTF-8");
                 p.setDescription("Mail body");
                 p.setMimeType("plain/text");
-               
-                // mp.setValue();
-                
-                
 
+                // mp.setValue();
                 StorageUtils su = new StorageUtils();
                 File fout = su.storeFile("out", ".txt", getComposedMailBody().getBytes("UTF-8"));
                 String strMD5 = mpHU.getMD5Hash(fout);
@@ -295,14 +285,14 @@ public class OutMailDataView extends AbstractMailView<MSHOutMail, MSHOutEvent> i
                     p.setName(p.getFilename().substring(0, p.getFilename().lastIndexOf(".")));
                 }
 
-                if (newOutMail.getMSHOutPayload() == null ){
+                if (newOutMail.getMSHOutPayload() == null) {
                     newOutMail.setMSHOutPayload(new MSHOutPayload());
                 }
-                
+
                 newOutMail.getMSHOutPayload().getMSHOutParts().add(0, p);
-                
+
                 newOutMail.setSubmittedDate(Calendar.getInstance().getTime());
-                
+
                 mDB.serializeOutMail(newOutMail, userSessionData.getUser().getUserId(), "ebms-sed-web", pmodeId);
             } catch (UnsupportedEncodingException | StorageException | HashException ex) {
                 LOG.logError(0, ex);
@@ -317,10 +307,5 @@ public class OutMailDataView extends AbstractMailView<MSHOutMail, MSHOutEvent> i
     public void setComposedMailBody(String body) {
         newMailBody = body;
     }
-    
-   
-    
-    
-   
 
 }

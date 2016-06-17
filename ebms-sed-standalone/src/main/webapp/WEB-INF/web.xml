@@ -58,9 +58,9 @@
         <load-on-startup>1</load-on-startup>
     </servlet>
     <!--TODO try with  CXFNonSpringServlet in Main,jata
-    for different root contexts
-        http://localhost:8080/ebms-sed/ebms?wsdl  
-        http://localhost:8080/ebms-sed-ws/sed-mailbox?wsdl    -->
+for different root contexts
+    http://localhost:8080/ebms-sed/ebms?wsdl  
+    http://localhost:8080/ebms-sed-ws/sed-mailbox?wsdl    -->
     <servlet-mapping>
         <servlet-name>RootCXFServlet</servlet-name>
         <url-pattern>/ebms-sed/*</url-pattern>

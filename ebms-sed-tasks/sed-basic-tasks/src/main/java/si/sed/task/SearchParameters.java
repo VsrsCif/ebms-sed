@@ -13,22 +13,23 @@ import java.util.Date;
  */
 public class SearchParameters {
 
-    Date submittedDateTo;
     Date receivedDateTo;
 
-    public Date getSubmittedDateTo() {
-        return submittedDateTo;
-    }
-
-    public void setSubmittedDateTo(Date submittedDateTo) {
-        this.submittedDateTo = submittedDateTo;
-    }
+    Date submittedDateTo;
 
     public Date getReceivedDateTo() {
         return receivedDateTo;
     }
 
+    public Date getSubmittedDateTo() {
+        return submittedDateTo;
+    }
+
     public void setReceivedDateTo(Date receivedDateTo) {
         this.receivedDateTo = receivedDateTo;
+    }
+
+    public void setSubmittedDateTo(Date submittedDateTo) {
+        this.submittedDateTo = submittedDateTo;
     }
 }

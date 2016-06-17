@@ -54,15 +54,13 @@ import si.sed.commons.SEDValues;
  */
 public abstract class AbstractPluginInterceptor extends AbstractSoapInterceptor {
 
-    
     String LOADED_CLASSES = "hibernate.ejb.loaded.classes";
+    @PersistenceContext(unitName = "ebMS_MSH_PU")
+    private EntityManager memEManager;
     protected Queue mqMSHQueue = null;
 
     @Resource
     private UserTransaction mutUTransaction;
-
-    @PersistenceContext(unitName = "ebMS_MSH_PU")
-    private EntityManager memEManager;
 
     public AbstractPluginInterceptor(String p) {
         super(p);
@@ -73,33 +71,18 @@ public abstract class AbstractPluginInterceptor extends AbstractSoapInterceptor 
 
     }
 
-    public UserTransaction getUserTransaction() {
-        // for jetty 
-        if (mutUTransaction == null) {
-            try {
-                InitialContext ic = new InitialContext();
-
-                mutUTransaction = (UserTransaction) ic.lookup(getJNDIPrefix() + "UserTransaction");
-
-            } catch (NamingException ex) {
-                Logger.getLogger(AbstractPluginInterceptor.class.getName()).log(Level.SEVERE, null, ex);
+    protected void closeConnection(Connection con) {
+        try {
+            if (con != null) {
+                con.close();
             }
-
+        } catch (JMSException jmse) {
+            // ignore
         }
-        return mutUTransaction;
-    }
-
-    private String getJNDIPrefix() {
-
-        return System.getProperty(SEDSystemProperties.SYS_PROP_JNDI_PREFIX, "java:/jboss/");
-    }
-
-    private String getJNDI_JMSPrefix() {
-        return System.getProperty(SEDSystemProperties.SYS_PROP_JNDI_JMS_PREFIX, "java:/jms/");
     }
 
     public EntityManager getEntityManager() {
-        // for jetty 
+        // for jetty
         if (memEManager == null) {
             try {
                 InitialContext ic = new InitialContext();
@@ -114,9 +97,81 @@ public abstract class AbstractPluginInterceptor extends AbstractSoapInterceptor 
         return memEManager;
     }
 
-   
+    private String getJNDIPrefix() {
+
+        return System.getProperty(SEDSystemProperties.SYS_PROP_JNDI_PREFIX, "java:/jboss/");
+    }
+
+    private String getJNDI_JMSPrefix() {
+        return System.getProperty(SEDSystemProperties.SYS_PROP_JNDI_JMS_PREFIX, "java:/jms/");
+    }
+
+    private Queue getMSHQueue() throws NamingException {
+        if (mqMSHQueue == null) {
+            String jndiName = getJNDI_JMSPrefix() + SEDValues.JNDI_QUEUE_EBMS;
+            InitialContext ic = new InitialContext();
+            mqMSHQueue = (Queue) ic.lookup(jndiName);
+
+        }
+        return mqMSHQueue;
+    }
+
+    public UserTransaction getUserTransaction() {
+        // for jetty
+        if (mutUTransaction == null) {
+            try {
+                InitialContext ic = new InitialContext();
+
+                mutUTransaction = (UserTransaction) ic.lookup(getJNDIPrefix() + "UserTransaction");
+
+            } catch (NamingException ex) {
+                Logger.getLogger(AbstractPluginInterceptor.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+        }
+        return mutUTransaction;
+    }
+
     @Override
     public abstract void handleMessage(SoapMessage t) throws Fault;
+
+    public boolean sendMessage(BigInteger biPosiljkaId, String strpModeId) {
+
+        boolean suc = false;
+        InitialContext ic = null;
+        Connection connection = null;
+        try {
+            Queue queue = getMSHQueue();
+
+            ic = new InitialContext();
+            String jndiName = getJNDIPrefix() + SEDValues.EBMS_JMS_CONNECTION_FACTORY_JNDI;
+            ConnectionFactory cf = (ConnectionFactory) ic.lookup(jndiName);
+
+            connection = cf.createConnection();
+            Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+            MessageProducer sender = session.createProducer(queue);
+            Message message = session.createMessage();
+            message.setLongProperty(SEDValues.EBMS_QUEUE_PARAM_MAIL_ID, biPosiljkaId.longValue());
+            message.setStringProperty(SEDValues.EBMS_QUEUE_PARAM_PMODE_ID, strpModeId);
+            message.setIntProperty(SEDValues.EBMS_QUEUE_PARAM_RETRY, 0);
+            message.setLongProperty(SEDValues.EBMS_QUEUE_PARAM_DELAY, 0);
+            sender.send(message);
+            suc = true;
+        } catch (NamingException | JMSException ex) {
+            ex.printStackTrace();
+
+        } finally {
+            if (ic != null) {
+                try {
+                    ic.close();
+                } catch (Exception ignore) {
+                }
+            }
+            closeConnection(connection);
+        }
+
+        return suc;
+    }
 
     public void serializeMail(MSHOutMail mail, String userID, String applicationId, String pmodeId) {
         //  EntityManagerFactory emf = null;
@@ -162,12 +217,9 @@ public abstract class AbstractPluginInterceptor extends AbstractSoapInterceptor 
         }
 
     }
-    
-     public void updateInMail(MSHInMail mail, String statusDesc) {
 
-      
+    public void updateInMail(MSHInMail mail, String statusDesc) {
 
-       
         // --------------------
         // serialize data to db
         try {
@@ -180,7 +232,7 @@ public abstract class AbstractPluginInterceptor extends AbstractSoapInterceptor 
             // persist mail event
             MSHInEvent me = new MSHInEvent();
             me.setDescription(LOADED_CLASSES);
-            me.setMailId(mail.getId());            
+            me.setMailId(mail.getId());
             me.setStatus(mail.getStatus());
             me.setDescription(statusDesc);
             me.setDate(mail.getStatusDate());
@@ -200,64 +252,6 @@ public abstract class AbstractPluginInterceptor extends AbstractSoapInterceptor 
             }
         }
 
-    }
-
-    public boolean sendMessage(BigInteger biPosiljkaId, String strpModeId) {
-
-        boolean suc = false;
-        InitialContext ic = null;
-        Connection connection = null;
-        try {
-            Queue queue = getMSHQueue();
-
-            ic = new InitialContext();
-            String jndiName = getJNDIPrefix() + SEDValues.EBMS_JMS_CONNECTION_FACTORY_JNDI;
-            ConnectionFactory cf = (ConnectionFactory) ic.lookup(jndiName);
-
-            connection = cf.createConnection();
-            Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-            MessageProducer sender = session.createProducer(queue);
-            Message message = session.createMessage();
-            message.setLongProperty(SEDValues.EBMS_QUEUE_PARAM_MAIL_ID, biPosiljkaId.longValue());
-            message.setStringProperty(SEDValues.EBMS_QUEUE_PARAM_PMODE_ID, strpModeId);
-            message.setIntProperty(SEDValues.EBMS_QUEUE_PARAM_RETRY, 0);
-            message.setLongProperty(SEDValues.EBMS_QUEUE_PARAM_DELAY, 0);
-            sender.send(message);
-            suc = true;
-        } catch (NamingException | JMSException ex) {
-            ex.printStackTrace();
-
-        } finally {
-            if (ic != null) {
-                try {
-                    ic.close();
-                } catch (Exception ignore) {
-                }
-            }
-            closeConnection(connection);
-        }
-
-        return suc;
-    }
-
-    private Queue getMSHQueue() throws NamingException {
-        if (mqMSHQueue == null) {
-            String jndiName = getJNDI_JMSPrefix() + SEDValues.JNDI_QUEUE_EBMS;
-            InitialContext ic = new InitialContext();
-            mqMSHQueue = (Queue) ic.lookup(jndiName);
-
-        }
-        return mqMSHQueue;
-    }
-
-    protected void closeConnection(Connection con) {
-        try {
-            if (con != null) {
-                con.close();
-            }
-        } catch (JMSException jmse) {
-            // ignore
-        }
     }
 
 }

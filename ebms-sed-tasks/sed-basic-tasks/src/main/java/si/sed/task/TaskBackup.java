@@ -333,7 +333,6 @@ public class TaskBackup implements TaskExecutionInterface {
         p.setProperty(KEY_DELETE_OLD, "Clear backup folder (true/false)");
         return p;
     }*/
-
     @Override
     public SEDTaskType getTaskDefinition() {
         SEDTaskType tt = new SEDTaskType();

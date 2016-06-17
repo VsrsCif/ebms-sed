@@ -32,7 +32,7 @@
             <p:ajax event="rowDblselect" listener="#{adminSEDBoxView.startEditSelected()}" 
                     update=":dlgsedbox:sedboxDialogForm:sedboxDetails"  
                     oncomplete="PF('sedboxDialog').show()"/>
-         
+
             <f:facet name="header">
                 <p:commandButton value="#{msg['Add']}" styleClass="toolbar-Button" icon="ui-icon-sed-add" 
                                  update=":dlgsedbox:sedboxDialogForm:sedboxDetails" 
@@ -64,17 +64,17 @@
             <p:column headerText="#{msg['MetaData']}" width="60">
                 <h:selectBooleanCheckbox value="#{sp.export.exportMetaData}" disabled="true" />
             </p:column>
-       
+
             <p:column headerText="#{msg['Folder']}">
                 <h:outputText value="#{sp.export.folder}" />
             </p:column>
-             <p:column headerText="#{msg['Execution']}" width="60">
-                 <h:selectBooleanCheckbox value="#{sp.execute.active}" disabled="true" />
+            <p:column headerText="#{msg['Execution']}" width="60">
+                <h:selectBooleanCheckbox value="#{sp.execute.active}" disabled="true" />
             </p:column>
-             <p:column headerText="#{msg['Command']}" >
-                 <h:outputText value="#{sp.execute.command}" />               
+            <p:column headerText="#{msg['Command']}" >
+                <h:outputText value="#{sp.execute.command}" />               
             </p:column>
-            
+
         </p:dataTable>
 
 

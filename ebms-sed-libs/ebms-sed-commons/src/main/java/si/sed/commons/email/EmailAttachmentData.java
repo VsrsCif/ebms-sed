@@ -11,10 +11,12 @@ import java.io.File;
  *
  * @author sluzba
  */
-public class EmailAttachmentData{
+public class EmailAttachmentData {
+
+    File mFile;
+
     String mstrFileName;
     String mstrMimeType;
-    File mFile;
 
     public EmailAttachmentData(String mstrFileName, String mstrMimeType, File mFile) {
         this.mstrFileName = mstrFileName;
@@ -22,29 +24,28 @@ public class EmailAttachmentData{
         this.mFile = mFile;
     }
 
-    
-    public String getFileName() {
-        return mstrFileName;
+    public File getFile() {
+        return mFile;
     }
 
-    public void setFileName(String mstrFileName) {
-        this.mstrFileName = mstrFileName;
+    public String getFileName() {
+        return mstrFileName;
     }
 
     public String getMimeType() {
         return mstrMimeType;
     }
 
+    public void setFile(File mFile) {
+        this.mFile = mFile;
+    }
+
+    public void setFileName(String mstrFileName) {
+        this.mstrFileName = mstrFileName;
+    }
+
     public void setMimeType(String mstrMimeType) {
         this.mstrMimeType = mstrMimeType;
     }
 
-    public File getFile() {
-        return mFile;
-    }
-
-    public void setFile(File mFile) {
-        this.mFile = mFile;
-    }
-    
 }

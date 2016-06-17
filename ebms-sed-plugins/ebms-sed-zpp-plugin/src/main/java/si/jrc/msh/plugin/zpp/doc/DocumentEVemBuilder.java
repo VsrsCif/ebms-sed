@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.Properties;
-import java.util.logging.Level;
 import org.apache.log4j.Logger;
 import org.msh.ebms.outbox.mail.MSHOutMail;
 import org.msh.ebms.outbox.payload.MSHOutPart;
@@ -21,15 +20,14 @@ import si.crea._2004.eppr.message.Message;
 import si.crea._2004.eppr.message.PhysicalAddressType;
 import si.crea.schemas._2004.document.AttachmentType;
 import si.crea.schemas._2004.document.AttachmentsType;
+import si.crea.schemas._2004.document.ContentType;
 import si.crea.schemas._2004.document.DataObjectFormatType;
 import si.crea.schemas._2004.document.DataType;
 import si.crea.schemas._2004.document.Document;
+import si.crea.schemas._2004.document.EmbeddedDataType;
 import si.crea.schemas._2004.document.SignaturesType;
 import si.crea.schemas._2004.document.VisualisationType;
 import si.crea.schemas._2004.document.VisualisationsType;
-import si.crea.schemas._2004.document.ContentType;
-import si.crea.schemas._2004.document.EmbeddedDataType;
-import static si.jrc.msh.plugin.zpp.doc.DocumentBuilder.IDPFX_VIS;
 import si.sed.commons.exception.SEDSecurityException;
 import si.sed.commons.exception.StorageException;
 import si.sed.commons.utils.Utils;
@@ -44,7 +42,7 @@ public class DocumentEVemBuilder extends DocumentBuilder {
     private static final String NM_VIS = "http://www.crea.si/Schemas/2004/Document/ObjectType/Visualisation";
 
     @Override
-    public void createMail(MSHOutMail dce, FileOutputStream fos,KeyStore.PrivateKeyEntry key) throws SEDSecurityException {
+    public void createMail(MSHOutMail dce, FileOutputStream fos, KeyStore.PrivateKeyEntry key) throws SEDSecurityException {
         long t = getTime();
         mlgLogger.info("DocumentBuilder.createMail: begin ");
 
@@ -182,7 +180,7 @@ public class DocumentEVemBuilder extends DocumentBuilder {
         org.w3c.dom.Document dw3c = convertEpDoc2W3cDoc(document, new Class[]{Document.class, Message.class
         });
         // sign document and return value
-        
+
         singDocument(dw3c, lstSignatureIDS, fos, key);
 
         mlgLogger.info(

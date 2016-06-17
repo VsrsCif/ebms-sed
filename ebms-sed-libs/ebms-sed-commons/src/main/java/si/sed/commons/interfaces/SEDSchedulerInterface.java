@@ -23,5 +23,5 @@ public interface SEDSchedulerInterface {
 
     @Timeout
     void timeout(Timer timer);
-    
+
 }

@@ -41,7 +41,6 @@ import javax.jms.Session;
 import javax.jws.WebService;
 import javax.naming.Binding;
 import javax.naming.Context;
-
 import javax.naming.InitialContext;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
@@ -60,10 +59,8 @@ import javax.transaction.NotSupportedException;
 import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
-import javax.xml.ws.Holder;
 import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.handler.MessageContext;
-
 import org.msh.svev.pmode.PMode;
 import org.sed.ebms.GetInMailRequest;
 import org.sed.ebms.GetInMailResponse;
@@ -71,7 +68,6 @@ import org.sed.ebms.InMailEventListRequest;
 import org.sed.ebms.InMailEventListResponse;
 import org.sed.ebms.InMailListRequest;
 import org.sed.ebms.InMailListResponse;
-import org.sed.ebms.ModifOutActionCode;
 import org.sed.ebms.ModifyActionCode;
 import org.sed.ebms.ModifyInMailRequest;
 import org.sed.ebms.ModifyInMailResponse;
@@ -92,8 +88,8 @@ import org.sed.ebms.ebox.SEDBox;
 import org.sed.ebms.inbox.event.InEvent;
 import org.sed.ebms.inbox.mail.InMail;
 import org.sed.ebms.inbox.payload.InPart;
-import org.sed.ebms.outbox.mail.OutMail;
 import org.sed.ebms.outbox.event.OutEvent;
+import org.sed.ebms.outbox.mail.OutMail;
 import org.sed.ebms.outbox.payload.OutPart;
 import org.sed.ebms.rcontrol.RControl;
 import si.sed.commons.SEDInboxMailStatus;
@@ -102,6 +98,7 @@ import si.sed.commons.SEDOutboxMailStatus;
 import si.sed.commons.SEDSystemProperties;
 import si.sed.commons.SEDValues;
 import si.sed.commons.exception.HashException;
+import si.sed.commons.exception.PModeException;
 import si.sed.commons.exception.SVEVReturnValue;
 import si.sed.commons.exception.StorageException;
 import si.sed.commons.interfaces.SEDLookupsInterface;
@@ -765,7 +762,7 @@ public class SEDMailBox implements SEDMailBoxWS {
                             || omail.getStatus().equalsIgnoreCase(SEDOutboxMailStatus.EBMSERROR.getValue())
                             || omail.getStatus().equalsIgnoreCase(SEDOutboxMailStatus.ERROR.getValue())
                             || omail.getStatus().equalsIgnoreCase(SEDOutboxMailStatus.SCHEDULE.getValue())) {
-                        
+
                         omail.setStatus(SEDOutboxMailStatus.CANCELED.getValue());
                         omail.setStatusDate(Calendar.getInstance().getTime());
 
@@ -1147,13 +1144,15 @@ public class SEDMailBox implements SEDMailBoxWS {
         if (SEDRequestUtils.isValidMailAddress(mail.getSenderEBox())) {
             throw SEDRequestUtils.createSEDException("Invalid format: SenderEBox", SEDExceptionCode.INVALID_DATA);
         }
-        
-     
 
         // get pmode       
-        String pmodeId =   mail.getService()+":"+getDomainFromAddress(mail.getReceiverEBox());     ;
+        String pmodeId = mail.getService() + ":" + getDomainFromAddress(mail.getReceiverEBox());;
 
-        pm = mpModeManager.getPModeById(pmodeId);
+        try {
+            pm = mpModeManager.getPModeById(pmodeId);
+        } catch (PModeException ex) {
+            throw SEDRequestUtils.createSEDException(String.format("Error occured while retrieving PMode  '%s'! Check PMode configuration. (pmodeId=[service:receiverDomain])", pmodeId), SEDExceptionCode.INVALID_DATA);
+        }
         if (pm == null) {
             throw SEDRequestUtils.createSEDException(String.format("PMode '%s' not exist! Check PMode configuration. (pmodeId=[service:receiverDomain])", pmodeId), SEDExceptionCode.INVALID_DATA);
         }

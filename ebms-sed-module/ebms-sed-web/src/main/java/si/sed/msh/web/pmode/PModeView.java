@@ -16,29 +16,20 @@
  */
 package si.sed.msh.web.pmode;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
-import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
-import static javax.ws.rs.client.Entity.text;
+import javax.xml.bind.JAXBException;
 import org.msh.svev.pmode.Leg;
 import org.msh.svev.pmode.PMode;
-import org.primefaces.event.SelectEvent;
-import si.sed.commons.SEDSystemProperties;
+import si.sed.commons.exception.PModeException;
+import si.sed.commons.utils.PModeManager;
 import si.sed.commons.utils.SEDLogger;
 import si.sed.commons.utils.xml.XMLUtils;
-import si.sed.msh.web.abst.AbstractJSFView;
+import si.sed.msh.web.abst.AbstractAdminJSFView;
 
 /**
  *
@@ -46,13 +37,12 @@ import si.sed.msh.web.abst.AbstractJSFView;
  */
 @SessionScoped
 @ManagedBean(name = "pModeView")
-public class PModeView extends AbstractJSFView {
+public class PModeView extends AbstractAdminJSFView<PMode> {
 
     public static SEDLogger LOG = new SEDLogger(PModeView.class);
-    
-    private PMode currentPMode;
-    //PModeManager pm = new  PModeManager();
-    String pMode = null;
+
+    PModeManager pm = new PModeManager();
+    String curre = null;
 
     private Map<String, String> mLookupMep;
     private Map<String, String> mLookupMepBinding;
@@ -71,25 +61,73 @@ public class PModeView extends AbstractJSFView {
         mLookupMepBinding.put("PullAndPush", "http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/pullAndPush");
     }
 
-    public List<PMode> getPModes() {
+    @Override
+    public void createEditable() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void removeSelected() {
+        if (getSelected() != null) {
+            pm.removePMode(getSelected());
+        }
+    }
+
+    @Override
+    public void persistEditable() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void updateEditable() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public List<PMode> getList() {
+        long l = LOG.logStart();
+
+        try {
+            return pm.getPModeList();
+        } catch (PModeException ex) {
+            LOG.logError(l, null, ex);
+        }
         return null;
     }
 
-    public PMode getCurrentPMode() {
-        return currentPMode;
+    public String getCurrentPModeAsString() {
+        long l = LOG.logStart();
+        String pmrs = "";
+        PMode pmed = getEditable();
+        if (pmed != null) {
+            try {
+                pmrs = XMLUtils.serializeToString(pmed);
+            } catch (JAXBException ex) {
+                LOG.logError(l, null, ex);
+            }
+        }
+        return pmrs;
     }
 
-    public void setCurrentPMode(PMode currentPMode) {
-        this.currentPMode = currentPMode;
+    public void setCurrentPModeAsString(String strPMode) {
+        long l = LOG.logStart();
+
+        PMode pmed = getEditable();
+        if (pmed != null) {
+            try {
+                PMode pmdNew = (PMode) XMLUtils.deserialize(strPMode, PMode.class);
+                setEditable(pmdNew);
+                pm.replace(pmdNew, pmed.getId());
+            } catch (JAXBException ex) {
+                LOG.logError(l, null, ex);
+            }
+        }
+
     }
 
     public Leg getCurrentPModeForeChannel() {
 
         return null;
-    }
-
-    public void onRowSelect(SelectEvent event) {
-        setCurrentPMode((PMode) event.getObject());
     }
 
     public Map<String, String> getLookupMEP() {
@@ -100,71 +138,8 @@ public class PModeView extends AbstractJSFView {
         return mLookupMepBinding;
     }
 
-    public String getPModeString() {
-        long l = LOG.logStart();
-        if (pMode == null) {
-            File pModeFile = new File(getPModeFilePath());
-            try {
-                pMode = readFile(pModeFile, Charset.forName("UTF-8"));
-                
-            } catch (IOException ex) {
-                LOG.logError(l, "ERROR reading file: " + getPModeFilePath(),  ex);
-            }
-        }
-        LOG.logEnd(l);
-        return pMode;
-    }
-
-    public void setPModeString(String val) {
-        pMode = val;
-    }
-
- 
-
-    public void savePMode() {
-        long l = LOG.logStart();
-        try {
-
-            File pModeFile = new File(getPModeFilePath());
-            int i = 1;
-            String fileFormat = getPModeFilePath() + ".%03d";
-            File pModeFileTarget = new File(String.format(fileFormat, i++));
-
-            while (pModeFileTarget.exists()) {
-                pModeFileTarget = new File(String.format(fileFormat, i++));
-            }
-
-            Files.move(pModeFile.toPath(), pModeFileTarget.toPath(), StandardCopyOption.REPLACE_EXISTING);
-
-            try (PrintWriter out = new PrintWriter(pModeFile)) {
-                out.println(getPModeString());
-                
-                String msg = "PMode saved!";
-                LOG.log(msg + " File: " + getPModeFilePath());
-                facesContext().addMessage(null, new FacesMessage(msg, pModeFile.getAbsolutePath() ));                
-            }
-
-        } catch (IOException ex) {
-            String msg = "ERROR saving file: "  +   ex.getMessage();
-            LOG.logError(l, msg ,  ex);
-            facesContext().addMessage(null, new FacesMessage(msg,getPModeFilePath() ));                
-        }
-        LOG.logEnd(l);
-    }
-
     public void formatPMode() {
-        setPModeString(XMLUtils.format(getPModeString()));
-    }
-    
-    public String getPModeFilePath(){
-        return System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR) + File.separator
-                    + System.getProperty(SEDSystemProperties.SYS_PROP_PMODE, SEDSystemProperties.SYS_PROP_PMODE_DEF);
+        ///      setPModeString(XMLUtils.format(getPModeString()));
     }
 
-    static String readFile(File file, Charset encoding)
-            throws IOException {
-
-        byte[] encoded = Files.readAllBytes(file.toPath());
-        return new String(encoded, encoding);
-    }
 }

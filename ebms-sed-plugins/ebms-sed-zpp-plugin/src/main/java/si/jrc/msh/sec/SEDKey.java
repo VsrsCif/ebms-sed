@@ -9,12 +9,12 @@ import java.io.Serializable;
 import java.math.BigInteger;
 import java.security.Key;
 
-public class SEDKey  implements Key, Serializable {
-    
-    BigInteger id;
-    byte[] secretKey;
+public class SEDKey implements Key, Serializable {
+
     String algorithm;
     String format;
+    BigInteger id;
+    byte[] secretKey;
 
     public SEDKey() {
     }
@@ -26,24 +26,9 @@ public class SEDKey  implements Key, Serializable {
         this.format = format;
     }
 
-    
-    
-    public BigInteger getId() {
-        return id;
-    }
-
-    public void setId(BigInteger id) {
-        this.id = id;
-    }
-
     @Override
     public String getAlgorithm() {
         return algorithm;
-    }
-
-    @Override
-    public String getFormat() {
-        return format;
     }
 
     @Override
@@ -51,17 +36,29 @@ public class SEDKey  implements Key, Serializable {
         return secretKey;
     }
 
-    public void setEncoded(byte[] secretKey) {
-        this.secretKey = secretKey;
+    @Override
+    public String getFormat() {
+        return format;
+    }
+
+    public BigInteger getId() {
+        return id;
     }
 
     public void setAlgorithm(String algorithm) {
         this.algorithm = algorithm;
     }
 
+    public void setEncoded(byte[] secretKey) {
+        this.secretKey = secretKey;
+    }
+
     public void setFormat(String format) {
         this.format = format;
     }
 
-   
+    public void setId(BigInteger id) {
+        this.id = id;
+    }
+
 }

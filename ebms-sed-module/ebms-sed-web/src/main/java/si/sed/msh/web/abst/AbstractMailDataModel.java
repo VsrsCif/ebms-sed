@@ -30,60 +30,58 @@ import si.sed.msh.web.gui.UserSessionData;
 public abstract class AbstractMailDataModel<T> extends LazyDataModel<T> {
 
     protected static final long serialVersionUID = 1L;
-    protected final Class<T> type;
+    SEDDaoInterface mDB;
     protected List<T> mDataList;
 
-    
-    SEDDaoInterface mDB;
-    
     protected UserSessionData messageBean;
+
+    protected final Class<T> type;
+
+    public AbstractMailDataModel(Class<T> type) {
+        this.type = type;
+    }
+
+    abstract public Object externalFilters();
+
+    public List<T> getCurrentData() {
+        return mDataList;
+    }
+
+    public List<T> getData(int startingAt, int maxPerPage, String sortField, SortOrder sortOrder, Object filters) {
+        String strSortOrder = "DESC";
+        return mDB.getDataList(type, startingAt, maxPerPage, sortField, strSortOrder, filters);
+    }
+
+    public List<T> getData(int startingAt, int maxPerPage) {
+        String strSortOrder = "DESC";
+        return mDB.getDataList(type, startingAt, maxPerPage, "Id", strSortOrder, externalFilters());
+    }
+
+    public Class<T> getType() {
+        return type;
+    }
+
+    public UserSessionData getUserSessionData() {
+        return this.messageBean;
+    }
+
+    @Override
+    public List<T> load(int startingAt, int maxPerPage, String sortField, SortOrder sortOrder, Map<String, Object> filters) {
+        String strSortOrder = "DESC";
+        // validate data
+        Object filterObject = externalFilters();
+        mDataList = getData(startingAt, maxPerPage, sortField, sortOrder, filterObject);
+        long l = mDB.getDataListCount(type, filterObject);
+        setRowCount((int) l);
+
+        setPageSize(maxPerPage);
+        return mDataList;
+    }
 
     //must povide the setter method
     public void setUserSessionData(UserSessionData messageBean, SEDDaoInterface db) {
         mDB = db;
         this.messageBean = messageBean;
     }
-    public UserSessionData getUserSessionData() {
-        return this.messageBean;
-    }
-
-    public AbstractMailDataModel(Class<T> type) {
-        this.type = type;
-      }
-
-    @Override
-    public List<T> load(int startingAt, int maxPerPage, String sortField, SortOrder sortOrder, Map<String, Object> filters) {
-        String strSortOrder = "DESC";
-        // validate data        
-        Object filterObject = externalFilters();
-        mDataList = getData(startingAt, maxPerPage, sortField, sortOrder, filterObject);
-        long l = mDB.getDataListCount(type, filterObject);
-        setRowCount((int)l);
-     
-        setPageSize(maxPerPage);
-        return mDataList;
-    }
-
-    public List<T> getData(int startingAt, int maxPerPage, String sortField, SortOrder sortOrder, Object filters) {
-         String strSortOrder = "DESC";
-        return mDB.getDataList(type, startingAt, maxPerPage, sortField, strSortOrder, filters);
-    }
-    
-    public List<T> getData(int startingAt, int maxPerPage) {
-         String strSortOrder = "DESC";
-        return mDB.getDataList(type, startingAt, maxPerPage, "Id", strSortOrder, externalFilters());
-    }
-
-    public List<T> getCurrentData() {
-        return mDataList;
-    }
-    
-    abstract public Object externalFilters();
-
-    public Class<T> getType() {
-        return type;
-    }
-    
-    
 
 }

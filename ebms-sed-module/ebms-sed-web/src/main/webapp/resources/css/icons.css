@@ -3,14 +3,14 @@
     width:  22px !important;
     height:  22px !important;
     background-image: url('../images/add.png') !important;
-    
+
 }
 
 .ui-icon-sed-compose {    
     width:  22px !important;
     height:  22px !important;
     background-image: url('../images/edit.png') !important;
-    
+
 }
 
 
@@ -18,26 +18,26 @@
     width:  22px !important;
     height:  22px !important;
     background-image: url('../images/resend.png') !important;
-    
+
 }
 .ui-icon-sed-remove {    
     width:  22px !important;
     height:  22px !important;
     background-image: url('../images/remove.png') !important;
-    
+
 }
 .ui-icon-sed-edit {    
     width:  22px !important;
     height:  22px !important;
     background-image: url('../images/edit.png') !important;
-    
+
 }
 
 .ui-icon-sed-exit {    
     width:  22px !important;
     height:  22px !important;
     background-image: url('../images/exit22.png') !important;
-    
+
 }
 
 .ui-icon-sed-showHidePanel {
@@ -88,7 +88,7 @@
 .ui-icon-sed-cancel {
     width:  22px !important;
     height:  22px !important;
-    
+
     background-image: url('../images/cancel.png') !important;
 }
 .ui-icon-sed-refresh{

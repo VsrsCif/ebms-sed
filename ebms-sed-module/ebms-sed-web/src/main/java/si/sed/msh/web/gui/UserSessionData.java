@@ -18,42 +18,46 @@ package si.sed.msh.web.gui;
 * limitations under the Licence.
  */
 import java.io.IOException;
-import si.sed.msh.web.abst.AbstractJSFView;
-import javax.faces.bean.ManagedBean;
-import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.faces.application.FacesMessage;
+import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
-
 import javax.faces.bean.SessionScoped;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.event.TransferEvent;
 import org.primefaces.event.UnselectEvent;
 import org.sed.ebms.user.SEDUser;
-import si.sed.commons.utils.SEDLogger;
 import si.sed.commons.SEDGUIConstants;
+import si.sed.commons.utils.SEDLogger;
+import si.sed.msh.web.abst.AbstractJSFView;
 
 @SessionScoped
 @ManagedBean(name = "userSessionData")
 public class UserSessionData extends AbstractJSFView {
-    
-    
-    @ManagedProperty(value = "#{loginManager}")
-    private LoginManager loginManager;
 
     private static final SEDLogger LOG = new SEDLogger(UserSessionData.class);
+    @ManagedProperty(value = "#{loginManager}")
+    private LoginManager loginManager;
     private String mstrCurrentSEDBox;
+
+    public String getCurrentSEDBox() {
+        return mstrCurrentSEDBox == null
+                && getUserEBoxes() != null && !getUserEBoxes().isEmpty() ? getUserEBoxes().get(0) : mstrCurrentSEDBox;
+    }
+
+    public LoginManager getLoginManager() {
+        return loginManager;
+    }
 
     public SEDUser getUser() {
         long l = LOG.logStart();
         FacesContext context = facesContext();
         ExternalContext externalContext = context.getExternalContext();
         SEDUser su = (SEDUser) externalContext.getSessionMap().get(SEDGUIConstants.SESSION_USER_VARIABLE_NAME);
-        if (su==null){
+        if (su == null) {
             try {
                 loginManager.logout();
             } catch (IOException ex) {
@@ -74,17 +78,18 @@ public class UserSessionData extends AbstractJSFView {
         return lst;
     }
 
-    public void setCurrentSEDBox(String strCurrBox) {
-        mstrCurrentSEDBox = strCurrBox;
+    public void onReorder() {
+        FacesContext context = FacesContext.getCurrentInstance();
+        context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "List Reordered", null));
     }
 
-    public String getCurrentSEDBox() {
-        return mstrCurrentSEDBox == null&&
-                getUserEBoxes()!=null &&  !getUserEBoxes().isEmpty()? getUserEBoxes().get(0):mstrCurrentSEDBox;
+    public void onSelect(SelectEvent event) {
+        FacesContext context = FacesContext.getCurrentInstance();
+        context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Item Selected", event.getObject().toString()));
     }
-    
-     public void onTransfer(TransferEvent event) {
-       /* StringBuilder builder = new StringBuilder();
+
+    public void onTransfer(TransferEvent event) {
+        /* StringBuilder builder = new StringBuilder();
         for(Object item : event.getItems()) {
             builder.append(((Theme) item).getName()).append("<br />");
         }
@@ -95,25 +100,15 @@ public class UserSessionData extends AbstractJSFView {
         msg.setDetail(builder.toString());
          
         FacesContext.getCurrentInstance().addMessage(null, msg);*/
-    } 
- 
-    public void onSelect(SelectEvent event) {
-        FacesContext context = FacesContext.getCurrentInstance();
-        context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Item Selected", event.getObject().toString()));
     }
-     
+
     public void onUnselect(UnselectEvent event) {
         FacesContext context = FacesContext.getCurrentInstance();
         context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Item Unselected", event.getObject().toString()));
     }
-     
-    public void onReorder() {
-        FacesContext context = FacesContext.getCurrentInstance();
-        context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "List Reordered", null));
-    } 
 
-    public LoginManager getLoginManager() {
-        return loginManager;
+    public void setCurrentSEDBox(String strCurrBox) {
+        mstrCurrentSEDBox = strCurrBox;
     }
 
     public void setLoginManager(LoginManager loginManager) {

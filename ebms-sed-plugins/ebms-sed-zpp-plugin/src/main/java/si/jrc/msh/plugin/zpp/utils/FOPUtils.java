@@ -1,19 +1,3 @@
-/*
-* Copyright 2015, Supreme Court Republic of Slovenia 
-*
-* Licensed under the EUPL, Version 1.1 or – as soon they will be approved by 
-* the European Commission - subsequent versions of the EUPL (the "Licence");
-* You may not use this work except in compliance with the Licence.
-* You may obtain a copy of the Licence at:
-*
-* https://joinup.ec.europa.eu/software/page/eupl
-*
-* Unless required by applicable law or agreed to in writing, software 
-* distributed under the Licence is distributed on an "AS IS" basis, WITHOUT 
-* WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the Licence for the specific language governing permissions and  
-* limitations under the Licence.
- */
 package si.jrc.msh.plugin.zpp.utils;
 
 import java.io.File;
@@ -23,7 +7,6 @@ import java.io.OutputStream;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.util.JAXBSource;
-
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
@@ -35,8 +18,6 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import org.apache.fop.apps.Fop;
 import org.apache.fop.apps.FopFactory;
-import org.msh.ebms.outbox.mail.MSHOutMail;
-
 import org.xml.sax.SAXException;
 import si.sed.commons.exception.FOPException;
 
@@ -46,25 +27,8 @@ import si.sed.commons.exception.FOPException;
  */
 public class FOPUtils {
 
-    public enum FopTransformations {
-
-        DeliveryNotification("LegalDelivery_ZPP-DeliveryNotification.fo"),
-        AdviceOfDelivery("LegalDelivery_ZPP-AdviceOfDelivery.fo"),
-        AdviceOfDeliveryFiction("LegalDelivery_ZPP-AdviceOfDeliveryFiction.fo");
-
-        private final String mstrfileName;
-
-        FopTransformations(String filename) {
-            mstrfileName = filename;
-        }
-
-        public String getFileName() {
-            return mstrfileName;
-        }
-    }
-
-    FopFactory mfopFactorory = null;
     String mTransformationFolder;
+    FopFactory mfopFactorory = null;
     File msfConfigFile;
 
     public FOPUtils(File configfile, String xsltFolder) {
@@ -73,13 +37,6 @@ public class FOPUtils {
 
     }
 
-    private FopFactory getFopFactory() throws SAXException, IOException {
-        if (mfopFactorory == null) {
-            mfopFactorory = FopFactory.newInstance(msfConfigFile);
-        }
-        return mfopFactorory;
-
-    }
 
     /*
     public static void main(String... args) {        
@@ -154,6 +111,14 @@ public class FOPUtils {
         }
     }
 
+    private FopFactory getFopFactory() throws SAXException, IOException {
+        if (mfopFactorory == null) {
+            mfopFactorory = FopFactory.newInstance(msfConfigFile);
+        }
+        return mfopFactorory;
+
+    }
+
     /*
 
     public byte[] generateVisualization(File inputRequest, String service, FopTransformations xslt) throws FOPException {
@@ -183,6 +148,23 @@ public class FOPUtils {
         }
         return new File(mTransformationFolder, xslt.getFileName());
 
+    }
+
+    public enum FopTransformations {
+
+        DeliveryNotification("LegalDelivery_ZPP-DeliveryNotification.fo"),
+        AdviceOfDelivery("LegalDelivery_ZPP-AdviceOfDelivery.fo"),
+        AdviceOfDeliveryFiction("LegalDelivery_ZPP-AdviceOfDeliveryFiction.fo");
+
+        private final String mstrfileName;
+
+        FopTransformations(String filename) {
+            mstrfileName = filename;
+        }
+
+        public String getFileName() {
+            return mstrfileName;
+        }
     }
 
 }

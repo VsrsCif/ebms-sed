@@ -10,9 +10,9 @@ package si.sed.msh.web.gui.entities;
  * @author sluzba
  */
 public class BTAction {
-    String name;
-    
+
     String leftEnd;
+    String name;
     String rightEnd;
 
     public BTAction(String name, String leftEnd, String rightEnd) {
@@ -21,34 +21,28 @@ public class BTAction {
         this.rightEnd = rightEnd;
     }
 
-    
-    
-    
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getLeftEnd() {
         return leftEnd;
     }
 
-    public void setLeftEnd(String leftEnd) {
-        this.leftEnd = leftEnd;
+    public String getName() {
+        return name;
     }
 
     public String getRightEnd() {
         return rightEnd;
     }
 
+    public void setLeftEnd(String leftEnd) {
+        this.leftEnd = leftEnd;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public void setRightEnd(String rightEnd) {
         this.rightEnd = rightEnd;
     }
-    
-    
-    
-    
+
 }

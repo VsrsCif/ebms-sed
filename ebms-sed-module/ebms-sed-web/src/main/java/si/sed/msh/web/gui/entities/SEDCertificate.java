@@ -23,6 +23,7 @@ import java.security.cert.X509Certificate;
  * @author Jože Rihtaršič
  */
 public class SEDCertificate {
+
     String alias;
     X509Certificate x509Certificate;
 
@@ -31,25 +32,20 @@ public class SEDCertificate {
         this.x509Certificate = x509Certificate;
     }
 
-    
     public String getAlias() {
         return alias;
-    }
-
-    public void setAlias(String alias) {
-        this.alias = alias;
     }
 
     public X509Certificate getX509Certificate() {
         return x509Certificate;
     }
 
+    public void setAlias(String alias) {
+        this.alias = alias;
+    }
+
     public void setX509Certificate(X509Certificate x509Certificate) {
         this.x509Certificate = x509Certificate;
     }
-    
-    
-    
-    
-            
+
 }

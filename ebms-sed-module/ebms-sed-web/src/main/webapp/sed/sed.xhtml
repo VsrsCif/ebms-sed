@@ -48,10 +48,10 @@
                                 <p:commandButton value="#{msg['Export']}" styleClass="toolbar-Button"  
                                                  rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_OUTBOX)}" 
                                                  icon="ui-icon-sed-save"
-                                                 
+
                                                  update=":dlgExportOutData:exportOutDataDialogForm"
                                                  oncomplete="PF('exportOutDataDialog').show()"/>
-                                
+
                                 <p:commandButton value="#{msg['Export']}" styleClass="toolbar-Button"  
                                                  rendered="#{MainWindow.currentPanel().equalsIgnoreCase(AppConstant.s_PANEL_INBOX)}" 
                                                  icon="ui-icon-sed-save"                                                 
@@ -236,6 +236,7 @@
                                                 update="forms:MainPanel">
                                         <f:attribute name="panel" value="PANEL_SETT_PMODE" />
                                     </p:menuitem>
+
                                 </p:menu>
                             </p:tab>
 
@@ -305,6 +306,7 @@
             <dlg:dlg-plugin id="dlgPlugin" />
             <dlg:dlg-export-outdata id="dlgExportOutData" />
             <dlg:dlg-export-indata id="dlgExportInData" />
+            <dlg:dlg-pmode id="dlgPMode" />
 
 
         </h:body>

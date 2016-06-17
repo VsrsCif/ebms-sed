@@ -23,16 +23,16 @@
                      selectionMode="single"
                      selection="#{adminSEDUserView.selected}"
                      rowKey="#{sp.userId}"
-                     
+
                      style="padding: 0px; margin: 0px"
                      scrollable="true" 
                      scrollHeight="200px"                     
                      >
 
-             <p:ajax event="rowDblselect" listener="#{adminSEDUserView.startEditSelected()}" 
+            <p:ajax event="rowDblselect" listener="#{adminSEDUserView.startEditSelected()}" 
                     update=":dlguser:userDialogForm:userDetails"
                     oncomplete="PF('userDialog').show()"/>
-            
+
             <f:facet name="header">
                 <p:commandButton value="#{msg['Add']}" styleClass="toolbar-Button" icon="ui-icon-sed-add" 
                                  update=":dlguser:userDialogForm:userDetails" 

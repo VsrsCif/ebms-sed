@@ -17,9 +17,27 @@ import si.sed.commons.interfaces.PluginDescriptionInterface;
  */
 @Stateless
 @Local(PluginDescriptionInterface.class)
-public class ZPPPluginDescription implements PluginDescriptionInterface{
-    
-  
+public class ZPPPluginDescription implements PluginDescriptionInterface {
+
+    @Override
+    public String getDesc() {
+        return "ZPP - e-delivery: SVEV 2.0 service implementation";
+    }
+
+    @Override
+    public String getJNDIInInterceptor() {
+        return "java:global/plugin-zpp/ZPPOutInterceptor!si.sed.commons.interfaces.SoapInterceptorInterface";
+    }
+
+    @Override
+    public String getJNDIOutInterceptor() {
+        return "java:global/plugin-zpp/ZPPOutInterceptor!si.sed.commons.interfaces.SoapInterceptorInterface";
+    }
+
+    @Override
+    public String getName() {
+        return "ZPP plugin";
+    }
 
     @Override
     public String getSettingUrlContext() {
@@ -32,30 +50,8 @@ public class ZPPPluginDescription implements PluginDescriptionInterface{
     }
 
     @Override
-    public String getJNDIOutInterceptor() {
-        return "java:global/plugin-zpp/ZPPOutInterceptor!si.sed.commons.interfaces.SoapInterceptorInterface";
-    }
-
-    @Override
-    public String getJNDIInInterceptor() {
-        return "java:global/plugin-zpp/ZPPOutInterceptor!si.sed.commons.interfaces.SoapInterceptorInterface";
-    }
-
-    @Override
     public String getType() {
         return ZPPConstants.S_ZPP_PLUGIN_TYPE;
     }
 
-    @Override
-    public String getName() {
-        return "ZPP plugin";
-    }
-
-    @Override
-    public String getDesc() {
-        return "ZPP - e-delivery: SVEV 2.0 service implementation";
-    }
-
-  
-    
 }

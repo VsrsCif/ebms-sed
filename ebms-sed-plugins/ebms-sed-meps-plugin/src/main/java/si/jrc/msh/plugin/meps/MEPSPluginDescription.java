@@ -17,7 +17,27 @@ import si.sed.commons.interfaces.PluginDescriptionInterface;
  */
 @Stateless
 @Local(PluginDescriptionInterface.class)
-public class MEPSPluginDescription implements PluginDescriptionInterface{
+public class MEPSPluginDescription implements PluginDescriptionInterface {
+
+    @Override
+    public String getDesc() {
+        return "";
+    }
+
+    @Override
+    public String getJNDIInInterceptor() {
+        return "java:global/plugin-meps/MEPSOutInterceptor!si.sed.commons.interfaces.SoapInterceptorInterface";
+    }
+
+    @Override
+    public String getJNDIOutInterceptor() {
+        return "java:global/plugin-meps/MEPSOutInterceptor!si.sed.commons.interfaces.SoapInterceptorInterface";
+    }
+
+    @Override
+    public String getName() {
+        return "MEPS-plugin";
+    }
 
     @Override
     public String getSettingUrlContext() {
@@ -30,30 +50,8 @@ public class MEPSPluginDescription implements PluginDescriptionInterface{
     }
 
     @Override
-    public String getJNDIOutInterceptor() {
-        return "java:global/plugin-meps/MEPSOutInterceptor!si.sed.commons.interfaces.SoapInterceptorInterface";
-    }
-
-    @Override
-    public String getJNDIInInterceptor() {
-        return "java:global/plugin-meps/MEPSOutInterceptor!si.sed.commons.interfaces.SoapInterceptorInterface";
-    }
-
-    @Override
     public String getType() {
         return "MEPSPlugin";
     }
 
-    @Override
-    public String getName() {
-        return "MEPS-plugin";
-    }
-
-    @Override
-    public String getDesc() {
-        return "";
-    }
-
-  
-    
 }

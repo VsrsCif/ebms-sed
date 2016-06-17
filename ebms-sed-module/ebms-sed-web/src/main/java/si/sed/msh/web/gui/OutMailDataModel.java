@@ -16,10 +16,10 @@
  */
 package si.sed.msh.web.gui;
 
-import si.sed.msh.web.abst.AbstractMailDataModel;
 import java.math.BigInteger;
 import org.msh.ebms.outbox.mail.MSHOutMail;
 import si.sed.commons.interfaces.SEDDaoInterface;
+import si.sed.msh.web.abst.AbstractMailDataModel;
 import si.sed.msh.web.gui.entities.OutMailTableFilter;
 
 /**
@@ -28,24 +28,22 @@ import si.sed.msh.web.gui.entities.OutMailTableFilter;
  */
 public class OutMailDataModel extends AbstractMailDataModel<MSHOutMail> {
 
- 
-    
     OutMailTableFilter outFilter = new OutMailTableFilter();
-    
+
     public OutMailDataModel(Class<MSHOutMail> type, UserSessionData messageBean, SEDDaoInterface db) {
         super(type);
         setUserSessionData(messageBean, db);
     }
-    
+
     @Override
     public Object getRowKey(MSHOutMail inMail) {
         return inMail.getId();
     }
-    
+
     @Override
     public MSHOutMail getRowData(String inMailId) {
         BigInteger id = new BigInteger(inMailId);
-        
+
         for (MSHOutMail player : getCurrentData()) {
             if (id.equals(player.getId())) {
                 return player;
@@ -53,7 +51,7 @@ public class OutMailDataModel extends AbstractMailDataModel<MSHOutMail> {
         }
         return null;
     }
-    
+
     @Override
     public Object externalFilters() {
         if (outFilter == null) {
@@ -63,22 +61,20 @@ public class OutMailDataModel extends AbstractMailDataModel<MSHOutMail> {
         outFilter.getSenderEBoxList().clear();
         if (strSedBox == null || strSedBox.equalsIgnoreCase("ALL")) {
             outFilter.getSenderEBoxList().addAll(getUserSessionData().getUserEBoxes());
-            
+
         } else {
             outFilter.getSenderEBoxList().add(strSedBox);
         }
-        
+
         return outFilter;
     }
-    
+
     public OutMailTableFilter getFilter() {
         return outFilter;
     }
-    
+
     public void setFilter(OutMailTableFilter imtFilter) {
         this.outFilter = imtFilter;
     }
-    
-   
-    
+
 }

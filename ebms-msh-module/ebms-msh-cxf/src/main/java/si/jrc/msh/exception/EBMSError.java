@@ -12,8 +12,8 @@ package si.jrc.msh.exception;
 public class EBMSError extends Exception {
 
     EBMSErrorCode ebmsErrorCode;
-    String subMessage;
     String refToMessage;
+    String subMessage;
 
     public EBMSError(EBMSErrorCode ec, String refToMsg) {
         ebmsErrorCode = ec;
@@ -42,16 +42,16 @@ public class EBMSError extends Exception {
 
     }
 
-    public String getSubMessage() {
-        return subMessage;
-    }
-
     public EBMSErrorCode getEbmsErrorCode() {
         return ebmsErrorCode;
     }
 
     public String getRefToMessage() {
         return refToMessage;
+    }
+
+    public String getSubMessage() {
+        return subMessage;
     }
 
 }

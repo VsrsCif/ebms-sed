@@ -37,6 +37,12 @@ public class MockUserTransaction implements UserTransaction {
     }
 
     @Override
+    public int getStatus() throws SystemException {
+
+        return met.isActive() ? Status.STATUS_ACTIVE : Status.STATUS_NO_TRANSACTION;
+    }
+
+    @Override
     public void rollback() throws IllegalStateException, SecurityException, SystemException {
         met.rollback();
     }
@@ -44,12 +50,6 @@ public class MockUserTransaction implements UserTransaction {
     @Override
     public void setRollbackOnly() throws IllegalStateException, SystemException {
         met.setRollbackOnly();
-    }
-
-    @Override
-    public int getStatus() throws SystemException {
-
-        return met.isActive() ? Status.STATUS_ACTIVE : Status.STATUS_NO_TRANSACTION;
     }
 
     @Override

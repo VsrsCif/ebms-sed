@@ -21,11 +21,7 @@ package si.sed.commons;
  * @author Joze Rihtarsic <joze.rihtarsic@sodisce.si>
  */
 public enum SEDTaskStatus {
-    INIT("INIT", "Task initialize.", "orange")
-    ,PROGRESS("PROGRESS", "Task is in progress.", "gray")
-    ,SUCCESS("SUCCESS", "Task ended successfully", "blue")    
-    ,ERROR("ERROR", "Error occured ", "red")
-    ;
+    INIT("INIT", "Task initialize.", "orange"), PROGRESS("PROGRESS", "Task is in progress.", "gray"), SUCCESS("SUCCESS", "Task ended successfully", "blue"), ERROR("ERROR", "Error occured ", "red");
 
     String mstrVal;
     String mstrDesc;
@@ -44,17 +40,18 @@ public enum SEDTaskStatus {
     public String getDesc() {
         return mstrDesc;
     }
-    public String getColor(){
+
+    public String getColor() {
         return mstrColor;
     }
 
-    public static String getColor(String strName ) {
-        
-        for (SEDTaskStatus st: values()){
-            if (st.getValue().equals(strName)){
+    public static String getColor(String strName) {
+
+        for (SEDTaskStatus st : values()) {
+            if (st.getValue().equals(strName)) {
                 return st.getColor();
             }
-        }        
+        }
         return strName;
     }
 }

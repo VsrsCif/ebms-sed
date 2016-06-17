@@ -2,9 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package si.jrc.msh.plugin.zpp.doc;
-
 
 /**
  *
@@ -12,13 +10,12 @@ package si.jrc.msh.plugin.zpp.doc;
  */
 public class DocumentBuilderFactory {
 
-
-    public static DocumentBuilder getDocumentBuilder(String strVal){
+    public static DocumentBuilder getDocumentBuilder(String strVal) {
         DocumentBuilder db = null;
 
-        if (strVal != null && strVal.equalsIgnoreCase(DocumentBuilder.CREA_V1)){
+        if (strVal != null && strVal.equalsIgnoreCase(DocumentBuilder.CREA_V1)) {
             db = new DocumentEVemBuilder();
-        }else {
+        } else {
             db = new DocumentSodBuilder();
         }
         return db;

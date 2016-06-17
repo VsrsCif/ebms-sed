@@ -30,8 +30,9 @@ public interface DBSettingsInterface {
 
     @Lock(value = LockType.READ)
     void setSEDProperties(List<SEDProperty> prps);
+
     List<SEDProperty> getSEDProperties();
-    
+
     Properties getProperties();
 
     @Lock(value = LockType.READ)

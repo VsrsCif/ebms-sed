@@ -28,9 +28,9 @@ import si.sed.commons.SEDValues;
 public class TestUtils {
 
     protected static final String JNDI_CONNECTION_FACTORY = "ConnectionFactory";
-    protected static final String PERSISTENCE_UNIT_NAME = "ebMS_PU";
     protected static final String PERSISTENCE_SED_UNIT_NAME = "ebMS_MSH_PU";
-    
+    protected static final String PERSISTENCE_UNIT_NAME = "ebMS_PU";
+
     protected static final String SED_HOME = "target/TEST-SED_HOME";
 
     public static Queue setJMSEnvironment() throws NamingException, JMSException {

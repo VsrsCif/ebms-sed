@@ -11,6 +11,54 @@ package si.sed.commons.exception;
  */
 public class SEDSecurityException extends Exception {
 
+    String[] messageParams;
+    SEDSecurityExceptionCode mshErrorCode;
+
+    public SEDSecurityException(SEDSecurityExceptionCode ec) {
+        mshErrorCode = ec;
+
+    }
+
+    public SEDSecurityException(SEDSecurityExceptionCode ec, String... params) {
+        super(ec.getName());
+        mshErrorCode = ec;
+
+        messageParams = params;
+
+    }
+
+    public SEDSecurityException(SEDSecurityExceptionCode ec, Throwable cause, String... params) {
+        super(ec.getName(), cause);
+        mshErrorCode = ec;
+        messageParams = params;
+    }
+
+    public SEDSecurityException(SEDSecurityExceptionCode ec, Throwable cause) {
+        super(ec.getName(), cause);
+        mshErrorCode = ec;
+    }
+
+    public SEDSecurityExceptionCode getMSHErrorCode() {
+        return mshErrorCode;
+    }
+
+    @Override
+    public String getMessage() {
+        if (messageParams == null) {
+            messageParams = new String[mshErrorCode.getDescParamCount()];
+        }
+
+        if (messageParams.length != mshErrorCode.getDescParamCount()) {
+            String[] newMP = new String[mshErrorCode.getDescParamCount()];
+            for (int i = 0; i < newMP.length; i++) {
+                newMP[i] = i < messageParams.length ? messageParams[i] : "";
+            }
+            messageParams = newMP;
+
+        }
+        return String.format(mshErrorCode.getDescriptionFormat(), (Object[]) messageParams);
+    }
+
     public enum SEDSecurityExceptionCode {
 
         NoSuchAlgorithm("SEC:0001", "NoSuchAlgorithm", "No such algorithm: %s ", 1),
@@ -28,7 +76,7 @@ public class SEDSecurityException extends Exception {
         SignatureNotFound("SEC:0013", "SignatureNotFound", "Signature Not Found exception %s", 1),
         KeyForAliasNotExists("SEC:0014", "KeyForAliasNotExists", "Key for alias %s not found!", 1),;
         ;
-
+        
         String code;
         String name;
         String description;
@@ -56,54 +104,6 @@ public class SEDSecurityException extends Exception {
         public int getDescParamCount() {
             return paramCount;
         }
-    }
-
-    SEDSecurityExceptionCode mshErrorCode;
-    String[] messageParams;
-
-    public SEDSecurityException(SEDSecurityExceptionCode ec) {
-        mshErrorCode = ec;
-
-    }
-
-    public SEDSecurityException(SEDSecurityExceptionCode ec, String... params) {
-        super(ec.getName());
-        mshErrorCode = ec;
-
-        messageParams = params;
-
-    }
-
-    public SEDSecurityException(SEDSecurityExceptionCode ec, Throwable cause, String... params) {
-        super(ec.getName(), cause);
-        mshErrorCode = ec;
-        messageParams = params;
-    }
-
-    public SEDSecurityException(SEDSecurityExceptionCode ec, Throwable cause) {
-        super(ec.getName(), cause);
-        mshErrorCode = ec;
-    }
-
-    @Override
-    public String getMessage() {
-        if (messageParams == null) {
-            messageParams = new String[mshErrorCode.getDescParamCount()];
-        }
-
-        if (messageParams.length != mshErrorCode.getDescParamCount()) {
-            String[] newMP = new String[mshErrorCode.getDescParamCount()];
-            for (int i = 0; i < newMP.length; i++) {
-                newMP[i] = i < messageParams.length ? messageParams[i] : "";
-            }
-            messageParams = newMP;
-
-        }
-        return String.format(mshErrorCode.getDescriptionFormat(), (Object[]) messageParams);
-    }
-
-    public SEDSecurityExceptionCode getMSHErrorCode() {
-        return mshErrorCode;
     }
 
 }

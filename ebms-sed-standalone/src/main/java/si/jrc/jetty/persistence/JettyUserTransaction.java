@@ -29,7 +29,6 @@ import javax.transaction.UserTransaction;
  *
  * @author Joze Rihtarsic
  */
-
 public class JettyUserTransaction implements UserTransaction {
 
     EntityTransaction met;
@@ -67,7 +66,7 @@ public class JettyUserTransaction implements UserTransaction {
 
     @Override
     public void setTransactionTimeout(int seconds) throws SystemException {
-        miTimeOutTransaction = seconds*100;
+        miTimeOutTransaction = seconds * 100;
     }
 
 }

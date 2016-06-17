@@ -5,10 +5,10 @@
  */
 package si.jrc.msh.db.entities;
 
-import si.jrc.msh.exception.EBMSError;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import si.jrc.msh.exception.EBMSError;
 
 /**
  *
@@ -16,41 +16,27 @@ import java.util.List;
  */
 public class EBMSSignal {
 
-    enum SignalType {
-        SvevKeySignal,
-        ErrorSignal,
-        AS4ResponseSignal
-    }
-
-    Date signalReceivedDate;
-    Date signalDate;
-    String refToMessageId;
     boolean AS4ResponseValid;
 
     List<EBMSError> errors = new ArrayList<>();
+    String refToMessageId;
+    Date signalDate;
+    Date signalReceivedDate;
 
-    public Date getSignalReceivedDate() {
-        return signalReceivedDate;
-    }
-
-    public void setSignalReceivedDate(Date signalReceivedDate) {
-        this.signalReceivedDate = signalReceivedDate;
-    }
-
-    public Date getSignalDate() {
-        return signalDate;
-    }
-
-    public void setSignalDate(Date signalDate) {
-        this.signalDate = signalDate;
+    public List<EBMSError> getErrors() {
+        return errors;
     }
 
     public String getRefToMessageId() {
         return refToMessageId;
     }
 
-    public void setRefToMessageId(String refToMessageId) {
-        this.refToMessageId = refToMessageId;
+    public Date getSignalDate() {
+        return signalDate;
+    }
+
+    public Date getSignalReceivedDate() {
+        return signalReceivedDate;
     }
 
     public boolean isAS4ResponseValid() {
@@ -61,8 +47,22 @@ public class EBMSSignal {
         this.AS4ResponseValid = isAS4ResponseValid;
     }
 
-    public List<EBMSError> getErrors() {
-        return errors;
+    public void setRefToMessageId(String refToMessageId) {
+        this.refToMessageId = refToMessageId;
+    }
+
+    public void setSignalDate(Date signalDate) {
+        this.signalDate = signalDate;
+    }
+
+    public void setSignalReceivedDate(Date signalReceivedDate) {
+        this.signalReceivedDate = signalReceivedDate;
+    }
+
+    enum SignalType {
+        SvevKeySignal,
+        ErrorSignal,
+        AS4ResponseSignal
     }
 
 }

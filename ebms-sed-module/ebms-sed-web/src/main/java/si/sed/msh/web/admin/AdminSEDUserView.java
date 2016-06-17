@@ -16,7 +16,6 @@
  */
 package si.sed.msh.web.admin;
 
-import si.sed.msh.web.abst.AbstractAdminJSFView;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -29,6 +28,7 @@ import org.sed.ebms.user.SEDUser;
 import si.sed.commons.SEDJNDI;
 import si.sed.commons.interfaces.SEDLookupsInterface;
 import si.sed.commons.utils.SEDLogger;
+import si.sed.msh.web.abst.AbstractAdminJSFView;
 
 /**
  *
@@ -41,14 +41,13 @@ public class AdminSEDUserView extends AbstractAdminJSFView<SEDUser> {
 
     private static final SEDLogger LOG = new SEDLogger(AdminSEDUserView.class);
 
-    @EJB (mappedName=SEDJNDI.JNDI_SEDLOOKUPS)
+    @EJB(mappedName = SEDJNDI.JNDI_SEDLOOKUPS)
     private SEDLookupsInterface mdbLookups;
 
     private DualListModel<SEDBox> msbCBDualList = new DualListModel<>();
 
     public DualListModel<SEDBox> getCurrentPickupDualSEDBoxList() {
 
-                
         List<String> sbIDs = new ArrayList<>();
         if (getEditable() != null) {
             getEditable().getSEDBoxes().stream().forEach((sb) -> {

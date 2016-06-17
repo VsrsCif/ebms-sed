@@ -23,22 +23,12 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import org.junit.After;
 import org.junit.AfterClass;
+import static org.junit.Assert.*;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
-import org.sed.ebms.SEDException_Exception;
-import org.sed.ebms.SubmitMailRequest;
-import org.sed.ebms.SubmitMailResponse;
-import org.sed.ebms.control.Control;
-import org.sed.ebms.outbox.mail.OutMail;
-import org.sed.ebms.outbox.payload.OutPart;
-import org.sed.ebms.outbox.payload.OutPayload;
-import si.sed.commons.MimeValues;
-import si.sed.commons.SEDSystemProperties;
-import si.sed.msh.test.db.MockUserTransaction;
-import static org.junit.Assert.*;
-import org.junit.BeforeClass;
 import org.sed.ebms.GetInMailRequest;
 import org.sed.ebms.GetInMailResponse;
 import org.sed.ebms.InMailEventListRequest;
@@ -56,19 +46,29 @@ import org.sed.ebms.OutMailEventListResponse;
 import org.sed.ebms.OutMailListRequest;
 import org.sed.ebms.OutMailListResponse;
 import org.sed.ebms.SEDExceptionCode;
+import org.sed.ebms.SEDException_Exception;
+import org.sed.ebms.SubmitMailRequest;
+import org.sed.ebms.SubmitMailResponse;
+import org.sed.ebms.control.Control;
 import org.sed.ebms.inbox.event.InEvent;
 import org.sed.ebms.inbox.mail.InMail;
 import org.sed.ebms.inbox.payload.InPart;
 import org.sed.ebms.inbox.payload.InPayload;
 import org.sed.ebms.outbox.event.OutEvent;
+import org.sed.ebms.outbox.mail.OutMail;
+import org.sed.ebms.outbox.payload.OutPart;
+import org.sed.ebms.outbox.payload.OutPayload;
+import si.sed.commons.MimeValues;
 import si.sed.commons.SEDInboxMailStatus;
 import si.sed.commons.SEDOutboxMailStatus;
+import si.sed.commons.SEDSystemProperties;
 import si.sed.commons.exception.HashException;
 import si.sed.commons.exception.SVEVReturnValue;
 import si.sed.commons.exception.StorageException;
 import si.sed.commons.utils.HashUtils;
 import si.sed.commons.utils.StorageUtils;
 import si.sed.commons.utils.Utils;
+import si.sed.msh.test.db.MockUserTransaction;
 
 /**
  *
@@ -76,9 +76,6 @@ import si.sed.commons.utils.Utils;
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class SEDMailBoxTest extends TestUtils {
-
-    HashUtils mpHU = new HashUtils();
-    StorageUtils msuStorageUtils = new StorageUtils();
 
     static SEDMailBox mTestInstance = new SEDMailBox();
     static EntityManagerFactory memfFactory = null;
@@ -128,9 +125,290 @@ public class SEDMailBoxTest extends TestUtils {
     @AfterClass
     public static void tearDownClass() throws Exception {
     }
+    HashUtils mpHU = new HashUtils();
+    StorageUtils msuStorageUtils = new StorageUtils();
+
+    private void assertModifyOutMail(OutMail om, SEDOutboxMailStatus startOMStatus, ModifOutActionCode oac, SEDOutboxMailStatus endOMStatus,
+            SEDExceptionCode ecExpected) throws StorageException, HashException {
+
+        storeUpdateOutMail(om, startOMStatus);
+
+        ModifyOutMailRequest momr = new ModifyOutMailRequest();
+        momr.setControl(createControl());
+        momr.setData(new ModifyOutMailRequest.Data());
+        momr.getData().setMailId(om.getId());
+        momr.getData().setSenderEBox(om.getSenderEBox());
+        momr.getData().setAction(oac);
+
+        try {
+            ModifyOutMailResponse mer = mTestInstance.modifyOutMail(momr);
+            assertNotNull("Response", mer);
+            assertNotNull("Response/RControl", mer.getRControl());
+            assertNotNull("Response/RControl/@returnValue", mer.getRControl().getReturnValue());
+            assertEquals("Response/RControl/@returnValue", mer.getRControl().getReturnValue().intValue(), SVEVReturnValue.OK.getValue());
+            assertNotNull("Response/RData", mer.getRData());
+            assertNotNull("Response/RData/OutEvent", mer.getRData().getOutEvent());
+            assertEquals("Mail id", om.getId(), mer.getRData().getOutEvent().getMailId());
+            assertEquals("Sender box", om.getSenderEBox(), mer.getRData().getOutEvent().getSenderEBox());
+
+            OutMail omtest = getOutMail(om.getId());
+            assertNotNull("OutMail not exists in db", omtest);
+            assertEquals("Wrong modified end status", endOMStatus.getValue(), omtest.getStatus());
+
+        } catch (SEDException_Exception ex) {
+            assertNotNull("Error " + ex.getMessage() + " is not exptected to be thrown", ecExpected);
+            assertNotNull("SEDException_Exception/FaultInfo", ex.getFaultInfo());
+            assertNotNull("SEDException_Exception/FaultInfo/ErrorCode", ex.getFaultInfo().getErrorCode());
+            assertEquals("Erro code", ecExpected, ex.getFaultInfo().getErrorCode());
+        }
+
+    }
+
+    private void assertThrowErrorOnSubmit(SubmitMailRequest smr, String assertMessage, SEDExceptionCode ecExpected) {
+
+        SEDException_Exception ex = null;
+        try {
+            mTestInstance.submitMail(smr);
+        } catch (SEDException_Exception exRes) {
+            ex = exRes;
+        }
+        assertNotNull(assertMessage, ex);
+        assertEquals(ecExpected, ex.getFaultInfo().getErrorCode());
+
+    }
+
+    private Control createControl() {
+
+        Control c = new Control();
+        c.setApplicationId("ApplicationId");
+        c.setUserId("UserId");
+        return c;
+
+    }
+
+    private InMail createInMail() {
+
+        InMail im = new InMail();
+
+        im.setSenderMessageId("SM_ID-" + UUID.randomUUID().toString());
+        im.setAction("action");
+        im.setService("LegalDelivery_ZPP");
+        im.setConversationId(UUID.randomUUID().toString());
+        im.setReceiverName("Mr. Receiver Name");
+        im.setReceiverEBox("receiver.name@sed-box.si");
+        im.setSenderName("Mr. Sender Name");
+        im.setSenderEBox("sender.name@sed-box.si");
+
+        String testContent = "Test content";
+        im.setInPayload(new InPayload());
+        InPart ip = new InPart();
+        ip.setFilename("Test.txt");
+        ip.setDescription("test attachment");
+        ip.setValue(testContent.getBytes());
+        ip.setMimeType(MimeValues.MIME_TEXI.getMimeType());
+        im.getInPayload().getInParts().add(ip);
+
+        return im;
+
+    }
+
+    private OutMail createOutMail() {
+
+        OutMail om = new OutMail();
+
+        om.setSenderMessageId("SM_ID-" + UUID.randomUUID().toString());
+        om.setAction("action");
+        om.setService("LegalDelivery_ZPP");
+        om.setConversationId(UUID.randomUUID().toString());
+        om.setReceiverName("Mr. Receiver Name");
+        om.setReceiverEBox("receiver.name@sed-box.si");
+        om.setSenderName("Mr. Sender Name");
+        om.setSenderEBox("sender.name@sed-box.si");
+
+        String testContent = "Test content";
+        om.setOutPayload(new OutPayload());
+        OutPart op = new OutPart();
+        op.setFilename("Test.txt");
+        op.setDescription("test attachment");
+        op.setValue(testContent.getBytes());
+        op.setMimeType(MimeValues.MIME_TEXI.getMimeType());
+        om.getOutPayload().getOutParts().add(op);
+
+        return om;
+
+    }
+
+    private OutMail getOutMail(BigInteger iId) {
+        EntityManager me = null;
+        OutMail om = null;
+        try {
+            me = memfFactory.createEntityManager();
+            om = me.find(OutMail.class, iId);
+        } finally {
+            if (me != null) {
+                me.close();
+            }
+        }
+        return om;
+    }
 
     @Before
     public void setUp() {
+
+    }
+
+    private void storeInMail(InMail mail) throws StorageException, HashException {
+
+        EntityManager me = null;
+        try {
+            // --------------------
+            // serialize payload
+
+            if (mail.getInPayload() != null && !mail.getInPayload().getInParts().isEmpty()) {
+                for (InPart p : mail.getInPayload().getInParts()) {
+                    File fout = null;
+
+                    if (p.getValue() != null) {
+                        fout = msuStorageUtils.storeInFile(p.getMimeType(), p.getValue());
+                        // purge binary data
+                        //p.setValue(null);
+                    } else if (!Utils.isEmptyString(p.getFilepath())) {
+                        File fIn = new File(p.getFilepath());
+                        if (fIn.exists()) {
+                            fout = msuStorageUtils.storeOutFile(p.getMimeType(), fIn);
+                        }
+                    }
+                    // set MD5 and relative path;
+                    if (fout != null) {
+                        String strMD5 = mpHU.getMD5Hash(fout);
+                        String relPath = StorageUtils.getRelativePath(fout);
+                        p.setFilepath(relPath);
+                        p.setMd5(strMD5);
+
+                        if (Utils.isEmptyString(p.getFilename())) {
+                            p.setFilename(fout.getName());
+                        }
+                        if (Utils.isEmptyString(p.getName())) {
+                            p.setName(p.getFilename().substring(p.getFilename().lastIndexOf(".")));
+                        }
+                    }
+                }
+            }
+
+            me = memfFactory.createEntityManager();
+            mail.setReceivedDate(Calendar.getInstance().getTime());
+            mail.setStatusDate(mail.getReceivedDate());
+            mail.setStatus(SEDInboxMailStatus.RECEIVED.getValue());
+            me.getTransaction().begin();
+            me.persist(mail);
+
+            InEvent mevent = new InEvent();
+
+            mevent.setMailId(mail.getId());
+            mevent.setReceiverEBox(mail.getReceiverEBox());
+            mevent.setStatus(mail.getStatus());
+            mevent.setDate(mail.getStatusDate());
+            mevent.setUserId("userID");
+            mevent.setApplicationId("applicationId");
+            me.persist(mevent);
+            me.getTransaction().commit();
+        } finally {
+            if (me != null) {
+                me.close();
+            }
+        }
+
+    }
+
+    private void storeUpdateOutMail(OutMail mail, SEDOutboxMailStatus st) throws StorageException, HashException {
+        if (mail.getId() != null) {
+            EntityManager me = null;
+            try {
+
+                me = memfFactory.createEntityManager();
+                mail.setReceivedDate(Calendar.getInstance().getTime());
+                mail.setStatusDate(mail.getReceivedDate());
+                mail.setStatus(st.getValue());
+                me.getTransaction().begin();
+                me.merge(mail);
+
+                OutEvent mevent = new OutEvent();
+
+                mevent.setMailId(mail.getId());
+                mevent.setSenderEBox(mail.getSenderEBox());
+                mevent.setStatus(mail.getStatus());
+                mevent.setDate(mail.getStatusDate());
+                mevent.setUserId("userID");
+                mevent.setApplicationId("applicationId");
+                me.persist(mevent);
+                me.getTransaction().commit();
+            } finally {
+                if (me != null) {
+                    me.close();
+                }
+            }
+
+        } else {
+
+            EntityManager me = null;
+            try {
+                // --------------------
+                // serialize payload
+
+                if (mail.getOutPayload() != null && !mail.getOutPayload().getOutParts().isEmpty()) {
+                    for (OutPart p : mail.getOutPayload().getOutParts()) {
+                        File fout = null;
+
+                        if (p.getValue() != null) {
+                            fout = msuStorageUtils.storeOutFile(p.getMimeType(), p.getValue());
+                            // purge binary data
+                            //p.setValue(null);
+                        } else if (!Utils.isEmptyString(p.getFilepath())) {
+                            File fIn = new File(p.getFilepath());
+                            if (fIn.exists()) {
+                                fout = msuStorageUtils.storeOutFile(p.getMimeType(), fIn);
+                            }
+                        }
+                        // set MD5 and relative path;
+                        if (fout != null) {
+                            String strMD5 = mpHU.getMD5Hash(fout);
+                            String relPath = StorageUtils.getRelativePath(fout);
+                            p.setFilepath(relPath);
+                            p.setMd5(strMD5);
+
+                            if (Utils.isEmptyString(p.getFilename())) {
+                                p.setFilename(fout.getName());
+                            }
+                            if (Utils.isEmptyString(p.getName())) {
+                                p.setName(p.getFilename().substring(p.getFilename().lastIndexOf(".")));
+                            }
+                        }
+                    }
+                }
+
+                me = memfFactory.createEntityManager();
+                mail.setReceivedDate(Calendar.getInstance().getTime());
+                mail.setStatusDate(mail.getReceivedDate());
+                mail.setStatus(st.getValue());
+                me.getTransaction().begin();
+                me.persist(mail);
+
+                OutEvent mevent = new OutEvent();
+
+                mevent.setMailId(mail.getId());
+                mevent.setSenderEBox(mail.getSenderEBox());
+                mevent.setStatus(mail.getStatus());
+                mevent.setDate(mail.getStatusDate());
+                mevent.setUserId("userID");
+                mevent.setApplicationId("applicationId");
+                me.persist(mevent);
+                me.getTransaction().commit();
+            } finally {
+                if (me != null) {
+                    me.close();
+                }
+            }
+        }
 
     }
 
@@ -703,8 +981,6 @@ public class SEDMailBoxTest extends TestUtils {
     public void test_J_ModifyOutMail() throws Exception {
         System.out.println("test_J_ModifyOutMail");
 
-        
-        
         // assert abort
         assertModifyOutMail(createOutMail(), SEDOutboxMailStatus.SUBMITTED, ModifOutActionCode.ABORT, SEDOutboxMailStatus.CANCELED, null);
         assertModifyOutMail(createOutMail(), SEDOutboxMailStatus.ERROR, ModifOutActionCode.ABORT, SEDOutboxMailStatus.CANCELED, null);
@@ -712,309 +988,23 @@ public class SEDMailBoxTest extends TestUtils {
         assertModifyOutMail(createOutMail(), SEDOutboxMailStatus.SCHEDULE, ModifOutActionCode.ABORT, SEDOutboxMailStatus.CANCELED, null);
         assertModifyOutMail(createOutMail(), SEDOutboxMailStatus.CANCELED, ModifOutActionCode.ABORT, SEDOutboxMailStatus.CANCELED, null);
         assertModifyOutMail(createOutMail(), SEDOutboxMailStatus.CANCELING, ModifOutActionCode.ABORT, SEDOutboxMailStatus.CANCELING, null);
-        
+
         assertModifyOutMail(createOutMail(), SEDOutboxMailStatus.SENT, ModifOutActionCode.ABORT, null, SEDExceptionCode.INVALID_DATA);
         assertModifyOutMail(createOutMail(), SEDOutboxMailStatus.SENDING, ModifOutActionCode.ABORT, null, SEDExceptionCode.INVALID_DATA);
-        
+
         // assert Delete
         assertModifyOutMail(createOutMail(), SEDOutboxMailStatus.SUBMITTED, ModifOutActionCode.DELETE, SEDOutboxMailStatus.DELETED, null);
         assertModifyOutMail(createOutMail(), SEDOutboxMailStatus.ERROR, ModifOutActionCode.DELETE, SEDOutboxMailStatus.DELETED, null);
         assertModifyOutMail(createOutMail(), SEDOutboxMailStatus.EBMSERROR, ModifOutActionCode.DELETE, SEDOutboxMailStatus.DELETED, null);
         assertModifyOutMail(createOutMail(), SEDOutboxMailStatus.SCHEDULE, ModifOutActionCode.DELETE, SEDOutboxMailStatus.DELETED, null);
         assertModifyOutMail(createOutMail(), SEDOutboxMailStatus.CANCELED, ModifOutActionCode.DELETE, SEDOutboxMailStatus.DELETED, null);
-        
-        assertModifyOutMail(createOutMail(), SEDOutboxMailStatus.CANCELING, ModifOutActionCode.DELETE,null, SEDExceptionCode.INVALID_DATA); 
+
+        assertModifyOutMail(createOutMail(), SEDOutboxMailStatus.CANCELING, ModifOutActionCode.DELETE, null, SEDExceptionCode.INVALID_DATA);
         assertModifyOutMail(createOutMail(), SEDOutboxMailStatus.SENT, ModifOutActionCode.DELETE, null, SEDExceptionCode.INVALID_DATA);
         assertModifyOutMail(createOutMail(), SEDOutboxMailStatus.SENDING, ModifOutActionCode.DELETE, null, SEDExceptionCode.INVALID_DATA);
-        
-         // assert resend
+
+        // assert resend
         // todo
-         
-        
-        
-        
-        
-        
-
-    }
-
-    private void assertModifyOutMail(OutMail om, SEDOutboxMailStatus startOMStatus, ModifOutActionCode oac, SEDOutboxMailStatus endOMStatus,
-            SEDExceptionCode ecExpected) throws StorageException, HashException {
-        
-        storeUpdateOutMail(om, startOMStatus);
-
-        ModifyOutMailRequest momr = new ModifyOutMailRequest();
-        momr.setControl(createControl());
-        momr.setData(new ModifyOutMailRequest.Data());
-        momr.getData().setMailId(om.getId());
-        momr.getData().setSenderEBox(om.getSenderEBox());
-        momr.getData().setAction(oac);
-
-        try {
-            ModifyOutMailResponse mer = mTestInstance.modifyOutMail(momr);
-            assertNotNull("Response", mer);
-            assertNotNull("Response/RControl", mer.getRControl());
-            assertNotNull("Response/RControl/@returnValue", mer.getRControl().getReturnValue());
-            assertEquals("Response/RControl/@returnValue", mer.getRControl().getReturnValue().intValue(), SVEVReturnValue.OK.getValue());
-            assertNotNull("Response/RData", mer.getRData());
-            assertNotNull("Response/RData/OutEvent", mer.getRData().getOutEvent());
-            assertEquals("Mail id", om.getId(), mer.getRData().getOutEvent().getMailId());
-            assertEquals("Sender box", om.getSenderEBox(), mer.getRData().getOutEvent().getSenderEBox());
-
-            OutMail omtest = getOutMail(om.getId());
-            assertNotNull("OutMail not exists in db", omtest);
-            assertEquals("Wrong modified end status", endOMStatus.getValue(), omtest.getStatus());
-
-        } catch (SEDException_Exception ex) {
-            assertNotNull("Error " + ex.getMessage() + " is not exptected to be thrown", ecExpected);
-            assertNotNull("SEDException_Exception/FaultInfo", ex.getFaultInfo());
-            assertNotNull("SEDException_Exception/FaultInfo/ErrorCode", ex.getFaultInfo().getErrorCode());
-            assertEquals("Erro code", ecExpected, ex.getFaultInfo().getErrorCode());
-        }
-
-    }
-
-    private void assertThrowErrorOnSubmit(SubmitMailRequest smr, String assertMessage, SEDExceptionCode ecExpected) {
-
-        SEDException_Exception ex = null;
-        try {
-            mTestInstance.submitMail(smr);
-        } catch (SEDException_Exception exRes) {
-            ex = exRes;
-        }
-        assertNotNull(assertMessage, ex);
-        assertEquals(ecExpected, ex.getFaultInfo().getErrorCode());
-
-    }
-
-    private OutMail createOutMail() {
-
-        OutMail om = new OutMail();
-
-        om.setSenderMessageId("SM_ID-" + UUID.randomUUID().toString());
-        om.setAction("action");
-        om.setService("LegalDelivery_ZPP");
-        om.setConversationId(UUID.randomUUID().toString());
-        om.setReceiverName("Mr. Receiver Name");
-        om.setReceiverEBox("receiver.name@sed-box.si");
-        om.setSenderName("Mr. Sender Name");
-        om.setSenderEBox("sender.name@sed-box.si");
-
-        String testContent = "Test content";
-        om.setOutPayload(new OutPayload());
-        OutPart op = new OutPart();
-        op.setFilename("Test.txt");
-        op.setDescription("test attachment");
-        op.setValue(testContent.getBytes());
-        op.setMimeType(MimeValues.MIME_TEXI.getMimeType());
-        om.getOutPayload().getOutParts().add(op);
-
-        return om;
-
-    }
-
-    private InMail createInMail() {
-
-        InMail im = new InMail();
-
-        im.setSenderMessageId("SM_ID-" + UUID.randomUUID().toString());
-        im.setAction("action");
-        im.setService("LegalDelivery_ZPP");
-        im.setConversationId(UUID.randomUUID().toString());
-        im.setReceiverName("Mr. Receiver Name");
-        im.setReceiverEBox("receiver.name@sed-box.si");
-        im.setSenderName("Mr. Sender Name");
-        im.setSenderEBox("sender.name@sed-box.si");
-
-        String testContent = "Test content";
-        im.setInPayload(new InPayload());
-        InPart ip = new InPart();
-        ip.setFilename("Test.txt");
-        ip.setDescription("test attachment");
-        ip.setValue(testContent.getBytes());
-        ip.setMimeType(MimeValues.MIME_TEXI.getMimeType());
-        im.getInPayload().getInParts().add(ip);
-
-        return im;
-
-    }
-
-    private void storeInMail(InMail mail) throws StorageException, HashException {
-
-        EntityManager me = null;
-        try {
-            // --------------------
-            // serialize payload
-
-            if (mail.getInPayload() != null && !mail.getInPayload().getInParts().isEmpty()) {
-                for (InPart p : mail.getInPayload().getInParts()) {
-                    File fout = null;
-
-                    if (p.getValue() != null) {
-                        fout = msuStorageUtils.storeInFile(p.getMimeType(), p.getValue());
-                        // purge binary data
-                        //p.setValue(null);
-                    } else if (!Utils.isEmptyString(p.getFilepath())) {
-                        File fIn = new File(p.getFilepath());
-                        if (fIn.exists()) {
-                            fout = msuStorageUtils.storeOutFile(p.getMimeType(), fIn);
-                        }
-                    }
-                    // set MD5 and relative path;
-                    if (fout != null) {
-                        String strMD5 = mpHU.getMD5Hash(fout);
-                        String relPath = StorageUtils.getRelativePath(fout);
-                        p.setFilepath(relPath);
-                        p.setMd5(strMD5);
-
-                        if (Utils.isEmptyString(p.getFilename())) {
-                            p.setFilename(fout.getName());
-                        }
-                        if (Utils.isEmptyString(p.getName())) {
-                            p.setName(p.getFilename().substring(p.getFilename().lastIndexOf(".")));
-                        }
-                    }
-                }
-            }
-
-            me = memfFactory.createEntityManager();
-            mail.setReceivedDate(Calendar.getInstance().getTime());
-            mail.setStatusDate(mail.getReceivedDate());
-            mail.setStatus(SEDInboxMailStatus.RECEIVED.getValue());
-            me.getTransaction().begin();
-            me.persist(mail);
-
-            InEvent mevent = new InEvent();
-
-            mevent.setMailId(mail.getId());
-            mevent.setReceiverEBox(mail.getReceiverEBox());
-            mevent.setStatus(mail.getStatus());
-            mevent.setDate(mail.getStatusDate());
-            mevent.setUserId("userID");
-            mevent.setApplicationId("applicationId");
-            me.persist(mevent);
-            me.getTransaction().commit();
-        } finally {
-            if (me != null) {
-                me.close();
-            }
-        }
-
-    }
-
-    private void storeUpdateOutMail(OutMail mail, SEDOutboxMailStatus st) throws StorageException, HashException {
-        if (mail.getId() != null) {
-            EntityManager me = null;
-            try {
-
-                me = memfFactory.createEntityManager();
-                mail.setReceivedDate(Calendar.getInstance().getTime());
-                mail.setStatusDate(mail.getReceivedDate());
-                mail.setStatus(st.getValue());
-                me.getTransaction().begin();
-                me.merge(mail);
-
-                OutEvent mevent = new OutEvent();
-
-                mevent.setMailId(mail.getId());
-                mevent.setSenderEBox(mail.getSenderEBox());
-                mevent.setStatus(mail.getStatus());
-                mevent.setDate(mail.getStatusDate());
-                mevent.setUserId("userID");
-                mevent.setApplicationId("applicationId");
-                me.persist(mevent);
-                me.getTransaction().commit();
-            } finally {
-                if (me != null) {
-                    me.close();
-                }
-            }
-
-        } else {
-
-            EntityManager me = null;
-            try {
-                // --------------------
-                // serialize payload
-
-                if (mail.getOutPayload() != null && !mail.getOutPayload().getOutParts().isEmpty()) {
-                    for (OutPart p : mail.getOutPayload().getOutParts()) {
-                        File fout = null;
-
-                        if (p.getValue() != null) {
-                            fout = msuStorageUtils.storeOutFile(p.getMimeType(), p.getValue());
-                            // purge binary data
-                            //p.setValue(null);
-                        } else if (!Utils.isEmptyString(p.getFilepath())) {
-                            File fIn = new File(p.getFilepath());
-                            if (fIn.exists()) {
-                                fout = msuStorageUtils.storeOutFile(p.getMimeType(), fIn);
-                            }
-                        }
-                        // set MD5 and relative path;
-                        if (fout != null) {
-                            String strMD5 = mpHU.getMD5Hash(fout);
-                            String relPath = StorageUtils.getRelativePath(fout);
-                            p.setFilepath(relPath);
-                            p.setMd5(strMD5);
-
-                            if (Utils.isEmptyString(p.getFilename())) {
-                                p.setFilename(fout.getName());
-                            }
-                            if (Utils.isEmptyString(p.getName())) {
-                                p.setName(p.getFilename().substring(p.getFilename().lastIndexOf(".")));
-                            }
-                        }
-                    }
-                }
-
-                me = memfFactory.createEntityManager();
-                mail.setReceivedDate(Calendar.getInstance().getTime());
-                mail.setStatusDate(mail.getReceivedDate());
-                mail.setStatus(st.getValue());
-                me.getTransaction().begin();
-                me.persist(mail);
-
-                OutEvent mevent = new OutEvent();
-
-                mevent.setMailId(mail.getId());
-                mevent.setSenderEBox(mail.getSenderEBox());
-                mevent.setStatus(mail.getStatus());
-                mevent.setDate(mail.getStatusDate());
-                mevent.setUserId("userID");
-                mevent.setApplicationId("applicationId");
-                me.persist(mevent);
-                me.getTransaction().commit();
-            } finally {
-                if (me != null) {
-                    me.close();
-                }
-            }
-        }
-
-    }
-
-    private Control createControl() {
-
-        Control c = new Control();
-        c.setApplicationId("ApplicationId");
-        c.setUserId("UserId");
-        return c;
-
-    }
-
-    private OutMail getOutMail(BigInteger iId) {
-        EntityManager me = null;
-        OutMail om = null;
-        try {
-            me = memfFactory.createEntityManager();
-            om = me.find(OutMail.class, iId);
-        } finally {
-            if (me != null) {
-                me.close();
-            }
-        }
-        return om;
     }
 
 }

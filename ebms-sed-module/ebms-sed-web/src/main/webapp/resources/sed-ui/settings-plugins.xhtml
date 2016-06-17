@@ -11,7 +11,7 @@
     </composite:interface>
 
     <composite:implementation >
-        
+
         <h1>#{msg['adminSEDPluginView']}</h1>
         <p:panel id="TaskDesc" toggleTitle="#{msg['INFO']}" header="#{msg['PluginDefinitions']}" 
                  toggleable="true"  collapsed="true">
@@ -27,9 +27,9 @@
                      style="padding: 0px; margin: 0px"
                      scrollable="true" 
                      scrollHeight="200"    
-                     
+
                      >
-             <p:ajax event="rowDblselect" listener="#{adminSEDPluginView.startEditSelected()}" 
+            <p:ajax event="rowDblselect" listener="#{adminSEDPluginView.startEditSelected()}" 
                     update=":dlgPlugin:pluginDialogForm:plugin"
                     oncomplete="PF('pluginDialog').show()"/>
 
@@ -38,7 +38,7 @@
                                  actionListener="#{adminSEDPluginView.createEditable()}"
                                  oncomplete="PF('pluginDialog').show()" 
                                  update=":dlgPlugin:pluginDialogForm:plugin"
-                                 
+
                                  />
                 <p:commandButton value="#{msg['Edit']}"  styleClass="toolbar-Button" icon="ui-icon-sed-edit" 
                                  oncomplete="PF('pluginDialog').show()"                                                                   
@@ -47,27 +47,27 @@
                                  />
                 <p:commandButton value="#{msg['Delete']}" styleClass="toolbar-Button" icon="ui-icon-sed-remove" 
                                  actionListener="#{adminSEDPluginView.removeSelected()}" update=":forms:SettingsPlugin:TblPlugin :forms:toolbars" />
- 
+
             </f:facet>
-             <p:column headerText="#{msg['Type']}" width="120">
+            <p:column headerText="#{msg['Type']}" width="120">
                 <h:outputText value="#{sp.type}" />
             </p:column>
             <p:column headerText="#{msg['Name']}" width="160">
                 <h:outputText value="#{sp.name}"></h:outputText>                
             </p:column>
-               <p:column headerText="#{msg['Context']}">
-                   <h:outputText value="#{sp.webContext}"></h:outputText>                
+            <p:column headerText="#{msg['Context']}">
+                <h:outputText value="#{sp.webContext}"></h:outputText>                
             </p:column>
             <p:column headerText="#{msg['JNDIIn']}">
                 <h:outputText value="#{sp.jndiInInterceptor}"></h:outputText>                
             </p:column>
-             <p:column headerText="#{msg['JNDIOut']}">
-                 <h:outputText value="#{sp.jndiOutInterceptor}"></h:outputText>                
+            <p:column headerText="#{msg['JNDIOut']}">
+                <h:outputText value="#{sp.jndiOutInterceptor}"></h:outputText>                
             </p:column>
             <p:column headerText="#{msg['Description']}">
                 <h:outputText value="#{sp.description}" ></h:outputText>                
             </p:column>
-            
+
         </p:dataTable>
 
     </composite:implementation>

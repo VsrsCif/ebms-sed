@@ -5,16 +5,19 @@
  */
 package si.jrc.msh.utils;
 
-import si.sed.commons.utils.PModeManager;
 import java.util.ArrayList;
 import java.util.List;
-import javax.rmi.CORBA.Util;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.msh.ebms.outbox.mail.MSHOutMail;
 import org.msh.ebms.outbox.payload.MSHOutPart;
-
 import org.msh.svev.pmode.PMode;
+import si.jrc.msh.exception.EBMSError;
+import si.jrc.msh.exception.EBMSErrorCode;
 import si.jrc.msh.exception.MSHException;
 import si.jrc.msh.exception.MSHExceptionCode;
+import si.sed.commons.exception.PModeException;
+import si.sed.commons.utils.PModeManager;
 import si.sed.commons.utils.Utils;
 
 /**
@@ -85,18 +88,23 @@ public class SvevUtils {
     }
 
     public PMode getPModeForMail(MSHOutMail mail) throws MSHException {
-        PMode pmd;
-        
-        
-        String pmode = Utils.getPModeIdFromOutMail(mail);
-        mpmd.reloadPModes();
-        // check if exists targeted MSHOut with legal-delivery service
-        pmd = mpmd.getPModeById(pmode);
-
-        if (pmd == null) {
-            throw new MSHException(MSHExceptionCode.InvalidPModeId, pmode);
+        String pmode = "";
+        try {
+            PMode pmd;
+            
+            pmode = Utils.getPModeIdFromOutMail(mail);
+            mpmd.reloadPModes();
+            // check if exists targeted MSHOut with legal-delivery service
+            pmd = mpmd.getPModeById(pmode);
+            
+            if (pmd == null) {
+                throw new MSHException(MSHExceptionCode.InvalidPModeId, pmode);
+            }
+            return pmd;
+        } catch (PModeException ex) {
+            String errmsg = "Error reading PModes for id: '" +pmode+ "'! Err:" + ex.getMessage();
+            throw new MSHException(MSHExceptionCode.InvalidPMode, ex, errmsg);
         }
-        return pmd;
     }
 
 }

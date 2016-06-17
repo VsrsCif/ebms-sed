@@ -17,7 +17,6 @@ import org.msh.svev.pmode.PMode;
 import si.sed.commons.interfaces.SoapInterceptorInterface;
 import si.sed.commons.utils.SEDLogger;
 
-
 /**
  *
  * @author sluzba
@@ -42,8 +41,8 @@ public class MSHPluginOutInterceptor extends AbstractSoapInterceptor {
             // todo
             String str = pmd.getLegs().get(0).getBusinessInfo().getService().getOutPlugin();
             if (str != null) {
-                  System.out.println("LOOKUP " + str);
-                
+                System.out.println("LOOKUP " + str);
+
                 try {
                     SoapInterceptorInterface example = InitialContext.doLookup(str);
                     example.handleMessage(msg);

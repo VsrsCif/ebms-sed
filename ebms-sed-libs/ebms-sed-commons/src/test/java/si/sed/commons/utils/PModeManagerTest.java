@@ -25,6 +25,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.junit.After;
 import org.msh.svev.pmode.PModes;
+import si.sed.commons.exception.PModeException;
 import si.sed.commons.utils.xml.XMLUtils;
 
 /**
@@ -34,7 +35,7 @@ import si.sed.commons.utils.xml.XMLUtils;
 public class PModeManagerTest {
 
     public PModeManagerTest() {
-        
+
         ConsoleAppender console = new ConsoleAppender(); //create appender
         //configure the appender
         String PATTERN = "%d [%p|%c|%C{1}] %m%n";
@@ -60,17 +61,14 @@ public class PModeManagerTest {
     }
 
     @org.junit.Test
-    public void testReloadPModes() {
+    public void testReloadPModes() throws PModeException, JAXBException, FileNotFoundException {
         System.out.println("reloadPModes");
 
         PModeManager pmd = new PModeManager();
         pmd.reloadPModes(PModeManagerTest.class.getResourceAsStream("/pmode/pmodes.xml"));
         PModes pm = pmd.getPModes();
-        try {
-            XMLUtils.serialize(pm, "test-pmode.xml");
-        } catch (JAXBException | FileNotFoundException ex) {
 
-        }
+        XMLUtils.serialize(pm, "test-pmode.xml");
 
     }
 

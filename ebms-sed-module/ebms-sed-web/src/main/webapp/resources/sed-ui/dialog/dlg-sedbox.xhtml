@@ -13,25 +13,25 @@
     <composite:implementation >
         <script type="text/javascript">
             function handleDisableExport(chkField) {
-                 if (chkField.checked) {
-                    PF('exFM').enable();                    
+                if (chkField.checked) {
+                    PF('exFM').enable();
                     PF('exFld').enable();
-                  //  PF('exMT').enable();
-                    
+                    //  PF('exMT').enable();
+
                 } else {
-                    PF('exFM').disable();                                        
+                    PF('exFM').disable();
                     PF('exFld').disable();
                     //PF('exMT').disable();
-                }                
+                }
             }
             function handleDisableExecute(chkField) {
-                 if (chkField.checked) {
+                if (chkField.checked) {
                     PF('exCmd').enable();
                     PF('exParams').enable();
                 } else {
-                    PF('exCmd').disable();                    
+                    PF('exCmd').disable();
                     PF('exParams').disable();
-                }                
+                }
             }
         </script>
         <!-- sed-box ADD/EDIT dialog! -->
@@ -89,19 +89,19 @@
                         <p:toolbar 
                             styleClass="dialogButtonBar" >
                             <f:facet name="right"  >
-                        <p:commandButton value="#{msg['Ok']}" update=":forms:SettingsSEDBoxes:TblSedBox" 
-                                         styleClass="toolbar-Button" 
-                                         icon="ui-icon-sed-ok"                                          
-                                         action="#{adminSEDBoxView.addOrUpdateEditable()}"
-                                         oncomplete="PF('sedboxDialog').hide()"   />
-                        <p:commandButton value="#{msg['Cancel']}" styleClass="toolbar-Button" 
-                                         icon="ui-icon-sed-cancel" 
-                                         oncomplete="PF('sedboxDialog').hide()" />
+                                <p:commandButton value="#{msg['Ok']}" update=":forms:SettingsSEDBoxes:TblSedBox" 
+                                                 styleClass="toolbar-Button" 
+                                                 icon="ui-icon-sed-ok"                                          
+                                                 action="#{adminSEDBoxView.addOrUpdateEditable()}"
+                                                 oncomplete="PF('sedboxDialog').hide()"   />
+                                <p:commandButton value="#{msg['Cancel']}" styleClass="toolbar-Button" 
+                                                 icon="ui-icon-sed-cancel" 
+                                                 oncomplete="PF('sedboxDialog').hide()" />
                             </f:facet>
                         </p:toolbar>
                     </p:layoutUnit>
                 </p:layout>               
-                
+
             </h:form>
         </p:dialog>
     </composite:implementation>

@@ -16,7 +16,6 @@
  */
 package si.sed.msh.web.admin;
 
-import si.sed.msh.web.abst.AbstractAdminJSFView;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
@@ -25,12 +24,11 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import org.sed.ebms.cron.SEDTaskType;
 import org.sed.ebms.cron.SEDTaskTypeProperty;
-
 import si.sed.commons.SEDJNDI;
 import si.sed.commons.interfaces.SEDLookupsInterface;
 import si.sed.commons.interfaces.TaskExecutionInterface;
-
 import si.sed.commons.utils.SEDLogger;
+import si.sed.msh.web.abst.AbstractAdminJSFView;
 
 /**
  *
@@ -47,13 +45,10 @@ public class AdminSEDTaskTypeView extends AbstractAdminJSFView<SEDTaskType> {
 
     SEDTaskTypeProperty mSelTaksProp;
 
-    
-
     @Override
     public void createEditable() {
         SEDTaskType ecj = new SEDTaskType();
-        
-        
+
         String type = "type_%03d";
         int i = 1;
         while (mdbLookups.getSEDTaskTypeByType(String.format(type, i)) != null) {
@@ -63,30 +58,29 @@ public class AdminSEDTaskTypeView extends AbstractAdminJSFView<SEDTaskType> {
         ecj.setType(String.format(type, i));
         ecj.setName("");
         ecj.setDescription("Enter JNDI and refresh data from EJB task!");
-     
 
         setNew(ecj);
     }
-    
-    public void refreshDataFromEJB(){
-        if (getEditable() ==null || getEditable().getJndi()==null || getEditable().getJndi().isEmpty())  {
+
+    public void refreshDataFromEJB() {
+        if (getEditable() == null || getEditable().getJndi() == null || getEditable().getJndi().isEmpty()) {
             return;
         }
-        
-         try {
+
+        try {
             TaskExecutionInterface tproc = InitialContext.doLookup(getEditable().getJndi());
             getEditable().setDescription(tproc.getTaskDefinition().getDescription());
             getEditable().setName(tproc.getTaskDefinition().getName());
             getEditable().setType(tproc.getTaskDefinition().getType());
             getEditable().getSEDTaskTypeProperties().clear();
-            if (!tproc.getTaskDefinition().getSEDTaskTypeProperties().isEmpty()){
-                getEditable().getSEDTaskTypeProperties().addAll(tproc.getTaskDefinition().getSEDTaskTypeProperties());                
+            if (!tproc.getTaskDefinition().getSEDTaskTypeProperties().isEmpty()) {
+                getEditable().getSEDTaskTypeProperties().addAll(tproc.getTaskDefinition().getSEDTaskTypeProperties());
             }
         } catch (NamingException ex) {
-        
+
             return;
         }
-        
+
     }
 
     @Override
@@ -95,9 +89,9 @@ public class AdminSEDTaskTypeView extends AbstractAdminJSFView<SEDTaskType> {
             mdbLookups.removeSEDTaskType(getSelected());
             setSelected(null);
         }
-        
-      
+
     }
+
     @Override
     public void persistEditable() {
         SEDTaskType ecj = getEditable();
@@ -121,41 +115,39 @@ public class AdminSEDTaskTypeView extends AbstractAdminJSFView<SEDTaskType> {
         LOG.logEnd(l, lst != null ? lst.size() : "null");
         return lst;
     }
-    
-    
-    public SEDTaskTypeProperty createTypeProperty(String key, String name, boolean mandatory){
-        SEDTaskTypeProperty sp = new SEDTaskTypeProperty();        
+
+    public SEDTaskTypeProperty createTypeProperty(String key, String name, boolean mandatory) {
+        SEDTaskTypeProperty sp = new SEDTaskTypeProperty();
         sp.setKey(key);
         sp.setDescription(name);
         sp.setMandatory(mandatory);
         return sp;
     }
-    
-    public void addTypeProperty(){
-        
-        if (getEditable()!=null) {
+
+    public void addTypeProperty() {
+
+        if (getEditable() != null) {
             System.out.println("ADD property");
-            SEDTaskTypeProperty sp = createTypeProperty("newProp","", true);
+            SEDTaskTypeProperty sp = createTypeProperty("newProp", "", true);
             getEditable().getSEDTaskTypeProperties().add(sp);
             setSelectedTaskProperty(sp);
             System.out.println("set selected ");
         }
 
     }
-     public void removeSelectedTypeProperty(){
-        if (getEditable()!=null && getSelectedTaskProperty()!=null)  {
+
+    public void removeSelectedTypeProperty() {
+        if (getEditable() != null && getSelectedTaskProperty() != null) {
             getEditable().getSEDTaskTypeProperties().remove(getSelectedTaskProperty());
         }
     }
 
-    
-    public SEDTaskTypeProperty getSelectedTaskProperty(){
+    public SEDTaskTypeProperty getSelectedTaskProperty() {
         return mSelTaksProp;
     }
-    
-    public void setSelectedTaskProperty(SEDTaskTypeProperty prop){
+
+    public void setSelectedTaskProperty(SEDTaskTypeProperty prop) {
         this.mSelTaksProp = prop;
     }
-    
-    
+
 }

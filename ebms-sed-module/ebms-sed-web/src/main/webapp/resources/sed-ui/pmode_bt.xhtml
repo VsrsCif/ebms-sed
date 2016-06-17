@@ -16,36 +16,36 @@
         <p:layout style="min-width:400px;min-height:400px; height: 100%;width: 100%"   >
             <p:layoutUnit position="north">
                 Business transactions
-               
+
             </p:layoutUnit>
-            
+
             <p:layoutUnit  position="west" resizable="false" size="300" minSize="300" maxSize="300" gutter="0" >
 
                 <p:dataTable id="BusinessTransaction"  var="act" value="#{businessTransaction.getActions()}" 
-                            styleClass="sq-table"
-                            selectionMode="single"
-                            selection="#{businessTransaction.selectedAction}"
-                            rowKey="#{act.name}"
-                            scrollable="true" 
-                            scrollHeight="200px"  
-                           
-                             >
-                    
-            <f:facet name="header">
-                <p:commandButton value="#{msg['Add']}" styleClass="toolbar-Button" icon="ui-icon-sed-add" 
-                                 update=":forms:SettingsPModesBT:BusinessTransaction" 
-                                 actionListener="#{businessTransaction.addAction()}"
-                                 oncomplete="PF('sedboxDialog').show()"  />
-                <p:commandButton value="#{msg['Edit']}" styleClass="toolbar-Button" icon="ui-icon-sed-edit" 
-                                 update=":dialogs:sedboxDialogForm:sedboxDetails" 
-                                 actionListener="#{adminSEDBoxView.startEditSelected()}"
-                                 oncomplete="PF('sedboxDialog').show()" />
-                <p:commandButton value="#{msg['Delete']}" styleClass="toolbar-Button" icon="ui-icon-sed-remove" 
-                                 actionListener="#{adminSEDBoxView.removeSelected()}"
-                                 update=":forms:SettingsSEDBoxes:TblSedBox" />
+                             styleClass="sq-table"
+                             selectionMode="single"
+                             selection="#{businessTransaction.selectedAction}"
+                             rowKey="#{act.name}"
+                             scrollable="true" 
+                             scrollHeight="200px"  
 
- 
-            </f:facet>
+                             >
+
+                    <f:facet name="header">
+                        <p:commandButton value="#{msg['Add']}" styleClass="toolbar-Button" icon="ui-icon-sed-add" 
+                                         update=":forms:SettingsPModesBT:BusinessTransaction" 
+                                         actionListener="#{businessTransaction.addAction()}"
+                                         oncomplete="PF('sedboxDialog').show()"  />
+                        <p:commandButton value="#{msg['Edit']}" styleClass="toolbar-Button" icon="ui-icon-sed-edit" 
+                                         update=":dialogs:sedboxDialogForm:sedboxDetails" 
+                                         actionListener="#{adminSEDBoxView.startEditSelected()}"
+                                         oncomplete="PF('sedboxDialog').show()" />
+                        <p:commandButton value="#{msg['Delete']}" styleClass="toolbar-Button" icon="ui-icon-sed-remove" 
+                                         actionListener="#{adminSEDBoxView.removeSelected()}"
+                                         update=":forms:SettingsSEDBoxes:TblSedBox" />
+
+
+                    </f:facet>
                     <p:ajax event="rowSelect" update="forms:SettingsPModesBT:BTActionData" />
                     <p:column headerText="sender" width="60" style="padding: 0; margin: 0; border-style: none; border-bottom-width: 0px;">
                         <p:graphicImage value="resources/images/#{act.leftEnd}.png"  />
@@ -69,8 +69,8 @@
                     <h:inputText value="#{businessTransaction.selectedAction.leftEnd}"  style="width:100%;"  readonly='true' />
                     <h:inputText value="#{businessTransaction.selectedAction.rightEnd}"  style="width:100%;"  readonly='true' />
                     Payloads
-                        
-                Properties
+
+                    Properties
                 </p:outputPanel>
             </p:layoutUnit>
 

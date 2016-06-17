@@ -11,8 +11,8 @@ package si.jrc.msh.exception;
  */
 public class MSHException extends Exception {
 
-    MSHExceptionCode mshErrorCode;
     String[] messageParams;
+    MSHExceptionCode mshErrorCode;
 
     public MSHException(MSHExceptionCode ec) {
         mshErrorCode = ec;
@@ -38,6 +38,10 @@ public class MSHException extends Exception {
         mshErrorCode = ec;
     }
 
+    public MSHExceptionCode getMSHErrorCode() {
+        return mshErrorCode;
+    }
+
     @Override
     public String getMessage() {
         if (messageParams == null) {
@@ -53,10 +57,6 @@ public class MSHException extends Exception {
 
         }
         return String.format(mshErrorCode.getDescriptionFormat(), (Object[]) messageParams);
-    }
-
-    public MSHExceptionCode getMSHErrorCode() {
-        return mshErrorCode;
     }
 
 }

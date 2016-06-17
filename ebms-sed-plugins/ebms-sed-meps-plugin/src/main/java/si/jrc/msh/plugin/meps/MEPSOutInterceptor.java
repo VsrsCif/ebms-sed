@@ -5,11 +5,11 @@
  */
 package si.jrc.msh.plugin.meps;
 
-import org.apache.cxf.binding.soap.SoapMessage;
 import javax.ejb.Local;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
+import org.apache.cxf.binding.soap.SoapMessage;
 import si.sed.commons.interfaces.SoapInterceptorInterface;
 
 /**
@@ -21,16 +21,16 @@ import si.sed.commons.interfaces.SoapInterceptorInterface;
 @TransactionManagement(TransactionManagementType.BEAN)
 public class MEPSOutInterceptor implements SoapInterceptorInterface {
 
-     @Override
-    public void handleMessage(SoapMessage msg) {
-        // create one pdf with white pages
-        // file message 
+    @Override
+    public void handleFault(SoapMessage t) {
 
     }
 
     @Override
-    public void handleFault(SoapMessage t) {
-        
+    public void handleMessage(SoapMessage msg) {
+        // create one pdf with white pages
+        // file message
+
     }
 
 }

@@ -31,7 +31,6 @@ import org.msh.ebms.outbox.mail.MSHOutMail;
 import org.msh.ebms.outbox.payload.MSHOutPart;
 import org.msh.ebms.outbox.property.MSHOutProperty;
 import org.msh.svev.pmode.PMode;
-
 import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.AgreementRef;
 import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.CollaborationInfo;
 import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.Description;
@@ -53,7 +52,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 import si.jrc.msh.client.MshClient;
-
 import si.jrc.msh.exception.EBMSError;
 import si.jrc.msh.exception.EBMSErrorCode;
 import si.sed.commons.utils.SEDLogger;
@@ -66,80 +64,9 @@ import si.sed.commons.utils.xml.XMLUtils;
  */
 public class EBMSUtils {
 
-    protected final SEDLogger mlog = new SEDLogger(MshClient.class);
     private static final String ID_PREFIX_ = "SED-";
 
-    public SignalMessage generateErrorSignal(EBMSError ebError, String senderDomain, Date timestamp) {
-        SignalMessage sigMsg = new SignalMessage();
-        // generate  MessageInfo
-        sigMsg.setMessageInfo(createMessageInfo(senderDomain, ebError.getRefToMessage(), timestamp));
-
-        // get references
-        org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.Error er = new org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.Error();
-        er.setCategory(ebError.getEbmsErrorCode().getCategory());
-        //er.setDescription(ebError.getEbmsErrorCode().getDescription());
-        er.setOrigin(ebError.getEbmsErrorCode().getOrigin());
-        er.setErrorCode(ebError.getEbmsErrorCode().getCode());
-        er.setErrorDetail(ebError.getSubMessage());
-        er.setRefToMessageInError(ebError.getRefToMessage());
-        er.setSeverity(ebError.getEbmsErrorCode().getSeverity());
-        er.setShortDescription(ebError.getEbmsErrorCode().getName());
-        sigMsg.getErrors().add(er);
-        return sigMsg;
-    }
-
-    public SignalMessage generateAS4ReceiptSignal(UserMessage userMessage, String senderDomain, File inboundMail, Date timestamp) {
-        SignalMessage sigMsg = new SignalMessage();
-        try (FileInputStream fos = new FileInputStream(inboundMail);
-                InputStream isXSLT = getClass().getResourceAsStream("/xslt/soap2AS4Receipt.xsl")) {
-
-            // add message infof
-            sigMsg.setMessageInfo(createMessageInfo(senderDomain, userMessage.getMessageInfo().getMessageId(), timestamp));
-            // generate receipt
-            Receipt rcp = new Receipt();
-            // generate as4 receipt from xslt
-            Document doc = XMLUtils.deserializeToDom(fos, isXSLT);
-            rcp.getAnies().add(doc.getDocumentElement());
-            sigMsg.setReceipt(rcp);
-
-        } catch (JAXBException | TransformerException | ParserConfigurationException | SAXException | IOException ex) {
-            Logger.getLogger(EBMSUtils.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return sigMsg;
-    }
-
-    public SignalMessage generateAS4ReceiptSignal(String refMessageId, String senderDomain, Element inboundMail, Date timestamp) {
-        SignalMessage sigMsg = new SignalMessage();
-        try (InputStream isXSLT = getClass().getResourceAsStream("/xslt/soap2AS4Receipt.xsl")) {
-
-            // add message infof
-            sigMsg.setMessageInfo(createMessageInfo(senderDomain, refMessageId, timestamp));
-            // generate receipt
-            Receipt rcp = new Receipt();
-            // generate as4 receipt from xslt
-            Document doc = XMLUtils.transform(inboundMail, isXSLT);
-            rcp.getAnies().add(doc.getDocumentElement());
-            sigMsg.setReceipt(rcp);
-
-        } catch (JAXBException | TransformerException | ParserConfigurationException | SAXException | IOException ex) {
-            Logger.getLogger(EBMSUtils.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return sigMsg;
-    }
-
-    public Messaging createMessaging(SoapVersion version) {
-        Messaging msg = new Messaging();
-        //ID must be an NCName. This means that it must start with a letter or underscore, 
-        //and can only contain letters, digits, underscores, hyphens, and periods.
-        msg.setId(ID_PREFIX_ + UUID.randomUUID().toString()); // generate unique id
-        if (version.getVersion() != 1.1) {
-            msg.setMustUnderstand(Boolean.TRUE);
-        } else {
-            msg.setS11MustUnderstand(Boolean.TRUE);;
-        }
-        return msg;
-
-    }
+    protected final SEDLogger mlog = new SEDLogger(MshClient.class);
 
     private MessageInfo createMessageInfo(String senderDomain, String refToMessage, Date timestamp) {
         return createMessageInfo(UUID.randomUUID().toString(), senderDomain, refToMessage, timestamp);
@@ -154,6 +81,20 @@ public class EBMSUtils {
         mi.setTimestamp(timestamp);
         mi.setRefToMessageId(refToMessage);
         return mi;
+    }
+
+    public Messaging createMessaging(SoapVersion version) {
+        Messaging msg = new Messaging();
+        //ID must be an NCName. This means that it must start with a letter or underscore, 
+        //and can only contain letters, digits, underscores, hyphens, and periods.
+        msg.setId(ID_PREFIX_ + UUID.randomUUID().toString()); // generate unique id
+        if (version.getVersion() != 1.1) {
+            msg.setMustUnderstand(Boolean.TRUE);
+        } else {
+            msg.setS11MustUnderstand(Boolean.TRUE);;
+        }
+        return msg;
+
     }
 
     public UserMessage createUserMessage(PMode pm, MSHOutMail mo, String senderDomain, Date timestamp) {
@@ -283,7 +224,7 @@ public class EBMSUtils {
                 }
                 Property fp = new Property();
                 fp.setName(EbMSConstants.EBMS_FILE_PROPERTY_IS_ENCRYPTED);
-                fp.setValue(mp.getIsEncrypted()?"true":"false");
+                fp.setValue(mp.getIsEncrypted() ? "true" : "false");
                 fileProp.add(fp);
 
                 if (!fileProp.isEmpty()) {
@@ -296,6 +237,64 @@ public class EBMSUtils {
         }
 
         return usgMsg;
+    }
+
+    public SignalMessage generateAS4ReceiptSignal(UserMessage userMessage, String senderDomain, File inboundMail, Date timestamp) {
+        SignalMessage sigMsg = new SignalMessage();
+        try (FileInputStream fos = new FileInputStream(inboundMail);
+                InputStream isXSLT = getClass().getResourceAsStream("/xslt/soap2AS4Receipt.xsl")) {
+
+            // add message infof
+            sigMsg.setMessageInfo(createMessageInfo(senderDomain, userMessage.getMessageInfo().getMessageId(), timestamp));
+            // generate receipt
+            Receipt rcp = new Receipt();
+            // generate as4 receipt from xslt
+            Document doc = XMLUtils.deserializeToDom(fos, isXSLT);
+            rcp.getAnies().add(doc.getDocumentElement());
+            sigMsg.setReceipt(rcp);
+
+        } catch (JAXBException | TransformerException | ParserConfigurationException | SAXException | IOException ex) {
+            Logger.getLogger(EBMSUtils.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return sigMsg;
+    }
+
+    public SignalMessage generateAS4ReceiptSignal(String refMessageId, String senderDomain, Element inboundMail, Date timestamp) {
+        SignalMessage sigMsg = new SignalMessage();
+        try (InputStream isXSLT = getClass().getResourceAsStream("/xslt/soap2AS4Receipt.xsl")) {
+
+            // add message infof
+            sigMsg.setMessageInfo(createMessageInfo(senderDomain, refMessageId, timestamp));
+            // generate receipt
+            Receipt rcp = new Receipt();
+            // generate as4 receipt from xslt
+            Document doc = XMLUtils.transform(inboundMail, isXSLT);
+            rcp.getAnies().add(doc.getDocumentElement());
+            sigMsg.setReceipt(rcp);
+
+        } catch (JAXBException | TransformerException | ParserConfigurationException | SAXException | IOException ex) {
+            Logger.getLogger(EBMSUtils.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return sigMsg;
+    }
+
+    public SignalMessage generateErrorSignal(EBMSError ebError, String senderDomain, Date timestamp) {
+        SignalMessage sigMsg = new SignalMessage();
+        // generate  MessageInfo
+        sigMsg.setMessageInfo(createMessageInfo(senderDomain, ebError.getRefToMessage(), timestamp));
+
+        // get references
+        org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.Error er = new org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.Error();
+        er.setCategory(ebError.getEbmsErrorCode().getCategory());
+        //er.setDescription(ebError.getEbmsErrorCode().getDescription());
+        er.setOrigin(ebError.getEbmsErrorCode().getOrigin());
+        er.setErrorCode(ebError.getEbmsErrorCode().getCode());
+        er.setErrorDetail(ebError.getSubMessage());
+        er.setRefToMessageInError(ebError.getRefToMessage());
+        er.setSeverity(ebError.getEbmsErrorCode().getSeverity());
+        er.setShortDescription(ebError.getEbmsErrorCode().getName());
+        sigMsg.getErrors().add(er);
+        return sigMsg;
     }
 
     public MSHInMail userMessage2MSHMail(UserMessage um) throws EBMSError {
@@ -450,8 +449,8 @@ public class EBMSUtils {
                                 case EbMSConstants.EBMS_FILE_PROPERTY_TYPE:
                                     part.setType(p.getValue());
                                     break;
-                                    case EbMSConstants.EBMS_FILE_PROPERTY_IS_ENCRYPTED:
-                                    part.setIsEncrypted(p.getValue()!= null && p.getValue().equalsIgnoreCase("true"));
+                                case EbMSConstants.EBMS_FILE_PROPERTY_IS_ENCRYPTED:
+                                    part.setIsEncrypted(p.getValue() != null && p.getValue().equalsIgnoreCase("true"));
                                     break;
                                 default:
                                     mlog.logWarn(l, "Unknown part property: '" + p.getName() + "' for message: '" + mshmail.getMessageId() + "' ", null);

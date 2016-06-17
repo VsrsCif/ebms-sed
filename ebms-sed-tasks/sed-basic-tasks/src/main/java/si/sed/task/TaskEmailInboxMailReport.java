@@ -29,10 +29,11 @@ import si.sed.task.filter.InMailFilter;
 @Local(TaskExecutionInterface.class)
 public class TaskEmailInboxMailReport extends TaskEmailReport {
 
-    public static String KEY_NoMail = "skip.on.NoMail";
-    public static String KEY_OnlyNew = "new.only";
     //public static String KEY_ListLine = "mail.data";
     public static String KEY_MAIL_STATUS = "mail.status";
+
+    public static String KEY_NoMail = "skip.on.NoMail";
+    public static String KEY_OnlyNew = "new.only";
 
     @Override
     public String generateMailReport(Properties p, StringWriter sw) throws TaskException {
@@ -40,15 +41,14 @@ public class TaskEmailInboxMailReport extends TaskEmailReport {
         String sedbox = null;
         boolean bNewOnly = true;
         boolean bSkipNoMail = true;
-        String  mailStatus = "RECEIVED";
-        
-        
+        String mailStatus = "RECEIVED";
+
         if (!p.containsKey(KEY_SEDBOX)) {
             throw new TaskException(TaskException.TaskExceptionCode.InitException, "Missing parameter:  '" + KEY_SEDBOX + "'!");
         } else {
             sedbox = p.getProperty(KEY_SEDBOX);
         }
-        
+
         if (!p.containsKey(KEY_NoMail)) {
             throw new TaskException(TaskException.TaskExceptionCode.InitException, "Missing parameter:  '" + KEY_NoMail + "'!");
         } else {
@@ -65,33 +65,32 @@ public class TaskEmailInboxMailReport extends TaskEmailReport {
             mailStatus = p.getProperty(KEY_MAIL_STATUS);
         }
 
-        
         sw.append("Got status report ");
         Date recTo = null;
         InMailFilter miFilter = new InMailFilter();
         miFilter.setStatus(mailStatus);
-        if (bNewOnly){
+        if (bNewOnly) {
             SEDTaskExecution te = null;
             try {
                 te = mdao.getLastSuccesfullTaskExecution(getTaskDefinition().getType());
-                if (te!= null) {
+                if (te != null) {
                     recTo = te.getStartTimestamp();
                 }
             } catch (StorageException ex) {
                 LOG.logWarn(0, "ERROR reading task execution", ex);
             }
-            if (te!=null){
+            if (te != null) {
                 miFilter.setReceivedDateFrom(recTo);
                 miFilter.setReceivedDateTo(Calendar.getInstance().getTime());
             }
         }
-        
+
         List<MSHInMail> lstInMail = mdao.getDataList(MSHInMail.class, -1, -1, "Id", "ASC", miFilter);
         if (lstInMail.isEmpty() && bSkipNoMail) {
-            sw.append("In mail size: " + lstInMail.size() +  "' nothing to submit - !");
+            sw.append("In mail size: " + lstInMail.size() + "' nothing to submit - !");
             return null;
         }
-        
+
         StringWriter swBody = new StringWriter();
         swBody.append("Dohodna pošta za predal: ");
         swBody.append(sedbox);
@@ -119,7 +118,7 @@ public class TaskEmailInboxMailReport extends TaskEmailReport {
             swBody.append(im.getSenderName() + ", ");
             swBody.append(im.getSubject());
             swBody.append(System.lineSeparator());
-        } 
+        }
         return swBody.toString();
     }
 
@@ -132,7 +131,7 @@ public class TaskEmailInboxMailReport extends TaskEmailReport {
 
         tt.getSEDTaskTypeProperties().add(createTTProperty(KEY_NoMail, "Supress if not Mail ", true, "boolean", null, null));
         tt.getSEDTaskTypeProperties().add(createTTProperty(KEY_OnlyNew, "Only if new mail ", true, "boolean", null, null));
-      //  tt.getSEDTaskTypeProperties().add(createTTProperty(KEY_ListLine, "List line"));
+        //  tt.getSEDTaskTypeProperties().add(createTTProperty(KEY_ListLine, "List line"));
 
         String strLst = "";
         for (SEDInboxMailStatus c : SEDInboxMailStatus.values()) {

@@ -19,7 +19,6 @@ package si.sed.commons.exception;
 import javax.xml.namespace.QName;
 import org.apache.cxf.binding.soap.SoapFault;
 
-
 /**
  *
  * @author Jože Rihtaršič

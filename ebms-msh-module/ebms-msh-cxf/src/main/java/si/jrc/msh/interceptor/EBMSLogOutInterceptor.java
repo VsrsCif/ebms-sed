@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package si.jrc.msh.interceptor;
 
 import java.io.File;
@@ -13,7 +8,6 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
-import static java.lang.System.out;
 import java.util.logging.Logger;
 import org.apache.cxf.common.logging.LogUtils;
 import org.apache.cxf.interceptor.AbstractLoggingInterceptor;
@@ -36,9 +30,9 @@ import si.sed.commons.utils.SEDLogger;
  */
 public class EBMSLogOutInterceptor extends AbstractLoggingInterceptor {
 
-    SEDLogger mlog = new SEDLogger(EBMSLogOutInterceptor.class);
     private static final Logger LOG = LogUtils.getLogger(EBMSLogOutInterceptor.class);
     private static final String LOG_SETUP = EBMSLogOutInterceptor.class.getName() + ".log-setup";
+    SEDLogger mlog = new SEDLogger(EBMSLogOutInterceptor.class);
 
     public EBMSLogOutInterceptor(String phase) {
         super(phase);
@@ -59,13 +53,20 @@ public class EBMSLogOutInterceptor extends AbstractLoggingInterceptor {
         this.writer = w;
     }
 
+    protected String formatLoggingMessage(LoggingMessage buffer) {
+        return buffer.toString();
+    }
+
+    @Override
+    protected Logger getLogger() {
+        return LOG;
+
+    }
+
     @Override
     public void handleMessage(Message message) throws Fault {
         long l = mlog.logStart();
 
-        
-
-        
         final OutputStream os = message.getContent(OutputStream.class);
         final Writer iowriter = message.getContent(Writer.class);
         boolean isRequestor = MessageUtils.isRequestor(message);
@@ -74,14 +75,14 @@ public class EBMSLogOutInterceptor extends AbstractLoggingInterceptor {
             return;
         }
         File fStore = null;
- 
+
         if (isRequestor) {
-            
+
             MSHOutMail rq = message.getExchange().get(MSHOutMail.class);
             fStore = EBMSLogUtils.getOutboundFileName(true, rq.getId(), null);
         } else {
             // get base from input log file
-            
+
             String base = (String) message.getExchange().get(EbMSConstants.EBMS_CP_BASE_LOG_SOAP_MESSAGE_FILE);
             fStore = EBMSLogUtils.getOutboundFileName(false, null, base);
 
@@ -93,12 +94,11 @@ public class EBMSLogOutInterceptor extends AbstractLoggingInterceptor {
         try {
             writer = new PrintWriter(fStore);
         } catch (FileNotFoundException ex) {
-            String errmsg = "Application error store outbound message to file: '"+fStore.getAbsolutePath()+"'! ";
+            String errmsg = "Application error store outbound message to file: '" + fStore.getAbsolutePath() + "'! ";
             mlog.logError(l, errmsg, ex);
         }
 
-        
-         Logger logger = LOG;
+        Logger logger = LOG;
         boolean hasLogged = message.containsKey(LOG_SETUP);
         if (!hasLogged) {
             message.put(LOG_SETUP, Boolean.TRUE);
@@ -119,7 +119,6 @@ public class EBMSLogOutInterceptor extends AbstractLoggingInterceptor {
         mlog.logEnd(l);
     }
 
-    
     private LoggingMessage setupBuffer(Message message) {
         String id = (String) message.getExchange().get(LoggingMessage.ID_KEY);
         if (id == null) {
@@ -167,11 +166,11 @@ public class EBMSLogOutInterceptor extends AbstractLoggingInterceptor {
 
     private class LogWriter extends FilterWriter {
 
-        StringWriter out2;
         int count;
+        final int lim;
         Logger logger; //NOPMD
         Message message;
-        final int lim;
+        StringWriter out2;
 
         public LogWriter(Logger logger, Message message, Writer writer) {
             super(writer);
@@ -181,6 +180,26 @@ public class EBMSLogOutInterceptor extends AbstractLoggingInterceptor {
                 out2 = new StringWriter();
             }
             lim = limit == -1 ? Integer.MAX_VALUE : limit;
+        }
+
+        public void close() throws IOException {
+            LoggingMessage buffer = setupBuffer(message);
+            if (count >= lim) {
+                buffer.getMessage().append("(message truncated to ").append(lim).append(" bytes)\n");
+            }
+            StringWriter w2 = out2;
+            if (w2 == null) {
+                w2 = (StringWriter) out;
+            }
+            String ct = (String) message.get(Message.CONTENT_TYPE);
+            try {
+                writePayload(buffer.getPayload(), w2, ct);
+            } catch (Exception ex) {
+                //ignore
+            }
+            log(logger, buffer.toString());
+            message.setContent(Writer.class, out);
+            super.close();
         }
 
         public void write(int c) throws IOException {
@@ -207,37 +226,15 @@ public class EBMSLogOutInterceptor extends AbstractLoggingInterceptor {
             count += len;
         }
 
-        public void close() throws IOException {
-            LoggingMessage buffer = setupBuffer(message);
-            if (count >= lim) {
-                buffer.getMessage().append("(message truncated to " + lim + " bytes)\n");
-            }
-            StringWriter w2 = out2;
-            if (w2 == null) {
-                w2 = (StringWriter) out;
-            }
-            String ct = (String) message.get(Message.CONTENT_TYPE);
-            try {
-                writePayload(buffer.getPayload(), w2, ct);
-            } catch (Exception ex) {
-                //ignore
-            }
-            log(logger, buffer.toString());
-            message.setContent(Writer.class, out);
-            super.close();
-        }
-    }
-
-    protected String formatLoggingMessage(LoggingMessage buffer) {
-        return buffer.toString();
     }
 
     class LoggingCallback implements CachedOutputStreamCallback {
 
+        private final int lim;
+        private final Logger logger; //NOPMD
+
         private final Message message;
         private final OutputStream origStream;
-        private final Logger logger; //NOPMD
-        private final int lim;
 
         public LoggingCallback(final Logger logger, final Message msg, final OutputStream os) {
             this.logger = logger;
@@ -246,30 +243,24 @@ public class EBMSLogOutInterceptor extends AbstractLoggingInterceptor {
             this.lim = limit == -1 ? Integer.MAX_VALUE : limit;
         }
 
-        public void onFlush(CachedOutputStream cos) {
-
-        }
-
         public void onClose(CachedOutputStream cos) {
             LoggingMessage buffer = setupBuffer(message);
-
             String ct = (String) message.get(Message.CONTENT_TYPE);
             if (!isShowBinaryContent() && isBinaryContent(ct)) {
                 buffer.getMessage().append(BINARY_CONTENT_MESSAGE).append('\n');
                 log(logger, formatLoggingMessage(buffer));
                 return;
             }
-
             if (cos.getTempFile() == null) {
                 //buffer.append("Outbound Message:\n");
                 if (cos.size() >= lim) {
-                    buffer.getMessage().append("(message truncated to " + lim + " bytes)\n");
+                    buffer.getMessage().append("(message truncated to ").append(lim).append(" bytes)\n");
                 }
             } else {
                 buffer.getMessage().append("Outbound Message (saved to tmp file):\n");
-                buffer.getMessage().append("Filename: " + cos.getTempFile().getAbsolutePath() + "\n");
+                buffer.getMessage().append("Filename: ").append(cos.getTempFile().getAbsolutePath()).append("\n");
                 if (cos.size() >= lim) {
-                    buffer.getMessage().append("(message truncated to " + lim + " bytes)\n");
+                    buffer.getMessage().append("(message truncated to ").append(lim).append(" bytes)\n");
                 }
             }
             try {
@@ -278,7 +269,6 @@ public class EBMSLogOutInterceptor extends AbstractLoggingInterceptor {
             } catch (Exception ex) {
                 //ignore
             }
-
             log(logger, formatLoggingMessage(buffer));
             try {
                 //empty out the cache
@@ -290,11 +280,10 @@ public class EBMSLogOutInterceptor extends AbstractLoggingInterceptor {
             message.setContent(OutputStream.class,
                     origStream);
         }
-    }
 
-    @Override
-    protected Logger getLogger() {
-        return LOG;
+        public void onFlush(CachedOutputStream cos) {
+
+        }
 
     }
 

@@ -47,102 +47,14 @@ import si.sed.msh.web.gui.OutMailDataView;
 public abstract class AbstractMailView<T, S> {
 
     protected static final SimpleDateFormat SDF_DDMMYYY_HH_MM_SS = new SimpleDateFormat("dd.MM.YYYY HH:mm:ss");
-    protected int mTabActiveIndex = 0;
 
     protected T mMail;
     protected AbstractMailDataModel<T> mMailModel = null;
+    StringFormater mStringFomrater = new StringFormater();
+    protected int mTabActiveIndex = 0;
     protected List<S> mlstMailEvents = null;
 
     private DualListModel<String> msbCBExportDualList = new DualListModel<>();
-    StringFormater mStringFomrater = new StringFormater();
-
-    abstract public String getStatusColor(String status);
-
-    abstract public void updateEventList();
-
-    abstract public StreamedContent getFile(BigInteger bi);
-
-    public LazyDataModel<T> getMailList() {
-        return mMailModel;
-    }
-
-    public T getCurrentMail() {
-        return mMail;
-    }
-
-    public void setCurrentMail(T mail) {
-        this.mMail = mail;
-        updateEventList();
-    }
-
-    public List<S> getMailEvents() {
-        return mlstMailEvents;
-    }
-
-    public void onRowSelect(SelectEvent event) {
-        if (event != null) {
-            setCurrentMail((T) event.getObject());
-        } else {
-            setCurrentMail(null);
-        }
-    }
-
-    public void onRowUnselect(UnselectEvent event) {
-        setCurrentMail(null);
-    }
-
-    public String formatDate(Date date) {
-        return SDF_DDMMYYY_HH_MM_SS.format(date);
-    }
-
-    public int rowIndex(T om) {
-        return mMailModel.getRowIndex();
-    }
-
-    public void search(ActionEvent event) {
-        String res = (String) event.getComponent().getAttributes().get("status");
-    }
-
-    public void setTabActiveIndex(int itindex) {
-        mTabActiveIndex = itindex;
-    }
-
-    public int getTabActiveIndex() {
-        return mTabActiveIndex;
-    }
-
-    public void onTabChange(TabChangeEvent event) {
-        if (event != null) {
-            TabView tv = (TabView) event.getComponent();
-            mTabActiveIndex = tv.getActiveIndex();
-        } else {
-            mTabActiveIndex = 0;
-        }
-    }
-
-    public DualListModel<String> getCurrentPickupDualExportData() {
-
-        List<String> sbIDs =new ArrayList<>();
-        List<String> sbTrg =  ReflectUtils.getBeanMethods(mMailModel.getType());
-        if (sbTrg.contains("MSHOutProperties")){
-            sbTrg.remove("MSHOutProperties");
-        }
-        if (sbTrg.contains("MSHInProperties")){
-            sbTrg.remove("MSHInProperties");
-        }
-        if (sbTrg.contains("MSHOutPayload")){
-            sbTrg.remove("MSHOutPayload");
-        }
-         if (sbTrg.contains("MSHInPayload")){
-            sbTrg.remove("MSHInPayload");
-        }
-
-        return msbCBExportDualList = new DualListModel<>(sbIDs, sbTrg);
-    }
-
-    public void setCurrentPickupDualExportData(DualListModel<String> dl) {
-        msbCBExportDualList = dl;
-    }
 
     public StreamedContent exportTableData() {
 
@@ -167,10 +79,97 @@ public abstract class AbstractMailView<T, S> {
         } catch (IOException ex) {
             Logger.getLogger(OutMailDataView.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
-           
+
         }
         return null;
     }
-;
+
+    public String formatDate(Date date) {
+        return SDF_DDMMYYY_HH_MM_SS.format(date);
+    }
+
+    public T getCurrentMail() {
+        return mMail;
+    }
+
+    public DualListModel<String> getCurrentPickupDualExportData() {
+
+        List<String> sbIDs = new ArrayList<>();
+        List<String> sbTrg = ReflectUtils.getBeanMethods(mMailModel.getType());
+        if (sbTrg.contains("MSHOutProperties")) {
+            sbTrg.remove("MSHOutProperties");
+        }
+        if (sbTrg.contains("MSHInProperties")) {
+            sbTrg.remove("MSHInProperties");
+        }
+        if (sbTrg.contains("MSHOutPayload")) {
+            sbTrg.remove("MSHOutPayload");
+        }
+        if (sbTrg.contains("MSHInPayload")) {
+            sbTrg.remove("MSHInPayload");
+        }
+
+        return msbCBExportDualList = new DualListModel<>(sbIDs, sbTrg);
+    }
+
+    abstract public StreamedContent getFile(BigInteger bi);
+
+    public List<S> getMailEvents() {
+        return mlstMailEvents;
+    }
+
+    public LazyDataModel<T> getMailList() {
+        return mMailModel;
+    }
+
+    abstract public String getStatusColor(String status);
+
+    public int getTabActiveIndex() {
+        return mTabActiveIndex;
+    }
+
+    public void onRowSelect(SelectEvent event) {
+        if (event != null) {
+            setCurrentMail((T) event.getObject());
+        } else {
+            setCurrentMail(null);
+        }
+    }
+
+    public void onRowUnselect(UnselectEvent event) {
+        setCurrentMail(null);
+    }
+
+    public void onTabChange(TabChangeEvent event) {
+        if (event != null) {
+            TabView tv = (TabView) event.getComponent();
+            mTabActiveIndex = tv.getActiveIndex();
+        } else {
+            mTabActiveIndex = 0;
+        }
+    }
+
+    public int rowIndex(T om) {
+        return mMailModel.getRowIndex();
+    }
+
+    public void search(ActionEvent event) {
+        String res = (String) event.getComponent().getAttributes().get("status");
+    }
+
+    public void setCurrentMail(T mail) {
+        this.mMail = mail;
+        updateEventList();
+    }
+
+    public void setCurrentPickupDualExportData(DualListModel<String> dl) {
+        msbCBExportDualList = dl;
+    }
+
+    public void setTabActiveIndex(int itindex) {
+        mTabActiveIndex = itindex;
+    }
+
+    ;abstract public void updateEventList();
 
 }

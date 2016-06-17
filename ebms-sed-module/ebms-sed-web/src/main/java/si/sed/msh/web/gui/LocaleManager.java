@@ -17,17 +17,17 @@ public class LocaleManager {
 
     private Locale locale;
 
-    @PostConstruct
-    public void init() {
-        locale = FacesContext.getCurrentInstance().getExternalContext().getRequestLocale();
+    public String getLanguage() {
+        return locale.getLanguage();
     }
 
     public Locale getLocale() {
         return locale;
     }
 
-    public String getLanguage() {
-        return locale.getLanguage();
+    @PostConstruct
+    public void init() {
+        locale = FacesContext.getCurrentInstance().getExternalContext().getRequestLocale();
     }
 
     public void setLanguage(String language) {

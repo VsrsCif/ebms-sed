@@ -1,21 +1,10 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package si.jrc.msh.plugin.zpp.doc;
 
-import com.sun.scenario.Settings;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.UnrecoverableEntryException;
-import java.security.cert.CertificateException;
 import java.util.Calendar;
 import java.util.List;
-
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -35,32 +24,25 @@ import si.sed.commons.utils.sec.XMLSignatureUtils;
  */
 public abstract class DocumentBuilder {
 
-    // schema type
-    public static final String SOD_V1 = "SOD_V1";
     public static final String CREA_V1 = "CREA_V1";
-
-    protected static final String MIME_TXT = "text/xml";
-    protected static final String MIME_PDF = "application/pdf";
-    protected static final String IDPFX_VIS = "vis-test";
-    protected static final String IDPFX_DATA = "dat-test";
-    protected static final String ENC_TYPE_B64 = "base64";
-    protected static final String ENC_TYPE_UTF8 = "UTF-8";
     protected static final String DELIVERY_TYPE = "Legal-ZPP2";
     protected static final String DOCUMENT_TYPE = "Message";
+    protected static final String ENC_TYPE_B64 = "base64";
+    protected static final String ENC_TYPE_UTF8 = "UTF-8";
+    private static final String HLSSDK_JKSPATH = "JKSPATH";
+    protected static final String IDPFX_DATA = "dat-test";
 
-    private static final String SIGNATURE_ELEMENT_NAME = "Signatures";
     private static final String IDPFX_SIG = "sig-test";
     private static final String IDPFX_SIG_PROP = "sigprop-test";
-    private static final String HLSSDK_JKSPATH = "JKSPATH";
+    protected static final String IDPFX_VIS = "vis-test";
+    protected static final String MIME_PDF = "application/pdf";
+    protected static final String MIME_TXT = "text/xml";
+    private static final String SIGNATURE_ELEMENT_NAME = "Signatures";
+    // schema type
+    public static final String SOD_V1 = "SOD_V1";
     private static final String XAdESCertificateDigestAlgorithm = "http://www.w3.org/2000/09/xmldsig#sha1";
-    private static final String XMLHEADER = "<?";
     private static final String XAdESignatureProductionPlace = "Ljubljana";
-
-    //private static ESignDocImpl medSigJDK = null;
-    private XMLSignatureUtils mssuSignUtils;
-    StorageUtils msuStorageUtils = new StorageUtils();
-
-    Logger mlgLogger = Logger.getLogger(DocumentBuilder.class.getName());
+    private static final String XMLHEADER = "<?";
 
     public static void writeToFile(String strVal, String strFile) {
         FileOutputStream fos = null;
@@ -75,14 +57,11 @@ public abstract class DocumentBuilder {
             }
         }
     }
+    Logger mlgLogger = Logger.getLogger(DocumentBuilder.class.getName());
 
-    public XMLSignatureUtils getSignUtils() {
-        if (mssuSignUtils == null) {
-            mssuSignUtils = new XMLSignatureUtils();
-            //mssuSignUtils.setTimeStampServerUrl(Settings.getInstance().getTimestampUrl());
-        }
-        return mssuSignUtils;
-    }
+    //private static ESignDocImpl medSigJDK = null;
+    private XMLSignatureUtils mssuSignUtils;
+    StorageUtils msuStorageUtils = new StorageUtils();
 
     protected Document convertEpDoc2W3cDoc(Object jaxBDoc, Class[] cls) throws SEDSecurityException {
         Document xDoc = null;
@@ -108,7 +87,15 @@ public abstract class DocumentBuilder {
         return xDoc;
     }
 
-    public abstract void createMail(MSHOutMail dce,  FileOutputStream fos,KeyStore.PrivateKeyEntry key) throws SEDSecurityException;
+    public abstract void createMail(MSHOutMail dce, FileOutputStream fos, KeyStore.PrivateKeyEntry key) throws SEDSecurityException;
+
+    public XMLSignatureUtils getSignUtils() {
+        if (mssuSignUtils == null) {
+            mssuSignUtils = new XMLSignatureUtils();
+            //mssuSignUtils.setTimeStampServerUrl(Settings.getInstance().getTimestampUrl());
+        }
+        return mssuSignUtils;
+    }
 
     /*
     protected static synchronized ESignDocImpl getSigJDK() throws SEDSecurityException {
@@ -129,11 +116,10 @@ public abstract class DocumentBuilder {
     }
 
     protected synchronized void singDocument(Document xDoc, List<String[]> strIds,
-             FileOutputStream fos, KeyStore.PrivateKeyEntry key ) throws SEDSecurityException {
+            FileOutputStream fos, KeyStore.PrivateKeyEntry key) throws SEDSecurityException {
         long t = getTime();
         mlgLogger.info("DocumentBuilder.singDocument: begin ");
 
-        
         NodeList lst = xDoc.getDocumentElement().getElementsByTagName(SIGNATURE_ELEMENT_NAME);
         Element eltSignature = (Element) lst.item(0);
         getSignUtils().singDocument(key, eltSignature, strIds, fos);

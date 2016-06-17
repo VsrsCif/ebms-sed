@@ -22,47 +22,40 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
 /**
  *
  * @author Joze Rihtarsic <joze.rihtarsic@sodisce.si>
  */
 public class ReflectUtils {
-    private static Map<Class, List<String> > BEAN_MEMBERS = new HashMap<>();
-    
-    // States used in property parsing
 
-    public static List<String> getBeanMethods(Class cls){
-        if (BEAN_MEMBERS.containsKey(cls)){
+    private static Map<Class, List<String>> BEAN_MEMBERS = new HashMap<>();
+
+    // States used in property parsing
+    public static List<String> getBeanMethods(Class cls) {
+        if (BEAN_MEMBERS.containsKey(cls)) {
             return BEAN_MEMBERS.get(cls);
         }
-        
-        List<String> lst  = new ArrayList<>();        
-        for (Method m: cls.getDeclaredMethods()){
-            if (m.getName().startsWith("get") && m.getReturnType() != null && 
-                    (m.getParameterTypes() == null ||  m.getParameterTypes().length ==0)  ){
-                
+
+        List<String> lst = new ArrayList<>();
+        for (Method m : cls.getDeclaredMethods()) {
+            if (m.getName().startsWith("get") && m.getReturnType() != null
+                    && (m.getParameterTypes() == null || m.getParameterTypes().length == 0)) {
+
                 String name = m.getName().substring(3);
-                if (lst.contains(name)){
+                if (lst.contains(name)) {
                     continue;
                 }
                 try {
-                    Method m2 = cls.getDeclaredMethod("set" +name, m.getReturnType());
+                    Method m2 = cls.getDeclaredMethod("set" + name, m.getReturnType());
                     lst.add(name);
                 } catch (NoSuchMethodException | SecurityException ignore) {
-                    
+
                 }
             }
-        
+
         }
         BEAN_MEMBERS.put(cls, lst);
-        return lst;           
+        return lst;
     }
 
-
-
-
-
-    
-   
 }

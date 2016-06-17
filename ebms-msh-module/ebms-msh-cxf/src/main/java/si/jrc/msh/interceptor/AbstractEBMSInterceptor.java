@@ -16,7 +16,6 @@
  */
 package si.jrc.msh.interceptor;
 
-
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import org.apache.cxf.binding.soap.SoapMessage;
@@ -36,11 +35,10 @@ public abstract class AbstractEBMSInterceptor extends AbstractSoapInterceptor {
 
     String LOADED_CLASSES = "hibernate.ejb.loaded.classes";
 
-    SEDLogger mlog = new SEDLogger(AbstractEBMSInterceptor.class);
-     
     DBSettingsInterface mDBSettings;
     SEDDaoInterface mSedDao;
     SEDLookupsInterface mSedLookups;
+    SEDLogger mlog = new SEDLogger(AbstractEBMSInterceptor.class);
 
     public AbstractEBMSInterceptor(String p) {
         super(p);
@@ -51,14 +49,39 @@ public abstract class AbstractEBMSInterceptor extends AbstractSoapInterceptor {
 
     }
 
+    public SEDDaoInterface getDAO() {
+        long l = mlog.logStart();
+        if (mSedDao == null) {
+            try {
+                mSedDao = InitialContext.doLookup(SEDJNDI.JNDI_SEDDAO);
+                mlog.logEnd(l);
+            } catch (NamingException ex) {
+                mlog.logError(l, ex);
+            }
+        }
 
-   
+        return mSedDao;
+    }
+
+    public SEDLookupsInterface getLookups() {
+        long l = mlog.logStart();
+        if (mSedLookups == null) {
+            try {
+                mSedLookups = InitialContext.doLookup(SEDJNDI.JNDI_SEDLOOKUPS);
+                mlog.logEnd(l);
+            } catch (NamingException ex) {
+                mlog.logError(l, ex);
+            }
+        }
+
+        return mSedLookups;
+    }
 
     public DBSettingsInterface getSettings() {
         long l = mlog.logStart();
-        if (mDBSettings== null) {
+        if (mDBSettings == null) {
             try {
-                mDBSettings=  InitialContext.doLookup(SEDJNDI.JNDI_DBSETTINGS);
+                mDBSettings = InitialContext.doLookup(SEDJNDI.JNDI_DBSETTINGS);
                 mlog.logEnd(l);
             } catch (NamingException ex) {
                 mlog.logError(l, ex);
@@ -66,40 +89,8 @@ public abstract class AbstractEBMSInterceptor extends AbstractSoapInterceptor {
         }
         return mDBSettings;
     }
-    
-     public SEDDaoInterface getDAO() {
-        long l = mlog.logStart();
-        if (mSedDao== null) {
-            try {
-                mSedDao=  InitialContext.doLookup(SEDJNDI.JNDI_SEDDAO);
-                mlog.logEnd(l);
-            } catch (NamingException ex) {
-                mlog.logError(l, ex);
-            }            
-        }
-      
-        return mSedDao;
-    }
-     
-      public SEDLookupsInterface getLookups() {
-        long l = mlog.logStart();
-        if (mSedLookups== null) {
-            try {
-                mSedLookups=  InitialContext.doLookup(SEDJNDI.JNDI_SEDLOOKUPS);
-                mlog.logEnd(l);
-            } catch (NamingException ex) {
-                mlog.logError(l, ex);
-            }            
-        }
-      
-        return mSedLookups;
-    }
 
     @Override
     public abstract void handleMessage(SoapMessage t) throws Fault;
-
-    
-
-    
 
 }

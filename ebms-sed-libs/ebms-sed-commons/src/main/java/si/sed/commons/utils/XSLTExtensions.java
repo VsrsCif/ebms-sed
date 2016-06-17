@@ -30,6 +30,14 @@ public class XSLTExtensions {
     private static final SimpleDateFormat S_DATE_FORMAT = new SimpleDateFormat("dd.MM.yyyy");
     private static final SimpleDateFormat S_DATE_TIME_FORMAT = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
 
+    public static Object currentDate() {
+        return S_DATE_FORMAT.format(Calendar.getInstance().getTime());
+    }
+
+    public static Object currentDateTime() {
+        return S_DATE_TIME_FORMAT.format(Calendar.getInstance().getTime());
+    }
+
     public static Object formatDate(String str) {
         if (str == null || str.trim().isEmpty()) {
             return null;
@@ -49,14 +57,6 @@ public class XSLTExtensions {
         c.add(Calendar.DAY_OF_MONTH, 15);
         return S_DATE_FORMAT.format(c.getTime());
 
-    }
-
-    public static Object currentDate() {
-        return S_DATE_FORMAT.format(Calendar.getInstance().getTime());
-    }
-
-    public static Object currentDateTime() {
-        return S_DATE_TIME_FORMAT.format(Calendar.getInstance().getTime());
     }
 
 }

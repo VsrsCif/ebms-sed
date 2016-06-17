@@ -14,9 +14,8 @@ import org.apache.log4j.Logger;
  */
 public class SEDLogger {
 
-    private final Logger mlgLogger;
     int miMethodStack = 3;
-    
+    private final Logger mlgLogger;
 
     public SEDLogger(Class clzz) {
         mlgLogger = Logger.getLogger(clzz != null ? clzz.getName() : this.getClass().getName());
@@ -27,32 +26,13 @@ public class SEDLogger {
         miMethodStack = iLogStackMethodLevel;
     }
 
-    public long getTime() {
-        return Calendar.getInstance().getTimeInMillis();
-    }
-
     protected String getCurrentMethodName() {
         return Thread.currentThread().getStackTrace().length > miMethodStack
                 ? Thread.currentThread().getStackTrace()[miMethodStack].getMethodName() : "NULL METHOD";
     }
 
-    public long logStart(final Object... param) {
-        long mlTime = getTime();
-        String strParams = null;
-        if (param != null && param.length != 0) {
-            StringWriter sw = new StringWriter();
-            int i = 0;
-            for (Object o : param) {
-                if (i != 0) {
-                    sw.append(",");
-                }
-                sw.append((++i) + ":'" + o + "'");
-            }
-            strParams = sw.toString();
-        }
-
-        mlgLogger.debug(getCurrentMethodName() + ": - BEGIN' " + (strParams != null ? " params: " + strParams : ""));
-        return mlTime;
+    public long getTime() {
+        return Calendar.getInstance().getTimeInMillis();
     }
 
     public long log(final Object... param) {
@@ -98,6 +78,25 @@ public class SEDLogger {
 
     public void logError(long lTime, Exception ex) {
         mlgLogger.error(getCurrentMethodName() + ": - ERROR MSG: '" + (ex != null ? ex.getMessage() : "") + "' ( " + (getTime() - lTime) + " ms )", ex);
+    }
+
+    public long logStart(final Object... param) {
+        long mlTime = getTime();
+        String strParams = null;
+        if (param != null && param.length != 0) {
+            StringWriter sw = new StringWriter();
+            int i = 0;
+            for (Object o : param) {
+                if (i != 0) {
+                    sw.append(",");
+                }
+                sw.append((++i) + ":'" + o + "'");
+            }
+            strParams = sw.toString();
+        }
+
+        mlgLogger.debug(getCurrentMethodName() + ": - BEGIN' " + (strParams != null ? " params: " + strParams : ""));
+        return mlTime;
     }
 
     public void logWarn(long lTime, String strMessage, Exception ex) {

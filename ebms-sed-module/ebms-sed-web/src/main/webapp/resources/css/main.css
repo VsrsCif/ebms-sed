@@ -208,7 +208,7 @@
     text-align: left !important;
     height: 28px !important;
     vertical-align: middle !important;
-    
+
 }
 
 .ui-picklist.ui-picklist-responsive .ui-picklist-list-wrapper {
@@ -217,4 +217,17 @@
 
 
 
+.CodeMirror {
+    /* Set height, width, borders, and global font properties here */
+    font-family: monospace;
+    height: 550px !important;
+    color: black;
+}
 
+
+.CodeMirror-scroll {
+    height: 550px !important;
+    outline: 0 none;
+    overflow: auto;
+    position: relative;
+}

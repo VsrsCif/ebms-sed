@@ -16,10 +16,10 @@
  */
 package si.sed.msh.web.gui;
 
-import si.sed.msh.web.abst.AbstractMailDataModel;
 import java.math.BigInteger;
 import org.sed.ebms.cron.SEDTaskExecution;
 import si.sed.commons.interfaces.SEDDaoInterface;
+import si.sed.msh.web.abst.AbstractMailDataModel;
 import si.sed.msh.web.gui.entities.CronExecutionFilter;
 
 /**
@@ -58,7 +58,6 @@ public class CronExecutionModel extends AbstractMailDataModel<SEDTaskExecution> 
         if (imtFilter == null) {
             imtFilter = new CronExecutionFilter();
         }
-       
 
         return imtFilter;
     }

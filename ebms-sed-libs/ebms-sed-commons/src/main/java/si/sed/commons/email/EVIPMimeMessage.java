@@ -13,18 +13,12 @@ import javax.mail.internet.MimeMessage;
 
 public class EVIPMimeMessage extends MimeMessage {
 
-    
     private String mStrMessageId = null;
 
     public EVIPMimeMessage(Session session, String messageId) {
         super(session);
         this.session = session;
         mStrMessageId = messageId;
-    }
-
-    @Override
-    public void updateMessageID() throws MessagingException {
-        setHeader("Message-ID", "<" + getUniqueMessageIDValue(session) + ">");
     }
 
     public String getUniqueMessageIDValue(Session ssn) {
@@ -47,6 +41,11 @@ public class EVIPMimeMessage extends MimeMessage {
         s.append("EVIPMail.");
         s.append(suffix);
         return s.toString();
+    }
+
+    @Override
+    public void updateMessageID() throws MessagingException {
+        setHeader("Message-ID", "<" + getUniqueMessageIDValue(session) + ">");
     }
 
 }

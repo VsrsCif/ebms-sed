@@ -19,6 +19,76 @@ public class XMLSignatureX509KeySelector extends KeySelector {
 
     }
 
+    /**
+     * Checks if a JCA/JCE public key algorithm name is compatible with the
+     * specified signature algorithm URI.
+     */
+    //@@@FIXME: this should also work for key types other than DSA/RSA
+    private boolean algEquals(String algURI, String algName) {
+        if (algName.equalsIgnoreCase("DSA")
+                && algURI.equalsIgnoreCase(SignatureMethod.DSA_SHA1)) {
+            return true;
+        } else if (algName.equalsIgnoreCase("RSA")
+                && algURI.equalsIgnoreCase(SignatureMethod.RSA_SHA1)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Searches the specified keystore for a certificate that matches the
+     * criteria specified in the CertSelector.
+     *
+     * @return a KeySelectorResult containing the cert's public key if there is
+     * a match; otherwise null
+     */
+    /**
+     * Searches the specified keystore for a certificate that matches the
+     * specified X509Certificate and contains a public key that is compatible
+     * with the specified SignatureMethod.
+     *
+     * @return a KeySelectorResult containing the cert's public key if there is
+     * a match; otherwise null
+     */
+    private KeySelectorResult certSelect(X509Certificate xcert,
+            SignatureMethod sm) throws KeyStoreException {
+        // skip non-signer certs
+        //System.out.println("X509KeySelector.certSelect 1");
+        System.out.println("Got cert: " + xcert.getSubjectDN().toString());
+        boolean[] keyUsage = xcert.getKeyUsage();
+        if (keyUsage != null && keyUsage[0] == false) {
+            return null;
+        }
+        //System.out.println("X509KeySelector.certSelect 2: "+xcert.getPublicKey());
+
+        return new SimpleKeySelectorResult(xcert.getPublicKey());
+        /*
+        String alias = ks.getCertificateAlias(xcert);
+        if (alias != null) {
+            PublicKey pk = ks.getCertificate(alias).getPublicKey();
+            // make sure algorithm is compatible with method
+            if (algEquals(sm.getAlgorithm(), pk.getAlgorithm())) {
+                return new SimpleKeySelectorResult(pk);
+            }
+        }
+	return null;*/
+    }
+
+    /**
+     * Returns an OID of a public-key algorithm compatible with the specified
+     * signature algorithm URI.
+     */
+    private String getPKAlgorithmOID(String algURI) {
+        if (algURI.equalsIgnoreCase(SignatureMethod.DSA_SHA1)) {
+            return "1.2.840.10040.4.1";
+        } else if (algURI.equalsIgnoreCase(SignatureMethod.RSA_SHA1)) {
+            return "1.2.840.113549.1.1";
+        } else {
+            return null;
+        }
+    }
+
     @Override
     public KeySelectorResult select(KeyInfo keyInfo,
             KeySelector.Purpose purpose, AlgorithmMethod method,
@@ -80,94 +150,6 @@ public class XMLSignatureX509KeySelector extends KeySelector {
 
         // return null since no match could be found
         return new SimpleKeySelectorResult(null);
-    }
-
-    /**
-     * Searches the specified keystore for a certificate that matches the
-     * criteria specified in the CertSelector.
-     *
-     * @return a KeySelectorResult containing the cert's public key if there is
-     * a match; otherwise null
-     */
-    /**
-     * Searches the specified keystore for a certificate that matches the
-     * specified X509Certificate and contains a public key that is compatible
-     * with the specified SignatureMethod.
-     *
-     * @return a KeySelectorResult containing the cert's public key if there is
-     * a match; otherwise null
-     */
-    private KeySelectorResult certSelect(X509Certificate xcert,
-            SignatureMethod sm) throws KeyStoreException {
-        // skip non-signer certs
-        //System.out.println("X509KeySelector.certSelect 1");
-        System.out.println("Got cert: " + xcert.getSubjectDN().toString());
-        boolean[] keyUsage = xcert.getKeyUsage();
-        if (keyUsage != null && keyUsage[0] == false) {
-            return null;
-        }
-        //System.out.println("X509KeySelector.certSelect 2: "+xcert.getPublicKey());
-
-        return new SimpleKeySelectorResult(xcert.getPublicKey());
-        /*
-        String alias = ks.getCertificateAlias(xcert);
-        if (alias != null) {
-            PublicKey pk = ks.getCertificate(alias).getPublicKey();
-            // make sure algorithm is compatible with method
-            if (algEquals(sm.getAlgorithm(), pk.getAlgorithm())) {
-                return new SimpleKeySelectorResult(pk);
-            }
-        }
-	return null;*/
-    }
-
-    /**
-     * Returns an OID of a public-key algorithm compatible with the specified
-     * signature algorithm URI.
-     */
-    private String getPKAlgorithmOID(String algURI) {
-        if (algURI.equalsIgnoreCase(SignatureMethod.DSA_SHA1)) {
-            return "1.2.840.10040.4.1";
-        } else if (algURI.equalsIgnoreCase(SignatureMethod.RSA_SHA1)) {
-            return "1.2.840.113549.1.1";
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * A simple KeySelectorResult containing a public key.
-     */
-    private static class SimpleKeySelectorResult implements KeySelectorResult {
-
-        private final Key key;
-
-        SimpleKeySelectorResult(Key key) {
-            this.key = key;
-        }
-
-        @Override
-        public Key getKey() {
-            //System.out.println("SimpleKeySelectorResult.getKey " + key);
-            return key;
-        }
-    }
-
-    /**
-     * Checks if a JCA/JCE public key algorithm name is compatible with the
-     * specified signature algorithm URI.
-     */
-    //@@@FIXME: this should also work for key types other than DSA/RSA
-    private boolean algEquals(String algURI, String algName) {
-        if (algName.equalsIgnoreCase("DSA")
-                && algURI.equalsIgnoreCase(SignatureMethod.DSA_SHA1)) {
-            return true;
-        } else if (algName.equalsIgnoreCase("RSA")
-                && algURI.equalsIgnoreCase(SignatureMethod.RSA_SHA1)) {
-            return true;
-        } else {
-            return false;
-        }
     }
 
     /**
@@ -246,5 +228,23 @@ public class XMLSignatureX509KeySelector extends KeySelector {
 
         }
         return ksr;
+    }
+
+    /**
+     * A simple KeySelectorResult containing a public key.
+     */
+    private static class SimpleKeySelectorResult implements KeySelectorResult {
+
+        private final Key key;
+
+        SimpleKeySelectorResult(Key key) {
+            this.key = key;
+        }
+
+        @Override
+        public Key getKey() {
+            //System.out.println("SimpleKeySelectorResult.getKey " + key);
+            return key;
+        }
     }
 }

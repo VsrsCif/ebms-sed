@@ -42,32 +42,19 @@ public abstract class TaskEmailReport implements TaskExecutionInterface {
     @EJB(mappedName = SEDJNDI.JNDI_SEDREPORTS)
     SEDReportInterface mdaoReports;
 
-    public EmailData validateMailParameters(Properties p) throws TaskException {
+    protected SEDTaskTypeProperty createTTProperty(String key, String desc, boolean mandatory, String type, String valFormat, String valList) {
+        SEDTaskTypeProperty ttp = new SEDTaskTypeProperty();
+        ttp.setKey(key);
+        ttp.setDescription(desc);
+        ttp.setMandatory(mandatory);
+        ttp.setType(type);
+        ttp.setValueFormat(valFormat);
+        ttp.setValueList(valList);
+        return ttp;
+    }
 
-        String emailTo = null;
-        String emailFrom = null;
-        String emailSubject = null;
-
-        if (!p.containsKey(KEY_EMAIL_TO)) {
-            throw new TaskException(TaskException.TaskExceptionCode.InitException, "Missing parameter:  '" + KEY_EMAIL_TO + "'!");
-        } else {
-            emailTo = p.getProperty(KEY_EMAIL_TO);
-        }
-        if (!p.containsKey(KEY_EMAIL_FROM)) {
-            throw new TaskException(TaskException.TaskExceptionCode.InitException, "Missing parameter:  '" + KEY_EMAIL_FROM + "'!");
-        } else {
-            emailFrom = p.getProperty(KEY_EMAIL_FROM);
-        }
-        if (!p.containsKey(KEY_EMAIL_SUBJECT)) {
-            throw new TaskException(TaskException.TaskExceptionCode.InitException, "Missing parameter:  '" + KEY_EMAIL_SUBJECT + "'!");
-        } else {
-            emailSubject = p.getProperty(KEY_EMAIL_SUBJECT);
-        }
-
-        EmailData emd = new EmailData(emailTo, null, emailSubject, null);
-        emd.setEmailSenderAddress(emailFrom);
-        return emd;
-
+    protected SEDTaskTypeProperty createTTProperty(String key, String desc) {
+        return createTTProperty(key, desc, true, "string", null, null);
     }
 
     @Override
@@ -129,19 +116,32 @@ public abstract class TaskEmailReport implements TaskExecutionInterface {
         return tt;
     }
 
-    protected SEDTaskTypeProperty createTTProperty(String key, String desc, boolean mandatory, String type, String valFormat, String valList) {
-        SEDTaskTypeProperty ttp = new SEDTaskTypeProperty();
-        ttp.setKey(key);
-        ttp.setDescription(desc);
-        ttp.setMandatory(mandatory);
-        ttp.setType(type);
-        ttp.setValueFormat(valFormat);
-        ttp.setValueList(valList);
-        return ttp;
-    }
+    public EmailData validateMailParameters(Properties p) throws TaskException {
 
-    protected SEDTaskTypeProperty createTTProperty(String key, String desc) {
-        return createTTProperty(key, desc, true, "string", null, null);
+        String emailTo = null;
+        String emailFrom = null;
+        String emailSubject = null;
+
+        if (!p.containsKey(KEY_EMAIL_TO)) {
+            throw new TaskException(TaskException.TaskExceptionCode.InitException, "Missing parameter:  '" + KEY_EMAIL_TO + "'!");
+        } else {
+            emailTo = p.getProperty(KEY_EMAIL_TO);
+        }
+        if (!p.containsKey(KEY_EMAIL_FROM)) {
+            throw new TaskException(TaskException.TaskExceptionCode.InitException, "Missing parameter:  '" + KEY_EMAIL_FROM + "'!");
+        } else {
+            emailFrom = p.getProperty(KEY_EMAIL_FROM);
+        }
+        if (!p.containsKey(KEY_EMAIL_SUBJECT)) {
+            throw new TaskException(TaskException.TaskExceptionCode.InitException, "Missing parameter:  '" + KEY_EMAIL_SUBJECT + "'!");
+        } else {
+            emailSubject = p.getProperty(KEY_EMAIL_SUBJECT);
+        }
+
+        EmailData emd = new EmailData(emailTo, null, emailSubject, null);
+        emd.setEmailSenderAddress(emailFrom);
+        return emd;
+
     }
 
 }

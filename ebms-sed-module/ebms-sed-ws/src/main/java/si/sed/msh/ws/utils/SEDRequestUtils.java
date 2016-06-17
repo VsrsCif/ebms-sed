@@ -36,47 +36,6 @@ public class SEDRequestUtils {
 
     private static final Pattern EMAIL_PATTEREN = Pattern.compile("^.+@.+(\\\\.[^\\\\.]+)+$");
 
-    public static SEDException_Exception createSEDException(String message, SEDExceptionCode cd) {
-        return createSEDException(message, cd, null);
-    }
-
-    public static SEDException_Exception createSEDException(String message, SEDExceptionCode cd, Throwable tw) {
-        SEDException se = new SEDException();
-        se.setErrorCode(cd);
-        se.setMessage(message);
-        return new SEDException_Exception(cd.name() + ":" + message, se, tw);
-    }
-
-    /**
-     * Method checks input control parameters
-     *
-     * @param c
-     * @throws SEDException_Exception
-     */
-    public static void validateControl(Control c) throws SEDException_Exception {
-
-        if (c == null) {
-            throw SEDRequestUtils.createSEDException("SubmitMailRequest/Control", SEDExceptionCode.MISSING_DATA);
-        }
-        if (c.getApplicationId() == null) {
-            throw SEDRequestUtils.createSEDException("SubmitMailRequest/Control/@userId", SEDExceptionCode.MISSING_DATA);
-        }
-        if (c.getUserId() == null) {
-            throw SEDRequestUtils.createSEDException("SubmitMailRequest/Control/@getApplicationId", SEDExceptionCode.MISSING_DATA);
-        }
-    }
-
-    /**
-     * Method checks format of ebox address
-     *
-     * @param address
-     * @return
-     */
-    public static boolean isValidMailAddress(String address) {
-        return address != null && EMAIL_PATTEREN.matcher(address).matches();
-
-    }
-
     /**
      * Methods validate OutMail for missing data
      *
@@ -127,5 +86,46 @@ public class SEDRequestUtils {
             throw createSEDException("Missing data (" + errLst.size() + "):" + String.join(", ", errLst), SEDExceptionCode.MISSING_DATA);
         }
 
+    }
+
+    public static SEDException_Exception createSEDException(String message, SEDExceptionCode cd) {
+        return createSEDException(message, cd, null);
+    }
+
+    public static SEDException_Exception createSEDException(String message, SEDExceptionCode cd, Throwable tw) {
+        SEDException se = new SEDException();
+        se.setErrorCode(cd);
+        se.setMessage(message);
+        return new SEDException_Exception(cd.name() + ":" + message, se, tw);
+    }
+
+    /**
+     * Method checks format of ebox address
+     *
+     * @param address
+     * @return
+     */
+    public static boolean isValidMailAddress(String address) {
+        return address != null && EMAIL_PATTEREN.matcher(address).matches();
+
+    }
+
+    /**
+     * Method checks input control parameters
+     *
+     * @param c
+     * @throws SEDException_Exception
+     */
+    public static void validateControl(Control c) throws SEDException_Exception {
+
+        if (c == null) {
+            throw SEDRequestUtils.createSEDException("SubmitMailRequest/Control", SEDExceptionCode.MISSING_DATA);
+        }
+        if (c.getApplicationId() == null) {
+            throw SEDRequestUtils.createSEDException("SubmitMailRequest/Control/@userId", SEDExceptionCode.MISSING_DATA);
+        }
+        if (c.getUserId() == null) {
+            throw SEDRequestUtils.createSEDException("SubmitMailRequest/Control/@getApplicationId", SEDExceptionCode.MISSING_DATA);
+        }
     }
 }

@@ -33,9 +33,9 @@ abstract public class AFileSettings extends ASettings {
         init();
     }
 
-    public abstract File getConfigFile();
-
     public abstract void createIniFile();
+
+    public abstract File getConfigFile();
 
     @Override
     final protected void init() {
@@ -58,14 +58,6 @@ abstract public class AFileSettings extends ASettings {
         mlLastChagedTime = fPropFile.lastModified();
         initialize();
         // create folders
-    }
-
-    public void setPropertiesFromString(String strProperties) throws IOException {
-        mprpProperties.clear();
-        mprpProperties.load(new ByteArrayInputStream(strProperties.getBytes()));
-        // initialize def values if key not exists!
-        createIniFile();
-        storeProperties();
     }
 
     public String propertiesToString() {
@@ -91,8 +83,11 @@ abstract public class AFileSettings extends ASettings {
         storeProperties();
     }
 
-    @Override
-    protected void storeProperty(String key, String value, String group) {
+    public void setPropertiesFromString(String strProperties) throws IOException {
+        mprpProperties.clear();
+        mprpProperties.load(new ByteArrayInputStream(strProperties.getBytes()));
+        // initialize def values if key not exists!
+        createIniFile();
         storeProperties();
     }
 
@@ -105,5 +100,10 @@ abstract public class AFileSettings extends ASettings {
                 mlog.logError(l, "Error saving priperties to file: '" + getConfigFile().getAbsolutePath() + "'", ex);
             }
         }
+    }
+
+    @Override
+    protected void storeProperty(String key, String value, String group) {
+        storeProperties();
     }
 }

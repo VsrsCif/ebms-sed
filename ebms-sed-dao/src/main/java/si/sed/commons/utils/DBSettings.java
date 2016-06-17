@@ -5,7 +5,6 @@
  */
 package si.sed.commons.utils;
 
-import si.sed.commons.interfaces.DBSettingsInterface;
 import java.io.File;
 import java.util.List;
 import java.util.Properties;
@@ -35,6 +34,7 @@ import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 import org.sed.ebms.property.SEDProperty;
 import si.sed.commons.SEDSystemProperties;
+import si.sed.commons.interfaces.DBSettingsInterface;
 import static si.sed.commons.utils.abst.ASettings.newProperties;
 
 /**

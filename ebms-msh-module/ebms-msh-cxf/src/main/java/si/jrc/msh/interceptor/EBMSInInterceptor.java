@@ -18,6 +18,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.activation.DataHandler;
 import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
@@ -44,12 +46,10 @@ import org.apache.wss4j.dom.handler.WSHandlerConstants;
 import org.msh.ebms.inbox.mail.MSHInMail;
 import org.msh.ebms.inbox.payload.MSHInPart;
 import org.msh.ebms.outbox.mail.MSHOutMail;
-
 import org.msh.svev.pmode.Certificate;
 import org.msh.svev.pmode.PMode;
 import org.msh.svev.pmode.References;
 import org.msh.svev.pmode.Security;
-
 import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.CollaborationInfo;
 import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.MessageInfo;
 import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.Messaging;
@@ -59,21 +59,19 @@ import org.sed.ebms.cert.SEDCertStore;
 import org.sed.ebms.ebox.SEDBox;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-//import si.sed.commons.utils.sec.CertificateUtils;
-
 import si.jrc.msh.exception.EBMSError;
 import si.jrc.msh.exception.EBMSErrorCode;
-import si.sed.commons.exception.ExceptionUtils;
-import si.sed.commons.exception.SOAPExceptionCode;
 import si.jrc.msh.utils.EBMSUtils;
-import si.sed.commons.utils.PModeManager;
 import si.jrc.msh.utils.EbMSConstants;
 import si.sed.commons.SEDInboxMailStatus;
 import si.sed.commons.SEDOutboxMailStatus;
+import si.sed.commons.exception.ExceptionUtils;
 import si.sed.commons.exception.HashException;
+import si.sed.commons.exception.PModeException;
+import si.sed.commons.exception.SOAPExceptionCode;
 import si.sed.commons.exception.StorageException;
 import si.sed.commons.utils.HashUtils;
-
+import si.sed.commons.utils.PModeManager;
 import si.sed.commons.utils.SEDLogger;
 import si.sed.commons.utils.StorageUtils;
 import si.sed.commons.utils.Utils;
@@ -318,7 +316,7 @@ public class EBMSInInterceptor extends AbstractEBMSInterceptor {
             }
 
             MSHOutMail outmsg = msg.getExchange().get(MSHOutMail.class);
-            String strOutMsg = outmsg.getMessageId()+ "@" + getSettings().getDomain();
+            String strOutMsg = outmsg.getMessageId() + "@" + getSettings().getDomain();
             if (strOutMsg != null && !strOutMsg.equals(mi.getRefToMessageId())) {
                 String errmsg = "Outgoing msg ID '" + strOutMsg + "' not equals to received response signal RefToMessageId: '" + mi.getRefToMessageId() + "' ";
                 LOG.logError(l, errmsg, null);
@@ -529,8 +527,14 @@ public class EBMSInInterceptor extends AbstractEBMSInterceptor {
 
             String srv = ca.getService().getValue();
             String pmodeId = srv + ":" + Utils.getDomainFromAddress(senderBox);
-            // if user message 
-            pmd = mPModeManage.getPModeById(pmodeId);
+            try {
+                // if user message
+                pmd = mPModeManage.getPModeById(pmodeId);
+            } catch (PModeException ex) {
+                String errmsg = "Error reading PModes for id: '" + ca.getAgreementRef().getPmode() + "'! Err:" + ex.getMessage();
+                LOG.logError(l, errmsg, ex);
+                throw new EBMSError(EBMSErrorCode.ProcessingModeMismatch, null, errmsg, ex);
+            }
             if (pmd == null) {
                 String errmsg = "PMode with id: '" + ca.getAgreementRef().getPmode() + "' not exist!";
                 LOG.logError(l, errmsg, null);

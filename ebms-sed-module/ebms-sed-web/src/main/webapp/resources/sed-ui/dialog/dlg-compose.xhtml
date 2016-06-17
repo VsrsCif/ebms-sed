@@ -46,7 +46,7 @@
                     </p:layoutUnit>
                     <p:layoutUnit  position="east" size="400"  >
                         <p:fileUpload fileUploadListener="#{OutMailDataView.handleNewOutMailAttachmentUpload}"
-                                       mode="advanced" skinSimple="true" dragDropSupport="false"
+                                      mode="advanced" skinSimple="true" dragDropSupport="false"
                                       uploadLabel="#{msg['Add']}" 
                                       cancelLabel="#{msg['Cancel']}" 
                                       label="#{msg['Choose']}" 
@@ -67,7 +67,7 @@
                                            title="#{msg['Delete']}" styleClass="ui-icon ui-icon-remove" style="float:left;">
                                 <f:setPropertyActionListener value="#{prp}" target="#{OutMailDataView.selectedNewOutMailAttachment}" />
                             </p:commandLink>
-                            
+
 
                             <h:outputText value="#{prp.name}" style="display:inline-block"/>
                         </p:dataList>

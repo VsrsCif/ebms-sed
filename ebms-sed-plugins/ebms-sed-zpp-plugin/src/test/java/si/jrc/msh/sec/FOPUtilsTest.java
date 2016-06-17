@@ -5,25 +5,12 @@
  */
 package si.jrc.msh.sec;
 
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.math.BigInteger;
-import java.util.Calendar;
-import java.util.Date;
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.util.JAXBSource;
-import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
-import org.apache.fop.apps.MimeConstants;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-import org.msh.ebms.outbox.mail.MSHOutMail;
 import si.sed.commons.exception.FOPException;
 
 /**

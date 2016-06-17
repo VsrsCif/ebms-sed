@@ -59,9 +59,8 @@ import si.sed.commons.utils.sec.KeystoreUtils;
 public class ZPPTask implements TaskExecutionInterface {
 
     private static final SEDLogger LOG = new SEDLogger(ZPPTask.class);
-    private static final String SIGN_ALIAS="zpp.sign.key.alias";
-    private static final String REC_SEDBOX="zpp.sedbox";
-    
+    private static final String SIGN_ALIAS = "zpp.sign.key.alias";
+    private static final String REC_SEDBOX = "zpp.sedbox";
 
     SEDCrypto mSedCrypto = new SEDCrypto();
     HashUtils mpHU = new HashUtils();
@@ -81,37 +80,33 @@ public class ZPPTask implements TaskExecutionInterface {
     SEDLookupsInterface msedLookup;
 
     // TODO externalize
-    
-
     @Override
     public String executeTask(Properties p) throws TaskException {
 
         long l = LOG.logStart();
         StringWriter sw = new StringWriter();
         sw.append("Start zpp plugin task: \n");
-        
+
         String singDAAlias = "";
         if (!p.containsKey(SIGN_ALIAS)) {
             throw new TaskException(TaskException.TaskExceptionCode.InitException, "Missing parameter:  '" + SIGN_ALIAS + "'!");
         } else {
             singDAAlias = p.getProperty(SIGN_ALIAS);
         }
-        
-        String sedBox  = "";
+
+        String sedBox = "";
         if (!p.containsKey(REC_SEDBOX)) {
             throw new TaskException(TaskException.TaskExceptionCode.InitException, "Missing parameter:  '" + REC_SEDBOX + "'!");
         } else {
             sedBox = p.getProperty(REC_SEDBOX);
         }
 
-        
-
         MSHInMail mi = new MSHInMail();
         mi.setStatus(SEDInboxMailStatus.PLUGINLOCKED.getValue());
         mi.setReceiverEBox(sedBox);
-        
+
         List<MSHInMail> lst = mDB.getDataList(MSHInMail.class, -1, -1, "Id", "ASC", mi);
-        sw.append("got " + lst.size() + " mails for sedbox: '"+sedBox+"'!");
+        sw.append("got " + lst.size() + " mails for sedbox: '" + sedBox + "'!");
         for (MSHInMail m : lst) {
             try {
                 processInZPPDelivery(m, singDAAlias);
@@ -132,8 +127,7 @@ public class ZPPTask implements TaskExecutionInterface {
         tt.setName("ZPP plugin");
         tt.setDescription("Sign deliveryadvice for incomming mail");
         tt.getSEDTaskTypeProperties().add(createTTProperty(REC_SEDBOX, "Receiver sedbox."));
-        tt.getSEDTaskTypeProperties().add(createTTProperty(SIGN_ALIAS, "Signature key alias."));        
-        
+        tt.getSEDTaskTypeProperties().add(createTTProperty(SIGN_ALIAS, "Signature key alias."));
 
         return tt;
     }
@@ -213,8 +207,8 @@ public class ZPPTask implements TaskExecutionInterface {
 
         } catch (IOException | SEDSecurityException | StorageException ex) {
             LOG.logError(l, ex);
-        } 
-        
+        }
+
         LOG.logEnd(l);
     }
 

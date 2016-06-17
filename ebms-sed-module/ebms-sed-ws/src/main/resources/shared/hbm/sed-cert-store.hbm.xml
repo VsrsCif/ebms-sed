@@ -20,7 +20,7 @@
         </bag>
     </class>    
     
-  <class name="org.sed.ebms.cert.SEDCertificate" table="SED_CERTIFICATE">
+    <class name="org.sed.ebms.cert.SEDCertificate" table="SED_CERTIFICATE">
         <id name="Id" type="java.math.BigInteger">
             <column name="ID" scale="0" />
             <generator class="sequence">

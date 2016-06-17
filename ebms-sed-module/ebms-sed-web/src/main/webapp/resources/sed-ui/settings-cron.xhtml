@@ -11,7 +11,7 @@
     </composite:interface>
 
     <composite:implementation >
-        
+
         <h1>#{msg['TaskDefinitions']}</h1>
         <p:panel id="TaskDesc" toggleTitle="#{msg['INFO']}" header="#{msg['TaskDefinitions']}" 
                  toggleable="true"  collapsed="true">
@@ -27,9 +27,9 @@
                      style="padding: 0px; margin: 0px"
                      scrollable="true" 
                      scrollHeight="200"    
-                     
+
                      >
-             <p:ajax event="rowDblselect" listener="#{adminSEDTaskTypeView.startEditSelected()}" 
+            <p:ajax event="rowDblselect" listener="#{adminSEDTaskTypeView.startEditSelected()}" 
                     update=":dlgTaskType:cronDialogForm:taskType"
                     oncomplete="PF('taskTypeDialog').show()"/>
 
@@ -38,7 +38,7 @@
                                  actionListener="#{adminSEDTaskTypeView.createEditable()}"
                                  oncomplete="PF('taskTypeDialog').show()" 
                                  update=":dlgTaskType:cronDialogForm:taskType"
-                                 
+
                                  />
                 <p:commandButton value="#{msg['Edit']}"  styleClass="toolbar-Button" icon="ui-icon-sed-edit" 
                                  oncomplete="PF('taskTypeDialog').show()"                                                                   
@@ -47,9 +47,9 @@
                                  />
                 <p:commandButton value="#{msg['Delete']}" styleClass="toolbar-Button" icon="ui-icon-sed-remove" 
                                  actionListener="#{adminSEDTaskTypeView.removeSelected()}" update=":forms:SettingsCron:TblTaskType" />
- 
+
             </f:facet>
-             <p:column headerText="#{msg['Type']}" width="120">
+            <p:column headerText="#{msg['Type']}" width="120">
                 <h:outputText value="#{sp.type}" />
             </p:column>
             <p:column headerText="#{msg['Name']}" width="160">
@@ -61,13 +61,13 @@
             <p:column headerText="#{msg['Description']}">
                 <h:outputText value="#{sp.description}" ></h:outputText>                
             </p:column>
-            
+
         </p:dataTable>
 
-        
-        
-        
-        
+
+
+
+
         <h1>#{msg['CronJobs']}</h1>
         <p:panel id="CronDesc" toggleTitle="INFO" header="#{msg['CronJobs']}" 
                  toggleable="true"  collapsed="true">
@@ -84,7 +84,7 @@
                      scrollable="true" 
                      scrollHeight="400"                     
                      >
-             <p:ajax event="rowDblselect" listener="#{adminSEDCronJobView.startEditSelected()}" 
+            <p:ajax event="rowDblselect" listener="#{adminSEDCronJobView.startEditSelected()}" 
                     update=":dlgcron:cronDialogForm:cronJob"
                     oncomplete="PF('cronDialog').show()"/>
 
@@ -93,7 +93,7 @@
                                  actionListener="#{adminSEDCronJobView.createEditable()}"
                                  oncomplete="PF('cronDialog').show()" 
                                  update=":dlgcron:cronDialogForm:cronJob"
-                                 
+
                                  />
                 <p:commandButton value="#{msg['Edit']}"  styleClass="toolbar-Button" icon="ui-icon-sed-edit" 
                                  oncomplete="PF('cronDialog').show()"                                                                   
@@ -102,20 +102,20 @@
                                  />
                 <p:commandButton value="#{msg['Delete']}" styleClass="toolbar-Button" icon="ui-icon-sed-remove" 
                                  actionListener="#{adminSEDCronJobView.removeSelected()}" update=":forms:SettingsCron:TblCron" />
- 
+
             </f:facet>
             <p:column headerText="#{msg['Id']}" width="60">
                 <h:outputText value="#{sp.id}" /></p:column>
-                
-                
+
+
             <p:column headerText="#{msg['Name']}" >
                 <h:outputText value="#{sp.name}"></h:outputText>                
             </p:column>
-             <p:column headerText="#{msg['TaskType']}" width="120">
+            <p:column headerText="#{msg['TaskType']}" width="120">
                 <h:outputText value="#{sp.SEDTask.taskType}" ></h:outputText>                
             </p:column>
-            
-             <p:column headerText="#{msg['Active']}" width="60">
+
+            <p:column headerText="#{msg['Active']}" width="60">
                 <h:selectBooleanCheckbox value="#{sp.active}" disabled="true" />
             </p:column>
             <p:column headerText="#{msg['Second']}" width="80">
@@ -136,12 +136,12 @@
             <p:column headerText="#{msg['DayOfWeek']}" width="80">
                 <h:outputText value="#{sp.dayOfWeek}" ></h:outputText>                
             </p:column>
-            
+
         </p:dataTable>
 
 
 
-       
+
 
 
     </composite:implementation>

@@ -31,12 +31,12 @@
                         <p:ajax event="rowSelect" listener="#{OutMailDataView.onRowSelect}" 
                                 update="forms:OutMailPanel:OutMailTab" />
 
-                         <p:column width="60" headerText="#{msg['Nu']}">
+                        <p:column width="60" headerText="#{msg['Nu']}">
                             <h:outputText value="#{OutMailDataView.rowIndex(outMail) + 1}" />
                         </p:column>
 
 
-                         <p:column width="60" headerText="#{msg['Id']}" >
+                        <p:column width="60" headerText="#{msg['Id']}" >
                             <h:outputText value="#{outMail.id}" />
                         </p:column>
 
@@ -44,7 +44,7 @@
                                   style="background-color:#{OutMailDataView.getStatusColor(outMail.status)}" >
                             <h:outputText value=" " />
                         </p:column>
-                        
+
                         <p:column width="130" headerText="#{msg['SubDate']}" >
                             <h:outputText value="#{outMail.submittedDate}"  ><f:convertDateTime pattern="dd.MM.yyyy hh:mm" timeZone="CET" />
                             </h:outputText>
@@ -68,12 +68,12 @@
             </p:layoutUnit>
             <p:layoutUnit  position="south" resizable="true" closable="true" collapsible="true" size="200" minSize="40" maxSize="400" style="width:100%;height:100%;padding: 0px; margin: 0px" gutter="0">
                 <p:tabView id="OutMailTab" style="height: 100%" activeIndex="#{OutMailDataView.tabActiveIndex}" >
-                     <p:ajax event="tabChange" listener="#{OutMailDataView.onTabChange}"/> 
+                    <p:ajax event="tabChange" listener="#{OutMailDataView.onTabChange}"/> 
                     <p:tab   id="OutMailDataTab"  title="#{msg['MailData']}">
                         <f:facet name="title">
                             <h:graphicImage value="resources/images/mail32.png" width="22" height="22" />
                             <h:outputText value="#{msg['MailData']}" />
-                           
+
                         </f:facet>
 
                         <p:outputPanel id="OutMailData" >
@@ -122,64 +122,64 @@
                             <h:graphicImage value="resources/images/document22.png" width="22" height="22" />
                             <h:outputText value="#{msg['Payloads']}" />
                         </f:facet>
-                            <p:outputPanel id="OutMailDocuments" style="text-align:center;">
-                                <p:dataTable var="plpart" value="#{OutMailDataView.currentMail.MSHOutPayload.MSHOutParts}"
-                                       scrollable="true"
-                                       scrollHeight="135" >
-                                      <p:column width="60" headerText="#{msg['Id']}">
+                        <p:outputPanel id="OutMailDocuments" style="text-align:center;">
+                            <p:dataTable var="plpart" value="#{OutMailDataView.currentMail.MSHOutPayload.MSHOutParts}"
+                                         scrollable="true"
+                                         scrollHeight="135" >
+                                <p:column width="60" headerText="#{msg['Id']}">
                                     <h:outputText value="#{plpart.id}" />
                                 </p:column>
-                                    <p:column width="60" headerText="#{msg['Encrypted']}">
+                                <p:column width="60" headerText="#{msg['Encrypted']}">
                                     <h:outputText value="#{plpart.isEncrypted}" />
                                 </p:column>
                                 <p:column width="60" headerText="#{msg['Download']}">
                                     <p:commandButton ajax="false" value="#{msg['Download']}"
-                                            onclick="PrimeFaces.monitorDownload(start, stop);" icon="ui-icon-arrowthick-1-s">
+                                                     onclick="PrimeFaces.monitorDownload(start, stop);" icon="ui-icon-arrowthick-1-s">
                                         <p:fileDownload value="#{OutMailDataView.getFile(plpart.id)}" />
                                     </p:commandButton>
                                 </p:column>
-                                    <p:column headerText="#{msg['Filename']}">
-                                        <h:outputText value="#{plpart.filename}" />
-                                    </p:column>
-                                    <p:column headerText="#{msg['Description']}">
-                                        <h:outputText value="#{plpart.description}" />
-                                    </p:column>
-                                    <p:column headerText="#{msg['MimeType']}">
-                                        <h:outputText value="#{plpart.mimeType}" />
-                                    </p:column>
-                                    
-                                </p:dataTable>
-                            </p:outputPanel>
-                        </p:tab>
+                                <p:column headerText="#{msg['Filename']}">
+                                    <h:outputText value="#{plpart.filename}" />
+                                </p:column>
+                                <p:column headerText="#{msg['Description']}">
+                                    <h:outputText value="#{plpart.description}" />
+                                </p:column>
+                                <p:column headerText="#{msg['MimeType']}">
+                                    <h:outputText value="#{plpart.mimeType}" />
+                                </p:column>
+
+                            </p:dataTable>
+                        </p:outputPanel>
+                    </p:tab>
                     <p:tab >
                         <f:facet name="title">
                             <h:graphicImage value="resources/images/events22.png" width="22" height="22" />
                             <h:outputText value="#{msg['Events']}" />                                 
                         </f:facet>
-                    <p:outputPanel id="OutMailEvents" style="text-align:center;">
-                        <p:dataTable var="mailEvents" 
-                                     value="#{OutMailDataView.mailEvents}"
-                                     scrollable="true"
-                                       scrollHeight="135">
-                                    <p:column width="60" headerText="#{msg['Id']}">
-                                        <h:outputText value="#{mailEvents.id}" />
-                                    </p:column>
-                                    <p:column headerText="#{msg['Status']}" width="15" style="background-color:#{OutMailDataView.getStatusColor(mailEvents.status)}" >
-                                        <h:outputText value=" " />
-                                    </p:column>
-                                     <p:column headerText="#{msg['Date']}" width="130">
-                                         <h:outputText value="#{mailEvents.date}"  ><f:convertDateTime pattern="dd.MM.yyyy hh:mm:ss" timeZone="CET" /></h:outputText>
-                                    </p:column>
-                                    <p:column headerText="#{msg['Description']}">
-                                        <h:outputText value="#{mailEvents.description}" />
-                                    </p:column>
-                                    <p:column headerText="#{msg['UsersId']}">
-                                        <h:outputText value="#{mailEvents.userId}" />
-                                    </p:column>
-                                    
-                                </p:dataTable>
+                        <p:outputPanel id="OutMailEvents" style="text-align:center;">
+                            <p:dataTable var="mailEvents" 
+                                         value="#{OutMailDataView.mailEvents}"
+                                         scrollable="true"
+                                         scrollHeight="135">
+                                <p:column width="60" headerText="#{msg['Id']}">
+                                    <h:outputText value="#{mailEvents.id}" />
+                                </p:column>
+                                <p:column headerText="#{msg['Status']}" width="15" style="background-color:#{OutMailDataView.getStatusColor(mailEvents.status)}" >
+                                    <h:outputText value=" " />
+                                </p:column>
+                                <p:column headerText="#{msg['Date']}" width="130">
+                                    <h:outputText value="#{mailEvents.date}"  ><f:convertDateTime pattern="dd.MM.yyyy hh:mm:ss" timeZone="CET" /></h:outputText>
+                                </p:column>
+                                <p:column headerText="#{msg['Description']}">
+                                    <h:outputText value="#{mailEvents.description}" />
+                                </p:column>
+                                <p:column headerText="#{msg['UsersId']}">
+                                    <h:outputText value="#{mailEvents.userId}" />
+                                </p:column>
 
-                            </p:outputPanel>
+                            </p:dataTable>
+
+                        </p:outputPanel>
                     </p:tab>
                 </p:tabView>
             </p:layoutUnit>

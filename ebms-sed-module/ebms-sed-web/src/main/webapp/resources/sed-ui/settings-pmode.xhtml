@@ -13,24 +13,64 @@
 
     <composite:implementation >
 
-        <p:layout style="min-width:400px;min-height:400px; height: 100%;width: 100%"   >
+        <h1>#{msg['adminPModeView']}</h1>
+        <p:panel id="TaskDesc" toggleTitle="#{msg['INFO']}" header="#{msg['PModeDefinitions']}" 
+                 toggleable="true"  collapsed="true">
+            <h:outputText value="#{msg['PModeDefDesc']}"></h:outputText>
+        </p:panel>
+        <p:dataTable id="TblPMode" 
+                     var="sp" 
+                     value="#{pModeView.list}"
+                     selectionMode="single"
+                     selection="#{pModeView.selected}"
+                     rowKey="#{sp.id}"
 
-            <p:layoutUnit  position="north"  gutter="0" >
-                <p:outputLabel value="File:"/><p:outputLabel value="#{pModeView.getPModeFilePath()}"/>
-            </p:layoutUnit>
-            <p:layoutUnit  position="center"  gutter="0" >
-                <p:scrollPanel mode="native"  style="width: 100%;height: 100%;" >
-                <p:inputTextarea
-                    value="#{pModeView.PModeString}" 
-                    readonly="false"
-                    style="width: 100%;height: 100%;"
-                    cols="300"
-                    rows="70" />                
-                </p:scrollPanel>
-            </p:layoutUnit>
+                     style="padding: 0px; margin: 0px"
+                     scrollable="true" 
+                     scrollHeight="200"    
+
+                     >
+            <p:ajax event="rowDblselect" listener="#{pModeView.startEditSelected()}" 
+                    update=":dlgPMode:pModeDialogForm:pMode"
+                    oncomplete="PF('pModeDialog').show()"/>
+
+            <f:facet name="header">
+                <p:commandButton value="#{msg['Add']}"  styleClass="toolbar-Button" icon="ui-icon-sed-add" 
+                                 actionListener="#{pModeView.createEditable()}"
+                                 oncomplete="PF('pModeDialog').show()" 
+                                 update=":dlgPMode:pModeDialogForm:pMode"
+
+                                 />
+                <p:commandButton value="#{msg['Edit']}"  styleClass="toolbar-Button" icon="ui-icon-sed-edit" 
+                                 oncomplete="PF('pModeDialog').show()"                                                                   
+                                 actionListener="#{pModeView.startEditSelected()}"
+                                 update=":dlgPMode:pModeDialogForm:pMode"
+                                 />
+                <p:commandButton value="#{msg['Delete']}" styleClass="toolbar-Button" icon="ui-icon-sed-remove" 
+                                 actionListener="#{pModeView.removeSelected()}" 
+                                 update=":forms:SettingsPModes:TblPMode" />
+
+            </f:facet>
+            <p:column headerText="#{msg['Id']}" width="200">
+                <h:outputText value="#{sp.id}" />
+            </p:column>
+            <p:column headerText="#{msg['Pogodba']}" width="200">
+                <h:outputText value="#{sp.agreement}"></h:outputText>                
+            </p:column>
+            <p:column headerText="#{msg['Service']}">
+                <h:outputText value="#{sp.MEPbinding}"></h:outputText>                
+            </p:column>
+            <p:column headerText="#{msg['MEP binding']}">
+                <h:outputText value="#{sp.MEPbinding}"></h:outputText>                
+            </p:column>
+            <p:column headerText="#{msg['MEP']}">
+                <h:outputText value="#{sp.MEP}"></h:outputText>                
+            </p:column>
 
 
-        </p:layout>
+        </p:dataTable>
+
+
     </composite:implementation>
 
 </html>

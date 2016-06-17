@@ -9,10 +9,7 @@ import java.math.BigInteger;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Properties;
-import si.sed.commons.interfaces.SEDSchedulerInterface;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
@@ -32,12 +29,12 @@ import org.sed.ebms.cron.SEDCronJob;
 import org.sed.ebms.cron.SEDTaskExecution;
 import org.sed.ebms.cron.SEDTaskProperty;
 import org.sed.ebms.cron.SEDTaskType;
-
 import si.sed.commons.SEDJNDI;
 import si.sed.commons.SEDTaskStatus;
 import si.sed.commons.exception.StorageException;
 import si.sed.commons.interfaces.SEDDaoInterface;
 import si.sed.commons.interfaces.SEDLookupsInterface;
+import si.sed.commons.interfaces.SEDSchedulerInterface;
 import si.sed.commons.interfaces.TaskExecutionInterface;
 import si.sed.commons.interfaces.exception.TaskException;
 

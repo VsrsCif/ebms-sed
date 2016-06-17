@@ -19,7 +19,7 @@
         <property column="APPLICATION_ID" name="ApplicationId"  length="128" type="java.lang.String" />
     </class>    
     
-   <sql-query name="org.msh.ebms.outbox.event.MSHOutEvent.getList">
+    <sql-query name="org.msh.ebms.outbox.event.MSHOutEvent.getList">
         <return class="org.msh.ebms.outbox.event.MSHOutEvent" />	
    <![CDATA[SELECT 
                 ev.id, 
@@ -40,7 +40,7 @@
                 and (ev.sender_msg_id = :senderMessageId or :senderMessageId='')
                 order by id asc]]>
     </sql-query>    
-     <sql-query name="org.msh.ebms.outbox.event.MSHOutEvent.getMailEventList">
+    <sql-query name="org.msh.ebms.outbox.event.MSHOutEvent.getMailEventList">
         <return class="org.msh.ebms.outbox.event.MSHOutEvent" />	
    <![CDATA[SELECT 
   ev.*

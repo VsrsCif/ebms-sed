@@ -1,11 +1,5 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package si.jrc.msh.sec;
 
-import si.jrc.msh.sec.SEDCrypto;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -18,12 +12,11 @@ import java.util.Enumeration;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.crypto.SecretKey;
-import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.Test;
 import si.sed.commons.SEDSystemProperties;
 import si.sed.commons.exception.SEDSecurityException;
 import si.sed.commons.utils.sec.KeystoreUtils;
-import static si.sed.commons.utils.sec.KeystoreUtils.getKeystore;
 
 /**
  *
@@ -31,14 +24,14 @@ import static si.sed.commons.utils.sec.KeystoreUtils.getKeystore;
  */
 public class SEDCryptoTest {
 
-    private static final String TEST_DATA = "This is a SECRET NOTE!";
-    private File mfSecretFile;
-    private static final String KEYSTORE_TYPE = "JKS";
-    private static final String KEYSTORE_PASSWORD = "test1234";
-    private static final String KEY_PASSWORD = "key1234";
     private static final String KEYSTORE = "/certs/msh.e-box-b-keystore.jks";
+    private static final String KEYSTORE_PASSWORD = "test1234";
+    private static final String KEYSTORE_TYPE = "JKS";
+    private static final String KEY_PASSWORD = "key1234";
 
     private static final String SIGN_KEY_ALIAS = "msh.e-box-b.si";
+    private static final String TEST_DATA = "This is a SECRET NOTE!";
+    private File mfSecretFile;
 
     public SEDCryptoTest() {
         try {
@@ -108,11 +101,11 @@ public class SEDCryptoTest {
         Enumeration<String> lst;
         try {
             lst = ks.aliases(); //encrypt keywhile (lst.hasMoreElements()){
-            
+
             while (lst.hasMoreElements()) {
                 System.out.println("Alias: " + lst.nextElement());
             }
-     
+
         } catch (KeyStoreException ex) {
             Logger.getLogger(SEDCryptoTest.class.getName()).log(Level.SEVERE, null, ex);
         }

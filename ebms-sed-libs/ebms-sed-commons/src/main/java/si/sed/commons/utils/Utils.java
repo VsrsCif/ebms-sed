@@ -25,17 +25,23 @@ import org.msh.ebms.outbox.mail.MSHOutMail;
  * @author Joze Rihtarsic <joze.rihtarsic@sodisce.si>
  */
 public class Utils {
+
+    private static final int IN_BRACKET = 2;
     // States used in property parsing
 
     private static final int NORMAL = 0;
     private static final int SEEN_DOLLAR = 1;
-    private static final int IN_BRACKET = 2;
-
-    Random random = new Random();
 
     public static Utils mInstance = null;
 
-    private Utils() {
+    public static String getDomainFromAddress(String strVal) {
+        if (isEmptyString(strVal)) {
+            return "NO_DOMAIN";
+        }
+        if (strVal.contains("@")) {
+            return strVal.substring(strVal.indexOf('@') + 1);
+        }
+        return strVal;
 
     }
 
@@ -43,64 +49,37 @@ public class Utils {
         return mInstance = mInstance == null ? new Utils() : mInstance;
     }
 
-    /**
-     * Return a GUID as a string. This is completely arbitrary, and returns the
-     * hexification of a random value followed by a timestamp.
-     *
-     * @return
-     */
-    public String getGuidString() {
-        long rand = (random.nextLong() & 0x7FFFFFFFFFFFFFFFL)
-                | 0x4000000000000000L;
-        return Long.toString(rand, 32)
-                + Long.toString(System.currentTimeMillis() & 0xFFFFFFFFFFFFFL, 32);
+    public static String getPModeIdFromInMail(MSHInMail mim) {
+        if (mim == null) {
+            return null;
+        }
+        return mim.getService() + ":" + getDomainFromAddress(mim.getSenderEBox());
+    }
+
+    public static String getPModeIdFromOutMail(MSHOutMail mom) {
+        if (mom == null) {
+            return null;
+        }
+        return mom.getService() + ":" + getDomainFromAddress(mom.getReceiverEBox());
     }
 
     /*
     
     public static void addURLToSystemClassLoader(URL url) throws IntrospectionException {
-        URLClassLoader systemClassLoader = (URLClassLoader) ClassLoader.getSystemClassLoader();
-        Class<URLClassLoader> classLoaderClass = URLClassLoader.class;
-
-        try {
-            Method method = classLoaderClass.getDeclaredMethod("addURL", new Class[]{URL.class});
-            method.setAccessible(true);
-            method.invoke(systemClassLoader, new Object[]{url});
-        } catch (Throwable t) {
-            throw new IntrospectionException("Error when adding url "+url.getPath()+" to system ClassLoader ");
-        }
+    URLClassLoader systemClassLoader = (URLClassLoader) ClassLoader.getSystemClassLoader();
+    Class<URLClassLoader> classLoaderClass = URLClassLoader.class;
+    
+    try {
+    Method method = classLoaderClass.getDeclaredMethod("addURL", new Class[]{URL.class});
+    method.setAccessible(true);
+    method.invoke(systemClassLoader, new Object[]{url});
+    } catch (Throwable t) {
+    throw new IntrospectionException("Error when adding url "+url.getPath()+" to system ClassLoader ");
+    }
     }*/
     public static boolean isEmptyString(String strVal) {
         return strVal == null || strVal.trim().isEmpty();
     }
-
-    public static String getDomainFromAddress(String strVal) {
-        if (isEmptyString(strVal)) {
-            return "NO_DOMAIN";
-        }
-        if (strVal.contains("@")) {
-            return strVal.substring(strVal.indexOf("@") + 1);
-        }
-        return strVal;
-
-    }
-    
-     public static String getPModeIdFromInMail(MSHInMail mim) {
-        if (mim == null) {
-            return null;
-        }
-        return mim.getService()+":"+getDomainFromAddress(mim.getSenderEBox());        
-    }
-     
-     public static String getPModeIdFromOutMail(MSHOutMail mom) {
-        if (mom == null) {
-            return null;
-        }
-        return mom.getService()+":"+getDomainFromAddress(mom.getReceiverEBox());        
-    }
-    
-    
-    
 
     /**
      * Method is "borrowed" from org.jboss.util.StringPropertyReplacer; Go
@@ -109,7 +88,7 @@ public class Utils {
      * the ${p} is replaced with "".
      *
      *
-     * @param string - the string with possible ${} references     
+     * @param string - the string with possible ${} references
      * @return the input string with all property references replaced if any. If
      * there are no valid references the input string will be returned.
      */
@@ -161,7 +140,23 @@ public class Utils {
         // Done
         return buffer.toString();
     }
+    Random random = new Random();
 
-    
-   
+    private Utils() {
+
+    }
+
+    /**
+     * Return a GUID as a string. This is completely arbitrary, and returns the
+     * hexification of a random value followed by a timestamp.
+     *
+     * @return
+     */
+    public String getGuidString() {
+        long rand = (random.nextLong() & 0x7FFFFFFFFFFFFFFFL)
+                | 0x4000000000000000L;
+        return Long.toString(rand, 32)
+                + Long.toString(System.currentTimeMillis() & 0xFFFFFFFFFFFFFL, 32);
+    }
+
 }

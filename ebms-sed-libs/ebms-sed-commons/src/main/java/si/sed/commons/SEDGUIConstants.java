@@ -10,5 +10,6 @@ package si.sed.commons;
  * @author sluzba
  */
 public class SEDGUIConstants {
+
     public static final String SESSION_USER_VARIABLE_NAME = "sed-user";
 }

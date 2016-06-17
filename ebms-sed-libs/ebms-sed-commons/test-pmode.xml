@@ -27,13 +27,13 @@
                     <Signature hashFunction="http://www.w3.org/2001/04/xmlenc#sha256" algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha512">
                         <Sign>
                             <Elements>
-<XPath xpath="env:Body">
-    <Namespace prefix="env" namespace="http://www.w3.org/2003/05/soap-envelope"/>
-</XPath>
-<XPath xpath="env:Header/eb3:Messaging">
-    <Namespace prefix="eb3" namespace="http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/"/>
-    <Namespace prefix="env" namespace="http://www.w3.org/2003/05/soap-envelope"/>
-</XPath>
+                                <XPath xpath="env:Body">
+                                    <Namespace prefix="env" namespace="http://www.w3.org/2003/05/soap-envelope"/>
+                                </XPath>
+                                <XPath xpath="env:Header/eb3:Messaging">
+                                    <Namespace prefix="eb3" namespace="http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/"/>
+                                    <Namespace prefix="env" namespace="http://www.w3.org/2003/05/soap-envelope"/>
+                                </XPath>
                             </Elements>
                         </Sign>
                     </Signature>
@@ -85,13 +85,13 @@
                         <Certificate alias="msh.e-box-a.si"/>
                         <Sign signElements="true" signAttachments="true">
                             <Elements>
-<XPath xpath="env:Body">
-    <Namespace prefix="env" namespace="http://www.w3.org/2003/05/soap-envelope"/>
-</XPath>
-<XPath xpath="env:Header/eb3:Messaging">
-    <Namespace prefix="eb3" namespace="http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/"/>
-    <Namespace prefix="env" namespace="http://www.w3.org/2003/05/soap-envelope"/>
-</XPath>
+                                <XPath xpath="env:Body">
+                                    <Namespace prefix="env" namespace="http://www.w3.org/2003/05/soap-envelope"/>
+                                </XPath>
+                                <XPath xpath="env:Header/eb3:Messaging">
+                                    <Namespace prefix="eb3" namespace="http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/"/>
+                                    <Namespace prefix="env" namespace="http://www.w3.org/2003/05/soap-envelope"/>
+                                </XPath>
                             </Elements>
                         </Sign>
                     </Signature>
@@ -151,13 +151,13 @@
                         <Certificate alias="msh.e-box-a.si"/>
                         <Sign signElements="true" signAttachments="true">
                             <Elements>
-<XPath xpath="env:Body">
-    <Namespace prefix="env" namespace="http://www.w3.org/2003/05/soap-envelope"/>
-</XPath>
-<XPath xpath="env:Header/eb3:Messaging">
-    <Namespace prefix="eb3" namespace="http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/"/>
-    <Namespace prefix="env" namespace="http://www.w3.org/2003/05/soap-envelope"/>
-</XPath>
+                                <XPath xpath="env:Body">
+                                    <Namespace prefix="env" namespace="http://www.w3.org/2003/05/soap-envelope"/>
+                                </XPath>
+                                <XPath xpath="env:Header/eb3:Messaging">
+                                    <Namespace prefix="eb3" namespace="http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/"/>
+                                    <Namespace prefix="env" namespace="http://www.w3.org/2003/05/soap-envelope"/>
+                                </XPath>
                             </Elements>
                         </Sign>
                     </Signature>

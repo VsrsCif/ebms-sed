@@ -36,121 +36,24 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
-
-
 import si.sed.commons.SEDSystemProperties;
 import si.sed.commons.SEDValues;
 import si.sed.commons.utils.PModeManager;
 import si.sed.commons.utils.SEDLogger;
 import si.sed.commons.utils.Utils;
 
-
 /**
  *
  * @author Jože Rihtaršič
  */
-
 @MessageDriven(activationConfig = {
     @ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "Auto-acknowledge"),
     @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),
     @ActivationConfigProperty(propertyName = "destination", propertyValue = "queue/SEDExecutionQueue"),
-    @ActivationConfigProperty(propertyName = "maxSession", propertyValue = "${"+SEDSystemProperties.SYS_PROP_EXECUTION_WORKERS+ ":5}")
+    @ActivationConfigProperty(propertyName = "maxSession", propertyValue = "${" + SEDSystemProperties.SYS_PROP_EXECUTION_WORKERS + ":5}")
 })
 @TransactionManagement(TransactionManagementType.BEAN)
 public class MSHExecutionBean implements MessageListener {
-
-    SEDLogger mlog = new SEDLogger(MSHExecutionBean.class);
-    PModeManager mpModeManager = new PModeManager();
-
-
-
-    @Override
-    public void onMessage(Message msg) {
-        try {
-            long t = mlog.logStart();
-            String command = msg.getStringProperty(SEDValues.EXEC_COMMAND);
-            command = Utils.replaceProperties(command);
-            String param = msg.getStringProperty(SEDValues.EXEC_PARAMS);
-            
-            ProcessBuilder builder = new ProcessBuilder(command ,  param);
-            Process process = builder.start();
-            long l = process.waitFor();
-            
-            mlog.log("execution of command " + command + " return value: " + l);
-            mlog.logEnd(t);
-        } catch (JMSException | IOException ex) {
-            Logger.getLogger(MSHExecutionBean.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (InterruptedException ex) {
-            Logger.getLogger(MSHExecutionBean.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-   
-
-    public boolean sendMessage(long biPosiljkaId, String strPmodeId, int retry, long delay) throws NamingException, JMSException {
-        System.out.println("Resent " + retry + " delay : " + delay);
-        boolean suc = false;
-        InitialContext ic = null;
-        Connection connection = null;
-         String msgFactoryJndiName = getJNDIPrefix() + SEDValues.EBMS_JMS_CONNECTION_FACTORY_JNDI;
-        String msgQueueJndiName = getJNDI_JMSPrefix() + SEDValues.JNDI_QUEUE_EBMS;
-        try {
-            ic = new InitialContext();
-            ConnectionFactory cf = (ConnectionFactory) ic.lookup(msgFactoryJndiName);
-            Queue queue = (Queue) ic.lookup(msgQueueJndiName);
-            connection = cf.createConnection();
-            Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-            MessageProducer sender = session.createProducer(queue);
-            Message message = session.createMessage();
-
-            message.setLongProperty(SEDValues.EBMS_QUEUE_PARAM_MAIL_ID, biPosiljkaId);
-            message.setStringProperty(SEDValues.EBMS_QUEUE_PARAM_PMODE_ID, strPmodeId);
-
-            message.setIntProperty(SEDValues.EBMS_QUEUE_PARAM_RETRY, retry);
-            message.setLongProperty(SEDValues.EBMS_QUEUE_PARAM_DELAY, delay);
-            message.setLongProperty(SEDValues.EBMS_QUEUE_DELAY_AMQ, delay);
-            message.setLongProperty(SEDValues.EBMS_QUEUE_DELAY_Artemis,System.currentTimeMillis() + delay);
-
-            
-
-            sender.send(message);
-            suc = true;
-        } finally {
-            if (ic != null) {
-                try {
-                    ic.close();
-                } catch (Exception ignore) {
-                }
-            }
-            closeConnection(connection);
-        }
-
-        return suc;
-    }
-
-    protected void closeConnection(Connection con) {
-        try {
-            if (con != null) {
-                con.close();
-            }
-        } catch (JMSException jmse) {
-
-        }
-    }
-
-  
-    /*private String getJNDIPrefix() {
-        return "__/";
-        // return System.getProperty(SEDSystemProperties.SYS_PROP_JNDI_PREFIX, "java:/");
-    }*/
-    private String getJNDI_JMSPrefix() {
-        return System.getProperty(SEDSystemProperties.SYS_PROP_JNDI_JMS_PREFIX, "java:/jms/");
-    }
-
-    private String getJNDIPrefix() {
-
-        return System.getProperty(SEDSystemProperties.SYS_PROP_JNDI_PREFIX, "java:/jboss/");
-    }
 
     private static final void listContext(Context ctx, String indent) {
         try {
@@ -168,5 +71,91 @@ public class MSHExecutionBean implements MessageListener {
         } catch (NamingException ex) {
             System.out.println(ex);
         }
+    }
+
+    SEDLogger mlog = new SEDLogger(MSHExecutionBean.class);
+    PModeManager mpModeManager = new PModeManager();
+
+    protected void closeConnection(Connection con) {
+        try {
+            if (con != null) {
+                con.close();
+            }
+        } catch (JMSException jmse) {
+
+        }
+    }
+
+    private String getJNDIPrefix() {
+
+        return System.getProperty(SEDSystemProperties.SYS_PROP_JNDI_PREFIX, "java:/jboss/");
+    }
+
+    /*private String getJNDIPrefix() {
+        return "__/";
+        // return System.getProperty(SEDSystemProperties.SYS_PROP_JNDI_PREFIX, "java:/");
+    }*/
+    private String getJNDI_JMSPrefix() {
+        return System.getProperty(SEDSystemProperties.SYS_PROP_JNDI_JMS_PREFIX, "java:/jms/");
+    }
+
+    @Override
+    public void onMessage(Message msg) {
+        try {
+            long t = mlog.logStart();
+            String command = msg.getStringProperty(SEDValues.EXEC_COMMAND);
+            command = Utils.replaceProperties(command);
+            String param = msg.getStringProperty(SEDValues.EXEC_PARAMS);
+
+            ProcessBuilder builder = new ProcessBuilder(command, param);
+            Process process = builder.start();
+            long l = process.waitFor();
+
+            mlog.log("execution of command " + command + " return value: " + l);
+            mlog.logEnd(t);
+        } catch (JMSException | IOException ex) {
+            Logger.getLogger(MSHExecutionBean.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(MSHExecutionBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public boolean sendMessage(long biPosiljkaId, String strPmodeId, int retry, long delay) throws NamingException, JMSException {
+        System.out.println("Resent " + retry + " delay : " + delay);
+        boolean suc = false;
+        InitialContext ic = null;
+        Connection connection = null;
+        String msgFactoryJndiName = getJNDIPrefix() + SEDValues.EBMS_JMS_CONNECTION_FACTORY_JNDI;
+        String msgQueueJndiName = getJNDI_JMSPrefix() + SEDValues.JNDI_QUEUE_EBMS;
+        try {
+            ic = new InitialContext();
+            ConnectionFactory cf = (ConnectionFactory) ic.lookup(msgFactoryJndiName);
+            Queue queue = (Queue) ic.lookup(msgQueueJndiName);
+            connection = cf.createConnection();
+            Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+            MessageProducer sender = session.createProducer(queue);
+            Message message = session.createMessage();
+
+            message.setLongProperty(SEDValues.EBMS_QUEUE_PARAM_MAIL_ID, biPosiljkaId);
+            message.setStringProperty(SEDValues.EBMS_QUEUE_PARAM_PMODE_ID, strPmodeId);
+
+            message.setIntProperty(SEDValues.EBMS_QUEUE_PARAM_RETRY, retry);
+            message.setLongProperty(SEDValues.EBMS_QUEUE_PARAM_DELAY, delay);
+            message.setLongProperty(SEDValues.EBMS_QUEUE_DELAY_AMQ, delay);
+            message.setLongProperty(SEDValues.EBMS_QUEUE_DELAY_Artemis, System.currentTimeMillis() + delay);
+
+            sender.send(message);
+            suc = true;
+        } finally {
+            if (ic != null) {
+                try {
+                    ic.close();
+                } catch (Exception ignore) {
+                }
+            }
+            closeConnection(connection);
+        }
+
+        return suc;
     }
 }

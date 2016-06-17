@@ -15,8 +15,8 @@ import org.apache.cxf.interceptor.Fault;
  */
 @Local
 public interface SoapInterceptorInterface {
-    
-     public void handleMessage(SoapMessage t) throws Fault;
+
+    public void handleMessage(SoapMessage t) throws Fault;
 
     public void handleFault(SoapMessage t);
 }

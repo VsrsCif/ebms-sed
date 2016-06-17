@@ -13,7 +13,7 @@
     <name>ebms-sed-standalone</name>
     <packaging>war</packaging>
     <description>PROJECT IS DEPRECATED: currently application is tested and developed for wildfly 10.
-Demo aplication for secure elektronic delivery.</description>
+        Demo aplication for secure elektronic delivery.</description>
     
     <licenses>
         <license>
@@ -150,7 +150,7 @@ Demo aplication for secure elektronic delivery.</description>
             <version>${jetty.version}</version>
             <optional>true</optional>   
         </dependency>
-           <dependency>
+        <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-security</artifactId>
             <version>${jetty.version}</version>
@@ -300,7 +300,7 @@ Demo aplication for secure elektronic delivery.</description>
             <version>${org.apache.activemq.version}</version>
             <optional>true</optional>   
         </dependency>
-          <dependency>
+        <dependency>
             <groupId>org.apache.activemq</groupId>
             <artifactId>activemq-pool</artifactId>
             <version>5.13.1</version>
@@ -338,11 +338,11 @@ Demo aplication for secure elektronic delivery.</description>
         </dependency>
   
 
-             <dependency>
-	  <groupId>org.glassfish.web</groupId>
-	  <artifactId>el-impl</artifactId>
-	  <version>2.2.1-b05</version>
-     </dependency>
+        <dependency>
+            <groupId>org.glassfish.web</groupId>
+            <artifactId>el-impl</artifactId>
+            <version>2.2.1-b05</version>
+        </dependency>
 
         <dependency>
             <groupId>javax.servlet.jsp</groupId>

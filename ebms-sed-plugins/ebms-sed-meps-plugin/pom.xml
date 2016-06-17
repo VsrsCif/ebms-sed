@@ -41,7 +41,7 @@
         </developer>
     </developers>
     
-     <properties>
+    <properties>
         <war.final.name>plugin-meps</war.final.name>
     </properties>
     <build>
@@ -95,7 +95,7 @@
             <artifactId>cxf-rt-frontend-jaxws</artifactId>
             <scope>provided</scope>
         </dependency>
-         <!-- GUI uses prifeaces componens --> 
+        <!-- GUI uses prifeaces componens --> 
         <dependency>
             <groupId>org.primefaces</groupId>
             <artifactId>primefaces</artifactId>

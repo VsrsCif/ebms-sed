@@ -9,8 +9,8 @@
         <property column="Active_Date_From" name="ActiveFromDate"  length="1024" type="java.util.Date" />       
         <property column="Active_Date_To" name="ActiveToDate"  length="32" type="java.util.Date" />        
         
-         <bag name="sedBoxes"  access="field" table="sed_user_sedbox" 
-        	inverse="false"  fetch="select" lazy="false" >
+        <bag name="sedBoxes"  access="field" table="sed_user_sedbox" 
+             inverse="false"  fetch="select" lazy="false" >
             <key>
                 <column name="userid" not-null="true" />
             </key>

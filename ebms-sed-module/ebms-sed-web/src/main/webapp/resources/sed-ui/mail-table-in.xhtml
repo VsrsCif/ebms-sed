@@ -31,8 +31,8 @@
                                  style="padding: 0px; margin: 0px"
                                  scrollable="true" 
                                  scrollHeight="100%"
-                                 
-                                 
+
+
                                  >
                         <p:ajax event="rowSelect" listener="#{InMailDataView.onRowSelect}" 
                                 update="forms:InMailPanel:InMailTab" />                        
@@ -47,8 +47,8 @@
                                   headerText="#{msg['St']}">
                             <h:outputText value=" " />
                         </p:column>
-                          <p:column width="130" headerText="#{msg['RecDate']}">
-                              <h:outputText value="#{inMail.receivedDate}"  ><f:convertDateTime pattern="dd.MM.yyyy hh:mm" timeZone="CET" /></h:outputText>
+                        <p:column width="130" headerText="#{msg['RecDate']}">
+                            <h:outputText value="#{inMail.receivedDate}"  ><f:convertDateTime pattern="dd.MM.yyyy hh:mm" timeZone="CET" /></h:outputText>
                         </p:column>
 
                         <p:column headerText="#{msg['Sender']}">
@@ -131,8 +131,8 @@
                             <p:dataTable var="plpart" 
                                          value="#{InMailDataView.currentMail.MSHInPayload.MSHInParts}"
                                          scrollable="true"
-                                     scrollHeight="135">
-                                
+                                         scrollHeight="135">
+
                                 <p:column width="60" headerText="#{msg['Id']}">
                                     <h:outputText value="#{plpart.id}" />
                                 </p:column>
@@ -141,7 +141,7 @@
                                 </p:column>
                                 <p:column width="60" headerText="#{msg['Download']}">
                                     <p:commandButton ajax="false" value="#{msg['Download']}"
-                                            onclick="PrimeFaces.monitorDownload(start, stop);" icon="ui-icon-arrowthick-1-s">
+                                                     onclick="PrimeFaces.monitorDownload(start, stop);" icon="ui-icon-arrowthick-1-s">
                                         <p:fileDownload value="#{InMailDataView.getFile(plpart.id)}" />
                                     </p:commandButton>
                                 </p:column>
@@ -168,8 +168,8 @@
 
 
                             <p:dataTable var="mailEvents" value="#{InMailDataView.mailEvents}"
-                                       scrollable="true"
-                                       scrollHeight="135" >
+                                         scrollable="true"
+                                         scrollHeight="135" >
                                 <p:column width="60" headerText="#{msg['Id']}">
                                     <h:outputText value="#{mailEvents.id}" />
                                 </p:column>
@@ -178,7 +178,7 @@
                                 </p:column>
                                 <p:column width="140" headerText="#{msg['Date']}">
                                     <h:outputText value="#{mailEvents.date}"  ><f:convertDateTime pattern="dd.MM.yyyy hh:mm:ss" timeZone="CET" /></h:outputText>
-                                    
+
                                 </p:column>
                                 <p:column headerText="#{msg['Description']}">
                                     <h:outputText value="#{mailEvents.description}" />

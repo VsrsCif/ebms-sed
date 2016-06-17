@@ -99,7 +99,7 @@ public class Main {
         contexts.setHandlers(new Handler[]{webapp});
 
         server.setHandler(contexts);
- /*
+        /*
         CXFNonSpringServlet cxf = new CXFNonSpringServlet();
         ServletHolder servlet = new ServletHolder(cxf);
         servlet.setName("soap");
@@ -109,7 +109,7 @@ public class Main {
          Bus bus = cxf.getBus();
         SEDMailBox impl = new SEDMailBox();
         Endpoint.publish("/Greeter", impl);
-*/
+         */
         server.start();
         server.join();
     }
@@ -135,13 +135,12 @@ public class Main {
             UserTransaction ut = new JettyUserTransaction(em.getTransaction());
             org.eclipse.jetty.plus.jndi.Resource myEntityManage = new org.eclipse.jetty.plus.jndi.Resource(webapp, PU_NAME,
                     em);
-           
-            org.eclipse.jetty.plus.jndi.Resource myEntityManage2 = new org.eclipse.jetty.plus.jndi.Resource(webapp,PU_MSH_NAME,
+
+            org.eclipse.jetty.plus.jndi.Resource myEntityManage2 = new org.eclipse.jetty.plus.jndi.Resource(webapp, PU_MSH_NAME,
                     em);
 
             org.eclipse.jetty.plus.jndi.Transaction transactionMgr = new org.eclipse.jetty.plus.jndi.Transaction(ut);
 
-  
         } catch (NamingException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }

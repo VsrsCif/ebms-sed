@@ -28,6 +28,8 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import javax.ejb.EJB;
 import javax.ejb.Local;
@@ -41,6 +43,7 @@ import org.sed.ebms.cron.SEDTaskTypeProperty;
 import si.sed.commons.MimeValues;
 import si.sed.commons.SEDJNDI;
 import si.sed.commons.SEDOutboxMailStatus;
+import si.sed.commons.exception.PModeException;
 import si.sed.commons.exception.StorageException;
 import si.sed.commons.interfaces.SEDDaoInterface;
 import si.sed.commons.interfaces.SEDLookupsInterface;
@@ -76,6 +79,9 @@ public class TaskFileSubmitter implements TaskExecutionInterface {
     private static final String PROP_RECEIVER_EBOX = "receiverEBox";
     private static final String PROP_PAYLOAD = "payload";
 
+    /**
+     *
+     */
     public static String KEY_EXPORT_FOLDER = "file.submit.folder";
 
     StorageUtils mSU = new StorageUtils();
@@ -91,6 +97,12 @@ public class TaskFileSubmitter implements TaskExecutionInterface {
     @EJB(mappedName = SEDJNDI.JNDI_SEDLOOKUPS)
     SEDLookupsInterface mLookups;
 
+    /**
+     *
+     * @param p
+     * @return
+     * @throws TaskException
+     */
     @Override
     public String executeTask(Properties p) throws TaskException {
         long l = LOG.logStart();
@@ -114,7 +126,7 @@ public class TaskFileSubmitter implements TaskExecutionInterface {
         } else {
             File[] flst = fRoot.listFiles((File dir, String name) -> name.startsWith(OUTMAIL_FILENAME) && name.endsWith(OUTMAIL_SUFFIX));
             for (File file : flst) {
-                LOG.log("check file data: " +file.getName());
+                LOG.log("check file data: " + file.getName());
 
                 try {
                     if (!isFileLocked(file)) {
@@ -129,9 +141,8 @@ public class TaskFileSubmitter implements TaskExecutionInterface {
                         Properties pmail = new Properties();
 
                         try (FileInputStream fp = new FileInputStream(file)) {
-                            
+
                             pmail.load(fp);
-                            
 
                             BigInteger bi = processOutMail(pmail, fMetaData);
                             File fewFMetaData = new File(file.getAbsolutePath() + OUTMAIL_SUFFIX_SUBMITTED);
@@ -152,7 +163,7 @@ public class TaskFileSubmitter implements TaskExecutionInterface {
 
                         } catch (IOException ex) {
                             LOG.logError(l, "Error reading outmail data: " + file.getAbsolutePath(), ex);
-                             File fewFMetaData = new File(file.getAbsolutePath() + OUTMAIL_SUFFIX_ERROR);
+                            File fewFMetaData = new File(file.getAbsolutePath() + OUTMAIL_SUFFIX_ERROR);
                             if (fMetaData.renameTo(fewFMetaData)) {
                                 try (FileOutputStream fos = new FileOutputStream(fMetaData, true)) {
                                     PrintStream ps = new PrintStream(fos);
@@ -216,7 +227,7 @@ public class TaskFileSubmitter implements TaskExecutionInterface {
         String payload = readProperty(p, PROP_PAYLOAD, true);
         String[] lst = payload.split(";");
         // validate data
-       /* if (isValidMailAddress(sender)) {
+        /* if (isValidMailAddress(sender)) {
             throw new FSException("Sender SEDBox: '" + sender + "' is not valid!");
         }
         if (isValidMailAddress(receiver)) {
@@ -272,7 +283,14 @@ public class TaskFileSubmitter implements TaskExecutionInterface {
         }
 
         String pmodeId = mout.getService() + ":" + Utils.getDomainFromAddress(mout.getReceiverEBox());;
-        PMode pm = mpModeManager.getPModeById(pmodeId);
+        PMode pm = null;
+        try {
+            pm = mpModeManager.getPModeById(pmodeId);
+        } catch (PModeException ex) {
+            String errDesc = "Error reading pmodes for id: '" + pmodeId + "'. Err:"+ex.getMessage()+".  Message with id '" + mout.getMessageId() + "' is not procesed!";
+           
+            throw new FSException(errDesc, ex);
+        }
         if (pm == null) {
             throw new FSException("PMode configuration '" + pmodeId + "' not exists", null);
         }
@@ -299,6 +317,10 @@ public class TaskFileSubmitter implements TaskExecutionInterface {
 
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public SEDTaskType getTaskDefinition() {
         SEDTaskType tt = new SEDTaskType();
@@ -325,6 +347,11 @@ public class TaskFileSubmitter implements TaskExecutionInterface {
         return createTTProperty(key, desc, true, "string", null, null);
     }
 
+    /**
+     *
+     * @param address
+     * @return
+     */
     public static boolean isValidMailAddress(String address) {
         return address != null && EMAIL_PATTEREN.matcher(address).matches();
 

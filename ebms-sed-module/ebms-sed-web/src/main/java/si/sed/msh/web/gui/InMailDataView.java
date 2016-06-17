@@ -16,7 +16,6 @@
  */
 package si.sed.msh.web.gui;
 
-import si.sed.msh.web.abst.AbstractMailView;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -36,12 +35,12 @@ import org.msh.ebms.inbox.mail.MSHInMail;
 import org.msh.ebms.inbox.payload.MSHInPart;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
-
 import si.sed.commons.SEDInboxMailStatus;
 import si.sed.commons.SEDJNDI;
 import si.sed.commons.exception.StorageException;
 import si.sed.commons.interfaces.SEDDaoInterface;
 import si.sed.commons.utils.StorageUtils;
+import si.sed.msh.web.abst.AbstractMailView;
 
 /**
  *
@@ -52,33 +51,29 @@ import si.sed.commons.utils.StorageUtils;
 public class InMailDataView extends AbstractMailView<MSHInMail, MSHInEvent> implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    
-    @EJB (mappedName=SEDJNDI.JNDI_SEDDAO)
+
+    @EJB(mappedName = SEDJNDI.JNDI_SEDDAO)
     SEDDaoInterface mDB;
 
     @ManagedProperty(value = "#{userSessionData}")
     private UserSessionData userSessionData;
 
-    
-      @PostConstruct
-    private void init(){
+    @PostConstruct
+    private void init() {
         mMailModel = new InMailDataModel(MSHInMail.class, userSessionData, mDB);
     }
-    
 
     public void setUserSessionData(UserSessionData messageBean) {
         this.userSessionData = messageBean;
-        
+
     }
 
     public UserSessionData getUserSessionData() {
-        return this.userSessionData ;
+        return this.userSessionData;
     }
-    
-    
-    
-    public InMailDataModel getInMailModel(){
-        return (InMailDataModel)mMailModel;
+
+    public InMailDataModel getInMailModel() {
+        return (InMailDataModel) mMailModel;
     }
 
     @Override
@@ -119,11 +114,9 @@ public class InMailDataView extends AbstractMailView<MSHInMail, MSHInEvent> impl
         }
         return null;
     }
-    
-    public List<SEDInboxMailStatus> getInStatuses(){
+
+    public List<SEDInboxMailStatus> getInStatuses() {
         return Arrays.asList(SEDInboxMailStatus.values());
     }
-    
-    
 
 }

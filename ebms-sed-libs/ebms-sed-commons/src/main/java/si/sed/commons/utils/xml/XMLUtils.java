@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringWriter;
+import java.io.Writer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.XMLConstants;
@@ -64,9 +65,23 @@ import org.xml.sax.SAXException;
  */
 public class XMLUtils {
 
+    public static Document bytesToDom(byte[] xml)
+            throws SAXException, ParserConfigurationException, IOException {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        factory.setNamespaceAware(true);
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        return builder.parse(new ByteArrayInputStream(xml));
+
+    }
+
     public static Object deserialize(File fXMLFilePath, Class cls) throws JAXBException {
         final Unmarshaller um = JAXBContext.newInstance(cls).createUnmarshaller();
         return um.unmarshal(fXMLFilePath);
+    }
+
+    public static Object deserialize(String xml, Class cls) throws JAXBException {
+        final Unmarshaller um = JAXBContext.newInstance(cls).createUnmarshaller();
+        return um.unmarshal(new ByteArrayInputStream(xml.getBytes()));
     }
 
     public static Object deserialize(InputStream io, Class cls) throws JAXBException {
@@ -95,16 +110,6 @@ public class XMLUtils {
             obj = jc.createUnmarshaller().unmarshal(source);
         }
         return obj;
-    }
-
-    public static synchronized String getElementValue(InputStream source, InputStream xsltSource) throws TransformerConfigurationException, JAXBException, TransformerException {
-        TransformerFactory factory = TransformerFactory.newInstance();
-        Transformer transformer;
-        transformer = factory.newTransformer(new StreamSource(xsltSource));
-        StringWriter sw = new StringWriter();
-        StreamResult result = new StreamResult(sw);
-        transformer.transform(new StreamSource(source), result);
-        return sw.toString();
     }
 
     public static Document deserializeToDom(InputStream xmlIS) throws IOException, ParserConfigurationException, SAXException {
@@ -145,18 +150,41 @@ public class XMLUtils {
         return obj;
     }
 
-    public static synchronized Document transform(Element source, InputStream xsltSource) throws TransformerConfigurationException, JAXBException, TransformerException, ParserConfigurationException, SAXException, IOException {
-        Document obj = null;
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        if (xsltSource != null) {
-            TransformerFactory factory = TransformerFactory.newInstance();
-            Transformer transformer;
-            transformer = factory.newTransformer(new StreamSource(xsltSource));
-            obj = dbf.newDocumentBuilder().newDocument();
-            Result result = new DOMResult(obj);
-            transformer.transform(new DOMSource(source), result);
+    public static String format(String unformattedXml) {
+        String xmlString = null;
+        try {
+            Transformer transformer = TransformerFactory.newInstance().newTransformer();
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+//initialize StreamResult with File object to save to file
+            StreamResult result = new StreamResult(new StringWriter());
+
+            DOMSource source = new DOMSource(deserializeToDom(unformattedXml));
+            transformer.transform(source, result);
+            xmlString = result.getWriter().toString();
+        } catch (IOException | ParserConfigurationException | SAXException | TransformerException ex) {
+            Logger.getLogger(XMLUtils.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return obj;
+        return xmlString;
+    }
+
+    public static synchronized String getElementValue(InputStream source, InputStream xsltSource) throws TransformerConfigurationException, JAXBException, TransformerException {
+        TransformerFactory factory = TransformerFactory.newInstance();
+        Transformer transformer;
+        transformer = factory.newTransformer(new StreamSource(xsltSource));
+        StringWriter sw = new StringWriter();
+        StreamResult result = new StreamResult(sw);
+        transformer.transform(new StreamSource(source), result);
+        return sw.toString();
+    }
+
+    public static Document jaxbToDocument(Object obj) throws JAXBException, ParserConfigurationException {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder db = factory.newDocumentBuilder();
+        Document doc = db.newDocument();
+        // Marshal the Object to a Document
+        final Marshaller m = JAXBContext.newInstance(obj.getClass()).createMarshaller();
+        m.marshal(obj, doc);
+        return doc;
     }
 
     public static byte[] serialize(Object obj) throws JAXBException {
@@ -169,29 +197,6 @@ public class XMLUtils {
         final Marshaller m = JAXBContext.newInstance(obj.getClass()).createMarshaller();
         m.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
         m.marshal(obj, os);
-    }
-
-    public static void serializeToSTD(Object obj) throws JAXBException {
-        final Marshaller m = JAXBContext.newInstance(obj.getClass()).createMarshaller();
-        m.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
-        m.marshal(obj, System.out);
-    }
-
-    public static String serializeToString(Element rootElement, boolean setXmlDecl) {
-        DOMImplementationLS lsImpl = (DOMImplementationLS) rootElement.getOwnerDocument().getImplementation().getFeature("LS", "3.0");
-        LSSerializer serializer = lsImpl.createLSSerializer();
-        serializer.getDomConfig().setParameter("xml-declaration", setXmlDecl); //set it to false to get String without xml-declaration
-        return serializer.writeToString(rootElement);
-    }
-
-    public static Document jaxbToDocument(Object obj) throws JAXBException, ParserConfigurationException {
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder db = factory.newDocumentBuilder();
-        Document doc = db.newDocument();
-        // Marshal the Object to a Document
-        final Marshaller m = JAXBContext.newInstance(obj.getClass()).createMarshaller();
-        m.marshal(obj, doc);
-        return doc;
     }
 
     public static void serialize(Object obj, String filename) throws JAXBException, FileNotFoundException {
@@ -208,13 +213,47 @@ public class XMLUtils {
         m.marshal(obj, new FileOutputStream(file));
     }
 
-    public static Document bytesToDom(byte[] xml)
-            throws SAXException, ParserConfigurationException, IOException {
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        factory.setNamespaceAware(true);
-        DocumentBuilder builder = factory.newDocumentBuilder();
-        return builder.parse(new ByteArrayInputStream(xml));
+    public static void serialize(Object obj, Writer w) throws JAXBException, FileNotFoundException {
+        final Marshaller m = JAXBContext.newInstance(obj.getClass()).createMarshaller();
+        m.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
+        m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+        m.marshal(obj, w);
+    }
 
+    public static void serializeToSTD(Object obj) throws JAXBException {
+        final Marshaller m = JAXBContext.newInstance(obj.getClass()).createMarshaller();
+        m.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
+        m.marshal(obj, System.out);
+    }
+
+    public static String serializeToString(Object obj) throws JAXBException {
+        java.io.StringWriter sw = new StringWriter();
+        final Marshaller m = JAXBContext.newInstance(obj.getClass()).createMarshaller();
+        m.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
+        m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+        m.marshal(obj, sw);
+        return sw.toString();
+    }
+
+    public static String serializeToString(Element rootElement, boolean setXmlDecl) {
+        DOMImplementationLS lsImpl = (DOMImplementationLS) rootElement.getOwnerDocument().getImplementation().getFeature("LS", "3.0");
+        LSSerializer serializer = lsImpl.createLSSerializer();
+        serializer.getDomConfig().setParameter("xml-declaration", setXmlDecl); //set it to false to get String without xml-declaration
+        return serializer.writeToString(rootElement);
+    }
+
+    public static synchronized Document transform(Element source, InputStream xsltSource) throws TransformerConfigurationException, JAXBException, TransformerException, ParserConfigurationException, SAXException, IOException {
+        Document obj = null;
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        if (xsltSource != null) {
+            TransformerFactory factory = TransformerFactory.newInstance();
+            Transformer transformer;
+            transformer = factory.newTransformer(new StreamSource(xsltSource));
+            obj = dbf.newDocumentBuilder().newDocument();
+            Result result = new DOMResult(obj);
+            transformer.transform(new DOMSource(source), result);
+        }
+        return obj;
     }
 
     public static String validateBySchema(Object jabxObj, InputStream schXsd, String xsdResourceFolder) {
@@ -252,24 +291,6 @@ public class XMLUtils {
 
         return res;
 
-    }
-
-    public static String format(String unformattedXml) {
-        String xmlString= null;
-        try {
-            Transformer transformer = TransformerFactory.newInstance().newTransformer();
-            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-//initialize StreamResult with File object to save to file
-            StreamResult result = new StreamResult(new StringWriter());
-            
-
-            DOMSource source = new DOMSource(deserializeToDom(unformattedXml));
-            transformer.transform(source, result);
-            xmlString = result.getWriter().toString();      
-        } catch (IOException | ParserConfigurationException | SAXException | TransformerException ex) {
-            Logger.getLogger(XMLUtils.class.getName()).log(Level.SEVERE, null, ex);        
-        }
-        return xmlString;
     }
 
 }

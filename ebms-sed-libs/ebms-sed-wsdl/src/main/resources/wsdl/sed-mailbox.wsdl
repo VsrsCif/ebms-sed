@@ -105,7 +105,7 @@ Copyright 2015, Supreme Court Republic of Slovenia
     <message name="ModifyInMailResponse">
         <part name="ModifyInMailResponse" element="tns:ModifyInMailResponse"/>
     </message>
-      <message name="ModifyOutMailRequest">
+    <message name="ModifyOutMailRequest">
         <part name="ModifyOutMailRequest" element="tns:ModifyOutMailRequest"/>
     </message>
     <message name="ModifyOutMailResponse">
@@ -259,7 +259,7 @@ Copyright 2015, Supreme Court Republic of Slovenia
                 <soap:fault name="SEDException" use="literal"/>
             </fault>
         </operation>
-         <operation name="modifyOutMail">
+        <operation name="modifyOutMail">
             <soap:operation soapAction="http://ebms.sed.org/modifyOutMail"/>
             <input>
                 <soap:body use="literal"/>

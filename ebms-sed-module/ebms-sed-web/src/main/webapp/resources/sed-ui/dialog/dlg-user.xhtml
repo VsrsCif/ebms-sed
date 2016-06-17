@@ -25,10 +25,10 @@
                             <h:outputText value="#{adminSEDUserView.editable.userId}" rendered="#{empty adminSEDUserView.new}" />
                             <h:inputText value="#{adminSEDUserView.editable.userId}" rendered="#{not empty adminSEDUserView.new}" />
 
-                            
+
                             <h:outputText value="#{msg['ActiveFromDate']}:" />
                             <p:calendar styleClass="searchDate" value="#{adminSEDUserView.editable.activeFromDate}" pattern="dd.MM.yyyy" mask="true" navigator="true" showOn="button"/>
-                             
+
                             <h:outputText value="#{msg['ActiveToDate']}:" />
                             <p:calendar styleClass="searchDate" value="#{adminSEDUserView.editable.activeToDate}" pattern="dd.MM.yyyy" mask="true" navigator="true" showOn="button"/>
                         </p:panelGrid>

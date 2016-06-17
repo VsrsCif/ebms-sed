@@ -26,8 +26,6 @@ import si.sed.commons.interfaces.exception.TaskException;
 @Local(TaskExecutionInterface.class)
 public class TaskEmailStatusReport extends TaskEmailReport {
 
- 
-
     @Override
     public String generateMailReport(Properties p, StringWriter sw) throws TaskException {
 
@@ -105,7 +103,6 @@ public class TaskEmailStatusReport extends TaskEmailReport {
         swBody.append(System.lineSeparator());
         return swBody.toString();
     }
-    
 
     @Override
     public SEDTaskType getTaskDefinition() {
@@ -115,7 +112,5 @@ public class TaskEmailStatusReport extends TaskEmailReport {
         tt.setDescription("Incoming outcomming mail report from sed box");
         return tt;
     }
-    
-    
 
 }

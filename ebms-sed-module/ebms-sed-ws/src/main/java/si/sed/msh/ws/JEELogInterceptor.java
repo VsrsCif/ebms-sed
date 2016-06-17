@@ -24,41 +24,12 @@ import org.apache.log4j.Logger;
  */
 public class JEELogInterceptor {
 
+    private final String logFormat = "%s %s %s %s time: %d ms.";
+
+    private final String logFormatBegin = "%s %s %s %s";
+    private final Logger mlgLogger = Logger.getLogger(JEELogInterceptor.class);
     @Resource
     WebServiceContext mwsCtxt;
-
-    private final Logger mlgLogger = Logger.getLogger(JEELogInterceptor.class);
-    private final String logFormatBegin ="%s %s %s %s";
-    private final String logFormat ="%s %s %s %s time: %d ms." 
-            ;
-
-    @AroundInvoke
-    public Object intercept(InvocationContext context) throws Exception {
-        String ip = getCurrrentRemoteIP();
-        String methodName = context.getMethod().getName() ;
-        
-        long l = getTime();
-        mlgLogger.debug(String.format(logFormatBegin, methodName, ip, "BEGIN", ""));
-        
-        Object result = null;
-        try {
-            result = context.proceed();
-        } catch (Exception e) {
-            mlgLogger.error(String.format(logFormat, methodName, ip, "ERROR", e.getMessage(), getDuration(l)), e);
-            mlgLogger.error("Parameters: " +  paramsToString(context.getParameters()));
-            throw e;
-        }
-        mlgLogger.info(String.format(logFormat, methodName, ip, "END","", getDuration(l)));
-        return result;
-    }
-
-    public long getTime() {
-        return Calendar.getInstance().getTimeInMillis();
-    }
-
-    public long getDuration(long t) {
-        return Calendar.getInstance().getTimeInMillis() - t;
-    }
 
     protected String getCurrrentRemoteIP() {
         String clientIP = "";
@@ -74,19 +45,47 @@ public class JEELogInterceptor {
         }
         return clientIP;
     }
-    
-     public void logError( String method, String pip, long lTime, String strMessage, Exception ex) {
+
+    public long getDuration(long t) {
+        return Calendar.getInstance().getTimeInMillis() - t;
+    }
+
+    public long getTime() {
+        return Calendar.getInstance().getTimeInMillis();
+    }
+
+    @AroundInvoke
+    public Object intercept(InvocationContext context) throws Exception {
+        String ip = getCurrrentRemoteIP();
+        String methodName = context.getMethod().getName();
+
+        long l = getTime();
+        mlgLogger.debug(String.format(logFormatBegin, methodName, ip, "BEGIN", ""));
+
+        Object result = null;
+        try {
+            result = context.proceed();
+        } catch (Exception e) {
+            mlgLogger.error(String.format(logFormat, methodName, ip, "ERROR", e.getMessage(), getDuration(l)), e);
+            mlgLogger.error("Parameters: " + paramsToString(context.getParameters()));
+            throw e;
+        }
+        mlgLogger.info(String.format(logFormat, methodName, ip, "END", "", getDuration(l)));
+        return result;
+    }
+
+    public void logError(String method, String pip, long lTime, String strMessage, Exception ex) {
         mlgLogger.error(method + ": - ERROR MSG: '" + strMessage + "' ( " + (getTime() - lTime) + " ms )", ex);
     }
 
-    public void logError(String method,long lTime, Exception ex) {
+    public void logError(String method, long lTime, Exception ex) {
         mlgLogger.error(method + ": - ERROR MSG: '" + (ex != null ? ex.getMessage() : "") + "' ( " + (getTime() - lTime) + " ms )", ex);
     }
 
-    public void logWarn(String method,long lTime, String strMessage, Exception ex) {
+    public void logWarn(String method, long lTime, String strMessage, Exception ex) {
         mlgLogger.warn(method + ": - Warn MSG: '" + strMessage + "' ( " + (getTime() - lTime) + " ms )", ex);
     }
-    
+
     public String paramsToString(final Object... param) {
         String strParams = null;
         if (param != null && param.length != 0) {
@@ -102,21 +101,22 @@ public class JEELogInterceptor {
         }
         return strParams;
     }
+
     public String requestToString(Object obj) {
         if (obj == null) {
             return "";
         }
         String strRes;
         try {
-            
+
             StringWriter sw = new StringWriter();
             JAXBContext jc = JAXBContext.newInstance(obj.getClass());
-            
-            Marshaller m = jc.createMarshaller();            
+
+            Marshaller m = jc.createMarshaller();
             m.marshal(obj, sw);
             strRes = sw.toString();
-        } catch (JAXBException  ex) {
-            mlgLogger.warn("Error marshal object: '"+obj+"'. Error:  " +  ex.toString() + ", " + ex.getMessage());
+        } catch (JAXBException ex) {
+            mlgLogger.warn("Error marshal object: '" + obj + "'. Error:  " + ex.toString() + ", " + ex.getMessage());
             strRes = obj.toString();
         }
         return strRes;

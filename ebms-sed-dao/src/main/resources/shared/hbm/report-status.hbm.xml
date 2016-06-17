@@ -13,7 +13,7 @@
         WHERE receiver_ebox = :sedBox
         GROUP BY status                 
     </sql-query>
-     <sql-query name="org.sed.ebms.report.getOutMailStatusesByBox">
+    <sql-query name="org.sed.ebms.report.getOutMailStatusesByBox">
         <return  class="org.sed.ebms.report.Status"/>
         SELECT status, count(id)
         FROM sed_outbox

@@ -1,19 +1,3 @@
-/*
-* Copyright 2015, Supreme Court Republic of Slovenia 
-*
-* Licensed under the EUPL, Version 1.1 or – as soon they will be approved by 
-* the European Commission - subsequent versions of the EUPL (the "Licence");
-* You may not use this work except in compliance with the Licence.
-* You may obtain a copy of the Licence at:
-*
-* https://joinup.ec.europa.eu/software/page/eupl
-*
-* Unless required by applicable law or agreed to in writing, software 
-* distributed under the Licence is distributed on an "AS IS" basis, WITHOUT 
-* WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the Licence for the specific language governing permissions and  
-* limitations under the Licence.
- */
 package si.sed.ebms.ws;
 
 import java.io.File;
@@ -21,22 +5,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.transaction.HeuristicMixedException;
-import javax.transaction.HeuristicRollbackException;
-import javax.transaction.NotSupportedException;
-import javax.transaction.RollbackException;
-import javax.transaction.SystemException;
-import javax.transaction.UserTransaction;
 import javax.xml.bind.JAXBException;
-import javax.xml.ws.soap.SOAPBinding;
 import javax.xml.soap.MessageFactory;
 import javax.xml.soap.SOAPConstants;
 import javax.xml.soap.SOAPException;
@@ -47,11 +18,11 @@ import javax.xml.ws.Service;
 import javax.xml.ws.ServiceMode;
 import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.WebServiceProvider;
+import javax.xml.ws.soap.SOAPBinding;
 import org.apache.cxf.jaxws.context.WrappedMessageContext;
 import org.apache.cxf.message.Attachment;
 import org.apache.cxf.message.Exchange;
 import org.apache.cxf.message.Message;
-import org.msh.ebms.inbox.event.MSHInEvent;
 import org.msh.ebms.inbox.mail.MSHInMail;
 import org.msh.ebms.inbox.payload.MSHInPart;
 import org.msh.svev.pmode.PMode;
@@ -64,7 +35,6 @@ import si.sed.commons.SEDJNDI;
 import si.sed.commons.SEDSystemProperties;
 import si.sed.commons.exception.StorageException;
 import si.sed.commons.interfaces.SEDDaoInterface;
-
 import si.sed.commons.utils.HashUtils;
 import si.sed.commons.utils.SEDLogger;
 import si.sed.commons.utils.StorageUtils;
@@ -91,19 +61,22 @@ public class EBMSEndpoint implements Provider<SOAPMessage> {
 
     private static final SEDLogger LOG = new SEDLogger(EBMSEndpoint.class);
 
+    @EJB(mappedName = SEDJNDI.JNDI_SEDDAO)
+    SEDDaoInterface mDB;
+    EBMSUtils mebmsUtils = new EBMSUtils();
+    HashUtils mpHU = new HashUtils();
+    StringFormater msfFormat = new StringFormater();
+    StorageUtils msuStorageUtils = new StorageUtils();
     @Resource
     WebServiceContext wsContext;
 
-    @EJB(mappedName = SEDJNDI.JNDI_SEDDAO)
-    SEDDaoInterface mDB;
-
-    StorageUtils msuStorageUtils = new StorageUtils();
-    HashUtils mpHU = new HashUtils();
-    EBMSUtils mebmsUtils = new EBMSUtils();
-    StringFormater msfFormat = new StringFormater();
-
     public EBMSEndpoint() {
 
+    }
+
+    private String getJNDIPrefix() {
+
+        return System.getProperty(SEDSystemProperties.SYS_PROP_JNDI_PREFIX, "java:/jboss/");
     }
 
     @Override
@@ -153,52 +126,43 @@ public class EBMSEndpoint implements Provider<SOAPMessage> {
         try {
             // --------------------
             // serialize data to db
-            
+
             mDB.setStatusToInMail(mail, SEDInboxMailStatus.RECEIVED, null);
         } catch (StorageException ex) {
-             LOG.logError(l, "Error setting status ERROR to MSHInMail :'" + mail.getId() + "'!", ex);
+            LOG.logError(l, "Error setting status ERROR to MSHInMail :'" + mail.getId() + "'!", ex);
         }
-         
-            // serialize to file
-            Export e = sb.getExport();
-            if (e != null && e.getActive()) {
 
-                String val = msfFormat.format(e.getFileMask(), mail);
-                int i = 1;
-                try {
-                    String folder = Utils.replaceProperties(e.getFolder());
-                    File fld = new File(folder);
-                    if (!fld.exists()) {
-                        fld.mkdirs();
-                    }
-                    String filPrefix = fld.getAbsolutePath() + File.separator + val;
-                    if (e.getExportMetaData()) {
-                        String fileMetaData = filPrefix + "." + MimeValues.MIME_XML.getSuffix();
-                        try {
+        // serialize to file
+        Export e = sb.getExport();
+        if (e != null && e.getActive()) {
 
-                            XMLUtils.serialize(mail, fld.getAbsolutePath() + File.separator + val + "." + MimeValues.MIME_XML.getSuffix());
-                        } catch (JAXBException | FileNotFoundException ex) {
-                            LOG.logError(l, "Export metadata ERROR. Export file:" + fileMetaData + ".", ex);
-                        }
-                    }
-                    for (MSHInPart mp : mail.getMSHInPayload().getMSHInParts()) {
-                        msuStorageUtils.copyInFile(mp.getFilepath(), new File(filPrefix + "_" + i + "." + MimeValues.getSuffixBYMimeType(mp.getMimeType())));
-                    }
-                } catch (IOException | StorageException ex) {
-                    LOG.logError(l, "Export ERROR", ex);
+            String val = msfFormat.format(e.getFileMask(), mail);
+            int i = 1;
+            try {
+                String folder = Utils.replaceProperties(e.getFolder());
+                File fld = new File(folder);
+                if (!fld.exists()) {
+                    fld.mkdirs();
                 }
-            }
+                String filPrefix = fld.getAbsolutePath() + File.separator + val;
+                if (e.getExportMetaData()) {
+                    String fileMetaData = filPrefix + "." + MimeValues.MIME_XML.getSuffix();
+                    try {
 
-      
+                        XMLUtils.serialize(mail, fld.getAbsolutePath() + File.separator + val + "." + MimeValues.MIME_XML.getSuffix());
+                    } catch (JAXBException | FileNotFoundException ex) {
+                        LOG.logError(l, "Export metadata ERROR. Export file:" + fileMetaData + ".", ex);
+                    }
+                }
+                for (MSHInPart mp : mail.getMSHInPayload().getMSHInParts()) {
+                    msuStorageUtils.copyInFile(mp.getFilepath(), new File(filPrefix + "_" + i + "." + MimeValues.getSuffixBYMimeType(mp.getMimeType())));
+                }
+            } catch (IOException | StorageException ex) {
+                LOG.logError(l, "Export ERROR", ex);
+            }
+        }
+
         LOG.logEnd(l);
     }
 
-   
-
-    private String getJNDIPrefix() {
-
-        return System.getProperty(SEDSystemProperties.SYS_PROP_JNDI_PREFIX, "java:/jboss/");
-    }
-
-    
 }

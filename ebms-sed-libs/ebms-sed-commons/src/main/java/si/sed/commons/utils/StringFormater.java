@@ -23,61 +23,57 @@ import org.msh.ebms.inbox.mail.MSHInMail;
  * @author sluzba
  */
 public class StringFormater {
+
     SimpleDateFormat msdf = new SimpleDateFormat("dd.MM.yyyy HH:mm.ss");
-    
-    
-    public  String format(List<String> methods, Object obj, int i){
-         
-         Class cls = obj.getClass();
-         StringWriter sw = new StringWriter();
-         sw.write(i+".");
-         
-         for(String mth: methods){
-         
-             try {
-                Method md =  cls.getDeclaredMethod("get"+mth);
-                Object res  = md.invoke(obj, new Object[0]);
-                
+
+    public String format(List<String> methods, Object obj, int i) {
+
+        Class cls = obj.getClass();
+        StringWriter sw = new StringWriter();
+        sw.write(i + ".");
+
+        for (String mth : methods) {
+
+            try {
+                Method md = cls.getDeclaredMethod("get" + mth);
+                Object res = md.invoke(obj, new Object[0]);
+
                 String value = object2String(res);
-                 sw.write(",");
-                 sw.write(value.replace("\\", "\\\\").replace(",", "\\,"));
-                
-             } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-                 Logger.getLogger(StringFormater.class.getName()).log(Level.SEVERE, null, ex);
-             }
+                sw.write(",");
+                sw.write(value.replace("\\", "\\\\").replace(",", "\\,"));
+
+            } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+                Logger.getLogger(StringFormater.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
-         
-       
+
         return sw.toString();
     }
-    
-    public  String format(String str, MSHInMail dce){
-         HashMap<String, Object> hm= new HashMap<>();
-         
-         
-         Method[] mthLst = dce.getClass().getDeclaredMethods();
-         for (Method mt:mthLst ){
-             
-             if (mt.getName().startsWith("get")){
-                 String strName = mt.getName().substring(3);
-                 Object put = null;
-                 try {
-                     if ( mt.getParameterTypes() == null ||  mt.getParameterTypes().length ==0) {                     
+
+    public String format(String str, MSHInMail dce) {
+        HashMap<String, Object> hm = new HashMap<>();
+
+        Method[] mthLst = dce.getClass().getDeclaredMethods();
+        for (Method mt : mthLst) {
+
+            if (mt.getName().startsWith("get")) {
+                String strName = mt.getName().substring(3);
+                Object put = null;
+                try {
+                    if (mt.getParameterTypes() == null || mt.getParameterTypes().length == 0) {
                         put = mt.invoke(dce, new Object[0]);
-                     }
-                 } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-                     Logger.getLogger(StringFormater.class.getName()).log(Level.SEVERE, null, ex);
-                 }
-                 hm.put(strName, put);
-                  
-             }
-         }
+                    }
+                } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+                    Logger.getLogger(StringFormater.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                hm.put(strName, put);
+
+            }
+        }
         return format(str, hm);
     }
-    
-    
-    
-     public String format(String str, Map<String, Object> values) {
+
+    public String format(String str, Map<String, Object> values) {
 
         StringBuilder builder = new StringBuilder(str);
 
@@ -95,28 +91,27 @@ public class StringFormater {
 
         return builder.toString();
     }
-     
-     
-     private String object2String(Object o){
-         String res = null; 
-         if (o == null){
-             res = "";
-        } else if (o instanceof String){
-            res = (String)o;
-        } else if (o instanceof Integer){
-            res = ((Integer)o).toString();
-        } else if (o instanceof BigInteger){
-            res = ((BigInteger)o).toString();
-        } else if (o instanceof BigDecimal){
-            res = ((BigDecimal)o).toString();
-        } else if (o instanceof Double){
-            res = ((Double)o).toString();
-        } else if (o instanceof Date){
-            res = msdf.format((Date)o);
+
+    private String object2String(Object o) {
+        String res = null;
+        if (o == null) {
+            res = "";
+        } else if (o instanceof String) {
+            res = (String) o;
+        } else if (o instanceof Integer) {
+            res = ((Integer) o).toString();
+        } else if (o instanceof BigInteger) {
+            res = ((BigInteger) o).toString();
+        } else if (o instanceof BigDecimal) {
+            res = ((BigDecimal) o).toString();
+        } else if (o instanceof Double) {
+            res = ((Double) o).toString();
+        } else if (o instanceof Date) {
+            res = msdf.format((Date) o);
         } else {
             res = o.toString();
         }
-         return res;
-         
-     }
+        return res;
+
+    }
 }

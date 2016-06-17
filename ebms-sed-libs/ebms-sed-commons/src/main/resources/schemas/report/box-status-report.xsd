@@ -26,31 +26,31 @@ Copyright 2016, Supreme Court Republic of Slovenia
  limitations under the Licence.
 -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ns1="http://ebms.sed.org/report" targetNamespace="http://ebms.sed.org/report" elementFormDefault="qualified" attributeFormDefault="unqualified">
-	<xs:element name="SEDReportBoxStatus" type="ns1:SEDReportBoxStatus"/>
-	<xs:complexType name="SEDReportBoxStatus">
-		<xs:sequence>
-			<xs:element name="InMail" minOccurs="0" maxOccurs="1">
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element ref="ns1:Status" minOccurs="0" maxOccurs="unbounded"/>
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
-                        <xs:element name="OutMail" minOccurs="0" maxOccurs="1">
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element ref="ns1:Status" minOccurs="0" maxOccurs="unbounded"/>
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
-		</xs:sequence>
-		<xs:attribute name="sedbox" type="xs:string" use="required"/>
-		<xs:attribute name="reportDate" type="xs:date" use="required"/>
-	</xs:complexType>
-	<xs:element name="Status">
-		<xs:complexType>
-			<xs:attribute name="status" type="xs:string" use="required"/>
-			<xs:attribute name="count" type="xs:integer" use="required"/>
-		</xs:complexType>
-	</xs:element>
+    <xs:element name="SEDReportBoxStatus" type="ns1:SEDReportBoxStatus"/>
+    <xs:complexType name="SEDReportBoxStatus">
+        <xs:sequence>
+            <xs:element name="InMail" minOccurs="0" maxOccurs="1">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element ref="ns1:Status" minOccurs="0" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="OutMail" minOccurs="0" maxOccurs="1">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element ref="ns1:Status" minOccurs="0" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+        <xs:attribute name="sedbox" type="xs:string" use="required"/>
+        <xs:attribute name="reportDate" type="xs:date" use="required"/>
+    </xs:complexType>
+    <xs:element name="Status">
+        <xs:complexType>
+            <xs:attribute name="status" type="xs:string" use="required"/>
+            <xs:attribute name="count" type="xs:integer" use="required"/>
+        </xs:complexType>
+    </xs:element>
 </xs:schema>

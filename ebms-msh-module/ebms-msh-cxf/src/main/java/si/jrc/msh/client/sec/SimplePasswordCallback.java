@@ -19,9 +19,7 @@ package si.jrc.msh.client.sec;
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.callback.UnsupportedCallbackException;
-
 import org.apache.wss4j.common.ext.WSPasswordCallback;
-
 import si.sed.commons.utils.SEDLogger;
 
 /**
@@ -29,22 +27,21 @@ import si.sed.commons.utils.SEDLogger;
  * @author Joze Rihtarsic <joze.rihtarsic@sodisce.si>
  */
 public class SimplePasswordCallback implements CallbackHandler {
-    
+
+    protected final SEDLogger mlog = new SEDLogger(SimplePasswordCallback.class);
+
     String password;
 
     public SimplePasswordCallback(String psswd) {
         this.password = psswd;
     }
-    
-
-    protected final SEDLogger mlog = new SEDLogger(SimplePasswordCallback.class);
 
     @Override
     public void handle(Callback[] callbacks) throws UnsupportedCallbackException {
-        if (callbacks[0] instanceof WSPasswordCallback ) {
-            WSPasswordCallback pc = (WSPasswordCallback)callbacks[0]; 
-            pc.setPassword(password); 
-        } else  {
+        if (callbacks[0] instanceof WSPasswordCallback) {
+            WSPasswordCallback pc = (WSPasswordCallback) callbacks[0];
+            pc.setPassword(password);
+        } else {
             throw new UnsupportedCallbackException(callbacks[0]);
         }
     }

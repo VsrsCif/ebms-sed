@@ -590,22 +590,21 @@ public enum MimeValues {
         return res;
 
     }
-    public static String getMimeTypeByFileName(String strFileName) {      
-        return getMimeTypeBySuffix(strFileName.substring(strFileName.lastIndexOf(".")+1));
+
+    public static String getMimeTypeByFileName(String strFileName) {
+        return getMimeTypeBySuffix(strFileName.substring(strFileName.lastIndexOf('.') + 1));
     }
-    
+
     public static String getMimeTypeBySuffix(String strSuffix) {
         String res = MIME_BIN.mstrMimeType;
-        
-        
+
         for (MimeValues vm : values()) {
-            if (vm.getSuffix().equalsIgnoreCase(strSuffix)){
+            if (vm.getSuffix().equalsIgnoreCase(strSuffix)) {
                 res = vm.getMimeType();
                 break;
             }
         }
-        
-        
+
         return res;
 
     }

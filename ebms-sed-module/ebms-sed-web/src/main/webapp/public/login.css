@@ -35,12 +35,12 @@
 
 
 .ui-button-icon-only .ui-icon, .ui-button-text-icon-left .ui-icon, .ui-button-text-icon-right .ui-icon {
-    
+
     top:0;
     margin:  2px;
     padding: 2px 2px 2px 4px;
     left: 0;
-    
+
 }
 
 .ui-button-text-icon-left .ui-button-text {

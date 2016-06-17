@@ -1,24 +1,6 @@
-/*
-* Copyright 2016, Supreme Court Republic of Slovenia 
-*
-* Licensed under the EUPL, Version 1.1 or – as soon they will be approved by 
-* the European Commission - subsequent versions of the EUPL (the "Licence");
-* You may not use this work except in compliance with the Licence.
-* You may obtain a copy of the Licence at:
-*
-* https://joinup.ec.europa.eu/software/page/eupl
-*
-* Unless required by applicable law or agreed to in writing, software 
-* distributed under the Licence is distributed on an "AS IS" basis, WITHOUT 
-* WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the Licence for the specific language governing permissions and  
-* limitations under the Licence.
- */
 package org.sed.msh.jms;
 
 import java.math.BigInteger;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
 import javax.ejb.MessageDriven;
@@ -29,16 +11,14 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.naming.NamingException;
 import javax.persistence.NoResultException;
-import javax.rmi.CORBA.Util;
 import org.msh.ebms.outbox.mail.MSHOutMail;
-
 import org.msh.svev.pmode.PMode;
 import org.msh.svev.pmode.ReceptionAwareness;
 import si.jrc.msh.client.MshClient;
 import si.sed.commons.SEDJNDI;
 import si.sed.commons.SEDOutboxMailStatus;
-
 import si.sed.commons.SEDValues;
+import si.sed.commons.exception.PModeException;
 import si.sed.commons.exception.StorageException;
 import si.sed.commons.interfaces.JMSManagerInterface;
 import si.sed.commons.interfaces.SEDDaoInterface;
@@ -60,14 +40,14 @@ import si.sed.commons.utils.Utils;
 public class MSHQueueBean implements MessageListener {
 
     public static final SEDLogger LOG = new SEDLogger(MSHQueueBean.class);
-    PModeManager mpModeManager = new PModeManager();
-    MshClient mmshClient = new MshClient();
 
     @EJB(mappedName = SEDJNDI.JNDI_SEDDAO)
     SEDDaoInterface mDB;
 
     @EJB(mappedName = SEDJNDI.JNDI_JMSMANAGER)
     JMSManagerInterface mJMS;
+    MshClient mmshClient = new MshClient();
+    PModeManager mpModeManager = new PModeManager();
 
     public MSHQueueBean() {
     }
@@ -108,7 +88,18 @@ public class MSHQueueBean implements MessageListener {
         }
 
         // get pmode 
-        PMode pMode = mpModeManager.getPModeById(pModeID);
+        PMode pMode = null;
+        try {
+            pMode = mpModeManager.getPModeById(pModeID);
+        } catch (PModeException pex) {
+            String errDesc = "Error reading pmodes for id: '" + pModeID + "'. Err:"+pex.getMessage()+".  Message with id '" + idMsg + "' is not procesed!";
+            LOG.logError(t, errDesc, null);
+            try {
+                mDB.setStatusToOutMail(mail, SEDOutboxMailStatus.ERROR, errDesc);
+            } catch (StorageException ex) {
+                LOG.logError(t, "Error setting status ERROR to MSHOutMail :'" + mail.getId() + "'!", ex);
+            }
+        }
         if (pMode == null) {
             String errDesc = "PMode with id: '" + pModeID + "' not exists! Message with id '" + idMsg + "' is not procesed!";
             LOG.logError(t, errDesc, null);
@@ -171,14 +162,14 @@ public class MSHQueueBean implements MessageListener {
                     } catch (NamingException | JMSException ex1) {
                         String errDesc = "Error occured while resending message with id: '" + pModeID + "'!";
                         LOG.logError(t, errDesc, ex1);
-                        
+
                         try {
                             mDB.setStatusToOutMail(mail, SEDOutboxMailStatus.ERROR, errDesc + " " + ex.getMessage());
                         } catch (StorageException ex2) {
                             LOG.logError(t, "Error occurred while setting status ERROR to MSHOutMail :'" + mail.getId() + "'!", ex2);
                             return;
                         }
-                        
+
                     }
                 }
             }

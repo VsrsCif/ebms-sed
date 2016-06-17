@@ -59,10 +59,10 @@ public class TestLoad {
     public static String[] SUBJECTS = new String[]{"dopis z dne 29.3.2016, PRAVN. SKLEP O ZVRŠBI", "sklep 23.03.2016,dgp.odg.na ug.s pril.z dne 21.12.2015", "P60_23, sklep št.III D 459/13 (priloga C8)", "r.št. 25 s kl.prav.", "dopis o poplačilu, dgp. vloge r. 12", "sklep o nadaljevanju izvršbe-86+predlog-82+pril.", "pozivni sklep U z drugop. r. št. 12", "Stroški IZV z r.št. 11 s pril. ", "dopis  25.3.2016 z r.št. 6", "Sklep z dne 18.3.2016,ftc.u.z. z dne 2.10.2014", "skl. str. izv. z dne 21.3.16 z vl. z dne 3.3.16 s strošk.", "sklep  24.3.2016 s predl., dopis 24.3.16", "sklep 23.3.2016 + dgp. vl. 21.1.16", "Dopis z dne 30. 03. 2016 s pril. ", "S59_S590452__23326 odgovor na ugovor s prilogami", "Sklep o izvršbi s pred. in pril., dopol. pred. s pril.", "skl. nis opp. + str.,pi,prnm si,ftk.predlog za nis ", "Sklep 21.3.2016+vloga 12.2.2016+14.3.2016", "sklep z dne 29. 3. 2016 s prilogami", "sklep z dne 29. 3. 2016 s prilogo", "sklep 23.3.2016, vl. 16.9.2015, rtr", "sklep NIS OPP s pril.", "Dopis upniku + VL. IZVR. Z DNE 19.2.16", "obv.pnm.  Skl.NIS.pl.  dopis,ftk.l.50,pnm.IS+IP,skl.l.41-,43-", "ftk.l.56 v vednost", "SKLEP 17.3.16 + FTK. SPISA", "Predlog-izvršba VL,SO sklep o izvršbi", "sklep- sprememba upnika  in vlogau pnika 15.12.2015", "prm.ID+RTRR", "Sklep N.I.S.-23 S00_0120vl. 19, prav. skl. o izv. s pr., r. 9,11", "Predložitveno poročilo, spis I 291/2014", "sklep o izvršbi in predlog s pril.", "dopis z dne 30.3.2016, vrač. skl. o del.ust.z dne 21.12.2015", "prav. skl. 21", "poziv izv ", "Odredba 29.03.2016 (VROČ.2), Sklep 29.03.2016 (VROČ.3) + Sodno pismo", "S00_0197", "dopis 18.3.16+skl. 15.3.16+vl. 26.2.16+ZZZS", "skl. 15.3.16+vl. 26.2.16+RTR+ZZZS", "Vloga 7.3.2016", "dopis 25.3.16  obv. o pravn. 25.3.16", "obvestilo o popl. dolga", "dopis z dne 29.3.16, drug.ug. z dne 1.3.16 s pril.", "Vloga", "sklep, obrazec ZST-1", "prav. skl. o izv. s pr., r. 5,19", "odredba z dne 29.3.2016", "sklep z dne 25.3.2016", "Sklep 21.3.16, sklep 18.11.15 s prav., 23.6.15 s prav.", "soi z dne 25.3.16, ip z dne 9.2.16 s pril.", "dopis z dne 29.3.2016, fot.vloge z dne 28.1.2016 - v vednost", "Sklep z dne 24. 3. 2016 +l. 13 (2)", "prm.skl. 9.2.16", "dopis prim.b., ftk. l. 13,22", "dopis 24.3.16+vl. 22.+25.2.+17.3.16", "PNM sklep z dne 4.2.2016 (1)", "dopis z dne 25.3.2016, vl. OPP 23.7.2015", "2xodr., orig. rač. ", "sklep z dne 25.3.2016 + pravn. sklep o izvršbi in predlog", "sklep o umiku z dne 25.3.2016", "pravn. sklep z dne 2.3.16, ftk. spisa", "skl. o um. 21.3.", "Dopis z dne 25.3.2016 +l. 23 (2)", "sklep o določ.", "dopis z dne 25.3.2016 in vloga z dne 10.2.2016", "sklep o novem upniku+dgp.r.št.6+pril.A1", "Sklep z dne 23. 3. 2016 (1)", "pi,si,", "sklep o ug. ", "Poziv z dne 29.3.2016, pr. sklep 7.5.2013", "sklep ustavitev premičnine   odredba seznam premoženja +sklep stroški 4.12.2015 s prilogo", "2x vloga 16.2.2016 (Ab) in vloga 16.2.2016"};
 
     public static String SENDER_BOX = "izvrsba@sed-court.si";
-    
-    public static  final SEDLogger  LOG = new SEDLogger(TestLoad.class);
 
-   public File[] testFiles;
+    public static final SEDLogger LOG = new SEDLogger(TestLoad.class);
+
+    public File[] testFiles;
     SEDMailBoxWS mTestInstance = null;
 
     public TestLoad() {
@@ -86,11 +86,10 @@ public class TestLoad {
     }
 
     public static void main(String... args) {
-        
-        
-        System.out.println("test: "  + Integer.parseInt("IICSR", 32));
-        
-    /*
+
+        System.out.println("test: " + Integer.parseInt("IICSR", 32));
+
+        /*
         
         TestLoad tl = new TestLoad();
         try {
@@ -98,9 +97,7 @@ public class TestLoad {
         } catch (SEDException_Exception ex) {
             Logger.getLogger(TestLoad.class.getName()).log(Level.SEVERE, null, ex);
         }*/
-
     }
-
 
     public long getDeltaTime(long l) {
         return LOG.getTime() - l;
@@ -114,7 +111,7 @@ public class TestLoad {
         String action = "Delivery";
         //String service = "LegalDelivery_ZPP";
         //String action = "DeliveryNotification";
-        
+
         SubmitMailRequest smr = new SubmitMailRequest();
         smr.setControl(createControl());
         smr.setData(new SubmitMailRequest.Data());
@@ -128,7 +125,7 @@ public class TestLoad {
                     SUBJECTS[rnd.nextInt(SUBJECTS.length)], getRandomFiles(1, 5, rnd), String.format("VL %d/2016", i + 1)));
             // submit request
             SubmitMailResponse mr = getService().submitMail(smr);
-            LOG.log(i + ". submited in: '"+getDeltaTime(st)+"' whole: '"+getDeltaTime(startl)+"'" );
+            LOG.log(i + ". submited in: '" + getDeltaTime(st) + "' whole: '" + getDeltaTime(startl) + "'");
 
         }
 
@@ -138,9 +135,9 @@ public class TestLoad {
 
         StringWriter sw = new StringWriter();
 
-            JAXBContext carContext = JAXBContext.newInstance(o.getClass());
-            Marshaller carMarshaller = carContext.createMarshaller();
-            carMarshaller.marshal(o, sw);
+        JAXBContext carContext = JAXBContext.newInstance(o.getClass());
+        Marshaller carMarshaller = carContext.createMarshaller();
+        carMarshaller.marshal(o, sw);
 
         return sw.toString();
     }

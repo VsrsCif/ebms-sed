@@ -27,22 +27,18 @@ import si.sodisce._2010.mail.message.AddressesType;
 import si.sodisce._2010.mail.message.Message;
 import si.sodisce._2010.mail.message.PhysicalAddressType;
 
-
 /**
  *
  * @author logos
  */
 public class DocumentSodBuilder extends DocumentBuilder {
 
-
     private static final BigDecimal SCHEMA_VERSION = BigDecimal.valueOf(1.0);
     private static final String NM_DATA = "http://www.sodisce.si/2010/mail/Document/ObjectType/Data";
     private static final String NM_VIS = "http://www.sodisce.si/2010/mail/Document/ObjectType/Visualisation";
 
-
-
     @Override
-    public void createMail( MSHOutMail dce,  FileOutputStream fos, KeyStore.PrivateKeyEntry key)
+    public void createMail(MSHOutMail dce, FileOutputStream fos, KeyStore.PrivateKeyEntry key)
             throws SEDSecurityException {
         try {
             long t = getTime();
@@ -103,24 +99,22 @@ public class DocumentSodBuilder extends DocumentBuilder {
             // --------------------- end create  message ----------------------
             // --------------------- end create  visualization  ----------------------
             VisualisationsType lstVst = new VisualisationsType();
-            
-            List<MSHOutPart> lst =  dce.getMSHOutPayload().getMSHOutParts();
-            
-            for (MSHOutPart d: lst) {            
+
+            List<MSHOutPart> lst = dce.getMSHOutPayload().getMSHOutParts();
+
+            for (MSHOutPart d : lst) {
                 VisualisationType vst = new VisualisationType();
                 vst.setDescription(d.getDescription());
                 lstVst.getVisualisations().add(vst);
                 vst.setId(Utils.getInstance().getGuidString());
                 lstSignatureIDS.add(new String[]{vst.getId(), NM_VIS});
                 doft = new DataObjectFormatType();
-                doft.setIdentifier(d.getId()+"");
-                doft.setMimeType(d.getMimeType()== null?"application/pdf": d.getMimeType());
+                doft.setIdentifier(d.getId() + "");
+                doft.setMimeType(d.getMimeType() == null ? "application/pdf" : d.getMimeType());
                 doft.setEncoding(ENC_TYPE_B64);
                 ct = new ContentType();
                 emb = new ContentType.EmbeddedData();
-                
-                
-                
+
                 emb.getContent().add(Base64.getEncoder().encodeToString(msuStorageUtils.getByteArray(d.getFilepath())));
                 ct.setEmbeddedData(emb);
                 vst.setDataFormat(doft);
@@ -133,19 +127,18 @@ public class DocumentSodBuilder extends DocumentBuilder {
 
             // convert to w3c document
             org.w3c.dom.Document dw3c = convertEpDoc2W3cDoc(document, new Class[]{Document.class, Message.class});
-            
+
             // sign document and return value
             singDocument(dw3c, lstSignatureIDS, fos, key);
             mlgLogger.info("DocumentBuilder.DocumentBuilder: - end (" + (getTime() - t) + "ms)");
         } catch (StorageException ex) {
-             String strMsg = "DocumentSodBuilder.createMail: error reading file'" + ex.getMessage() + "'.";
+            String strMsg = "DocumentSodBuilder.createMail: error reading file'" + ex.getMessage() + "'.";
             mlgLogger.error(strMsg, ex);
             throw new SEDSecurityException(SEDSecurityException.SEDSecurityExceptionCode.CreateSignatureException, ex);
-        } finally{
-        
+        } finally {
+
         }
-        
-        
+
     }
-    
+
 }

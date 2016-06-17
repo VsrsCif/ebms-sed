@@ -9,11 +9,10 @@ import javax.ejb.Local;
 import javax.jms.JMSException;
 import javax.naming.NamingException;
 
-
 @Local
 public interface JMSManagerInterface {
-    
+
     boolean sendMessage(long biPosiljkaId, String strPmodeId, int retry, long delay, boolean transacted) throws NamingException, JMSException;
-    
+
     boolean executeProcessOnInMail(long biInMailId, String command, String parameters) throws NamingException, JMSException;
 }

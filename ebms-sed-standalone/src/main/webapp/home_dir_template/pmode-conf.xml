@@ -42,7 +42,7 @@
             </Security>
         </Leg>
     </PMode>
- <PMode id="Delivery:sed-box.si:sed-box.si" isTemplate="false" extends="legal-delivery-template">
+    <PMode id="Delivery:sed-box.si:sed-box.si" isTemplate="false" extends="legal-delivery-template">
         <Agreement>www.sodisce.si</Agreement>
         <Initiator>
             <PartyId type="urn:oasis:names:tc:ebcore:partyid-type:unregistered:si-svev:provider:e-box">vrhovno.sodisce@e-sodisce.si</PartyId>

@@ -16,7 +16,6 @@
  */
 package si.sed.msh.web.admin;
 
-import si.sed.msh.web.abst.AbstractAdminJSFView;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
@@ -27,13 +26,12 @@ import javax.naming.NamingException;
 import org.sed.ebms.cron.SEDTaskType;
 import org.sed.ebms.cron.SEDTaskTypeProperty;
 import org.sed.ebms.plugin.SEDPlugin;
-
 import si.sed.commons.SEDJNDI;
 import si.sed.commons.interfaces.PluginDescriptionInterface;
 import si.sed.commons.interfaces.SEDLookupsInterface;
 import si.sed.commons.interfaces.TaskExecutionInterface;
-
 import si.sed.commons.utils.SEDLogger;
+import si.sed.msh.web.abst.AbstractAdminJSFView;
 
 /**
  *
@@ -47,7 +45,7 @@ public class AdminSEDPluginView extends AbstractAdminJSFView<SEDPlugin> {
 
     @EJB(mappedName = SEDJNDI.JNDI_SEDLOOKUPS)
     private SEDLookupsInterface mdbLookups;
-    
+
     SEDPlugin selectedViewPlugin;
 
     @Override
@@ -114,16 +112,16 @@ public class AdminSEDPluginView extends AbstractAdminJSFView<SEDPlugin> {
 
     private SEDTaskType getSEDTaskType(String jndi) {
         try {
-            SEDTaskType td = new SEDTaskType();            
+            SEDTaskType td = new SEDTaskType();
             TaskExecutionInterface tproc = InitialContext.doLookup(jndi);
             td.setJndi(jndi);
-            
+
             td.setDescription(tproc.getTaskDefinition().getDescription());
             td.setName(tproc.getTaskDefinition().getName());
             td.setType(tproc.getTaskDefinition().getType());
             td.getSEDTaskTypeProperties().clear();
             if (!tproc.getTaskDefinition().getSEDTaskTypeProperties().isEmpty()) {
-                td.getSEDTaskTypeProperties().addAll(tproc.getTaskDefinition().getSEDTaskTypeProperties());              
+                td.getSEDTaskTypeProperties().addAll(tproc.getTaskDefinition().getSEDTaskTypeProperties());
             }
             return td;
         } catch (NamingException ex) {
@@ -156,24 +154,22 @@ public class AdminSEDPluginView extends AbstractAdminJSFView<SEDPlugin> {
         LOG.logEnd(l, lst != null ? lst.size() : "null");
         return lst;
     }
-    
-    public String getSelectedWebContext(){
-        System.out.println("sgetSelectedWebContext from : " + selectedViewPlugin);
-        return selectedViewPlugin!=null? selectedViewPlugin.getWebContext():"";
-    }
 
-    
+    public String getSelectedWebContext() {
+        System.out.println("sgetSelectedWebContext from : " + selectedViewPlugin);
+        return selectedViewPlugin != null ? selectedViewPlugin.getWebContext() : "";
+    }
 
     public void onSelectedViewPluginAction(ActionEvent event) {
         long l = LOG.logStart();
         if (event != null) {
-            
+
             LOG.log("set selected plugin");
-            SEDPlugin res = (SEDPlugin) event.getComponent().getAttributes().get("pluginItem");            
-            
+            SEDPlugin res = (SEDPlugin) event.getComponent().getAttributes().get("pluginItem");
+
             selectedViewPlugin = res;
             LOG.log("set selected plugin setted: " + selectedViewPlugin);
-        }else {
+        } else {
             LOG.log("set selected plugin setted to null");
             selectedViewPlugin = null;
         }

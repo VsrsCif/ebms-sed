@@ -48,17 +48,18 @@ public enum SEDOutboxMailStatus {
     public String getDesc() {
         return mstrDesc;
     }
-    public String getColor(){
+
+    public String getColor() {
         return mstrColor;
     }
 
-    public static String getColor(String strName ) {
-        
-        for (SEDOutboxMailStatus st: values()){
-            if (st.getValue().equals(strName)){
+    public static String getColor(String strName) {
+
+        for (SEDOutboxMailStatus st : values()) {
+            if (st.getValue().equals(strName)) {
                 return st.getColor();
             }
-        }        
+        }
         return strName;
     }
 }

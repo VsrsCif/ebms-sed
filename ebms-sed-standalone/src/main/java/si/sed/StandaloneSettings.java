@@ -17,24 +17,22 @@ public class StandaloneSettings extends AFileSettings {
 
     private static final String S_PROP_PORT = "sed.port";
     private static final String S_PROP_HOME = "sed.home";
-    
-    private static final String S_PROP_PORT_DEF = "8080";  
-    private static final String S_PROP_HOME_DEF = "sed-home";
 
-   
+    private static final String S_PROP_PORT_DEF = "8080";
+    private static final String S_PROP_HOME_DEF = "sed-home";
 
     protected static final String PMODE_FILE = "pmode-conf.xml";
     protected static final String KEY_PASSWD_FILE = "key-passwords.properties";
     protected static final String SEC_CONF_FILE = "security-conf.properties";
     protected static final String LOG_CONF_FILE = "sed-log4j.properties";
     public static String S_PROPERTY_FILE = "config.xml";
-    
+
     public static String JNDI_PREFIX = "java:comp/env/";
 
     private static StandaloneSettings S_INSTANCE = null;
 
     private StandaloneSettings() {
-        
+
     }
 
     public static StandaloneSettings getInstance() {
@@ -49,16 +47,14 @@ public class StandaloneSettings extends AFileSettings {
 
     @Override
     public void initialize() {
-        
+
         // set system properties
         System.setProperty(SEDSystemProperties.SYS_PROP_JNDI_PREFIX, JNDI_PREFIX);
-        System.setProperty(SEDSystemProperties.SYS_PROP_JNDI_JMS_PREFIX,JNDI_PREFIX);
+        System.setProperty(SEDSystemProperties.SYS_PROP_JNDI_JMS_PREFIX, JNDI_PREFIX);
         if (!System.getProperties().containsKey(SEDSystemProperties.SYS_PROP_HOME_DIR)) {
             System.setProperty(SEDSystemProperties.SYS_PROP_HOME_DIR, getData(S_PROP_HOME, S_PROP_HOME_DEF));
         }
-        
-        
-        
+
     }
 
     @Override
@@ -88,7 +84,7 @@ public class StandaloneSettings extends AFileSettings {
     public File getHome() {
         return getFolder(S_PROP_HOME, S_PROP_HOME_DEF);
     }
-    
+
     public int getPort() {
         return Integer.parseInt(getData(S_PROP_PORT, S_PROP_PORT_DEF));
     }

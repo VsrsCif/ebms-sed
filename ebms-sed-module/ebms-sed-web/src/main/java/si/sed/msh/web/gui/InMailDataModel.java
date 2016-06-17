@@ -16,10 +16,10 @@
  */
 package si.sed.msh.web.gui;
 
-import si.sed.msh.web.abst.AbstractMailDataModel;
 import java.math.BigInteger;
 import org.msh.ebms.inbox.mail.MSHInMail;
 import si.sed.commons.interfaces.SEDDaoInterface;
+import si.sed.msh.web.abst.AbstractMailDataModel;
 import si.sed.msh.web.gui.entities.InMailTableFilter;
 
 /**

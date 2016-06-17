@@ -25,7 +25,6 @@ import javax.faces.bean.SessionScoped;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.event.UnselectEvent;
 import org.sed.ebms.cron.SEDTaskExecution;
-
 import si.sed.commons.SEDJNDI;
 import si.sed.commons.SEDTaskStatus;
 import si.sed.commons.interfaces.SEDDaoInterface;

@@ -48,20 +48,18 @@ import org.msh.svev.pmode.PMode;
 import org.msh.svev.pmode.References;
 import org.msh.svev.pmode.Security;
 import org.msh.svev.pmode.X509;
-
 import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.Messaging;
 import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.SignalMessage;
 import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.UserMessage;
 import org.sed.ebms.cert.SEDCertStore;
 import org.sed.ebms.cert.SEDCertificate;
-import si.sed.commons.utils.SEDLogger;
-import si.jrc.msh.utils.EBMSUtils;
 import si.jrc.msh.client.sec.SimplePasswordCallback;
 import si.jrc.msh.exception.EBMSError;
-//import si.sed.commons.utils.sec.CertificateUtils;
+import si.jrc.msh.utils.EBMSUtils;
 import si.sed.commons.exception.ExceptionUtils;
 import si.sed.commons.exception.SOAPExceptionCode;
 import si.sed.commons.exception.StorageException;
+import si.sed.commons.utils.SEDLogger;
 import si.sed.commons.utils.StorageUtils;
 import si.sed.commons.utils.Utils;
 import si.sed.commons.utils.sec.KeystoreUtils;
@@ -86,7 +84,6 @@ public class EBMSOutInterceptor extends AbstractEBMSInterceptor {
     public void handleMessage(SoapMessage msg) {
         long l = mlog.logStart(msg);
 
-
         SoapVersion version = msg.getVersion();
         boolean isRequest = MessageUtils.isRequestor(msg);
         QName sv = (isRequest ? SoapFault.FAULT_CODE_CLIENT : SoapFault.FAULT_CODE_SERVER);
@@ -102,9 +99,9 @@ public class EBMSOutInterceptor extends AbstractEBMSInterceptor {
             mlog.logError(l, errmsg, null);
             throw ExceptionUtils.createSoapFault(SOAPExceptionCode.InternalFailure, sv, errmsg);
         }
-        
+
         PMode pmd = msg.getExchange().get(PMode.class) == null ? (PMode) msg.getExchange().get(PMode.class.getName()) : msg.getExchange().get(PMode.class);
-        
+
         if (pmd == null) {
             String errmsg = "Missing PMode configuration for: " + (isRequest ? "Request" : "Response");
             mlog.logError(l, errmsg, null);
@@ -112,7 +109,6 @@ public class EBMSOutInterceptor extends AbstractEBMSInterceptor {
 
         }
 
-        
         MSHOutMail outMail = msg.getExchange().get(MSHOutMail.class) == null ? (MSHOutMail) msg.getExchange().get(MSHOutMail.class.getName()) : msg.getExchange().get(MSHOutMail.class);
 
         SignalMessage signal = msg.getExchange().get(SignalMessage.class);
@@ -122,7 +118,6 @@ public class EBMSOutInterceptor extends AbstractEBMSInterceptor {
         } catch (StorageException ex) {
             mlog.logError(l, "Error adding attachments to soap", ex);
         }
-        
 
         // MshIncomingMail inMail = msg.getExchange().get(MshIncomingMail.class);
         //EBMSError err = msg.getExchange().get(EBMSError.class);
@@ -132,7 +127,6 @@ public class EBMSOutInterceptor extends AbstractEBMSInterceptor {
         //boolean isRequestor = isRequestor(msg);
         // if sending usermessage, svevkey or as4 receipt -> pmode is mandatory
         // create  MESSAGING
-        
         Messaging msgHeader = mEBMSUtil.createMessaging(version);
         // add user message
         if (outMail != null) {
@@ -146,10 +140,10 @@ public class EBMSOutInterceptor extends AbstractEBMSInterceptor {
 
         // add error signal
         EBMSError err = msg.getExchange().get(EBMSError.class);
-        
+
         if (err != null) {
             SignalMessage sm = mEBMSUtil.generateErrorSignal(err, getSettings().getDomain(), Calendar.getInstance().getTime());
-            
+
             msgHeader.getSignalMessages().add(sm);
         }
         // add svev signal
@@ -237,16 +231,16 @@ public class EBMSOutInterceptor extends AbstractEBMSInterceptor {
             String cpropname = "CP." + UUID.randomUUID().toString();
             SEDCertStore cs = getLookups().getSEDCertStoreByCertAlias(alias, true);
             SEDCertificate aliasCrt = null;
-            if( cs != null) {
-                for (SEDCertificate crt: cs.getSEDCertificates()){
-                    if(crt.isKeyEntry() &&  alias.equals(crt.getAlias())) {
+            if (cs != null) {
+                for (SEDCertificate crt : cs.getSEDCertificates()) {
+                    if (crt.isKeyEntry() && alias.equals(crt.getAlias())) {
                         aliasCrt = crt;
                         break;
                     }
                 }
             }
-            if (cs ==null ||  aliasCrt==null){
-                mlog.logError( l, "Key for alias '"+alias+"' do not exists!", null);
+            if (cs == null || aliasCrt == null) {
+                mlog.logError(l, "Key for alias '" + alias + "' do not exists!", null);
                 // TODO throw error
                 return null;
             }
@@ -259,7 +253,7 @@ public class EBMSOutInterceptor extends AbstractEBMSInterceptor {
             outProps.put(WSHandlerConstants.SIGNATURE_PARTS, elmWr.toString());
             outProps.put(WSHandlerConstants.SIGNATURE_USER, alias);
             outProps.put(WSHandlerConstants.USER, alias);
-            
+
             outProps.put(WSHandlerConstants.PW_CALLBACK_REF, new SimplePasswordCallback(aliasCrt.getKeyPassword()));
 
             outProps.put(WSHandlerConstants.SIG_PROP_REF_ID, cpropname);

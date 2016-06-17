@@ -28,37 +28,18 @@ import si.sed.commons.utils.StringFormater;
 @Local(TaskExecutionInterface.class)
 public class MEPSTask implements TaskExecutionInterface {
 
-private static final SEDLogger LOG = new SEDLogger(MEPSTask.class);
-    
-    StringFormater msfFormat = new StringFormater();
+    private static final SEDLogger LOG = new SEDLogger(MEPSTask.class);
 
-    
     @EJB(mappedName = SEDJNDI.JNDI_SEDDAO)
     SEDDaoInterface mDB;
 
     @EJB(mappedName = SEDJNDI.JNDI_JMSMANAGER)
     JMSManagerInterface mJMS;
-    
+
     @EJB(mappedName = SEDJNDI.JNDI_SEDLOOKUPS)
     SEDLookupsInterface msedLookup;
-    
 
-
-    @Override
-    public String executeTask(Properties p) throws TaskException {
-
-        return null;
-    }
-
-    
-      @Override
-    public SEDTaskType getTaskDefinition() {
-        SEDTaskType tt = new SEDTaskType();
-        tt.setType("meps-plugin");
-        tt.setName("MEPS plugin");
-        tt.setDescription("Machine printing and enveloping task");
-        return tt;
-    }
+    StringFormater msfFormat = new StringFormater();
 
     private SEDTaskTypeProperty createTTProperty(String key, String desc, boolean mandatory, String type, String valFormat, String valList) {
         SEDTaskTypeProperty ttp = new SEDTaskTypeProperty();
@@ -74,6 +55,20 @@ private static final SEDLogger LOG = new SEDLogger(MEPSTask.class);
     private SEDTaskTypeProperty createTTProperty(String key, String desc) {
         return createTTProperty(key, desc, true, "string", null, null);
     }
-    
-    
+
+    @Override
+    public String executeTask(Properties p) throws TaskException {
+
+        return null;
+    }
+
+    @Override
+    public SEDTaskType getTaskDefinition() {
+        SEDTaskType tt = new SEDTaskType();
+        tt.setType("meps-plugin");
+        tt.setName("MEPS plugin");
+        tt.setDescription("Machine printing and enveloping task");
+        return tt;
+    }
+
 }

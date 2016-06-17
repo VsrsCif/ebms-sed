@@ -17,29 +17,24 @@ package si.sed.msh.web.gui;
 * See the Licence for the specific language governing permissions and  
 * limitations under the Licence.
  */
+import java.io.IOException;
+import java.util.Calendar;
+import java.util.Date;
 import javax.annotation.PostConstruct;
+import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
+import javax.faces.bean.SessionScoped;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.ejb.EJB;
-import javax.faces.bean.SessionScoped;
 import org.sed.ebms.user.SEDUser;
-import si.sed.commons.utils.SEDLogger;
 import si.sed.commons.SEDGUIConstants;
 import si.sed.commons.SEDJNDI;
-import si.sed.commons.interfaces.SEDDaoInterface;
 import si.sed.commons.interfaces.SEDLookupsInterface;
+import si.sed.commons.utils.SEDLogger;
 
 @SessionScoped
 @ManagedBean(name = "loginManager")

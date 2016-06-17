@@ -18,11 +18,7 @@ import si.sed.commons.utils.SEDLogger;
  */
 public abstract class ASettings {
 
-    protected SEDLogger mlog = new SEDLogger(AFileSettings.class);
-    final protected Properties mprpProperties = newProperties();
-    protected long mlLastChagedTime = 0;
-    
-     public static Properties newProperties() {
+    public static Properties newProperties() {
         return new Properties() {
             @Override
             public synchronized Enumeration<Object> keys() {
@@ -30,16 +26,14 @@ public abstract class ASettings {
             }
         };
     }
+    protected long mlLastChagedTime = 0;
+
+    protected SEDLogger mlog = new SEDLogger(AFileSettings.class);
+    final protected Properties mprpProperties = newProperties();
 
     public ASettings() {
-        
+
     }
-
-    public abstract void initialize();
-
-    protected abstract void init();
-
-   
 
     public String getData(String strKey) {
         String strVal = null;
@@ -63,51 +57,6 @@ public abstract class ASettings {
         return defVal;
     }
 
-    public void initData(String key, String value) {
-        if (!mprpProperties.containsKey(key)) {
-            mprpProperties.setProperty(key, value);
-        }
-    }
-
-    public void setData(String key, String value) {
-        setData(key, value, null);
-    }
-    
-    public void setData(String key, String value, String group) {
-        if (key == null || key.trim().isEmpty()) {
-            return;
-        }
-        String strKey = key.trim();
-        String strValue = value != null ? value.trim() : null;
-
-        init();
-        
-        if (mprpProperties.containsKey(key)) {
-            if (strValue == null) {
-                mprpProperties.remove(strValue);
-                removeProperty(strValue);
-            } else if (mprpProperties.get(strKey) != null || !mprpProperties.get(strKey).equals(strValue)) {
-                mprpProperties.setProperty(strKey, strValue);
-                replaceProperty(strKey, strValue, group);
-            }
-        } else if (strValue != null) {
-            mprpProperties.setProperty(strKey, strValue);
-            storeProperty(strKey,strValue,group);
-        }
-    }
-
-    
-    protected abstract void removeProperty(String key);
-    protected abstract void replaceProperty(String key, String value,  String group);
-    protected abstract void storeProperty(String key, String value,  String group);
-    
-
-    public void testFolder(File f) {
-        if (!f.exists()) {
-            f.mkdirs();
-        }
-    }
-
     public File getFile(String strPropName, String strDefProfValue, String strFileName) {
         File f = new File(System.getProperty(strPropName, getData(strPropName, strDefProfValue)));
         if (!f.exists()) {
@@ -122,6 +71,55 @@ public abstract class ASettings {
             f.mkdirs();
         }
         return f;
+    }
+
+    protected abstract void init();
+
+    public void initData(String key, String value) {
+        if (!mprpProperties.containsKey(key)) {
+            mprpProperties.setProperty(key, value);
+        }
+    }
+
+    public abstract void initialize();
+
+    protected abstract void removeProperty(String key);
+
+    protected abstract void replaceProperty(String key, String value, String group);
+
+    public void setData(String key, String value) {
+        setData(key, value, null);
+    }
+
+    public void setData(String key, String value, String group) {
+        if (key == null || key.trim().isEmpty()) {
+            return;
+        }
+        String strKey = key.trim();
+        String strValue = value != null ? value.trim() : null;
+
+        init();
+
+        if (mprpProperties.containsKey(key)) {
+            if (strValue == null) {
+                mprpProperties.remove(strValue);
+                removeProperty(strValue);
+            } else if (mprpProperties.get(strKey) != null || !mprpProperties.get(strKey).equals(strValue)) {
+                mprpProperties.setProperty(strKey, strValue);
+                replaceProperty(strKey, strValue, group);
+            }
+        } else if (strValue != null) {
+            mprpProperties.setProperty(strKey, strValue);
+            storeProperty(strKey, strValue, group);
+        }
+    }
+
+    protected abstract void storeProperty(String key, String value, String group);
+
+    public void testFolder(File f) {
+        if (!f.exists()) {
+            f.mkdirs();
+        }
     }
 
 }

@@ -43,72 +43,17 @@ import si.sed.commons.SEDSystemProperties;
  */
 @ApplicationScoped
 @ManagedBean(name = "ZppPluginData")
-public class ZppPluginData  {
+public class ZppPluginData {
 
     @Resource
     WebServiceContext context;
 
-
-    public String getHomeFolder() {
-        return System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR);
+    protected ExternalContext externalContext() {
+        return facesContext().getExternalContext();
     }
 
-
-    public String getSecurityFileName() {
-        return SEDSystemProperties.SYS_PROP_CERT_DEF;
-    }
-
-   
-    public String getPluginsFolder() {
-        return SEDSystemProperties.SYS_PROP_FOLDER_PLUGINS_DEF;
-
-    }
-
-    public String getStorageFolder() {
-        return SEDSystemProperties.SYS_PROP_FOLDER_STORAGE_DEF;
-
-    }
-
- 
-
-    public List<String> getSystemPropertyKeys() {
-        Set<String> s = System.getProperties().stringPropertyNames();
-        List<String> lst = new ArrayList<>(s);
-        Collections.sort(lst);
-        return lst;
-
-    }
-
-    public String getSystemPropertyValue(String strVal) {
-        return System.getProperty(strVal);
-
-    }
-
-   
-
-  
-     
-    public void onEdit(RowEditEvent event) {  
-        //FacesMessage msg = new FacesMessage("Item Edited",((OrderBean) event.getObject()).getItem());  
-        //FacesContext.getCurrentInstance().addMessage(null, msg);  
-    }  
-       
-    public void onCancel(RowEditEvent event) {  
-        //FacesMessage msg = new FacesMessage("Item Cancelled");   
-        //FacesContext.getCurrentInstance().addMessage(null, msg); 
-        //orderList.remove((OrderBean) event.getObject());
-    }  
-    
-   
-  
-
-    public void refreshMainPanel() {
-        FacesContext facesContext = facesContext();
-        String refreshpage = "MainPanel";
-        ViewHandler viewHandler = facesContext.getApplication().getViewHandler();
-        UIViewRoot viewroot = viewHandler.createView(facesContext, refreshpage);
-        viewroot.setViewId(refreshpage);
-        facesContext.setViewRoot(viewroot);
+    protected FacesContext facesContext() {
+        return FacesContext.getCurrentInstance();
     }
 
     public String getBuildVersion() {
@@ -127,16 +72,60 @@ public class ZppPluginData  {
         }
         return strBuildVer;
     }
-    
-     public String getClientIP() {
+
+    public String getClientIP() {
         return ((HttpServletRequest) externalContext().getRequest()).getRemoteAddr();
     }
 
-    protected ExternalContext externalContext() {
-        return facesContext().getExternalContext();
+    public String getHomeFolder() {
+        return System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR);
     }
 
-    protected FacesContext facesContext() {
-        return FacesContext.getCurrentInstance();
+    public String getPluginsFolder() {
+        return SEDSystemProperties.SYS_PROP_FOLDER_PLUGINS_DEF;
+
     }
+
+    public String getSecurityFileName() {
+        return SEDSystemProperties.SYS_PROP_CERT_DEF;
+    }
+
+    public String getStorageFolder() {
+        return SEDSystemProperties.SYS_PROP_FOLDER_STORAGE_DEF;
+
+    }
+
+    public List<String> getSystemPropertyKeys() {
+        Set<String> s = System.getProperties().stringPropertyNames();
+        List<String> lst = new ArrayList<>(s);
+        Collections.sort(lst);
+        return lst;
+
+    }
+
+    public String getSystemPropertyValue(String strVal) {
+        return System.getProperty(strVal);
+
+    }
+
+    public void onCancel(RowEditEvent event) {
+        //FacesMessage msg = new FacesMessage("Item Cancelled");   
+        //FacesContext.getCurrentInstance().addMessage(null, msg); 
+        //orderList.remove((OrderBean) event.getObject());
+    }
+
+    public void onEdit(RowEditEvent event) {
+        //FacesMessage msg = new FacesMessage("Item Edited",((OrderBean) event.getObject()).getItem());
+        //FacesContext.getCurrentInstance().addMessage(null, msg);
+    }
+
+    public void refreshMainPanel() {
+        FacesContext facesContext = facesContext();
+        String refreshpage = "MainPanel";
+        ViewHandler viewHandler = facesContext.getApplication().getViewHandler();
+        UIViewRoot viewroot = viewHandler.createView(facesContext, refreshpage);
+        viewroot.setViewId(refreshpage);
+        facesContext.setViewRoot(viewroot);
+    }
+
 }

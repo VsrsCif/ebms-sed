@@ -21,19 +21,18 @@ import si.sed.commons.interfaces.SoapInterceptorInterface;
 @TransactionManagement(TransactionManagementType.BEAN)
 public class MEPSInInterceptor implements SoapInterceptorInterface {
 
-
     public MEPSInInterceptor() {
+
+    }
+
+    @Override
+    public void handleFault(SoapMessage t) {
 
     }
 
     @Override
     public void handleMessage(SoapMessage msg) {
 
-    }
-
-    @Override
-    public void handleFault(SoapMessage t) {
-        
     }
 
 }

@@ -33,8 +33,22 @@ import org.w3c.dom.ls.LSResourceResolver;
  */
 public class SchemaResourceResolver implements LSResourceResolver {
 
-    private static final String XSD_NAMESPACE = "http://www.w3.org/2001/XMLSchema";
     private static final String XML_NAMESPACE = "http://www.w3.org/TR/REC-xml";
+    private static final String XSD_NAMESPACE = "http://www.w3.org/2001/XMLSchema";
+
+    private static URI getTargetURI(String baseURI, String relativePath) {
+        URI targetURI = null;
+
+        try {
+            targetURI = (new URI(baseURI)).resolve(relativePath);
+        } catch (URISyntaxException ex) {
+            throw new RuntimeException(
+                    "Could not resolve target URI  (baseURI:'" + baseURI + "' + path: '" + relativePath + "' )- " + ex.getMessage()
+            );
+        }
+
+        return targetURI;
+    }
 
     private final String contextFolder;
 
@@ -68,28 +82,14 @@ public class SchemaResourceResolver implements LSResourceResolver {
         return input;
     }
 
-    private static URI getTargetURI(String baseURI, String relativePath) {
-        URI targetURI = null;
-
-        try {
-            targetURI = (new URI(baseURI)).resolve(relativePath);
-        } catch (URISyntaxException ex) {
-            throw new RuntimeException(
-                    "Could not resolve target URI  (baseURI:'" + baseURI + "' + path: '" + relativePath + "' )- " + ex.getMessage()
-            );
-        }
-
-        return targetURI;
-    }
 }
 
 class SchemaInput implements LSInput {
 
-    Logger mlog = Logger.getLogger(SchemaInput.class);
+    final private String baseURI;
 
     private final BufferedInputStream inputStream;
-
-    final private String baseURI;
+    Logger mlog = Logger.getLogger(SchemaInput.class);
     private String publicId;
     private String systemId;
 
@@ -98,16 +98,6 @@ class SchemaInput implements LSInput {
         this.publicId = publicId;
         this.systemId = sysId;
         this.inputStream = new BufferedInputStream(input);
-    }
-
-    @Override
-    public String getPublicId() {
-        return publicId;
-    }
-
-    @Override
-    public void setPublicId(String publicId) {
-        this.publicId = publicId;
     }
 
     @Override
@@ -135,6 +125,15 @@ class SchemaInput implements LSInput {
         return null;
     }
 
+    public BufferedInputStream getInputStream() {
+        return inputStream;
+    }
+
+    @Override
+    public String getPublicId() {
+        return publicId;
+    }
+
     @Override
     public String getStringData() {
         synchronized (inputStream) {
@@ -145,6 +144,11 @@ class SchemaInput implements LSInput {
                 return null;
             }
         }
+    }
+
+    @Override
+    public String getSystemId() {
+        return systemId;
     }
 
     @Override
@@ -168,21 +172,17 @@ class SchemaInput implements LSInput {
     }
 
     @Override
-    public void setStringData(String stringData) {
+    public void setPublicId(String publicId) {
+        this.publicId = publicId;
     }
 
     @Override
-    public String getSystemId() {
-        return systemId;
+    public void setStringData(String stringData) {
     }
 
     @Override
     public void setSystemId(String systemId) {
         this.systemId = systemId;
-    }
-
-    public BufferedInputStream getInputStream() {
-        return inputStream;
     }
 
 }
