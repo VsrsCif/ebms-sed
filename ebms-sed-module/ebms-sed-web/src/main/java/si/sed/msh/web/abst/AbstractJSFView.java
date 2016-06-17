@@ -15,14 +15,26 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class AbstractJSFView {
 
+    /**
+     *
+     * @return
+     */
     protected ExternalContext externalContext() {
         return facesContext().getExternalContext();
     }
 
+    /**
+     *
+     * @return
+     */
     protected FacesContext facesContext() {
         return FacesContext.getCurrentInstance();
     }
 
+    /**
+     *
+     * @return
+     */
     public String getClientIP() {
         return ((HttpServletRequest) externalContext().getRequest()).getRemoteAddr();
     }

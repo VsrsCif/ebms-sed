@@ -7,13 +7,9 @@ package si.jrc.msh.utils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.msh.ebms.outbox.mail.MSHOutMail;
 import org.msh.ebms.outbox.payload.MSHOutPart;
 import org.msh.svev.pmode.PMode;
-import si.jrc.msh.exception.EBMSError;
-import si.jrc.msh.exception.EBMSErrorCode;
 import si.jrc.msh.exception.MSHException;
 import si.jrc.msh.exception.MSHExceptionCode;
 import si.sed.commons.exception.PModeException;
@@ -26,10 +22,18 @@ import si.sed.commons.utils.Utils;
  */
 public class SvevUtils {
 
+    /**
+     *
+     */
     public static final String S_LEGAL_DELIVERY_SERVICE = "legal-delivery";
 
     PModeManager mpmd = new PModeManager();
 
+    /**
+     *
+     * @param mail
+     * @throws MSHException
+     */
     public void vaildateMail(MSHOutMail mail) throws MSHException {
         List<String> merrLst = new ArrayList<>();
 
@@ -87,6 +91,12 @@ public class SvevUtils {
         }
     }
 
+    /**
+     *
+     * @param mail
+     * @return
+     * @throws MSHException
+     */
     public PMode getPModeForMail(MSHOutMail mail) throws MSHException {
         String pmode = "";
         try {

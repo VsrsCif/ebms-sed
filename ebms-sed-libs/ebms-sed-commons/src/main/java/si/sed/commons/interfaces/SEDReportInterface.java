@@ -15,5 +15,10 @@ import org.sed.ebms.report.SEDReportBoxStatus;
 @Local
 public interface SEDReportInterface {
 
+    /**
+     *
+     * @param strSedBox
+     * @return
+     */
     SEDReportBoxStatus getStatusReport(String strSedBox);
 }

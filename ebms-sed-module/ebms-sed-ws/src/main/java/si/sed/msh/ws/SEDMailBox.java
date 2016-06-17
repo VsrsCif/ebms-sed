@@ -122,33 +122,49 @@ import si.sed.msh.ws.utils.SEDRequestUtils;
 public class SEDMailBox implements SEDMailBoxWS {
 
     private static void listContext(Context ctx, String indent) {
+        long l = mLog.logStart();
         try {
             NamingEnumeration list = ctx.listBindings("");
             while (list.hasMore()) {
                 Binding item = (Binding) list.next();
                 String className = item.getClassName();
                 String name = item.getName();
-                System.out.println(indent + className + " " + name);
+                mLog.log(indent + className + " " + name);
                 Object o = item.getObject();
                 if (o instanceof javax.naming.Context) {
                     listContext((Context) o, indent + " ");
                 }
             }
         } catch (NamingException ex) {
-            System.out.println(ex);
+            mLog.logError(l, ex);
         }
     }
-    SEDLogger mLog = new SEDLogger(SEDMailBox.class);
+     private static final SEDLogger mLog = new SEDLogger(SEDMailBox.class);
+
+    /**
+     *
+     */
     @EJB(mappedName = SEDJNDI.JNDI_SEDLOOKUPS)
     protected SEDLookupsInterface mdbLookups;
+
+    /**
+     *
+     */
     @PersistenceContext(unitName = "ebMS_PU", name = "ebMS_PU")
     protected EntityManager memEManager;
     HashUtils mpHU = new HashUtils();
     PModeManager mpModeManager = new PModeManager();
 
+    /**
+     *
+     */
     protected Queue mqMSHQueue = null;
     SimpleDateFormat msdfDDMMYYYY_HHMMSS = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
     StorageUtils msuStorageUtils = new StorageUtils();
+
+    /**
+     *
+     */
     @Resource
     protected UserTransaction mutUTransaction;
     @Resource
@@ -205,6 +221,12 @@ public class SEDMailBox implements SEDMailBoxWS {
     mLog.logEnd(l, biPosiljkaId, strpModeId, suc);
     return suc;
     }*/
+
+    /**
+     *
+     * @param con
+     */
+
     protected void closeConnection(Connection con) {
         try {
             if (con != null) {
@@ -283,6 +305,10 @@ public class SEDMailBox implements SEDMailBoxWS {
         return cq;
     }
 
+    /**
+     *
+     * @return
+     */
     protected String getCurrrentRemoteIP() {
         String clientIP = null;
         if (mwsCtxt != null) {
@@ -1146,7 +1172,7 @@ public class SEDMailBox implements SEDMailBoxWS {
         }
 
         // get pmode       
-        String pmodeId = mail.getService() + ":" + getDomainFromAddress(mail.getReceiverEBox());;
+        String pmodeId = mail.getService() + ":" + getDomainFromAddress(mail.getReceiverEBox());
 
         try {
             pm = mpModeManager.getPModeById(pmodeId);

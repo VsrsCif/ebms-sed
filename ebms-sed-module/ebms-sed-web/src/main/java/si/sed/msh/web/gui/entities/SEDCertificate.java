@@ -27,23 +27,44 @@ public class SEDCertificate {
     String alias;
     X509Certificate x509Certificate;
 
+    /**
+     *
+     * @param alias
+     * @param x509Certificate
+     */
     public SEDCertificate(String alias, X509Certificate x509Certificate) {
         this.alias = alias;
         this.x509Certificate = x509Certificate;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getAlias() {
         return alias;
     }
 
+    /**
+     *
+     * @return
+     */
     public X509Certificate getX509Certificate() {
         return x509Certificate;
     }
 
+    /**
+     *
+     * @param alias
+     */
     public void setAlias(String alias) {
         this.alias = alias;
     }
 
+    /**
+     *
+     * @param x509Certificate
+     */
     public void setX509Certificate(X509Certificate x509Certificate) {
         this.x509Certificate = x509Certificate;
     }

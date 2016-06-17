@@ -20,6 +20,13 @@ import org.sed.ebms.ebox.SEDBox;
 @FacesConverter(value = "userSedBoxPickListConverter")
 public class UserSedBoxPickListConverter implements Converter {
 
+    /**
+     *
+     * @param arg0
+     * @param arg1
+     * @param arg2
+     * @return
+     */
     @Override
     public Object getAsObject(FacesContext arg0, UIComponent arg1, String arg2) {
         Object ret = null;
@@ -47,13 +54,19 @@ public class UserSedBoxPickListConverter implements Converter {
         return ret;
     }
 
+    /**
+     *
+     * @param arg0
+     * @param arg1
+     * @param arg2
+     * @return
+     */
     @Override
     public String getAsString(FacesContext arg0, UIComponent arg1, Object arg2) {
         String str = "";
         if (arg2 instanceof SEDBox) {
             str = "" + ((SEDBox) arg2).getBoxName();
         }
-        System.out.println("Return result:  : " + str);
         return str;
     }
 }

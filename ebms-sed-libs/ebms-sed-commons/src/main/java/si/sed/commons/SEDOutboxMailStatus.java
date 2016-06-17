@@ -21,14 +21,50 @@ package si.sed.commons;
  * @author Joze Rihtarsic <joze.rihtarsic@sodisce.si>
  */
 public enum SEDOutboxMailStatus {
+
+    /**
+     *
+     */
     SUBMITTED("SUBMITTED", "Message is sucessfuly added to SED for transmition.", "orange"),
+
+    /**
+     *
+     */
     SENDING("SENDING", "Message is pushing/pulling to receiving MSH", "gray"),
+
+    /**
+     *
+     */
     SCHEDULE("SCHEDULE", "Shedule for resend", "green"),
+
+    /**
+     *
+     */
     SENT("SENT", "Message is  sent to receiving MSH", "blue"),
+
+    /**
+     *
+     */
     ERROR("ERROR", "Error occured pushing/pulling to receiving MSH", "red"),
+
+    /**
+     *
+     */
     EBMSERROR("EBMSERROR", "EBMS Error occured pushing/pulling to receiving MSH", "darkred"),
+
+    /**
+     *
+     */
     DELETED("DELETED", "Pošiljka je izbrisana", "black"),
+
+    /**
+     *
+     */
     CANCELED("CANCELED", "Pošiljnje je preklicano", "yellow"),
+
+    /**
+     *
+     */
     CANCELING("CANCELING", "Pošiljnje je v postopku preklica", "darkgray");
 
     String mstrVal;
@@ -41,18 +77,35 @@ public enum SEDOutboxMailStatus {
         mstrColor = strColor;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getValue() {
         return mstrVal;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getDesc() {
         return mstrDesc;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getColor() {
         return mstrColor;
     }
 
+    /**
+     *
+     * @param strName
+     * @return
+     */
     public static String getColor(String strName) {
 
         for (SEDOutboxMailStatus st : values()) {

@@ -39,6 +39,9 @@ import si.sed.msh.web.abst.AbstractAdminJSFView;
 @ManagedBean(name = "pModeView")
 public class PModeView extends AbstractAdminJSFView<PMode> {
 
+    /**
+     *
+     */
     public static SEDLogger LOG = new SEDLogger(PModeView.class);
 
     PModeManager pm = new PModeManager();
@@ -47,6 +50,9 @@ public class PModeView extends AbstractAdminJSFView<PMode> {
     private Map<String, String> mLookupMep;
     private Map<String, String> mLookupMepBinding;
 
+    /**
+     *
+     */
     @PostConstruct
     public void init() {
         mLookupMep = new HashMap<>();
@@ -61,11 +67,17 @@ public class PModeView extends AbstractAdminJSFView<PMode> {
         mLookupMepBinding.put("PullAndPush", "http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/pullAndPush");
     }
 
+    /**
+     *
+     */
     @Override
     public void createEditable() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
+    /**
+     *
+     */
     @Override
     public void removeSelected() {
         if (getSelected() != null) {
@@ -73,16 +85,26 @@ public class PModeView extends AbstractAdminJSFView<PMode> {
         }
     }
 
+    /**
+     *
+     */
     @Override
     public void persistEditable() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
+    /**
+     *
+     */
     @Override
     public void updateEditable() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public List<PMode> getList() {
         long l = LOG.logStart();
@@ -95,6 +117,10 @@ public class PModeView extends AbstractAdminJSFView<PMode> {
         return null;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getCurrentPModeAsString() {
         long l = LOG.logStart();
         String pmrs = "";
@@ -109,6 +135,10 @@ public class PModeView extends AbstractAdminJSFView<PMode> {
         return pmrs;
     }
 
+    /**
+     *
+     * @param strPMode
+     */
     public void setCurrentPModeAsString(String strPMode) {
         long l = LOG.logStart();
 
@@ -125,19 +155,34 @@ public class PModeView extends AbstractAdminJSFView<PMode> {
 
     }
 
+    /**
+     *
+     * @return
+     */
     public Leg getCurrentPModeForeChannel() {
 
         return null;
     }
 
+    /**
+     *
+     * @return
+     */
     public Map<String, String> getLookupMEP() {
         return mLookupMep;
     }
 
+    /**
+     *
+     * @return
+     */
     public Map<String, String> getLookupMEPBinding() {
         return mLookupMepBinding;
     }
 
+    /**
+     *
+     */
     public void formatPMode() {
         ///      setPModeString(XMLUtils.format(getPModeString()));
     }

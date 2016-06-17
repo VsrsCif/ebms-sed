@@ -47,6 +47,9 @@ public class AdminSEDKeyStores extends AbstractAdminJSFView<SEDCertStore> {
     @EJB(mappedName = SEDJNDI.JNDI_SEDLOOKUPS)
     private SEDLookupsInterface mdbLookups;
 
+    /**
+     *
+     */
     @Override
     public void createEditable() {
         SEDCertStore cs = new SEDCertStore();
@@ -55,6 +58,9 @@ public class AdminSEDKeyStores extends AbstractAdminJSFView<SEDCertStore> {
 
     }
 
+    /**
+     *
+     */
     public void refreshCurrentKeystore() {
         long l = LOG.logStart();
 
@@ -90,6 +96,12 @@ public class AdminSEDKeyStores extends AbstractAdminJSFView<SEDCertStore> {
 
     }
 
+    /**
+     *
+     * @param lst
+     * @param sc
+     * @return
+     */
     public SEDCertificate existsCertInList(List<SEDCertificate> lst, SEDCertificate sc) {
         for (SEDCertificate c : lst) {
             if (stringEquals(c.getAlias(), c.getAlias())
@@ -102,10 +114,20 @@ public class AdminSEDKeyStores extends AbstractAdminJSFView<SEDCertStore> {
         return null;
     }
 
+    /**
+     *
+     * @param s1
+     * @param s2
+     * @return
+     */
     public boolean stringEquals(String s1, String s2) {
         return s1 != null && s2 != null && s1.equals(s2) || s2 == null && s2 == null;
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public List<SEDCertStore> getList() {
         long l = LOG.logStart();
@@ -114,6 +136,10 @@ public class AdminSEDKeyStores extends AbstractAdminJSFView<SEDCertStore> {
         return lst;
     }
 
+    /**
+     *
+     * @return
+     */
     public List<String> getTaskTypeList() {
         long l = LOG.logStart();
         List<String> rstLst = new ArrayList<>();
@@ -125,6 +151,9 @@ public class AdminSEDKeyStores extends AbstractAdminJSFView<SEDCertStore> {
         return rstLst;
     }
 
+    /**
+     *
+     */
     @Override
     public void persistEditable() {
         SEDCertStore ecj = getEditable();
@@ -133,6 +162,9 @@ public class AdminSEDKeyStores extends AbstractAdminJSFView<SEDCertStore> {
         }
     }
 
+    /**
+     *
+     */
     @Override
     public void removeSelected() {
         if (getSelected() != null) {
@@ -142,6 +174,9 @@ public class AdminSEDKeyStores extends AbstractAdminJSFView<SEDCertStore> {
         }
     }
 
+    /**
+     *
+     */
     @Override
     public void updateEditable() {
         SEDCertStore ecj = getEditable();

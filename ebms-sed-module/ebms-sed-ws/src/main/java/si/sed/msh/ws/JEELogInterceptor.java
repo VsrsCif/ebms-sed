@@ -31,6 +31,10 @@ public class JEELogInterceptor {
     @Resource
     WebServiceContext mwsCtxt;
 
+    /**
+     *
+     * @return
+     */
     protected String getCurrrentRemoteIP() {
         String clientIP = "";
         if (mwsCtxt != null) {
@@ -46,14 +50,29 @@ public class JEELogInterceptor {
         return clientIP;
     }
 
+    /**
+     *
+     * @param t
+     * @return
+     */
     public long getDuration(long t) {
         return Calendar.getInstance().getTimeInMillis() - t;
     }
 
+    /**
+     *
+     * @return
+     */
     public long getTime() {
         return Calendar.getInstance().getTimeInMillis();
     }
 
+    /**
+     *
+     * @param context
+     * @return
+     * @throws Exception
+     */
     @AroundInvoke
     public Object intercept(InvocationContext context) throws Exception {
         String ip = getCurrrentRemoteIP();
@@ -74,18 +93,44 @@ public class JEELogInterceptor {
         return result;
     }
 
+    /**
+     *
+     * @param method
+     * @param pip
+     * @param lTime
+     * @param strMessage
+     * @param ex
+     */
     public void logError(String method, String pip, long lTime, String strMessage, Exception ex) {
         mlgLogger.error(method + ": - ERROR MSG: '" + strMessage + "' ( " + (getTime() - lTime) + " ms )", ex);
     }
 
+    /**
+     *
+     * @param method
+     * @param lTime
+     * @param ex
+     */
     public void logError(String method, long lTime, Exception ex) {
         mlgLogger.error(method + ": - ERROR MSG: '" + (ex != null ? ex.getMessage() : "") + "' ( " + (getTime() - lTime) + " ms )", ex);
     }
 
+    /**
+     *
+     * @param method
+     * @param lTime
+     * @param strMessage
+     * @param ex
+     */
     public void logWarn(String method, long lTime, String strMessage, Exception ex) {
         mlgLogger.warn(method + ": - Warn MSG: '" + strMessage + "' ( " + (getTime() - lTime) + " ms )", ex);
     }
 
+    /**
+     *
+     * @param param
+     * @return
+     */
     public String paramsToString(final Object... param) {
         String strParams = null;
         if (param != null && param.length != 0) {
@@ -102,6 +147,11 @@ public class JEELogInterceptor {
         return strParams;
     }
 
+    /**
+     *
+     * @param obj
+     * @return
+     */
     public String requestToString(Object obj) {
         if (obj == null) {
             return "";

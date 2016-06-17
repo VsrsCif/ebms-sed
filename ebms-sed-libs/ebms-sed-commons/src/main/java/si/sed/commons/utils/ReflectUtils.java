@@ -31,6 +31,12 @@ public class ReflectUtils {
     private static Map<Class, List<String>> BEAN_MEMBERS = new HashMap<>();
 
     // States used in property parsing
+
+    /**
+     *
+     * @param cls
+     * @return
+     */
     public static List<String> getBeanMethods(Class cls) {
         if (BEAN_MEMBERS.containsKey(cls)) {
             return BEAN_MEMBERS.get(cls);

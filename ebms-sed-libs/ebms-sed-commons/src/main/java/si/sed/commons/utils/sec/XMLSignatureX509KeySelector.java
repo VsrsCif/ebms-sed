@@ -13,8 +13,15 @@ import javax.xml.crypto.*;
 import javax.xml.crypto.dsig.*;
 import javax.xml.crypto.dsig.keyinfo.*;
 
+/**
+ *
+ * @author sluzba
+ */
 public class XMLSignatureX509KeySelector extends KeySelector {
 
+    /**
+     *
+     */
     public XMLSignatureX509KeySelector() {
 
     }
@@ -55,7 +62,7 @@ public class XMLSignatureX509KeySelector extends KeySelector {
             SignatureMethod sm) throws KeyStoreException {
         // skip non-signer certs
         //System.out.println("X509KeySelector.certSelect 1");
-        System.out.println("Got cert: " + xcert.getSubjectDN().toString());
+    
         boolean[] keyUsage = xcert.getKeyUsage();
         if (keyUsage != null && keyUsage[0] == false) {
             return null;

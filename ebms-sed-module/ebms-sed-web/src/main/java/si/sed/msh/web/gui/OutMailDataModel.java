@@ -30,16 +30,32 @@ public class OutMailDataModel extends AbstractMailDataModel<MSHOutMail> {
 
     OutMailTableFilter outFilter = new OutMailTableFilter();
 
+    /**
+     *
+     * @param type
+     * @param messageBean
+     * @param db
+     */
     public OutMailDataModel(Class<MSHOutMail> type, UserSessionData messageBean, SEDDaoInterface db) {
         super(type);
         setUserSessionData(messageBean, db);
     }
 
+    /**
+     *
+     * @param inMail
+     * @return
+     */
     @Override
     public Object getRowKey(MSHOutMail inMail) {
         return inMail.getId();
     }
 
+    /**
+     *
+     * @param inMailId
+     * @return
+     */
     @Override
     public MSHOutMail getRowData(String inMailId) {
         BigInteger id = new BigInteger(inMailId);
@@ -52,6 +68,10 @@ public class OutMailDataModel extends AbstractMailDataModel<MSHOutMail> {
         return null;
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public Object externalFilters() {
         if (outFilter == null) {
@@ -69,10 +89,18 @@ public class OutMailDataModel extends AbstractMailDataModel<MSHOutMail> {
         return outFilter;
     }
 
+    /**
+     *
+     * @return
+     */
     public OutMailTableFilter getFilter() {
         return outFilter;
     }
 
+    /**
+     *
+     * @param imtFilter
+     */
     public void setFilter(OutMailTableFilter imtFilter) {
         this.outFilter = imtFilter;
     }

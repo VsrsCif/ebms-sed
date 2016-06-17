@@ -33,6 +33,10 @@ import org.sed.ebms.user.SEDUser;
 import si.sed.commons.SEDGUIConstants;
 import si.sed.commons.utils.SEDLogger;
 
+/**
+ *
+ * @author sluzba
+ */
 @ViewScoped
 @ManagedBean(name = "loginManager")
 public class LoginManager {
@@ -63,10 +67,18 @@ public class LoginManager {
         return FacesContext.getCurrentInstance();
     }
 
+    /**
+     *
+     * @return
+     */
     public String getClientIP() {
         return ((HttpServletRequest) externalContext().getRequest()).getRemoteAddr();
     }
 
+    /**
+     *
+     * @return
+     */
     public String getPassword() {
         return mstrPassword;
     }
@@ -85,10 +97,17 @@ public class LoginManager {
         return (SEDUser) externalContext.getSessionMap().get(SEDGUIConstants.SESSION_USER_VARIABLE_NAME);
     }
 
+    /**
+     *
+     * @return
+     */
     public String getUsername() {
         return mstrUsername;
     }
 
+    /**
+     *
+     */
     @PostConstruct
     public void init() {
         long l = mLog.logStart();
@@ -218,10 +237,18 @@ public class LoginManager {
         mLog.logEnd(l, getClientIP(), getUsername());
     }
 
+    /**
+     *
+     * @param password
+     */
     public void setPassword(String password) {
         this.mstrPassword = password;
     }
 
+    /**
+     *
+     * @param username
+     */
     public void setUsername(String username) {
         this.mstrUsername = username;
     }

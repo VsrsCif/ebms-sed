@@ -12,12 +12,40 @@ import javax.xml.namespace.QName;
  * @author sluzba
  */
 public enum SOAPExceptionCode {
+
+    /**
+     *
+     */
     SoapVersionMismatch("SoapVersionMismatch", new QName("http://ebms.sed,org/", "0001"), "Soap version does not match init soap version.", 0),
+
+    /**
+     *
+     */
     InvalidSoapVersion("InvalidSoapVersion", new QName("http://ebms.sed.org/", "0002"), "Invalid soap message: %s", 1),
+
+    /**
+     *
+     */
     SoapParseFailure("SoapParseFailure", new QName("http://ebms.sed.org/", "0003"), "Invalid Soap message: %s", 1),
+
+    /**
+     *
+     */
     ConfigurationFailure("ConfigurationFailure", new QName("http://ebms.sed.org/svev-msh", "0100"), "Configuration failure: %s", 1),
+
+    /**
+     *
+     */
     InternalFailure("InternalFailure", new QName("http://ebms.sed.org/svev-msh", "0101"), "Internal failure: %s", 1),
+
+    /**
+     *
+     */
     StoreInboundMailFailure("StoreMailFailure", new QName("http://ebms.sed.org/svev-msh", "0102"), "Internal error: %s", 1),
+
+    /**
+     *
+     */
     PluginFailure("PluginFailure", new QName("http://ebms.sed.org/svev-msh", "0202"), "Plugin: %s Failure: %s", 1);
 
     String name;
@@ -32,22 +60,43 @@ public enum SOAPExceptionCode {
         this.iParams = iCnt;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     *
+     * @return
+     */
     public QName getCode() {
         return code;
     }
 
+    /**
+     *
+     * @return
+     */
     public int getDescParamCount() {
         return iParams;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getDescriptionFormat() {
         return desc;
     }
 
+    /**
+     *
+     * @param messageParams
+     * @return
+     */
     public String getDesc(String... messageParams) {
         if (messageParams == null) {
             messageParams = new String[iParams];

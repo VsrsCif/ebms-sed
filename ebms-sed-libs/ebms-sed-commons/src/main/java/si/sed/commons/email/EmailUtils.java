@@ -63,12 +63,30 @@ public class EmailUtils {
 
     }
 
+    /**
+     *
+     * @param emailAddress
+     * @param subject
+     * @param body
+     * @param mailConfig
+     * @throws MessagingException
+     * @throws NamingException
+     * @throws IOException
+     */
     public void sendMailMessage(String emailAddress, String subject, String body, String mailConfig) throws MessagingException, NamingException, IOException {
 
         sendMailMessage(new EmailData(emailAddress, null, subject, body), mailConfig);
 
     }
 
+    /**
+     *
+     * @param eml
+     * @param mailConfig
+     * @throws MessagingException
+     * @throws NamingException
+     * @throws IOException
+     */
     public void sendMailMessage(EmailData eml, String mailConfig) throws MessagingException, NamingException, IOException {
         mlgLogger.info("EmailUtils.sendMailMessage: " + eml.toString());
         long l = Calendar.getInstance().getTimeInMillis();

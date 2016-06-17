@@ -18,32 +18,62 @@ public class EmailAttachmentData {
     String mstrFileName;
     String mstrMimeType;
 
+    /**
+     *
+     * @param mstrFileName
+     * @param mstrMimeType
+     * @param mFile
+     */
     public EmailAttachmentData(String mstrFileName, String mstrMimeType, File mFile) {
         this.mstrFileName = mstrFileName;
         this.mstrMimeType = mstrMimeType;
         this.mFile = mFile;
     }
 
+    /**
+     *
+     * @return
+     */
     public File getFile() {
         return mFile;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getFileName() {
         return mstrFileName;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getMimeType() {
         return mstrMimeType;
     }
 
+    /**
+     *
+     * @param mFile
+     */
     public void setFile(File mFile) {
         this.mFile = mFile;
     }
 
+    /**
+     *
+     * @param mstrFileName
+     */
     public void setFileName(String mstrFileName) {
         this.mstrFileName = mstrFileName;
     }
 
+    /**
+     *
+     * @param mstrMimeType
+     */
     public void setMimeType(String mstrMimeType) {
         this.mstrMimeType = mstrMimeType;
     }

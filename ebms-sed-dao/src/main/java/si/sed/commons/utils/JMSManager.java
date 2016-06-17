@@ -14,10 +14,7 @@ import javax.jms.Message;
 import javax.jms.MessageProducer;
 import javax.jms.Queue;
 import javax.jms.Session;
-import javax.naming.Binding;
-import javax.naming.Context;
 import javax.naming.InitialContext;
-import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import static si.sed.commons.SEDSystemProperties.SYS_PROP_JNDI_JMS_PREFIX;
 import static si.sed.commons.SEDSystemProperties.SYS_PROP_JNDI_PREFIX;
@@ -34,24 +31,10 @@ public class JMSManager implements JMSManagerInterface {
 
     private static final SEDLogger LOG = new SEDLogger(JMSManager.class);
 
-    private static final void listContext(Context ctx, String indent) {
-        try {
-            NamingEnumeration list = ctx.listBindings("");
-            while (list.hasMore()) {
-                Binding item = (Binding) list.next();
-                String className = item.getClassName();
-                String name = item.getName();
-                System.out.println(indent + className + " " + name);
-                Object o = item.getObject();
-                if (o instanceof javax.naming.Context) {
-                    listContext((Context) o, indent + " ");
-                }
-            }
-        } catch (NamingException ex) {
-            System.out.println(ex);
-        }
-    }
-
+    /**
+     *
+     * @param con
+     */
     protected void closeConnection(Connection con) {
         try {
             if (con != null) {
@@ -62,6 +45,15 @@ public class JMSManager implements JMSManagerInterface {
         }
     }
 
+    /**
+     *
+     * @param inId
+     * @param command
+     * @param parameters
+     * @return
+     * @throws NamingException
+     * @throws JMSException
+     */
     @Override
     public boolean executeProcessOnInMail(long inId, String command, String parameters) throws NamingException, JMSException {
 
@@ -110,9 +102,19 @@ public class JMSManager implements JMSManagerInterface {
         return System.getProperty(SYS_PROP_JNDI_JMS_PREFIX, "java:/jms/");
     }
 
+    /**
+     *
+     * @param biPosiljkaId
+     * @param strPmodeId
+     * @param retry
+     * @param delay
+     * @param transacted
+     * @return
+     * @throws NamingException
+     * @throws JMSException
+     */
     @Override
-    public boolean sendMessage(long biPosiljkaId, String strPmodeId, int retry, long delay, boolean transacted) throws NamingException, JMSException {
-        System.out.println("Resent " + retry + " delay : " + delay);
+    public boolean sendMessage(long biPosiljkaId, String strPmodeId, int retry, long delay, boolean transacted) throws NamingException, JMSException {        
         boolean suc = false;
         InitialContext ic = null;
         Connection connection = null;

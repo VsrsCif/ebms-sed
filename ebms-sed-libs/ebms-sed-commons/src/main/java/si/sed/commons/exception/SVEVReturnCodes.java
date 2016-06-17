@@ -21,7 +21,15 @@ package si.sed.commons.exception;
  * @author Joze Rihtarsic <joze.rihtarsic@sodisce.si>
  */
 public enum SVEVReturnCodes {
+
+    /**
+     *
+     */
     OK(1, "OK"),
+
+    /**
+     *
+     */
     RESOURCE_READING_ERROR(2, "Resource reading error");
     int miVal;
     String mstrDesc;
@@ -31,10 +39,18 @@ public enum SVEVReturnCodes {
         mstrDesc = strDesc;
     }
 
+    /**
+     *
+     * @return
+     */
     public int getValue() {
         return miVal;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getDesc() {
         return mstrDesc;
     }

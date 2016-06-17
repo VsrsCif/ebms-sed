@@ -22,10 +22,29 @@ package si.jrc.msh.exception;
  */
 public enum MSHExceptionCode {
 
+    /**
+     *
+     */
     EmptyMail("MSH:0001", "EmptyMail", "Empty Mail", 0),
+
+    /**
+     *
+     */
     InvalidMail("MSH:0002", "InvalidMail", "Invalid mail! Errors: %s", 1),
+
+    /**
+     *
+     */
     InvalidPModeId("MSH:0101", "InvalidPModeId", "PMode with id: %s not exists", 1),
+
+    /**
+     *
+     */
     InvalidPMode("MSH:0102", "InvalidPModeId", "Invalid PMode: %s. Error: %s", 2),
+
+    /**
+     *
+     */
     SecuritySettingsException("MSH:0103", "SecuritySettingsException", "Invalid PMode: %s. Error: %s", 3);
 
     String code;
@@ -40,18 +59,34 @@ public enum MSHExceptionCode {
         paramCount = pc;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getCode() {
         return code;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getDescriptionFormat() {
         return description;
     }
 
+    /**
+     *
+     * @return
+     */
     public int getDescParamCount() {
         return paramCount;
     }

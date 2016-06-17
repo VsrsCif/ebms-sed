@@ -20,16 +20,30 @@ public class BusinessTransaction {
     String name;
     String responderRole;
 
+    /**
+     *
+     * @param name
+     * @param initiatorRole
+     * @param responderRole
+     */
     public BusinessTransaction(String name, String initiatorRole, String responderRole) {
         this.name = name;
         this.initiatorRole = initiatorRole;
         this.responderRole = responderRole;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     *
+     * @param name
+     */
     public void setName(String name) {
         this.name = name;
     }

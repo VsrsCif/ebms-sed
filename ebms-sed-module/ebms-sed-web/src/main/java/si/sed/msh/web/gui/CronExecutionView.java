@@ -45,7 +45,14 @@ public class CronExecutionView implements Serializable {
     @ManagedProperty(value = "#{userSessionData}")
     private UserSessionData userSessionData;
 
+    /**
+     *
+     */
     protected CronExecutionModel mMailModel = null;
+
+    /**
+     *
+     */
     protected SEDTaskExecution mcurrent;
 
     @PostConstruct
@@ -53,30 +60,59 @@ public class CronExecutionView implements Serializable {
         mMailModel = new CronExecutionModel(SEDTaskExecution.class, userSessionData, mDB);
     }
 
+    /**
+     *
+     * @param messageBean
+     */
     public void setUserSessionData(UserSessionData messageBean) {
         this.userSessionData = messageBean;
     }
 
+    /**
+     *
+     * @return
+     */
     public UserSessionData getUserSessionData() {
         return this.userSessionData;
     }
 
+    /**
+     *
+     * @return
+     */
     public SEDTaskExecution getCurrent() {
         return mcurrent;
     }
 
+    /**
+     *
+     * @param mail
+     */
     public void setCurrent(SEDTaskExecution mail) {
         this.mcurrent = mail;
     }
 
+    /**
+     *
+     * @param om
+     * @return
+     */
     public int rowIndex(SEDTaskExecution om) {
         return mMailModel.getRowIndex();
     }
 
+    /**
+     *
+     * @return
+     */
     public CronExecutionModel getModel() {
         return (CronExecutionModel) mMailModel;
     }
 
+    /**
+     *
+     * @param event
+     */
     public void onRowSelect(SelectEvent event) {
         if (event != null) {
             setCurrent((SEDTaskExecution) event.getObject());
@@ -85,10 +121,19 @@ public class CronExecutionView implements Serializable {
         }
     }
 
+    /**
+     *
+     * @param event
+     */
     public void onRowUnselect(UnselectEvent event) {
         setCurrent(null);
     }
 
+    /**
+     *
+     * @param status
+     * @return
+     */
     public String getStatusColor(String status) {
         return SEDTaskStatus.getColor(status);
     }

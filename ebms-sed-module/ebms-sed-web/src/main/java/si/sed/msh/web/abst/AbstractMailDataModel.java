@@ -26,45 +26,103 @@ import si.sed.msh.web.gui.UserSessionData;
 /**
  *
  * @author sluzba
+ * @param <T>
  */
 public abstract class AbstractMailDataModel<T> extends LazyDataModel<T> {
 
+    /**
+     *
+     */
     protected static final long serialVersionUID = 1L;
     SEDDaoInterface mDB;
+
+    /**
+     *
+     */
     protected List<T> mDataList;
 
+    /**
+     *
+     */
     protected UserSessionData messageBean;
 
+    /**
+     *
+     */
     protected final Class<T> type;
 
+    /**
+     *
+     * @param type
+     */
     public AbstractMailDataModel(Class<T> type) {
         this.type = type;
     }
 
+    /**
+     *
+     * @return
+     */
     abstract public Object externalFilters();
 
+    /**
+     *
+     * @return
+     */
     public List<T> getCurrentData() {
         return mDataList;
     }
 
+    /**
+     *
+     * @param startingAt
+     * @param maxPerPage
+     * @param sortField
+     * @param sortOrder
+     * @param filters
+     * @return
+     */
     public List<T> getData(int startingAt, int maxPerPage, String sortField, SortOrder sortOrder, Object filters) {
         String strSortOrder = "DESC";
         return mDB.getDataList(type, startingAt, maxPerPage, sortField, strSortOrder, filters);
     }
 
+    /**
+     *
+     * @param startingAt
+     * @param maxPerPage
+     * @return
+     */
     public List<T> getData(int startingAt, int maxPerPage) {
         String strSortOrder = "DESC";
         return mDB.getDataList(type, startingAt, maxPerPage, "Id", strSortOrder, externalFilters());
     }
 
+    /**
+     *
+     * @return
+     */
     public Class<T> getType() {
         return type;
     }
 
+    /**
+     *
+     * @return
+     */
     public UserSessionData getUserSessionData() {
         return this.messageBean;
     }
 
+    /**
+     *
+     * @param startingAt
+     * @param maxPerPage
+     * @param sortField
+     * @param sortOrder
+     * @param filters
+     * @return
+     */
     @Override
     public List<T> load(int startingAt, int maxPerPage, String sortField, SortOrder sortOrder, Map<String, Object> filters) {
         String strSortOrder = "DESC";
@@ -79,6 +137,12 @@ public abstract class AbstractMailDataModel<T> extends LazyDataModel<T> {
     }
 
     //must povide the setter method
+
+    /**
+     *
+     * @param messageBean
+     * @param db
+     */
     public void setUserSessionData(UserSessionData messageBean, SEDDaoInterface db) {
         mDB = db;
         this.messageBean = messageBean;

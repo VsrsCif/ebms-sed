@@ -47,9 +47,20 @@ public class SEDCrypto {
         org.apache.xml.security.Init.init();
     }
 
+    /**
+     *
+     */
     public SEDCrypto() {
     }
 
+    /**
+     *
+     * @param elKey
+     * @param rsaKey
+     * @param targetKeyAlg
+     * @return
+     * @throws SEDSecurityException
+     */
     public Key decryptEncryptedKey(Element elKey, Key rsaKey, SymEncAlgorithms targetKeyAlg) throws SEDSecurityException {
 
         Key keyDec = null;
@@ -108,6 +119,14 @@ public class SEDCrypto {
         }
     }
 
+    /**
+     *
+     * @param strKey
+     * @param rsaKey
+     * @param targetKeyAlg
+     * @return
+     * @throws SEDSecurityException
+     */
     public Key decryptKey(String strKey, Key rsaKey, SymEncAlgorithms targetKeyAlg) throws SEDSecurityException {
 
         Key keyDec = null;
@@ -167,6 +186,12 @@ public class SEDCrypto {
         encryptDecryptStream(is, os, skey, Cipher.DECRYPT_MODE);
     }
 
+    /**
+     *
+     * @param e
+     * @return
+     * @throws SEDSecurityException
+     */
     public EncryptedKey element2SimetricEncryptedKey(Element e) throws SEDSecurityException {
 
         XMLCipher keyCipher;
@@ -322,6 +347,15 @@ public class SEDCrypto {
 
     }
 
+    /**
+     *
+     * @param key
+     * @param rsaCert
+     * @param recipient
+     * @param keyId
+     * @return
+     * @throws SEDSecurityException
+     */
     public Element encryptedKeyWithReceiverPublicKey(Key key, X509Certificate rsaCert, String recipient, String keyId) throws SEDSecurityException {
 
         // create document factory
@@ -379,6 +413,12 @@ public class SEDCrypto {
 
     }
 
+    /**
+     *
+     * @param in
+     * @return
+     * @throws SEDSecurityException
+     */
     public X509Certificate getCertificate(InputStream in) throws SEDSecurityException {
         X509Certificate cert;
         try {
@@ -411,8 +451,25 @@ public class SEDCrypto {
         return kgen.generateKey();
     }
 
+    /**
+     *
+     */
     public enum SymEncAlgorithms {
-        AES128_CBC("http://www.w3.org/2001/04/xmlenc#aes128-cbc", "AES", 128), AES192_CBC("http://www.w3.org/2001/04/xmlenc#aes192-cbc", "AES", 192), AES256_CBC("http://www.w3.org/2001/04/xmlenc#aes256-cbc", "AES", 256);
+
+        /**
+         *
+         */
+        AES128_CBC("http://www.w3.org/2001/04/xmlenc#aes128-cbc", "AES", 128), 
+
+        /**
+         *
+         */
+        AES192_CBC("http://www.w3.org/2001/04/xmlenc#aes192-cbc", "AES", 192), 
+
+        /**
+         *
+         */
+        AES256_CBC("http://www.w3.org/2001/04/xmlenc#aes256-cbc", "AES", 256);
 
         private final String mstrW3_uri;
         private final String mstrJce_name;
@@ -424,14 +481,26 @@ public class SEDCrypto {
             this.miKey_len = iKeyLen;
         }
 
+        /**
+         *
+         * @return
+         */
         public String getJCEName() {
             return mstrJce_name;
         }
 
+        /**
+         *
+         * @return
+         */
         public String getURI() {
             return mstrW3_uri;
         }
 
+        /**
+         *
+         * @return
+         */
         public int getKeyLength() {
             return miKey_len;
         }

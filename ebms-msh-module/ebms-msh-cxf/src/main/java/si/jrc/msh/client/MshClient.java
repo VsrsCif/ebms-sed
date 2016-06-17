@@ -89,8 +89,17 @@ public class MshClient {
 
     SEDLookupsInterface mSedLookups;
 
+    /**
+     *
+     */
     protected final SEDLogger mlog = new SEDLogger(MshClient.class);
 
+    /**
+     *
+     * @param pmode
+     * @return
+     * @throws MSHException
+     */
     public Dispatch<SOAPMessage> getClient(PMode pmode) throws MSHException {
 
         if (pmode.getLegs().isEmpty() || pmode.getLegs().get(0).getProtocol() == null
@@ -167,6 +176,10 @@ public class MshClient {
         return dispSOAPMsg;
     }
 
+    /**
+     *
+     * @return
+     */
     public SEDLookupsInterface getLookups() {
         long l = mlog.logStart();
         if (mSedLookups == null) {
@@ -181,6 +194,12 @@ public class MshClient {
         return mSedLookups;
     }
 
+    /**
+     *
+     * @param mail
+     * @param pmode
+     * @throws MSHException
+     */
     public void sendMessage(MSHOutMail mail, PMode pmode) throws MSHException {
 
         long l = mlog.logStart(mail);

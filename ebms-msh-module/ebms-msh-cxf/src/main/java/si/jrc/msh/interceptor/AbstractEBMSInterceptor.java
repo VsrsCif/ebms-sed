@@ -40,15 +40,28 @@ public abstract class AbstractEBMSInterceptor extends AbstractSoapInterceptor {
     SEDLookupsInterface mSedLookups;
     SEDLogger mlog = new SEDLogger(AbstractEBMSInterceptor.class);
 
+    /**
+     *
+     * @param p
+     */
     public AbstractEBMSInterceptor(String p) {
         super(p);
     }
 
+    /**
+     *
+     * @param i
+     * @param p
+     */
     public AbstractEBMSInterceptor(String i, String p) {
         super(i, p);
 
     }
 
+    /**
+     *
+     * @return
+     */
     public SEDDaoInterface getDAO() {
         long l = mlog.logStart();
         if (mSedDao == null) {
@@ -63,6 +76,10 @@ public abstract class AbstractEBMSInterceptor extends AbstractSoapInterceptor {
         return mSedDao;
     }
 
+    /**
+     *
+     * @return
+     */
     public SEDLookupsInterface getLookups() {
         long l = mlog.logStart();
         if (mSedLookups == null) {
@@ -77,6 +94,10 @@ public abstract class AbstractEBMSInterceptor extends AbstractSoapInterceptor {
         return mSedLookups;
     }
 
+    /**
+     *
+     * @return
+     */
     public DBSettingsInterface getSettings() {
         long l = mlog.logStart();
         if (mDBSettings == null) {
@@ -90,6 +111,11 @@ public abstract class AbstractEBMSInterceptor extends AbstractSoapInterceptor {
         return mDBSettings;
     }
 
+    /**
+     *
+     * @param t
+     * @throws Fault
+     */
     @Override
     public abstract void handleMessage(SoapMessage t) throws Fault;
 

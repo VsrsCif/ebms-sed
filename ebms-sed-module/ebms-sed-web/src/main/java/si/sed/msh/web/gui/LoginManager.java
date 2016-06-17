@@ -36,6 +36,10 @@ import si.sed.commons.SEDJNDI;
 import si.sed.commons.interfaces.SEDLookupsInterface;
 import si.sed.commons.utils.SEDLogger;
 
+/**
+ *
+ * @author sluzba
+ */
 @SessionScoped
 @ManagedBean(name = "loginManager")
 public class LoginManager {
@@ -52,22 +56,41 @@ public class LoginManager {
     @EJB(mappedName = SEDJNDI.JNDI_SEDLOOKUPS)
     SEDLookupsInterface mSedLookup;
 
+    /**
+     *
+     * @return
+     */
     public String getUsername() {
         return mstrUsername;
     }
 
+    /**
+     *
+     * @param username
+     */
     public void setUsername(String username) {
         this.mstrUsername = username;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getPassword() {
         return mstrPassword;
     }
 
+    /**
+     *
+     * @param password
+     */
     public void setPassword(String password) {
         this.mstrPassword = password;
     }
 
+    /**
+     *
+     */
     @PostConstruct
     public void init() {
         long l = mLog.logStart();
@@ -232,6 +255,10 @@ public class LoginManager {
         return externalContext.isUserInRole(role);
     }
 
+    /**
+     *
+     * @return
+     */
     public String getClientIP() {
         return ((HttpServletRequest) externalContext().getRequest()).getRemoteAddr();
     }

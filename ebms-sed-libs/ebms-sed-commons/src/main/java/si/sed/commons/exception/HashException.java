@@ -22,14 +22,27 @@ package si.sed.commons.exception;
  */
 public class HashException extends Exception {
 
+    /**
+     *
+     * @param message
+     */
     public HashException(String message) {
         super(message);
     }
 
+    /**
+     *
+     * @param message
+     * @param cause
+     */
     public HashException(String message, Throwable cause) {
         super(message, cause);
     }
 
+    /**
+     *
+     * @param cause
+     */
     public HashException(Throwable cause) {
         super(cause);
     }

@@ -25,12 +25,23 @@ public class MSHPluginOutInterceptor extends AbstractSoapInterceptor {
 
     private static final String PLUGIN_FOLDER = "plugins";
 
+    /**
+     *
+     */
     protected final SEDLogger mlog = new SEDLogger(MSHPluginOutInterceptor.class);
 
+    /**
+     *
+     */
     public MSHPluginOutInterceptor() {
         super(Phase.USER_LOGICAL);
     }
 
+    /**
+     *
+     * @param msg
+     * @throws Fault
+     */
     @Override
     public void handleMessage(SoapMessage msg) throws Fault {
         long l = mlog.logStart();
@@ -41,13 +52,11 @@ public class MSHPluginOutInterceptor extends AbstractSoapInterceptor {
             // todo
             String str = pmd.getLegs().get(0).getBusinessInfo().getService().getOutPlugin();
             if (str != null) {
-                System.out.println("LOOKUP " + str);
-
                 try {
                     SoapInterceptorInterface example = InitialContext.doLookup(str);
                     example.handleMessage(msg);
                 } catch (NamingException ex) {
-                    ex.printStackTrace();
+                    mlog.logError(l, ex);
                 }
                 /*
                 String[] lst = str.split("!");

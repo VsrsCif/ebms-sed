@@ -90,14 +90,26 @@ public class OutMailDataView extends AbstractMailView<MSHOutMail, MSHOutEvent> i
         mMailModel = new OutMailDataModel(MSHOutMail.class, getUserSessionData(), mDB);
     }
 
+    /**
+     *
+     * @param messageBean
+     */
     public void setUserSessionData(UserSessionData messageBean) {
         this.userSessionData = messageBean;
     }
 
+    /**
+     *
+     * @return
+     */
     public UserSessionData getUserSessionData() {
         return this.userSessionData;
     }
 
+    /**
+     *
+     * @return
+     */
     public OutMailDataModel getOutMailModel() {
         if (mMailModel == null) {
             mMailModel = new OutMailDataModel(MSHOutMail.class, getUserSessionData(), mDB);
@@ -105,15 +117,27 @@ public class OutMailDataView extends AbstractMailView<MSHOutMail, MSHOutEvent> i
         return (OutMailDataModel) mMailModel;
     }
 
+    /**
+     *
+     * @param status
+     * @return
+     */
     @Override
     public String getStatusColor(String status) {
         return SEDOutboxMailStatus.getColor(status);
     }
 
+    /**
+     *
+     * @return
+     */
     public List<SEDOutboxMailStatus> getOutStatuses() {
         return Arrays.asList(SEDOutboxMailStatus.values());
     }
 
+    /**
+     *
+     */
     @Override
     public void updateEventList() {
         if (this.mMail != null) {
@@ -123,6 +147,11 @@ public class OutMailDataView extends AbstractMailView<MSHOutMail, MSHOutEvent> i
         }
     }
 
+    /**
+     *
+     * @param bi
+     * @return
+     */
     @Override
     public StreamedContent getFile(BigInteger bi) {
         MSHOutPart part = null;
@@ -148,6 +177,10 @@ public class OutMailDataView extends AbstractMailView<MSHOutMail, MSHOutEvent> i
         return null;
     }
 
+    /**
+     *
+     * @throws IOException
+     */
     public void resendSelectedMail() throws IOException {
         if (this.mMail != null) {
             try {
@@ -160,6 +193,9 @@ public class OutMailDataView extends AbstractMailView<MSHOutMail, MSHOutEvent> i
         }
     }
 
+    /**
+     *
+     */
     public void deleteSelectedMail() {
         if (this.mMail != null) {
 
@@ -172,6 +208,9 @@ public class OutMailDataView extends AbstractMailView<MSHOutMail, MSHOutEvent> i
         }
     }
 
+    /**
+     *
+     */
     public void composeNewMail() {
         long l = LOG.logStart();
         MSHOutMail m = new MSHOutMail();
@@ -188,14 +227,26 @@ public class OutMailDataView extends AbstractMailView<MSHOutMail, MSHOutEvent> i
         LOG.logEnd(l);
     }
 
+    /**
+     *
+     * @return
+     */
     public MSHOutMail getNewOutMail() {
         return newOutMail;
     }
 
+    /**
+     *
+     * @param newOutMail
+     */
     public void setNewOutMail(MSHOutMail newOutMail) {
         this.newOutMail = newOutMail;
     }
 
+    /**
+     *
+     * @return
+     */
     public List<MSHOutPart> getNewOutMailAttachmentList() {
         List<MSHOutPart> lst = new ArrayList<>();
         if (getNewOutMail() != null && getNewOutMail().getMSHOutPayload() != null && !getNewOutMail().getMSHOutPayload().getMSHOutParts().isEmpty()) {
@@ -204,14 +255,25 @@ public class OutMailDataView extends AbstractMailView<MSHOutMail, MSHOutEvent> i
         return lst;
     }
 
+    /**
+     *
+     * @return
+     */
     public MSHOutPart getSelectedNewOutMailAttachment() {
         return selectedNewOutMailAttachment;
     }
 
+    /**
+     *
+     * @param selectedNewOutMailAttachment
+     */
     public void setSelectedNewOutMailAttachment(MSHOutPart selectedNewOutMailAttachment) {
         this.selectedNewOutMailAttachment = selectedNewOutMailAttachment;
     }
 
+    /**
+     *
+     */
     public void removeselectedNewOutMailAttachment() {
 
         if (selectedNewOutMailAttachment != null && getNewOutMail() != null && getNewOutMail().getMSHOutPayload() != null) {
@@ -222,6 +284,10 @@ public class OutMailDataView extends AbstractMailView<MSHOutMail, MSHOutEvent> i
 
     }
 
+    /**
+     *
+     * @param event
+     */
     public void handleNewOutMailAttachmentUpload(FileUploadEvent event) {
         long l = LOG.logStart();
         UploadedFile uf = event.getFile();
@@ -257,6 +323,9 @@ public class OutMailDataView extends AbstractMailView<MSHOutMail, MSHOutEvent> i
         }
     }
 
+    /**
+     *
+     */
     public void sendComposedMail() {
         if (newOutMail != null) {
             try {
@@ -300,10 +369,18 @@ public class OutMailDataView extends AbstractMailView<MSHOutMail, MSHOutEvent> i
         }
     }
 
+    /**
+     *
+     * @return
+     */
     public String getComposedMailBody() {
         return newMailBody;
     }
 
+    /**
+     *
+     * @param body
+     */
     public void setComposedMailBody(String body) {
         newMailBody = body;
     }

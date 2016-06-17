@@ -29,12 +29,34 @@ import si.sed.commons.utils.SEDLogger;
  */
 public abstract class TaskEmailReport implements TaskExecutionInterface {
 
+    /**
+     *
+     */
     public static String KEY_EMAIL_FROM = "email.from";
+
+    /**
+     *
+     */
     public static String KEY_EMAIL_SUBJECT = "email.subject";
+
+    /**
+     *
+     */
     public static String KEY_EMAIL_TO = "email.to";
+
+    /**
+     *
+     */
     public static String KEY_MAIL_CONFIG_JNDI = "mail.config.jndi";
+
+    /**
+     *
+     */
     public static String KEY_SEDBOX = "sedbox";
 
+    /**
+     *
+     */
     protected static final SEDLogger LOG = new SEDLogger(TaskEmailStatusReport.class);
     static final SimpleDateFormat SDF_DD_MM_YYY_HH_MI = new SimpleDateFormat("dd.MM.yyyy HH:mm");
     @EJB(mappedName = SEDJNDI.JNDI_SEDDAO)
@@ -42,6 +64,16 @@ public abstract class TaskEmailReport implements TaskExecutionInterface {
     @EJB(mappedName = SEDJNDI.JNDI_SEDREPORTS)
     SEDReportInterface mdaoReports;
 
+    /**
+     *
+     * @param key
+     * @param desc
+     * @param mandatory
+     * @param type
+     * @param valFormat
+     * @param valList
+     * @return
+     */
     protected SEDTaskTypeProperty createTTProperty(String key, String desc, boolean mandatory, String type, String valFormat, String valList) {
         SEDTaskTypeProperty ttp = new SEDTaskTypeProperty();
         ttp.setKey(key);
@@ -53,10 +85,22 @@ public abstract class TaskEmailReport implements TaskExecutionInterface {
         return ttp;
     }
 
+    /**
+     *
+     * @param key
+     * @param desc
+     * @return
+     */
     protected SEDTaskTypeProperty createTTProperty(String key, String desc) {
         return createTTProperty(key, desc, true, "string", null, null);
     }
 
+    /**
+     *
+     * @param p
+     * @return
+     * @throws TaskException
+     */
     @Override
     public String executeTask(Properties p) throws TaskException {
         long l = LOG.logStart();
@@ -103,6 +147,12 @@ public abstract class TaskEmailReport implements TaskExecutionInterface {
         p.setProperty(KEY_MAIL_CONFIG_JNDI, "Mail config jndi(def: java:jboss/mail/Default)");
         return p;
     }*/
+
+    /**
+     *
+     * @return
+     */
+
     public SEDTaskType getMailTaskDefinition() {
         SEDTaskType tt = new SEDTaskType();
         tt.setType("");
@@ -116,6 +166,12 @@ public abstract class TaskEmailReport implements TaskExecutionInterface {
         return tt;
     }
 
+    /**
+     *
+     * @param p
+     * @return
+     * @throws TaskException
+     */
     public EmailData validateMailParameters(Properties p) throws TaskException {
 
         String emailTo = null;

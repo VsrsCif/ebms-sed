@@ -28,12 +28,23 @@ import si.sed.commons.interfaces.SEDReportInterface;
 @TransactionManagement(TransactionManagementType.BEAN)
 public class SEDReportBean implements SEDReportInterface {
 
+    /**
+     *
+     */
     @Resource
     public UserTransaction mutUTransaction;
 
+    /**
+     *
+     */
     @PersistenceContext(unitName = "ebMS_SED_PU", name = "ebMS_SED_PU")
     public EntityManager memEManager;
 
+    /**
+     *
+     * @param strSedBox
+     * @return
+     */
     @Override
     public SEDReportBoxStatus getStatusReport(String strSedBox) {
         SEDReportBoxStatus rbs = new SEDReportBoxStatus();

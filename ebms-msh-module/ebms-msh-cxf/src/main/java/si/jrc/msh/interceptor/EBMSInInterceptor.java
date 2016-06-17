@@ -18,8 +18,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.activation.DataHandler;
 import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
@@ -92,6 +90,9 @@ public class EBMSInInterceptor extends AbstractEBMSInterceptor {
         HEADERS.addAll(me.getUnderstoodHeaders());
     }
 
+    /**
+     *
+     */
     protected final static SEDLogger LOG = new SEDLogger(EBMSInInterceptor.class);
 
     StorageUtils msuStorageUtils = new StorageUtils();
@@ -102,6 +103,9 @@ public class EBMSInInterceptor extends AbstractEBMSInterceptor {
     CryptoCoverageChecker checker = new CryptoCoverageChecker();
     WSS4JInInterceptor wssInterceptor = new WSS4JInInterceptor();
 
+    /**
+     *
+     */
     public EBMSInInterceptor() {
         //super(Phase.USER_PROTOCOL);
         super(Phase.PRE_PROTOCOL); // user preprotocol for generating receipt
@@ -109,15 +113,27 @@ public class EBMSInInterceptor extends AbstractEBMSInterceptor {
         getAfter().add(WSS4JInInterceptor.class.getName());
     }
 
+    /**
+     *
+     * @param phase
+     */
     public EBMSInInterceptor(String phase) {
         super(phase);
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public Set<QName> getUnderstoodHeaders() {
         return HEADERS;
     }
 
+    /**
+     *
+     * @param msg
+     */
     @Override
     public void handleMessage(SoapMessage msg) {
         long l = LOG.logStart();
@@ -151,7 +167,7 @@ public class EBMSInInterceptor extends AbstractEBMSInterceptor {
             if (isRequestor) {
                 if (!msgHeader.getUserMessages().isEmpty()) {
                     String errmsg = "For response only signal response is expected! UserMessage is ignored";
-                    LOG.logError(l, errmsg, null);;
+                    LOG.logError(l, errmsg, null);
                 }
 
                 if (msgHeader.getSignalMessages().size() > 0) {
@@ -161,7 +177,7 @@ public class EBMSInInterceptor extends AbstractEBMSInterceptor {
 
                 } else {
                     String errmsg = "For SOAP response error signal or receipt is expected!";
-                    LOG.logError(l, errmsg, null);;
+                    LOG.logError(l, errmsg, null);
                     throw new SoapFault(errmsg, version.getReceiver());
                 }
             } else if (!msgHeader.getUserMessages().isEmpty()) {
@@ -170,7 +186,7 @@ public class EBMSInInterceptor extends AbstractEBMSInterceptor {
                 String receiverBox = mMail.getReceiverEBox();
                 if (receiverBox == null && receiverBox.trim().isEmpty()) {
                     String errmsg = "Missing receiver box!";
-                    LOG.logError(l, errmsg, null);;
+                    LOG.logError(l, errmsg, null);
                     throw new EBMSError(EBMSErrorCode.Other, mMail.getMessageId(), errmsg);
                 }
 
@@ -201,7 +217,7 @@ public class EBMSInInterceptor extends AbstractEBMSInterceptor {
 
                 if (!lstSoapAtt.isEmpty() || !lstEBMSAtt.isEmpty()) {
                     String errmsg = "Ebms Payloads does note match soap attachments.";
-                    LOG.logError(l, errmsg, null);;
+                    LOG.logError(l, errmsg, null);
                     throw new EBMSError(EBMSErrorCode.ValueInconsistent, null, errmsg);
                 }
                 // serialize attachments
@@ -211,7 +227,7 @@ public class EBMSInInterceptor extends AbstractEBMSInterceptor {
                             serializeAttachments(p, msg.getAttachments());
                         } catch (StorageException | IOException | HashException ex) {
                             String errmsg = "Error reading attachments .";
-                            LOG.logError(l, errmsg, null);;
+                            LOG.logError(l, errmsg, null);
                             throw new EBMSError(EBMSErrorCode.ExternalPayloadError, null, errmsg);
                         }
                     }
@@ -241,7 +257,7 @@ public class EBMSInInterceptor extends AbstractEBMSInterceptor {
                 msg.getExchange().put(SignalMessage.class, as4Receipt);
             } else {
                 String errmsg = "Missing userMessage! In a SVEV-MSH  pull-MEP is not exepected!";
-                LOG.logError(l, errmsg, null);;
+                LOG.logError(l, errmsg, null);
                 throw new EBMSError(EBMSErrorCode.ProcessingModeMismatch, null, errmsg);
 
             }
@@ -351,7 +367,7 @@ public class EBMSInInterceptor extends AbstractEBMSInterceptor {
             msg.getExchange().put("SIGNAL_ELEMENTS", sm.getAnies());
 
             for (Element e : sm.getAnies()) {
-                System.out.println("Got elements in signal: " + e.getLocalName());
+                mlog.log("Got elements in signal: " + e.getLocalName());
                 /* if (e.getLocalName().equals("SVEVEncryptionKey")) {
                     System.out.println("********************** got encryptionKey");
                     try {
@@ -589,12 +605,20 @@ public class EBMSInInterceptor extends AbstractEBMSInterceptor {
         }
     }
 
+    /**
+     *
+     * @param message
+     */
     @Override
     public void handleFault(SoapMessage message) {
-        super.handleFault(message);
-        System.out.println("todo: Handle Fault message!");
+        super.handleFault(message);        
     }
 
+    /**
+     *
+     * @param msgHeader
+     * @return
+     */
     public String getMessageId(Messaging msgHeader) {
         String msgId = null;
         if (msgHeader != null) {

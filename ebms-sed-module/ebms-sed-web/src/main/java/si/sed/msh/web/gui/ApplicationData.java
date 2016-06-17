@@ -41,14 +41,24 @@ public class ApplicationData extends AbstractJSFView {
     @EJB(mappedName = SEDJNDI.JNDI_SEDLOOKUPS)
     private SEDLookupsInterface msedLookups;
 
+    /**
+     *
+     */
     public void exportLookupsWithNoPasswords() {
         msedLookups.exportLookups(new File(System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR)), false);
     }
 
+    /**
+     *
+     */
     public void exportLookupsWithPasswords() {
         msedLookups.exportLookups(new File(System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR)), true);
     }
 
+    /**
+     *
+     * @return
+     */
     public String getBuildVersion() {
         String strBuildVer = "";
         Manifest p;
@@ -66,18 +76,34 @@ public class ApplicationData extends AbstractJSFView {
         return strBuildVer;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getDomain() {
         return "@" + mdbSettings.getDomain();
     }
 
+    /**
+     *
+     * @return
+     */
     public String getHomeFolder() {
         return System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR);
     }
 
+    /**
+     *
+     * @return
+     */
     public String getPModeFileName() {
         return mdbSettings.getPModeFileName();
     }
 
+    /**
+     *
+     * @return
+     */
     public List<String> getPlugins() {
         List<String> plLSt = new ArrayList<>();
         File fldPlugins = new File(System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR) + File.separator + SEDSystemProperties.SYS_PROP_FOLDER_PLUGINS_DEF);
@@ -89,11 +115,19 @@ public class ApplicationData extends AbstractJSFView {
         return plLSt;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getPluginsFolder() {
         return SEDSystemProperties.SYS_PROP_FOLDER_PLUGINS_DEF;
 
     }
 
+    /**
+     *
+     * @return
+     */
     public List<String> getSEDPropertyKeys() {
 
         Set<String> s = mdbSettings.getProperties().stringPropertyNames();
@@ -103,20 +137,37 @@ public class ApplicationData extends AbstractJSFView {
 
     }
 
+    /**
+     *
+     * @param strVal
+     * @return
+     */
     public String getSEDPropertyValue(String strVal) {
         return mdbSettings.getProperties().getProperty(strVal);
 
     }
 
+    /**
+     *
+     * @return
+     */
     public String getSecurityFileName() {
         return SEDSystemProperties.SYS_PROP_CERT_DEF;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getStorageFolder() {
         return SEDSystemProperties.SYS_PROP_FOLDER_STORAGE_DEF;
 
     }
 
+    /**
+     *
+     * @return
+     */
     public List<String> getSystemPropertyKeys() {
         Set<String> s = System.getProperties().stringPropertyNames();
         List<String> lst = new ArrayList<>(s);
@@ -125,22 +176,38 @@ public class ApplicationData extends AbstractJSFView {
 
     }
 
+    /**
+     *
+     * @param strVal
+     * @return
+     */
     public String getSystemPropertyValue(String strVal) {
         return System.getProperty(strVal);
 
     }
 
+    /**
+     *
+     * @param event
+     */
     public void onCancel(RowEditEvent event) {
         //FacesMessage msg = new FacesMessage("Item Cancelled");
         //FacesContext.getCurrentInstance().addMessage(null, msg);
         //orderList.remove((OrderBean) event.getObject());
     }
 
+    /**
+     *
+     * @param event
+     */
     public void onEdit(RowEditEvent event) {
         //FacesMessage msg = new FacesMessage("Item Edited",((OrderBean) event.getObject()).getItem());  
         //FacesContext.getCurrentInstance().addMessage(null, msg);  
     }
 
+    /**
+     *
+     */
     public void refreshMainPanel() {
         FacesContext facesContext = facesContext();
         String refreshpage = "MainPanel";

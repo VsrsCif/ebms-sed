@@ -17,24 +17,46 @@ public class SEDLogger {
     int miMethodStack = 3;
     private final Logger mlgLogger;
 
+    /**
+     *
+     * @param clzz
+     */
     public SEDLogger(Class clzz) {
         mlgLogger = Logger.getLogger(clzz != null ? clzz.getName() : this.getClass().getName());
     }
 
+    /**
+     *
+     * @param clzz
+     * @param iLogStackMethodLevel
+     */
     public SEDLogger(Class clzz, int iLogStackMethodLevel) {
         mlgLogger = Logger.getLogger(clzz != null ? clzz.getName() : this.getClass().getName());
         miMethodStack = iLogStackMethodLevel;
     }
 
+    /**
+     *
+     * @return
+     */
     protected String getCurrentMethodName() {
         return Thread.currentThread().getStackTrace().length > miMethodStack
                 ? Thread.currentThread().getStackTrace()[miMethodStack].getMethodName() : "NULL METHOD";
     }
 
+    /**
+     *
+     * @return
+     */
     public long getTime() {
         return Calendar.getInstance().getTimeInMillis();
     }
 
+    /**
+     *
+     * @param param
+     * @return
+     */
     public long log(final Object... param) {
         long mlTime = getTime();
         String strParams = null;
@@ -58,6 +80,13 @@ public class SEDLogger {
     public void logEnd(long lTime ) {
         mlgLogger.info(getCurrentMethodName() + ": - END ( " + (getTime() - lTime) + " ms)");
     }*/
+
+    /**
+     *
+     * @param lTime
+     * @param param
+     */
+
     public void logEnd(long lTime, final Object... param) {
         String strParams = "";
         if (param != null && param.length != 0) {
@@ -72,14 +101,30 @@ public class SEDLogger {
         mlgLogger.info(getCurrentMethodName() + ": - END ( " + (getTime() - lTime) + " ms) " + strParams);
     }
 
+    /**
+     *
+     * @param lTime
+     * @param strMessage
+     * @param ex
+     */
     public void logError(long lTime, String strMessage, Exception ex) {
         mlgLogger.error(getCurrentMethodName() + ": - ERROR MSG: '" + strMessage + "' ( " + (getTime() - lTime) + " ms )", ex);
     }
 
+    /**
+     *
+     * @param lTime
+     * @param ex
+     */
     public void logError(long lTime, Exception ex) {
         mlgLogger.error(getCurrentMethodName() + ": - ERROR MSG: '" + (ex != null ? ex.getMessage() : "") + "' ( " + (getTime() - lTime) + " ms )", ex);
     }
 
+    /**
+     *
+     * @param param
+     * @return
+     */
     public long logStart(final Object... param) {
         long mlTime = getTime();
         String strParams = null;
@@ -99,6 +144,12 @@ public class SEDLogger {
         return mlTime;
     }
 
+    /**
+     *
+     * @param lTime
+     * @param strMessage
+     * @param ex
+     */
     public void logWarn(long lTime, String strMessage, Exception ex) {
         mlgLogger.warn(getCurrentMethodName() + ": - Warn MSG: '" + strMessage + "' ( " + (getTime() - lTime) + " ms )", ex);
     }

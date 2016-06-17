@@ -46,6 +46,10 @@ public class AdminSEDUserView extends AbstractAdminJSFView<SEDUser> {
 
     private DualListModel<SEDBox> msbCBDualList = new DualListModel<>();
 
+    /**
+     *
+     * @return
+     */
     public DualListModel<SEDBox> getCurrentPickupDualSEDBoxList() {
 
         List<String> sbIDs = new ArrayList<>();
@@ -67,10 +71,19 @@ public class AdminSEDUserView extends AbstractAdminJSFView<SEDUser> {
         return msbCBDualList = new DualListModel<>(src, trg);
     }
 
+    /**
+     *
+     * @param dl
+     */
     public void setCurrentPickupDualSEDBoxList(DualListModel<SEDBox> dl) {
         msbCBDualList = dl;
     }
 
+    /**
+     *
+     * @param username
+     * @return
+     */
     public SEDUser getSEDUserByUsername(String username) {
         List<SEDUser> lst = mdbLookups.getSEDUsers();
         for (SEDUser sb : lst) {
@@ -82,6 +95,9 @@ public class AdminSEDUserView extends AbstractAdminJSFView<SEDUser> {
 
     }
 
+    /**
+     *
+     */
     @Override
     public void createEditable() {
         long l = LOG.logStart();
@@ -100,6 +116,9 @@ public class AdminSEDUserView extends AbstractAdminJSFView<SEDUser> {
         LOG.logEnd(l);
     }
 
+    /**
+     *
+     */
     @Override
     public void removeSelected() {
         SEDUser sb = getSelected();
@@ -109,6 +128,9 @@ public class AdminSEDUserView extends AbstractAdminJSFView<SEDUser> {
         }
     }
 
+    /**
+     *
+     */
     @Override
     public void persistEditable() {
         SEDUser sb = getEditable();
@@ -122,11 +144,13 @@ public class AdminSEDUserView extends AbstractAdminJSFView<SEDUser> {
         }
     }
 
+    /**
+     *
+     */
     @Override
     public void updateEditable() {
         SEDUser sb = getEditable();
         if (sb != null) {
-            System.out.println("UPATE:_ " + msbCBDualList.getTarget().size());
             sb.getSEDBoxes().clear();
             if (msbCBDualList.getTarget() != null && !msbCBDualList.getTarget().isEmpty()) {
                 sb.getSEDBoxes().addAll(msbCBDualList.getTarget());
@@ -136,6 +160,10 @@ public class AdminSEDUserView extends AbstractAdminJSFView<SEDUser> {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public List<SEDUser> getList() {
         return mdbLookups.getSEDUsers();

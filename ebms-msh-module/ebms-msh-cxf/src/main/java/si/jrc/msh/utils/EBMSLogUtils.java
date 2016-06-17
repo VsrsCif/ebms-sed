@@ -15,13 +15,35 @@ import static si.sed.commons.utils.StorageUtils.currentStorageFolderName;
  */
 public class EBMSLogUtils {
 
+    /**
+     *
+     */
     public static final String S_IN_PREFIX = "_in";
+
+    /**
+     *
+     */
     public static final String S_OUT_PREFIX = "_out";
 
+    /**
+     *
+     */
     public static final String S_PREFIX = "ebms_";
+
+    /**
+     *
+     */
     public static final String S_REQUEST_SUFFIX = "-request.soap";
+
+    /**
+     *
+     */
     public static final String S_RESPONSE_SUFFIX = "-response.soap";
     private static final String S_ROOT_FOLDER = "ebms_log";
+
+    /**
+     *
+     */
     protected static final SEDLogger mlog = new SEDLogger(EBMSOutInterceptor.class);
 
     private static synchronized File currentStorageFolder() throws StorageException {
@@ -33,6 +55,14 @@ public class EBMSLogUtils {
         return f;
     }
 
+    /**
+     *
+     * @param prefix
+     * @param base
+     * @param suffix
+     * @return
+     * @throws StorageException
+     */
     public static File getBaseFile(String prefix, String base, String suffix) throws StorageException {
         File fStore = null;
         if (base != null) {
@@ -44,11 +74,22 @@ public class EBMSLogUtils {
         return fStore;
     }
 
+    /**
+     *
+     * @param f
+     * @return
+     */
     public static String getBaseFileName(File f) {
         String fn = f.getName();
         return fn.substring(fn.indexOf('_') + 1, fn.lastIndexOf('_'));
     }
 
+    /**
+     *
+     * @param isRequestor
+     * @param baseName
+     * @return
+     */
     public static File getInboundFileName(boolean isRequestor, String baseName) {
         try {
             return getBaseFile(S_PREFIX, baseName, S_IN_PREFIX + (isRequestor ? S_RESPONSE_SUFFIX : S_REQUEST_SUFFIX));
@@ -68,6 +109,13 @@ public class EBMSLogUtils {
         return fStore;
     }
 
+    /**
+     *
+     * @param isRequestor
+     * @param id
+     * @param baseName
+     * @return
+     */
     public static File getOutboundFileName(boolean isRequestor, BigInteger id, String baseName) {
         try {
             return getBaseFile(S_PREFIX, (baseName != null ? baseName : "") + (baseName != null && id != null ? "-" : "") + (id != null ? id.toString() : ""), S_OUT_PREFIX + (isRequestor ? S_REQUEST_SUFFIX : S_RESPONSE_SUFFIX));

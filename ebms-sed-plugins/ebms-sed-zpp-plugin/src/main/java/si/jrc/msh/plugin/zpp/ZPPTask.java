@@ -80,6 +80,13 @@ public class ZPPTask implements TaskExecutionInterface {
     SEDLookupsInterface msedLookup;
 
     // TODO externalize
+
+    /**
+     *
+     * @param p
+     * @return
+     * @throws TaskException
+     */
     @Override
     public String executeTask(Properties p) throws TaskException {
 
@@ -120,6 +127,10 @@ public class ZPPTask implements TaskExecutionInterface {
         return sw.toString();
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public SEDTaskType getTaskDefinition() {
         SEDTaskType tt = new SEDTaskType();
@@ -147,6 +158,13 @@ public class ZPPTask implements TaskExecutionInterface {
         return createTTProperty(key, desc, true, "string", null, null);
     }
 
+    /**
+     *
+     * @param mInMail
+     * @param singDAAlias
+     * @throws FOPException
+     * @throws HashException
+     */
     public void processInZPPDelivery(MSHInMail mInMail, String singDAAlias) throws FOPException, HashException {
         long l = LOG.logStart();
         // create delivery advice 
@@ -212,6 +230,10 @@ public class ZPPTask implements TaskExecutionInterface {
         LOG.logEnd(l);
     }
 
+    /**
+     *
+     * @return
+     */
     public FOPUtils getFOP() {
         if (mfpFop == null) {
             File fconf = new File(System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR) + File.separator

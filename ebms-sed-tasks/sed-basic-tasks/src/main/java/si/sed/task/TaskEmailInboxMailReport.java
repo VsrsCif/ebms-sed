@@ -30,11 +30,29 @@ import si.sed.task.filter.InMailFilter;
 public class TaskEmailInboxMailReport extends TaskEmailReport {
 
     //public static String KEY_ListLine = "mail.data";
+
+    /**
+     *
+     */
     public static String KEY_MAIL_STATUS = "mail.status";
 
+    /**
+     *
+     */
     public static String KEY_NoMail = "skip.on.NoMail";
+
+    /**
+     *
+     */
     public static String KEY_OnlyNew = "new.only";
 
+    /**
+     *
+     * @param p
+     * @param sw
+     * @return
+     * @throws TaskException
+     */
     @Override
     public String generateMailReport(Properties p, StringWriter sw) throws TaskException {
 
@@ -122,6 +140,10 @@ public class TaskEmailInboxMailReport extends TaskEmailReport {
         return swBody.toString();
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public SEDTaskType getTaskDefinition() {
         SEDTaskType tt = super.getMailTaskDefinition();

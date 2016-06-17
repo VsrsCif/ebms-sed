@@ -13,6 +13,10 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import si.sed.msh.web.gui.entities.BTAction;
 
+/**
+ *
+ * @author sluzba
+ */
 @ManagedBean(name = "businessTransaction")
 @SessionScoped
 public class BusinessTransaction implements Serializable {
@@ -23,18 +27,32 @@ public class BusinessTransaction implements Serializable {
 
     private boolean suspendEvent;
 
+    /**
+     *
+     */
     public void addAction() {
 
     }
 
+    /**
+     *
+     * @return
+     */
     public List<BTAction> getActions() {
         return mlst;
     }
 
+    /**
+     *
+     * @return
+     */
     public BTAction getSelectedAction() {
         return selectedAction;
     }
 
+    /**
+     *
+     */
     @PostConstruct
     public void init() {
         mlst.add(new BTAction("DeliveryNotify", "sq-right", "sq-left-arrow"));
@@ -44,6 +62,10 @@ public class BusinessTransaction implements Serializable {
         mlst.add(new BTAction("Test - 2", "sq-right-arrow", "sq-left"));
     }
 
+    /**
+     *
+     * @param selectedAction
+     */
     public void setSelectedAction(BTAction selectedAction) {
         this.selectedAction = selectedAction;
     }

@@ -23,38 +23,74 @@ public class EBMSSignal {
     Date signalDate;
     Date signalReceivedDate;
 
+    /**
+     *
+     * @return
+     */
     public List<EBMSError> getErrors() {
         return errors;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getRefToMessageId() {
         return refToMessageId;
     }
 
+    /**
+     *
+     * @return
+     */
     public Date getSignalDate() {
         return signalDate;
     }
 
+    /**
+     *
+     * @return
+     */
     public Date getSignalReceivedDate() {
         return signalReceivedDate;
     }
 
+    /**
+     *
+     * @return
+     */
     public boolean isAS4ResponseValid() {
         return AS4ResponseValid;
     }
 
+    /**
+     *
+     * @param isAS4ResponseValid
+     */
     public void setAS4ResponseValid(boolean isAS4ResponseValid) {
         this.AS4ResponseValid = isAS4ResponseValid;
     }
 
+    /**
+     *
+     * @param refToMessageId
+     */
     public void setRefToMessageId(String refToMessageId) {
         this.refToMessageId = refToMessageId;
     }
 
+    /**
+     *
+     * @param signalDate
+     */
     public void setSignalDate(Date signalDate) {
         this.signalDate = signalDate;
     }
 
+    /**
+     *
+     * @param signalReceivedDate
+     */
     public void setSignalReceivedDate(Date signalReceivedDate) {
         this.signalReceivedDate = signalReceivedDate;
     }

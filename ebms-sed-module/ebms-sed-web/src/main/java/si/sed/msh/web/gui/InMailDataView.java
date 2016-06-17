@@ -63,24 +63,44 @@ public class InMailDataView extends AbstractMailView<MSHInMail, MSHInEvent> impl
         mMailModel = new InMailDataModel(MSHInMail.class, userSessionData, mDB);
     }
 
+    /**
+     *
+     * @param messageBean
+     */
     public void setUserSessionData(UserSessionData messageBean) {
         this.userSessionData = messageBean;
 
     }
 
+    /**
+     *
+     * @return
+     */
     public UserSessionData getUserSessionData() {
         return this.userSessionData;
     }
 
+    /**
+     *
+     * @return
+     */
     public InMailDataModel getInMailModel() {
         return (InMailDataModel) mMailModel;
     }
 
+    /**
+     *
+     * @param status
+     * @return
+     */
     @Override
     public String getStatusColor(String status) {
         return SEDInboxMailStatus.getColor(status);
     }
 
+    /**
+     *
+     */
     @Override
     public void updateEventList() {
         if (this.mMail != null) {
@@ -90,6 +110,11 @@ public class InMailDataView extends AbstractMailView<MSHInMail, MSHInEvent> impl
         }
     }
 
+    /**
+     *
+     * @param bi
+     * @return
+     */
     @Override
     public StreamedContent getFile(BigInteger bi) {
         MSHInPart inpart = null;
@@ -115,6 +140,10 @@ public class InMailDataView extends AbstractMailView<MSHInMail, MSHInEvent> impl
         return null;
     }
 
+    /**
+     *
+     * @return
+     */
     public List<SEDInboxMailStatus> getInStatuses() {
         return Arrays.asList(SEDInboxMailStatus.values());
     }

@@ -56,12 +56,22 @@ public class MEPSTask implements TaskExecutionInterface {
         return createTTProperty(key, desc, true, "string", null, null);
     }
 
+    /**
+     *
+     * @param p
+     * @return
+     * @throws TaskException
+     */
     @Override
     public String executeTask(Properties p) throws TaskException {
 
         return null;
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public SEDTaskType getTaskDefinition() {
         SEDTaskType tt = new SEDTaskType();

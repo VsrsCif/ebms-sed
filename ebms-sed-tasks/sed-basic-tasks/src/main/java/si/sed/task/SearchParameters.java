@@ -17,18 +17,34 @@ public class SearchParameters {
 
     Date submittedDateTo;
 
+    /**
+     *
+     * @return
+     */
     public Date getReceivedDateTo() {
         return receivedDateTo;
     }
 
+    /**
+     *
+     * @return
+     */
     public Date getSubmittedDateTo() {
         return submittedDateTo;
     }
 
+    /**
+     *
+     * @param receivedDateTo
+     */
     public void setReceivedDateTo(Date receivedDateTo) {
         this.receivedDateTo = receivedDateTo;
     }
 
+    /**
+     *
+     * @param submittedDateTo
+     */
     public void setSubmittedDateTo(Date submittedDateTo) {
         this.submittedDateTo = submittedDateTo;
     }

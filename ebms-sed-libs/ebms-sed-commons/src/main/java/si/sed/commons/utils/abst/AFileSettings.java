@@ -29,14 +29,27 @@ import java.io.StringWriter;
  */
 abstract public class AFileSettings extends ASettings {
 
+    /**
+     *
+     */
     public AFileSettings() {
         init();
     }
 
+    /**
+     *
+     */
     public abstract void createIniFile();
 
+    /**
+     *
+     * @return
+     */
     public abstract File getConfigFile();
 
+    /**
+     *
+     */
     @Override
     final protected void init() {
         long l = mlog.logStart();
@@ -60,6 +73,10 @@ abstract public class AFileSettings extends ASettings {
         // create folders
     }
 
+    /**
+     *
+     * @return
+     */
     public String propertiesToString() {
         StringWriter sw = new StringWriter();
         if (mprpProperties != null) {
@@ -73,16 +90,31 @@ abstract public class AFileSettings extends ASettings {
         return sw.toString();
     }
 
+    /**
+     *
+     * @param key
+     */
     @Override
     protected void removeProperty(String key) {
         storeProperties();
     }
 
+    /**
+     *
+     * @param key
+     * @param value
+     * @param group
+     */
     @Override
     protected void replaceProperty(String key, String value, String group) {
         storeProperties();
     }
 
+    /**
+     *
+     * @param strProperties
+     * @throws IOException
+     */
     public void setPropertiesFromString(String strProperties) throws IOException {
         mprpProperties.clear();
         mprpProperties.load(new ByteArrayInputStream(strProperties.getBytes()));
@@ -91,6 +123,9 @@ abstract public class AFileSettings extends ASettings {
         storeProperties();
     }
 
+    /**
+     *
+     */
     public void storeProperties() {
         long l = mlog.logStart();
         if (mprpProperties != null) {
@@ -102,6 +137,12 @@ abstract public class AFileSettings extends ASettings {
         }
     }
 
+    /**
+     *
+     * @param key
+     * @param value
+     * @param group
+     */
     @Override
     protected void storeProperty(String key, String value, String group) {
         storeProperties();

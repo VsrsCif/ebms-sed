@@ -38,14 +38,26 @@ import si.sed.commons.utils.xml.XMLUtils;
  */
 public class PModeManager {
 
+    /**
+     *
+     */
     public static SEDLogger LOG = new SEDLogger(PModeManager.class);
 
     PModes pmodes = null;
 
+    /**
+     *
+     */
     public void PModeManager() {
 
     }
 
+    /**
+     *
+     * @param pModeId
+     * @return
+     * @throws PModeException
+     */
     public PMode getPModeById(String pModeId) throws PModeException {
         if (pmodes == null) {
             reloadPModes();
@@ -58,6 +70,11 @@ public class PModeManager {
         return null;
     }
 
+    /**
+     *
+     * @param pmr
+     * @return
+     */
     public boolean removePMode(PMode pmr) {
         boolean suc = false;
         if (pmr == null) {
@@ -67,6 +84,11 @@ public class PModeManager {
 
     }
 
+    /**
+     *
+     * @param pModeId
+     * @return
+     */
     public PMode removePModeById(String pModeId) {
         PMode removed = null;
         for (PMode pm : pmodes.getPModes()) {
@@ -80,6 +102,12 @@ public class PModeManager {
 
     }
 
+    /**
+     *
+     * @param pmrNew
+     * @param pModeIdOld
+     * @return
+     */
     public boolean replace(PMode pmrNew, String pModeIdOld) {
         boolean suc = false;
         for (PMode pm : pmodes.getPModes()) {
@@ -94,14 +122,28 @@ public class PModeManager {
         return suc;
     }
 
+    /**
+     *
+     * @param pmrNew
+     * @return
+     */
     public boolean add(PMode pmrNew) {
         return pmodes.getPModes().add(pmrNew);
     }
 
+    /**
+     *
+     * @param i
+     * @param pmrNew
+     */
     public void add(int i, PMode pmrNew) {
         pmodes.getPModes().add(i, pmrNew);
     }
 
+    /**
+     *
+     * @throws PModeException
+     */
     public void savePMode() throws PModeException {
         long l = LOG.logStart();
         try {
@@ -131,6 +173,10 @@ public class PModeManager {
         LOG.logEnd(l);
     }
 
+    /**
+     *
+     * @throws PModeException
+     */
     public void reloadPModes() throws PModeException {
         long l = LOG.logStart();
         File pModeFile = new File(getPModeFilePath());
@@ -143,6 +189,11 @@ public class PModeManager {
         LOG.logEnd(l);
     }
 
+    /**
+     *
+     * @param is
+     * @throws PModeException
+     */
     public void reloadPModes(InputStream is) throws PModeException {
         long l = LOG.logStart();
 
@@ -155,16 +206,30 @@ public class PModeManager {
         LOG.logEnd(l);
     }
 
+    /**
+     *
+     * @return
+     */
     public String getPModeFilePath() {
         return System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR) + File.separator
                 + System.getProperty(SEDSystemProperties.SYS_PROP_PMODE, SEDSystemProperties.SYS_PROP_PMODE_DEF);
     }
 
+    /**
+     *
+     * @return
+     * @throws PModeException
+     */
     public PModes getPModes() throws PModeException {
         reloadPModes();
         return pmodes;
     }
 
+    /**
+     *
+     * @return
+     * @throws PModeException
+     */
     public List<PMode> getPModeList() throws PModeException {
         reloadPModes();
         return pmodes.getPModes();

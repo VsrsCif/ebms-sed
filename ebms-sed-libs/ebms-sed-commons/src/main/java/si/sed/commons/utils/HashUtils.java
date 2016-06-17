@@ -30,10 +30,19 @@ import si.sed.commons.exception.HashException;
  */
 public class HashUtils {
 
+    /**
+     *
+     */
     public static String MessageDigest_MD5 = "MD5";
 
     MessageDigest mdMD5 = null;
 
+    /**
+     *
+     * @param file
+     * @return
+     * @throws HashException
+     */
     public String getMD5Hash(File file) throws HashException {
         try (FileInputStream fis = new FileInputStream(file)) {
             return getMD5Hash(fis);
@@ -42,6 +51,12 @@ public class HashUtils {
         }
     }
 
+    /**
+     *
+     * @param filePath
+     * @return
+     * @throws HashException
+     */
     public String getMD5Hash(String filePath) throws HashException {
         try (FileInputStream fis = new FileInputStream(filePath)) {
             return getMD5Hash(fis);
@@ -50,6 +65,12 @@ public class HashUtils {
         }
     }
 
+    /**
+     *
+     * @param is
+     * @return
+     * @throws HashException
+     */
     public String getMD5Hash(InputStream is) throws HashException {
         String strHash = null;
         try {

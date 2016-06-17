@@ -17,10 +17,22 @@ import javax.ejb.TimerService;
 @Local
 public interface SEDSchedulerInterface {
 
+    /**
+     *
+     * @return
+     */
     int getChecks();
 
+    /**
+     *
+     * @return
+     */
     TimerService getServices();
 
+    /**
+     *
+     * @param timer
+     */
     @Timeout
     void timeout(Timer timer);
 

@@ -6,9 +6,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.security.Key;
 import java.security.KeyStore;
-import java.security.KeyStoreException;
 import java.security.cert.X509Certificate;
-import java.util.Enumeration;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.crypto.SecretKey;
@@ -33,6 +31,9 @@ public class SEDCryptoTest {
     private static final String TEST_DATA = "This is a SECRET NOTE!";
     private File mfSecretFile;
 
+    /**
+     *
+     */
     public SEDCryptoTest() {
         try {
             mfSecretFile = File.createTempFile("secret_test", ".dat");
@@ -51,6 +52,7 @@ public class SEDCryptoTest {
 
     /**
      * Test of encrypt and decrypt file with class SEDCrypto.
+     * @throws si.sed.commons.exception.SEDSecurityException
      */
     @Test
     public void testAESEncryptDecryptFile() throws IOException, SEDSecurityException {
@@ -98,19 +100,8 @@ public class SEDCryptoTest {
         instance.encryptFile(mfSecretFile, fEnc, skey);
 
         KeyStore ks = KeystoreUtils.getKeystore(SEDCryptoTest.class.getResourceAsStream(KEYSTORE), KEYSTORE_TYPE, KEYSTORE_PASSWORD.toCharArray());
-        Enumeration<String> lst;
-        try {
-            lst = ks.aliases(); //encrypt keywhile (lst.hasMoreElements()){
-
-            while (lst.hasMoreElements()) {
-                System.out.println("Alias: " + lst.nextElement());
-            }
-
-        } catch (KeyStoreException ex) {
-            Logger.getLogger(SEDCryptoTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-        System.out.println("GOT keystore " + ks);
+   
+   
         // sign key cert
         X509Certificate ca = cu.getTrustedCertForAlias(ks, SIGN_KEY_ALIAS);
         assertNotNull("Initialize error: cert with alias: '" + SIGN_KEY_ALIAS + "' not found in trustore: '" + KEYSTORE + "'!", ca);

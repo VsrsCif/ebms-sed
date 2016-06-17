@@ -18,6 +18,10 @@ import si.sed.commons.utils.SEDLogger;
  */
 public abstract class ASettings {
 
+    /**
+     *
+     * @return
+     */
     public static Properties newProperties() {
         return new Properties() {
             @Override
@@ -26,15 +30,34 @@ public abstract class ASettings {
             }
         };
     }
+
+    /**
+     *
+     */
     protected long mlLastChagedTime = 0;
 
+    /**
+     *
+     */
     protected SEDLogger mlog = new SEDLogger(AFileSettings.class);
+
+    /**
+     *
+     */
     final protected Properties mprpProperties = newProperties();
 
+    /**
+     *
+     */
     public ASettings() {
 
     }
 
+    /**
+     *
+     * @param strKey
+     * @return
+     */
     public String getData(String strKey) {
         String strVal = null;
         init();
@@ -44,6 +67,12 @@ public abstract class ASettings {
         return strVal;
     }
 
+    /**
+     *
+     * @param strKey
+     * @param defVal
+     * @return
+     */
     public String getData(String strKey, String defVal) {
         // check if system property exists
         if (System.getProperties().containsKey(strKey)) {
@@ -57,6 +86,13 @@ public abstract class ASettings {
         return defVal;
     }
 
+    /**
+     *
+     * @param strPropName
+     * @param strDefProfValue
+     * @param strFileName
+     * @return
+     */
     public File getFile(String strPropName, String strDefProfValue, String strFileName) {
         File f = new File(System.getProperty(strPropName, getData(strPropName, strDefProfValue)));
         if (!f.exists()) {
@@ -65,6 +101,12 @@ public abstract class ASettings {
         return new File((f.getAbsolutePath().endsWith(File.separator) ? f.getPath() : f.getPath() + File.separator) + strFileName);
     }
 
+    /**
+     *
+     * @param prop
+     * @param defVal
+     * @return
+     */
     public File getFolder(String prop, String defVal) {
         File f = new File(System.getProperty(prop, getData(prop, defVal)));
         if (!f.exists()) {
@@ -73,24 +115,56 @@ public abstract class ASettings {
         return f;
     }
 
+    /**
+     *
+     */
     protected abstract void init();
 
+    /**
+     *
+     * @param key
+     * @param value
+     */
     public void initData(String key, String value) {
         if (!mprpProperties.containsKey(key)) {
             mprpProperties.setProperty(key, value);
         }
     }
 
+    /**
+     *
+     */
     public abstract void initialize();
 
+    /**
+     *
+     * @param key
+     */
     protected abstract void removeProperty(String key);
 
+    /**
+     *
+     * @param key
+     * @param value
+     * @param group
+     */
     protected abstract void replaceProperty(String key, String value, String group);
 
+    /**
+     *
+     * @param key
+     * @param value
+     */
     public void setData(String key, String value) {
         setData(key, value, null);
     }
 
+    /**
+     *
+     * @param key
+     * @param value
+     * @param group
+     */
     public void setData(String key, String value, String group) {
         if (key == null || key.trim().isEmpty()) {
             return;
@@ -114,8 +188,18 @@ public abstract class ASettings {
         }
     }
 
+    /**
+     *
+     * @param key
+     * @param value
+     * @param group
+     */
     protected abstract void storeProperty(String key, String value, String group);
 
+    /**
+     *
+     * @param f
+     */
     public void testFolder(File f) {
         if (!f.exists()) {
             f.mkdirs();

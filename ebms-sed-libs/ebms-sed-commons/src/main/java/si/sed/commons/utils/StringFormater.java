@@ -26,6 +26,13 @@ public class StringFormater {
 
     SimpleDateFormat msdf = new SimpleDateFormat("dd.MM.yyyy HH:mm.ss");
 
+    /**
+     *
+     * @param methods
+     * @param obj
+     * @param i
+     * @return
+     */
     public String format(List<String> methods, Object obj, int i) {
 
         Class cls = obj.getClass();
@@ -50,6 +57,12 @@ public class StringFormater {
         return sw.toString();
     }
 
+    /**
+     *
+     * @param str
+     * @param dce
+     * @return
+     */
     public String format(String str, MSHInMail dce) {
         HashMap<String, Object> hm = new HashMap<>();
 
@@ -73,6 +86,12 @@ public class StringFormater {
         return format(str, hm);
     }
 
+    /**
+     *
+     * @param str
+     * @param values
+     * @return
+     */
     public String format(String str, Map<String, Object> values) {
 
         StringBuilder builder = new StringBuilder(str);

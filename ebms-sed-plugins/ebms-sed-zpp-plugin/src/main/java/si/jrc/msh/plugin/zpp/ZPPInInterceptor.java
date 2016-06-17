@@ -89,6 +89,9 @@ import si.sed.commons.utils.xml.XMLUtils;
 @TransactionManagement(TransactionManagementType.BEAN)
 public class ZPPInInterceptor implements SoapInterceptorInterface {
 
+    /**
+     *
+     */
     protected final SEDLogger LOG = new SEDLogger(ZPPInInterceptor.class);
     SEDCrypto mSedCrypto = new SEDCrypto();
     HashUtils mpHU = new HashUtils();
@@ -107,12 +110,22 @@ public class ZPPInInterceptor implements SoapInterceptorInterface {
     @EJB(mappedName = SEDJNDI.JNDI_SEDLOOKUPS)
     SEDLookupsInterface msedLookup;
 
+    /**
+     *
+     */
     @Resource
     public UserTransaction mutUTransaction;
 
+    /**
+     *
+     */
     @PersistenceContext(unitName = "ebMS_ZPP_PU", name = "ebMS_ZPP_PU")
     public EntityManager memEManager;
 
+    /**
+     *
+     * @param msg
+     */
     @Override
     public void handleMessage(SoapMessage msg) {
         long l = LOG.logStart();
@@ -208,6 +221,14 @@ public class ZPPInInterceptor implements SoapInterceptorInterface {
         LOG.logEnd(l);
     }
 
+    /**
+     *
+     * @param mInMail
+     * @param pmd
+     * @param msg
+     * @throws FOPException
+     * @throws HashException
+     */
     public void processInZPPAdviceOfDelivery(MSHInMail mInMail, PMode pmd, SoapMessage msg) throws FOPException, HashException {
         long l = LOG.logStart();
         try {
@@ -235,6 +256,13 @@ public class ZPPInInterceptor implements SoapInterceptorInterface {
         LOG.logEnd(l);
     }
 
+    /**
+     *
+     * @param mInMail
+     * @param pmd
+     * @throws FOPException
+     * @throws HashException
+     */
     public void processInZPPDelivery(MSHInMail mInMail, PMode pmd) throws FOPException, HashException {
         long l = LOG.logStart();
         mInMail.setStatus(SEDInboxMailStatus.PLUGINLOCKED.getValue());
@@ -249,6 +277,10 @@ public class ZPPInInterceptor implements SoapInterceptorInterface {
         LOG.logEnd(l);
     }
 
+    /**
+     *
+     * @return
+     */
     public FOPUtils getFOP() {
         if (mfpFop == null) {
             File fconf = new File(System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR) + File.separator
@@ -260,6 +292,12 @@ public class ZPPInInterceptor implements SoapInterceptorInterface {
         return mfpFop;
     }
 
+    /**
+     *
+     * @param mi
+     * @return
+     * @throws IOException
+     */
     public Key getEncryptionKeyForDeliveryAdvice(MSHInMail mi) throws IOException {
         // conv id is [send mailID]@domain
         String convId = mi.getConversationId();
@@ -270,12 +308,18 @@ public class ZPPInInterceptor implements SoapInterceptorInterface {
 
     }
 
+    /**
+     *
+     * @param key
+     * @param convID
+     * @param sb
+     */
     public void decryptMail(Key key, String convID, SEDBox sb) {
         long l = LOG.logStart();
 
         try {
 
-            List<MSHInMail> lst = mDB.getInMailConvIdAndAction(ZPPConstants.S_ZPP_ACTION_DELIVERY_NOTIFICATION, convID);;
+            List<MSHInMail> lst = mDB.getInMailConvIdAndAction(ZPPConstants.S_ZPP_ACTION_DELIVERY_NOTIFICATION, convID);
             if (lst.isEmpty()) {
                 String errMsg = "Mail with convid: " + convID + " and action: " + ZPPConstants.S_ZPP_ACTION_DELIVERY_NOTIFICATION + " not found!"
                         + "Nothing to decrypt!";
@@ -333,9 +377,7 @@ public class ZPPInInterceptor implements SoapInterceptorInterface {
                             lstDec.add(miDec);
                             if (sb != null && sb.getExport() != null && exportFolder != null && exporFileName != null) {
                                 String filPrefix = exportFolder.getAbsolutePath() + File.separator + exporFileName;
-                                System.out.println("Export files prefix: " + filPrefix);
                                 if (sb.getExport().getExportMetaData()) {
-                                    System.out.println("Export metadata: " + filPrefix);
                                     String fn = filPrefix + "." + MimeValues.MIME_XML.getSuffix();
                                     try {
 
@@ -345,7 +387,6 @@ public class ZPPInInterceptor implements SoapInterceptorInterface {
                                         LOG.logError(l, "Export metadata ERROR. Export file:" + fn + ".", ex);
                                     }
                                 }
-                                System.out.println("Export file: : " + fNew);
                                 String fn = filPrefix + "_" + i + "." + MimeValues.getSuffixBYMimeType(miDec.getMimeType());
                                 listFiles.add(fn);
                                 StorageUtils.copyFile(fNew, new File(fn));
@@ -384,6 +425,10 @@ public class ZPPInInterceptor implements SoapInterceptorInterface {
         LOG.logEnd(l);
     }
 
+    /**
+     *
+     * @param t
+     */
     @Override
     public void handleFault(SoapMessage t) {
         // ignore

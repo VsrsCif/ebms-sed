@@ -30,16 +30,32 @@ public class InMailDataModel extends AbstractMailDataModel<MSHInMail> {
 
     InMailTableFilter imtFilter = new InMailTableFilter();
 
+    /**
+     *
+     * @param type
+     * @param userSessionData
+     * @param db
+     */
     public InMailDataModel(Class<MSHInMail> type, UserSessionData userSessionData, SEDDaoInterface db) {
         super(type);
         setUserSessionData(userSessionData, db);
     }
 
+    /**
+     *
+     * @param inMail
+     * @return
+     */
     @Override
     public Object getRowKey(MSHInMail inMail) {
         return inMail.getId();
     }
 
+    /**
+     *
+     * @param inMailId
+     * @return
+     */
     @Override
     public MSHInMail getRowData(String inMailId) {
         BigInteger id = new BigInteger(inMailId);
@@ -53,6 +69,10 @@ public class InMailDataModel extends AbstractMailDataModel<MSHInMail> {
         return null;
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public Object externalFilters() {
         if (imtFilter == null) {
@@ -70,10 +90,18 @@ public class InMailDataModel extends AbstractMailDataModel<MSHInMail> {
         return imtFilter;
     }
 
+    /**
+     *
+     * @return
+     */
     public InMailTableFilter getFilter() {
         return imtFilter;
     }
 
+    /**
+     *
+     * @param imtFilter
+     */
     public void setFilter(InMailTableFilter imtFilter) {
         this.imtFilter = imtFilter;
     }

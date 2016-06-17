@@ -15,32 +15,62 @@ public class BTAction {
     String name;
     String rightEnd;
 
+    /**
+     *
+     * @param name
+     * @param leftEnd
+     * @param rightEnd
+     */
     public BTAction(String name, String leftEnd, String rightEnd) {
         this.name = name;
         this.leftEnd = leftEnd;
         this.rightEnd = rightEnd;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getLeftEnd() {
         return leftEnd;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getRightEnd() {
         return rightEnd;
     }
 
+    /**
+     *
+     * @param leftEnd
+     */
     public void setLeftEnd(String leftEnd) {
         this.leftEnd = leftEnd;
     }
 
+    /**
+     *
+     * @param name
+     */
     public void setName(String name) {
         this.name = name;
     }
 
+    /**
+     *
+     * @param rightEnd
+     */
     public void setRightEnd(String rightEnd) {
         this.rightEnd = rightEnd;
     }

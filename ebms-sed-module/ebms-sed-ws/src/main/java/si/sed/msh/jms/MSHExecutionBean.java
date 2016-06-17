@@ -54,6 +54,7 @@ import si.sed.commons.utils.Utils;
 })
 @TransactionManagement(TransactionManagementType.BEAN)
 public class MSHExecutionBean implements MessageListener {
+    private static final  SEDLogger mlog = new SEDLogger(MSHExecutionBean.class);
 
     private static final void listContext(Context ctx, String indent) {
         try {
@@ -62,20 +63,24 @@ public class MSHExecutionBean implements MessageListener {
                 Binding item = (Binding) list.next();
                 String className = item.getClassName();
                 String name = item.getName();
-                System.out.println(indent + className + " " + name);
+
                 Object o = item.getObject();
                 if (o instanceof javax.naming.Context) {
                     listContext((Context) o, indent + " ");
                 }
             }
         } catch (NamingException ex) {
-            System.out.println(ex);
+                mlog.logError(0, ex);
         }
     }
 
-    SEDLogger mlog = new SEDLogger(MSHExecutionBean.class);
+    
     PModeManager mpModeManager = new PModeManager();
 
+    /**
+     *
+     * @param con
+     */
     protected void closeConnection(Connection con) {
         try {
             if (con != null) {
@@ -99,6 +104,10 @@ public class MSHExecutionBean implements MessageListener {
         return System.getProperty(SEDSystemProperties.SYS_PROP_JNDI_JMS_PREFIX, "java:/jms/");
     }
 
+    /**
+     *
+     * @param msg
+     */
     @Override
     public void onMessage(Message msg) {
         try {
@@ -120,8 +129,17 @@ public class MSHExecutionBean implements MessageListener {
         }
     }
 
+    /**
+     *
+     * @param biPosiljkaId
+     * @param strPmodeId
+     * @param retry
+     * @param delay
+     * @return
+     * @throws NamingException
+     * @throws JMSException
+     */
     public boolean sendMessage(long biPosiljkaId, String strPmodeId, int retry, long delay) throws NamingException, JMSException {
-        System.out.println("Resent " + retry + " delay : " + delay);
         boolean suc = false;
         InitialContext ic = null;
         Connection connection = null;

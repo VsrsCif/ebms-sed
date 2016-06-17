@@ -22,14 +22,27 @@ package si.sed.commons.exception;
  */
 public class PModeException extends Exception {
 
+    /**
+     *
+     * @param message
+     */
     public PModeException(String message) {
         super(message);
     }
 
+    /**
+     *
+     * @param message
+     * @param cause
+     */
     public PModeException(String message, Throwable cause) {
         super(message, cause);
     }
 
+    /**
+     *
+     * @param cause
+     */
     public PModeException(Throwable cause) {
         super(cause);
     }

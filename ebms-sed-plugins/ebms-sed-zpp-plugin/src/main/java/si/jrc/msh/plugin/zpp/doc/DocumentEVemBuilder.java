@@ -41,6 +41,13 @@ public class DocumentEVemBuilder extends DocumentBuilder {
     private static final String NM_DATA = "http://www.crea.si/Schemas/2004/Document/ObjectType/Data";
     private static final String NM_VIS = "http://www.crea.si/Schemas/2004/Document/ObjectType/Visualisation";
 
+    /**
+     *
+     * @param dce
+     * @param fos
+     * @param key
+     * @throws SEDSecurityException
+     */
     @Override
     public void createMail(MSHOutMail dce, FileOutputStream fos, KeyStore.PrivateKeyEntry key) throws SEDSecurityException {
         long t = getTime();
@@ -188,6 +195,11 @@ public class DocumentEVemBuilder extends DocumentBuilder {
     }
     static Properties mstrMimeTypes = null;
 
+    /**
+     *
+     * @param mimetype
+     * @return
+     */
     static public synchronized String getFilePrefixForMimeType(String mimetype) {
         String strRes = null;
 

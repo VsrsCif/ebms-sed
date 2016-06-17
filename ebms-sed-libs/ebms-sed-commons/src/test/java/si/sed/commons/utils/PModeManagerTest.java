@@ -34,6 +34,9 @@ import si.sed.commons.utils.xml.XMLUtils;
  */
 public class PModeManagerTest {
 
+    /**
+     *
+     */
     public PModeManagerTest() {
 
         ConsoleAppender console = new ConsoleAppender(); //create appender
@@ -56,13 +59,21 @@ public class PModeManagerTest {
         Logger.getRootLogger().addAppender(fa);
     }
 
+    /**
+     *
+     */
     @After
     public void tearDown() {
     }
 
+    /**
+     *
+     * @throws PModeException
+     * @throws JAXBException
+     * @throws FileNotFoundException
+     */
     @org.junit.Test
     public void testReloadPModes() throws PModeException, JAXBException, FileNotFoundException {
-        System.out.println("reloadPModes");
 
         PModeManager pmd = new PModeManager();
         pmd.reloadPModes(PModeManagerTest.class.getResourceAsStream("/pmode/pmodes.xml"));

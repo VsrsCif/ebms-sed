@@ -22,14 +22,27 @@ package si.sed.task.exception;
  */
 public class FSException extends Exception {
 
+    /**
+     *
+     * @param message
+     */
     public FSException(String message) {
         super(message);
     }
 
+    /**
+     *
+     * @param message
+     * @param cause
+     */
     public FSException(String message, Throwable cause) {
         super(message, cause);
     }
 
+    /**
+     *
+     * @param cause
+     */
     public FSException(Throwable cause) {
         super(cause);
     }

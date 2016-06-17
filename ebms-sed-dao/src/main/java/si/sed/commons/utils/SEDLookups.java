@@ -55,20 +55,40 @@ import si.sed.commons.utils.xml.XMLUtils;
 @TransactionManagement(TransactionManagementType.BEAN)
 public class SEDLookups implements SEDLookupsInterface {
 
+    /**
+     *
+     */
     protected static SEDLogger LOG = new SEDLogger(SEDLookups.class);
     // min, sec, milis.
+
+    /**
+     *
+     */
     public static final long S_UPDATE_TIMEOUT = 10 * 60 * 1000; // 10 minutes
     @EJB(mappedName = SEDJNDI.JNDI_DBSETTINGS)
     private DBSettingsInterface mdbSettings;
 
+    /**
+     *
+     */
     @PersistenceContext(unitName = "ebMS_SED_PU", name = "ebMS_SED_PU")
     public EntityManager memEManager;
     private final HashMap<Class, List<?>> mlstCacheLookup = new HashMap<>();
 
     private final HashMap<Class, Long> mlstTimeOut = new HashMap<>();
+
+    /**
+     *
+     */
     @Resource
     public UserTransaction mutUTransaction;
 
+    /**
+     *
+     * @param <T>
+     * @param o
+     * @return
+     */
     public <T> boolean add(T o) {
         long l = LOG.logStart();
         boolean suc = false;
@@ -89,31 +109,61 @@ public class SEDLookups implements SEDLookupsInterface {
         return suc;
     }
 
+    /**
+     *
+     * @param sb
+     * @return
+     */
     @Override
     public boolean addSEDBox(SEDBox sb) {
         return add(sb);
     }
 
+    /**
+     *
+     * @param sb
+     * @return
+     */
     @Override
     public boolean addSEDCertStore(SEDCertStore sb) {
         return add(sb);
     }
 
+    /**
+     *
+     * @param sb
+     * @return
+     */
     @Override
     public boolean addSEDCronJob(SEDCronJob sb) {
         return add(sb);
     }
 
+    /**
+     *
+     * @param sb
+     * @return
+     */
     @Override
     public boolean addSEDPlugin(SEDPlugin sb) {
         return add(sb);
     }
 
+    /**
+     *
+     * @param sb
+     * @return
+     */
     @Override
     public boolean addSEDTaskType(SEDTaskType sb) {
         return add(sb);
     }
 
+    /**
+     *
+     * @param sb
+     * @return
+     */
     @Override
     public boolean addSEDUser(SEDUser sb) {
         return add(sb);
@@ -134,6 +184,11 @@ public class SEDLookups implements SEDLookupsInterface {
         }
     }
 
+    /**
+     *
+     * @param f
+     * @param saveCertPasswords
+     */
     @Override
     public void exportLookups(File f, boolean saveCertPasswords) {
         long l = LOG.logStart();
@@ -192,6 +247,11 @@ public class SEDLookups implements SEDLookupsInterface {
         return t;
     }
 
+    /**
+     *
+     * @param strname
+     * @return
+     */
     @Override
     public SEDBox getSEDBoxByName(String strname) {
         if (strname != null && !strname.trim().isEmpty()) {
@@ -206,16 +266,30 @@ public class SEDLookups implements SEDLookupsInterface {
         return null;
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public List<SEDBox> getSEDBoxes() {
         return getLookup(SEDBox.class);
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public List<SEDCertStore> getSEDCertStore() {
         return getLookup(SEDCertStore.class);
     }
 
+    /**
+     *
+     * @param alias
+     * @param isKey
+     * @return
+     */
     @Override
     public SEDCertStore getSEDCertStoreByCertAlias(String alias, boolean isKey) {
         SEDCertStore rsCS = null;
@@ -237,6 +311,11 @@ public class SEDLookups implements SEDLookupsInterface {
 
     }
 
+    /**
+     *
+     * @param id
+     * @return
+     */
     @Override
     public SEDCronJob getSEDCronJobById(BigInteger id) {
         if (id != null) {
@@ -251,16 +330,29 @@ public class SEDLookups implements SEDLookupsInterface {
         return null;
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public List<SEDCronJob> getSEDCronJobs() {
         return getLookup(SEDCronJob.class);
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public List<SEDPlugin> getSEDPlugin() {
         return getLookup(SEDPlugin.class);
     }
 
+    /**
+     *
+     * @param type
+     * @return
+     */
     @Override
     public SEDTaskType getSEDTaskTypeByType(String type) {
         if (type != null) {
@@ -275,6 +367,11 @@ public class SEDLookups implements SEDLookupsInterface {
         return null;
     }
 
+    /**
+     *
+     * @param type
+     * @return
+     */
     @Override
     public SEDPlugin getSEDPluginByType(String type) {
         if (type != null) {
@@ -289,11 +386,20 @@ public class SEDLookups implements SEDLookupsInterface {
         return null;
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public List<SEDTaskType> getSEDTaskTypes() {
         return getLookup(SEDTaskType.class);
     }
 
+    /**
+     *
+     * @param userId
+     * @return
+     */
     @Override
     public SEDUser getSEDUserByUserId(String userId) {
         if (userId != null && !userId.trim().isEmpty()) {
@@ -308,6 +414,10 @@ public class SEDLookups implements SEDLookupsInterface {
         return null;
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public List<SEDUser> getSEDUsers() {
         return getLookup(SEDUser.class);
@@ -394,6 +504,12 @@ public class SEDLookups implements SEDLookupsInterface {
         LOG.logEnd(l);
     }
 
+    /**
+     *
+     * @param <T>
+     * @param o
+     * @return
+     */
     public <T> boolean remove(T o) {
         long l = LOG.logStart();
         boolean suc = false;
@@ -414,36 +530,72 @@ public class SEDLookups implements SEDLookupsInterface {
         return suc;
     }
 
+    /**
+     *
+     * @param sb
+     * @return
+     */
     @Override
     public boolean removeEDCertStore(SEDCertStore sb) {
         return remove(sb);
     }
 
+    /**
+     *
+     * @param sb
+     * @return
+     */
     @Override
     public boolean removeSEDBox(SEDBox sb) {
         return remove(sb);
     }
 
+    /**
+     *
+     * @param sb
+     * @return
+     */
     @Override
     public boolean removeSEDCronJob(SEDCronJob sb) {
         return remove(sb);
     }
 
+    /**
+     *
+     * @param sb
+     * @return
+     */
     @Override
     public boolean removeSEDPlugin(SEDPlugin sb) {
         return remove(sb);
     }
 
+    /**
+     *
+     * @param sb
+     * @return
+     */
     @Override
     public boolean removeSEDTaskType(SEDTaskType sb) {
         return remove(sb);
     }
 
+    /**
+     *
+     * @param sb
+     * @return
+     */
     @Override
     public boolean removeSEDUser(SEDUser sb) {
         return remove(sb);
     }
 
+    /**
+     *
+     * @param <T>
+     * @param o
+     * @return
+     */
     public <T> boolean update(T o) {
         long l = LOG.logStart();
         boolean suc = false;
@@ -469,16 +621,31 @@ public class SEDLookups implements SEDLookupsInterface {
                 || (Calendar.getInstance().getTimeInMillis() - mlstTimeOut.get(c)) > S_UPDATE_TIMEOUT;
     }
 
+    /**
+     *
+     * @param sb
+     * @return
+     */
     @Override
     public boolean updateSEDBox(SEDBox sb) {
         return update(sb);
     }
 
+    /**
+     *
+     * @param sb
+     * @return
+     */
     @Override
     public boolean updateSEDCertStore(SEDCertStore sb) {
         return update(sb);
     }
 
+    /**
+     *
+     * @param sb
+     * @return
+     */
     @Override
     public boolean updateSEDCronJob(SEDCronJob sb) {
         SEDCronJob st = getSEDCronJobById(sb.getId());
@@ -490,11 +657,21 @@ public class SEDLookups implements SEDLookupsInterface {
         return update(sb);
     }
 
+    /**
+     *
+     * @param sb
+     * @return
+     */
     @Override
     public boolean updateSEDPlugin(SEDPlugin sb) {
         return update(sb);
     }
 
+    /**
+     *
+     * @param sb
+     * @return
+     */
     @Override
     public boolean updateSEDTaskType(SEDTaskType sb) {
         SEDTaskType st = getSEDTaskTypeByType(sb.getType());
@@ -504,6 +681,11 @@ public class SEDLookups implements SEDLookupsInterface {
         return update(sb);
     }
 
+    /**
+     *
+     * @param sb
+     * @return
+     */
     @Override
     public boolean updateSEDUser(SEDUser sb) {
         return update(sb);

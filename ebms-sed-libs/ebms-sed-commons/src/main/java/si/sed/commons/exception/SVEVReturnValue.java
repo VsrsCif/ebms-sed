@@ -21,8 +21,20 @@ package si.sed.commons.exception;
  * @author Joze Rihtarsic <joze.rihtarsic@sodisce.si>
  */
 public enum SVEVReturnValue {
+
+    /**
+     *
+     */
     OK(1, "OK"),
+
+    /**
+     *
+     */
     WARNING(2, "WARNING"),
+
+    /**
+     *
+     */
     FAILURE(3, "FAILURE");
     int miVal;
     String mstrDesc;
@@ -32,10 +44,18 @@ public enum SVEVReturnValue {
         mstrDesc = strDesc;
     }
 
+    /**
+     *
+     * @return
+     */
     public int getValue() {
         return miVal;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getDesc() {
         return mstrDesc;
     }

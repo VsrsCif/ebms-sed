@@ -48,6 +48,9 @@ public class AdminSEDPluginView extends AbstractAdminJSFView<SEDPlugin> {
 
     SEDPlugin selectedViewPlugin;
 
+    /**
+     *
+     */
     @Override
     public void createEditable() {
         SEDPlugin ecj = new SEDPlugin();
@@ -60,6 +63,9 @@ public class AdminSEDPluginView extends AbstractAdminJSFView<SEDPlugin> {
         setNew(ecj);
     }
 
+    /**
+     *
+     */
     public void refreshDataFromEJB() {
         if (getEditable() == null || getEditable().getJndi() == null || getEditable().getJndi().isEmpty()) {
             return;
@@ -81,6 +87,9 @@ public class AdminSEDPluginView extends AbstractAdminJSFView<SEDPlugin> {
 
     }
 
+    /**
+     *
+     */
     @Override
     public void removeSelected() {
         if (getSelected() != null) {
@@ -90,6 +99,9 @@ public class AdminSEDPluginView extends AbstractAdminJSFView<SEDPlugin> {
 
     }
 
+    /**
+     *
+     */
     @Override
     public void persistEditable() {
         SEDPlugin ecj = getEditable();
@@ -131,6 +143,13 @@ public class AdminSEDPluginView extends AbstractAdminJSFView<SEDPlugin> {
 
     }
 
+    /**
+     *
+     * @param key
+     * @param name
+     * @param mandatory
+     * @return
+     */
     public SEDTaskTypeProperty createTypeProperty(String key, String name, boolean mandatory) {
         SEDTaskTypeProperty sp = new SEDTaskTypeProperty();
         sp.setKey(key);
@@ -139,6 +158,9 @@ public class AdminSEDPluginView extends AbstractAdminJSFView<SEDPlugin> {
         return sp;
     }
 
+    /**
+     *
+     */
     @Override
     public void updateEditable() {
         SEDPlugin ecj = getEditable();
@@ -147,6 +169,10 @@ public class AdminSEDPluginView extends AbstractAdminJSFView<SEDPlugin> {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public List<SEDPlugin> getList() {
         long l = LOG.logStart();
@@ -155,11 +181,18 @@ public class AdminSEDPluginView extends AbstractAdminJSFView<SEDPlugin> {
         return lst;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getSelectedWebContext() {
-        System.out.println("sgetSelectedWebContext from : " + selectedViewPlugin);
         return selectedViewPlugin != null ? selectedViewPlugin.getWebContext() : "";
     }
 
+    /**
+     *
+     * @param event
+     */
     public void onSelectedViewPluginAction(ActionEvent event) {
         long l = LOG.logStart();
         if (event != null) {

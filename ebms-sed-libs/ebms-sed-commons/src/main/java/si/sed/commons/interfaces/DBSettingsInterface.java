@@ -19,25 +19,56 @@ import org.sed.ebms.property.SEDProperty;
 @Local
 public interface DBSettingsInterface {
 
+    /**
+     *
+     * @return
+     */
     @Lock(value = LockType.READ)
     String getDomain();
 
+    /**
+     *
+     * @return
+     */
     @Lock(value = LockType.READ)
     String getHomeFolderPath();
 
+    /**
+     *
+     * @return
+     */
     @Lock(value = LockType.READ)
     String getPModeFileName();
 
+    /**
+     *
+     * @param prps
+     */
     @Lock(value = LockType.READ)
     void setSEDProperties(List<SEDProperty> prps);
 
+    /**
+     *
+     * @return
+     */
     List<SEDProperty> getSEDProperties();
 
+    /**
+     *
+     * @return
+     */
     Properties getProperties();
 
+    /**
+     *
+     * @return
+     */
     @Lock(value = LockType.READ)
     String getSecurityFolderPath();
 
+    /**
+     *
+     */
     void initialize();
 
 }

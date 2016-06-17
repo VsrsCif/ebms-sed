@@ -69,12 +69,34 @@ import si.sed.commons.utils.xml.XMLUtils;
 @Local(TaskExecutionInterface.class)
 public class TaskArchive implements TaskExecutionInterface {
 
+    /**
+     *
+     */
     public static String KEY_EXPORT_FOLDER = "archive.folder";
+
+    /**
+     *
+     */
     public static String KEY_CHUNK_SIZE = "archive.chunk.size";
+
+    /**
+     *
+     */
     public static String KEY_DELETE_RECORDS = "archive.delete.records";
+
+    /**
+     *
+     */
     public static String KEY_ARCHIVE_OFFSET = "archive.day.offset";
 
+    /**
+     *
+     */
     public static SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
+
+    /**
+     *
+     */
     public static String STORAGE_FOLDER = "storage";
 
     StorageUtils mSU = new StorageUtils();
@@ -89,6 +111,12 @@ public class TaskArchive implements TaskExecutionInterface {
     @EJB(mappedName = SEDJNDI.JNDI_SEDLOOKUPS)
     SEDLookupsInterface mLookups;
 
+    /**
+     *
+     * @param p
+     * @return
+     * @throws TaskException
+     */
     @Override
     public String executeTask(Properties p) throws TaskException {
         long l = LOG.logStart();
@@ -261,6 +289,16 @@ public class TaskArchive implements TaskExecutionInterface {
         return bck;
     }
 
+    /**
+     *
+     * @param to
+     * @param f
+     * @param iChunkSize
+     * @param fw
+     * @return
+     * @throws TaskException
+     * @throws IOException
+     */
     public String archiveOutMails(Date to, File f, int iChunkSize, Writer fw) throws TaskException, IOException {
         StringWriter sw = new StringWriter();
         MSHOutMailList noList = new MSHOutMailList();
@@ -322,6 +360,16 @@ public class TaskArchive implements TaskExecutionInterface {
 
     }
 
+    /**
+     *
+     * @param to
+     * @param f
+     * @param iChunkSize
+     * @param fw
+     * @return
+     * @throws TaskException
+     * @throws IOException
+     */
     public String archiveInMails(Date to, File f, int iChunkSize, Writer fw) throws TaskException, IOException {
         StringWriter sw = new StringWriter();
         MSHInMailList noList = new MSHInMailList();
@@ -383,6 +431,11 @@ public class TaskArchive implements TaskExecutionInterface {
         return sw.toString();
     }
 
+    /**
+     *
+     * @param path
+     * @throws IOException
+     */
     public static void removeRecursive(Path path) throws IOException {
         Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
             @Override
@@ -441,6 +494,12 @@ public class TaskArchive implements TaskExecutionInterface {
         return p;
     }
      */
+
+    /**
+     *
+     * @return
+     */
+
     @Override
     public SEDTaskType getTaskDefinition() {
         SEDTaskType tt = new SEDTaskType();

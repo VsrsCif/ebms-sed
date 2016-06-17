@@ -35,11 +35,23 @@ import si.sed.commons.exception.StorageException;
  */
 public class StorageUtils {
 
+    /**
+     *
+     */
     public static final String S_IN_PREFIX = "in_";
 
+    /**
+     *
+     */
     public static final String S_OUT_PREFIX = "out_";
     private static final SimpleDateFormat msdfFolderDateFormat = new SimpleDateFormat("yyyyMMdd");
 
+    /**
+     *
+     * @param sourceFile
+     * @param destFile
+     * @throws IOException
+     */
     public static synchronized void copyFile(File sourceFile, File destFile) throws IOException {
         if (!destFile.exists()) {
             destFile.createNewFile();
@@ -50,6 +62,13 @@ public class StorageUtils {
         }
     }
 
+    /**
+     *
+     * @param storageFilePath
+     * @param folder
+     * @throws IOException
+     * @throws StorageException
+     */
     public static synchronized void copyFileToFolder(String storageFilePath, File folder) throws IOException, StorageException {
         if (!folder.exists() && !folder.mkdirs()) {
             throw new IOException("Could not create export folder: " + folder.getAbsolutePath());
@@ -63,10 +82,22 @@ public class StorageUtils {
         copyFile(getFile(storageFilePath), destFile);
     }
 
+    /**
+     *
+     * @param strInFileName
+     * @param destFile
+     * @throws IOException
+     * @throws StorageException
+     */
     public static synchronized void copyInFile(String strInFileName, File destFile) throws IOException, StorageException {
         copyFile(getFile(strInFileName), destFile);
     }
 
+    /**
+     *
+     * @return
+     * @throws StorageException
+     */
     public static synchronized File currentStorageFolder() throws StorageException {
 
         File f = new File(System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR) + File.separator + SEDSystemProperties.SYS_PROP_FOLDER_STORAGE_DEF + File.separator + currentStorageFolderName());
@@ -76,15 +107,32 @@ public class StorageUtils {
         return f;
     }
 
+    /**
+     *
+     * @return
+     */
     public static synchronized String currentStorageFolderName() {
         return msdfFolderDateFormat.format(Calendar.getInstance().getTime());
     }
 
+    /**
+     *
+     * @param storagePath
+     * @return
+     * @throws StorageException
+     */
     public static synchronized File getFile(String storagePath) throws StorageException {
         File f = new File(System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR) + File.separator + storagePath);
         return f;
     }
 
+    /**
+     *
+     * @param suffix
+     * @param prefix
+     * @return
+     * @throws StorageException
+     */
     public static File getNewStorageFile(String suffix, String prefix) throws StorageException {
         File fStore;
         try {
@@ -95,6 +143,11 @@ public class StorageUtils {
         return fStore;
     }
 
+    /**
+     *
+     * @param path
+     * @return
+     */
     public static String getRelativePath(File path) {
         File hdir = new File(System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR));
         if (path.getAbsolutePath().startsWith(hdir.getAbsolutePath())) {
@@ -125,15 +178,26 @@ public class StorageUtils {
         }
         // add filename
         tmp.append(path.getName());
-        System.out.println("GET relative path:" + tmp.toString());
         return tmp.toString();
     }
 
+    /**
+     *
+     * @param strInFileName
+     * @throws IOException
+     * @throws StorageException
+     */
     public static synchronized void removeFile(String strInFileName) throws IOException, StorageException {
         File f = getFile(strInFileName);
         f.delete();
     }
 
+    /**
+     *
+     * @param storagePath
+     * @return
+     * @throws StorageException
+     */
     public byte[] getByteArray(String storagePath) throws StorageException {
         byte[] bin = null;
         File f = getFile(storagePath);
@@ -149,10 +213,26 @@ public class StorageUtils {
         return bin;
     }
 
+    /**
+     *
+     * @param prefix
+     * @param suffix
+     * @param buffer
+     * @return
+     * @throws StorageException
+     */
     public File storeFile(String prefix, String suffix, byte[] buffer) throws StorageException {
         return storeFile(prefix, suffix, new ByteArrayInputStream(buffer));
     }
 
+    /**
+     *
+     * @param prefix
+     * @param suffix
+     * @param inStream
+     * @return
+     * @throws StorageException
+     */
     public File storeFile(String prefix, String suffix, InputStream inStream) throws StorageException {
         File fStore = getNewStorageFile(suffix, prefix);
 
@@ -167,14 +247,28 @@ public class StorageUtils {
 
         } catch (IOException ex) {
             throw new StorageException(String.format("Error occurred while writing to file: '%s'", fStore.getAbsolutePath()));
-        };
+        }
         return fStore;
     }
 
+    /**
+     *
+     * @param mimeType
+     * @param buffer
+     * @return
+     * @throws StorageException
+     */
     public File storeInFile(String mimeType, byte[] buffer) throws StorageException {
         return storeFile(S_IN_PREFIX, MimeValues.getSuffixBYMimeType(mimeType), buffer);
     }
 
+    /**
+     *
+     * @param mimeType
+     * @param fIn
+     * @return
+     * @throws StorageException
+     */
     public File storeInFile(String mimeType, File fIn) throws StorageException {
         if (fIn.exists()) {
             throw new StorageException(String.format("File in message: '%s' not exists ", fIn.getAbsolutePath()));
@@ -190,14 +284,35 @@ public class StorageUtils {
         return fStore;
     }
 
+    /**
+     *
+     * @param mimeType
+     * @param is
+     * @return
+     * @throws StorageException
+     */
     public File storeInFile(String mimeType, InputStream is) throws StorageException {
         return storeFile(S_IN_PREFIX, MimeValues.getSuffixBYMimeType(mimeType), is);
     }
 
+    /**
+     *
+     * @param mimeType
+     * @param buffer
+     * @return
+     * @throws StorageException
+     */
     public File storeOutFile(String mimeType, byte[] buffer) throws StorageException {
         return storeFile(S_OUT_PREFIX, MimeValues.getSuffixBYMimeType(mimeType), buffer);
     }
 
+    /**
+     *
+     * @param mimeType
+     * @param fIn
+     * @return
+     * @throws StorageException
+     */
     public File storeOutFile(String mimeType, File fIn) throws StorageException {
         if (!fIn.exists()) {
             throw new StorageException(String.format("File in message: '%s' not exists ", fIn.getAbsolutePath()));

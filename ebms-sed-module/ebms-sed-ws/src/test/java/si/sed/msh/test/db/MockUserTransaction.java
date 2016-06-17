@@ -22,36 +22,75 @@ public class MockUserTransaction implements UserTransaction {
 
     EntityTransaction met;
 
+    /**
+     *
+     * @param et
+     */
     public MockUserTransaction(EntityTransaction et) {
         met = et;
     }
 
+    /**
+     *
+     * @throws NotSupportedException
+     * @throws SystemException
+     */
     @Override
     public void begin() throws NotSupportedException, SystemException {
         met.begin();
     }
 
+    /**
+     *
+     * @throws RollbackException
+     * @throws HeuristicMixedException
+     * @throws HeuristicRollbackException
+     * @throws SecurityException
+     * @throws IllegalStateException
+     * @throws SystemException
+     */
     @Override
     public void commit() throws RollbackException, HeuristicMixedException, HeuristicRollbackException, SecurityException, IllegalStateException, SystemException {
         met.commit();
     }
 
+    /**
+     *
+     * @return
+     * @throws SystemException
+     */
     @Override
     public int getStatus() throws SystemException {
 
         return met.isActive() ? Status.STATUS_ACTIVE : Status.STATUS_NO_TRANSACTION;
     }
 
+    /**
+     *
+     * @throws IllegalStateException
+     * @throws SecurityException
+     * @throws SystemException
+     */
     @Override
     public void rollback() throws IllegalStateException, SecurityException, SystemException {
         met.rollback();
     }
 
+    /**
+     *
+     * @throws IllegalStateException
+     * @throws SystemException
+     */
     @Override
     public void setRollbackOnly() throws IllegalStateException, SystemException {
         met.setRollbackOnly();
     }
 
+    /**
+     *
+     * @param seconds
+     * @throws SystemException
+     */
     @Override
     public void setTransactionTimeout(int seconds) throws SystemException {
         // ingore

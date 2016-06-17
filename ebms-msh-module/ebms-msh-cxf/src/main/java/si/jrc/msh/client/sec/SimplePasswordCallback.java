@@ -28,10 +28,17 @@ import si.sed.commons.utils.SEDLogger;
  */
 public class SimplePasswordCallback implements CallbackHandler {
 
+    /**
+     *
+     */
     protected final SEDLogger mlog = new SEDLogger(SimplePasswordCallback.class);
 
     String password;
 
+    /**
+     *
+     * @param psswd
+     */
     public SimplePasswordCallback(String psswd) {
         this.password = psswd;
     }

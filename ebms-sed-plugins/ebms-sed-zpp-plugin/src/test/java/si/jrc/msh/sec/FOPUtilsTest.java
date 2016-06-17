@@ -19,19 +19,29 @@ import si.sed.commons.exception.FOPException;
  */
 public class FOPUtilsTest {
 
+    /**
+     *
+     */
     public FOPUtilsTest() {
     }
 
+    /**
+     *
+     */
     @Before
     public void setUp() {
     }
 
+    /**
+     *
+     */
     @After
     public void tearDown() {
     }
 
     /**
      * Test of generateVisualization method, of class FOPUtils.
+     * @throws java.io.IOException
      */
     @Test
     public void testGenerateVisualizationFromMSHOutMail() throws JAXBException, FileNotFoundException, FOPException, IOException {

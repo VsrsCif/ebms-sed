@@ -92,6 +92,10 @@ public class SEDSystemProperties {
      * </p>
      */
     public static final String SYS_PROP_HOME_DIR = "sed.home";
+
+    /**
+     *
+     */
     public static final String SYS_PROP_HOME_DIR_DEF = "sed-home";
 
     /**
@@ -103,6 +107,10 @@ public class SEDSystemProperties {
      * </p>
      */
     public static final String SYS_PROP_INIT_LOOKUPS = "org.sed.init.lookups";
+
+    /**
+     *
+     */
     public static final String SYS_PROP_JNDI_JMS_PREFIX = "org.sed.jndi.jms.prefix";
     /**
      * System property for JNID prefix: wildfly: java:/jms/ jetty:

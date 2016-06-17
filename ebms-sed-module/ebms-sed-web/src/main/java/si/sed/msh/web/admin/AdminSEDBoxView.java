@@ -46,10 +46,18 @@ public class AdminSEDBoxView extends AbstractAdminJSFView<SEDBox> {
     @EJB(mappedName = SEDJNDI.JNDI_SEDLOOKUPS)
     private SEDLookupsInterface mdbLookups;
 
+    /**
+     *
+     * @param sedBox
+     * @return
+     */
     public SEDBox getSEDBoxByName(String sedBox) {
         return mdbLookups.getSEDBoxByName(sedBox);
     }
 
+    /**
+     *
+     */
     @Override
     public void createEditable() {
         long l = LOG.logStart();
@@ -69,6 +77,9 @@ public class AdminSEDBoxView extends AbstractAdminJSFView<SEDBox> {
         LOG.logEnd(l);
     }
 
+    /**
+     *
+     */
     @Override
     public void removeSelected() {
         SEDBox sb = getSelected();
@@ -81,6 +92,9 @@ public class AdminSEDBoxView extends AbstractAdminJSFView<SEDBox> {
 
     }
 
+    /**
+     *
+     */
     @Override
     public void startEditSelected() {
         if (getSelected() != null && getSelected().getExport() == null) {
@@ -92,6 +106,9 @@ public class AdminSEDBoxView extends AbstractAdminJSFView<SEDBox> {
         super.startEditSelected(); //To change body of generated methods, choose Tools | Templates.
     }
 
+    /**
+     *
+     */
     @Override
     public void persistEditable() {
         SEDBox sb = getEditable();
@@ -101,6 +118,9 @@ public class AdminSEDBoxView extends AbstractAdminJSFView<SEDBox> {
         }
     }
 
+    /**
+     *
+     */
     @Override
     public void updateEditable() {
         SEDBox sb = getEditable();
@@ -110,6 +130,10 @@ public class AdminSEDBoxView extends AbstractAdminJSFView<SEDBox> {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public List<SEDBox> getList() {
         return mdbLookups.getSEDBoxes();

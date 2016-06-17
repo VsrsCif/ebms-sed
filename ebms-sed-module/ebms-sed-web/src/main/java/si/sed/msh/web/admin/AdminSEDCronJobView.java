@@ -88,10 +88,20 @@ public class AdminSEDCronJobView extends AbstractAdminJSFView<SEDCronJob> {
         pp.setValue(val);
 
     }*/
+
+    /**
+     *
+     * @param id
+     * @return
+     */
+
     public SEDCronJob getMSHCronJobByName(BigInteger id) {
         return mdbLookups.getSEDCronJobById(id);
     }
 
+    /**
+     *
+     */
     @Override
     public void createEditable() {
         SEDCronJob ecj = new SEDCronJob();
@@ -108,6 +118,9 @@ public class AdminSEDCronJobView extends AbstractAdminJSFView<SEDCronJob> {
 
     }
 
+    /**
+     *
+     */
     @Override
     public void removeSelected() {
         if (getSelected() != null) {
@@ -117,6 +130,9 @@ public class AdminSEDCronJobView extends AbstractAdminJSFView<SEDCronJob> {
         }
     }
 
+    /**
+     *
+     */
     @Override
     public void persistEditable() {
         SEDCronJob ecj = getEditable();
@@ -139,6 +155,9 @@ public class AdminSEDCronJobView extends AbstractAdminJSFView<SEDCronJob> {
 
     }
 
+    /**
+     *
+     */
     @Override
     public void updateEditable() {
         SEDCronJob ecj = getEditable();
@@ -166,6 +185,10 @@ public class AdminSEDCronJobView extends AbstractAdminJSFView<SEDCronJob> {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public List<SEDCronJob> getList() {
         long l = LOG.logStart();
@@ -174,6 +197,10 @@ public class AdminSEDCronJobView extends AbstractAdminJSFView<SEDCronJob> {
         return lst;
     }
 
+    /**
+     *
+     * @return
+     */
     public List<String> getTaskTypeList() {
         long l = LOG.logStart();
         List<String> rstLst = new ArrayList<>();
@@ -185,8 +212,12 @@ public class AdminSEDCronJobView extends AbstractAdminJSFView<SEDCronJob> {
         return rstLst;
     }
 
+    /**
+     *
+     * @param task
+     */
     public void setEditableTask(String task) {
-        System.out.println("Set task:" + task);
+
         SEDCronJob scj = getEditable();
         if (scj != null) {
             if (scj.getSEDTask() == null
@@ -207,6 +238,10 @@ public class AdminSEDCronJobView extends AbstractAdminJSFView<SEDCronJob> {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     public String getEditableTask() {
         if (getEditable() != null && getEditable().getSEDTask() != null) {
             return getEditable().getSEDTask().getTaskType();
@@ -214,6 +249,11 @@ public class AdminSEDCronJobView extends AbstractAdminJSFView<SEDCronJob> {
         return null;
     }
 
+    /**
+     *
+     * @param key
+     * @return
+     */
     public String getTypeForEditableTaskProperty(String key) {
         String strType = "string";
         String task = getEditableTask();
@@ -229,6 +269,11 @@ public class AdminSEDCronJobView extends AbstractAdminJSFView<SEDCronJob> {
         return strType;
     }
 
+    /**
+     *
+     * @param key
+     * @param bVal
+     */
     public void setBooleanValueForEditableTaskProperty(String key, boolean bVal) {
 
         if (getEditable() != null) {
@@ -245,6 +290,11 @@ public class AdminSEDCronJobView extends AbstractAdminJSFView<SEDCronJob> {
 
     }
 
+    /**
+     *
+     * @param key
+     * @return
+     */
     public boolean getBooleanValueForEditableTaskProperty(String key) {
         if (getEditable() != null) {
             return false;

@@ -21,13 +21,45 @@ package si.sed.commons;
  * @author Joze Rihtarsic <joze.rihtarsic@sodisce.si>
  */
 public enum SEDInboxMailStatus {
+
+    /**
+     *
+     */
     RECEIVE("RECEIVE", "Receive message in process.", "orange"),
+
+    /**
+     *
+     */
     RECEIVED("RECEIVED", "Message is sucessfuly received to MSH.", "green"),
+
+    /**
+     *
+     */
     PROCESS("PROCESS", "Message is locked by plugin", "gray"),
+
+    /**
+     *
+     */
     LOCKED("LOCKED", "Message is locked by consumer", "lightgray"),
+
+    /**
+     *
+     */
     PLUGINLOCKED("PLGLOCKED", "Message is locked by plugin", "lightgray"),
+
+    /**
+     *
+     */
     DELIVERED("DELIVERED", "Message is consumed", "Blue"),
+
+    /**
+     *
+     */
     ERROR("ERROR", "Error occured receiving, processing MSH", "red"),
+
+    /**
+     *
+     */
     DELETED("DELETED", "Pošiljka je izbrisana", "black");
 
     String mstrVal;
@@ -40,18 +72,35 @@ public enum SEDInboxMailStatus {
         mstrColor = strColor;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getValue() {
         return mstrVal;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getDesc() {
         return mstrDesc;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getColor() {
         return mstrColor;
     }
 
+    /**
+     *
+     * @param strName
+     * @return
+     */
     public static String getColor(String strName) {
 
         for (SEDInboxMailStatus st : values()) {

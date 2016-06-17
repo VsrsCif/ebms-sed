@@ -10,6 +10,11 @@ package si.jrc.msh.plugin.zpp.doc;
  */
 public class DocumentBuilderFactory {
 
+    /**
+     *
+     * @param strVal
+     * @return
+     */
     public static DocumentBuilder getDocumentBuilder(String strVal) {
         DocumentBuilder db = null;
 

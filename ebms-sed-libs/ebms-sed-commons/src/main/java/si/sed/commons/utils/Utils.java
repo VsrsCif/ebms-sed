@@ -32,8 +32,16 @@ public class Utils {
     private static final int NORMAL = 0;
     private static final int SEEN_DOLLAR = 1;
 
+    /**
+     *
+     */
     public static Utils mInstance = null;
 
+    /**
+     *
+     * @param strVal
+     * @return
+     */
     public static String getDomainFromAddress(String strVal) {
         if (isEmptyString(strVal)) {
             return "NO_DOMAIN";
@@ -45,10 +53,19 @@ public class Utils {
 
     }
 
+    /**
+     *
+     * @return
+     */
     public static synchronized Utils getInstance() {
         return mInstance = mInstance == null ? new Utils() : mInstance;
     }
 
+    /**
+     *
+     * @param mim
+     * @return
+     */
     public static String getPModeIdFromInMail(MSHInMail mim) {
         if (mim == null) {
             return null;
@@ -56,6 +73,11 @@ public class Utils {
         return mim.getService() + ":" + getDomainFromAddress(mim.getSenderEBox());
     }
 
+    /**
+     *
+     * @param mom
+     * @return
+     */
     public static String getPModeIdFromOutMail(MSHOutMail mom) {
         if (mom == null) {
             return null;
@@ -77,6 +99,13 @@ public class Utils {
     throw new IntrospectionException("Error when adding url "+url.getPath()+" to system ClassLoader ");
     }
     }*/
+
+    /**
+     *
+     * @param strVal
+     * @return
+     */
+
     public static boolean isEmptyString(String strVal) {
         return strVal == null || strVal.trim().isEmpty();
     }

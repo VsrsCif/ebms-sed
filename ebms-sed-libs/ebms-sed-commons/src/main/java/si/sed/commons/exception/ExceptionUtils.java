@@ -25,6 +25,12 @@ import org.apache.cxf.binding.soap.SoapFault;
  */
 public class ExceptionUtils {
 
+    /**
+     *
+     * @param sc
+     * @param soapCode
+     * @return
+     */
     public static SoapFault createSoapFault(SOAPExceptionCode sc, QName soapCode) {
         SoapFault sf = new SoapFault(sc.getDesc(), soapCode);
 
@@ -32,6 +38,13 @@ public class ExceptionUtils {
         return sf;
     }
 
+    /**
+     *
+     * @param sc
+     * @param soapCode
+     * @param msg
+     * @return
+     */
     public static SoapFault createSoapFault(SOAPExceptionCode sc, QName soapCode, String... msg) {
         SoapFault sf = new SoapFault(sc.getDesc(msg), soapCode);
         sf.setSubCode(sc.getCode());

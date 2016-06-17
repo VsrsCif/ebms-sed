@@ -41,6 +41,10 @@ public class SchemaErrorHandler implements ErrorHandler {
         sw.append("\n");
     }
 
+    /**
+     *
+     * @return
+     */
     public String getErrorAsString() {
         return sw.toString();
     }

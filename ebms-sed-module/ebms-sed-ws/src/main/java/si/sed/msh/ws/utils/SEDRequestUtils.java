@@ -88,10 +88,23 @@ public class SEDRequestUtils {
 
     }
 
+    /**
+     *
+     * @param message
+     * @param cd
+     * @return
+     */
     public static SEDException_Exception createSEDException(String message, SEDExceptionCode cd) {
         return createSEDException(message, cd, null);
     }
 
+    /**
+     *
+     * @param message
+     * @param cd
+     * @param tw
+     * @return
+     */
     public static SEDException_Exception createSEDException(String message, SEDExceptionCode cd, Throwable tw) {
         SEDException se = new SEDException();
         se.setErrorCode(cd);

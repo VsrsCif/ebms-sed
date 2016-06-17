@@ -54,17 +54,37 @@ import si.sed.commons.interfaces.SEDDaoInterface;
 @TransactionManagement(TransactionManagementType.BEAN)
 public class SEDDaoBean implements SEDDaoInterface {
 
+    /**
+     *
+     */
     protected static SEDLogger LOG = new SEDLogger(SEDDaoBean.class);
 
     @EJB(mappedName = SEDJNDI.JNDI_JMSMANAGER)
     JMSManagerInterface mJMS;
+
+    /**
+     *
+     */
     @PersistenceContext(unitName = "ebMS_SED_PU", name = "ebMS_SED_PU")
     public EntityManager memEManager;
 
+    /**
+     *
+     */
     protected Queue mqMSHQueue = null;
+
+    /**
+     *
+     */
     @Resource
     public UserTransaction mutUTransaction;
 
+    /**
+     *
+     * @param <T>
+     * @param o
+     * @return
+     */
     public <T> boolean add(T o) {
         long l = LOG.logStart();
         boolean suc = false;
@@ -84,11 +104,26 @@ public class SEDDaoBean implements SEDDaoInterface {
         return suc;
     }
 
+    /**
+     *
+     * @param ad
+     * @return
+     */
     @Override
     public boolean addExecutionTask(SEDTaskExecution ad) {
         return add(ad);
     }
 
+    /**
+     *
+     * @param <T>
+     * @param type
+     * @param searchParams
+     * @param forCount
+     * @param sortField
+     * @param sortOrder
+     * @return
+     */
     protected <T> CriteriaQuery createSearchCriteria(Class<T> type, Object searchParams, boolean forCount, String sortField, String sortOrder) {
         long l = LOG.logStart();
         CriteriaBuilder cb = memEManager.getCriteriaBuilder();
@@ -129,8 +164,7 @@ public class SEDDaoBean implements SEDDaoInterface {
                     }
 
                     if (fieldName.endsWith("List") && searchValue instanceof List && !((List) searchValue).isEmpty()) {
-                        lstPredicate.add(om.get(fieldName.substring(0, fieldName.lastIndexOf("List"))).in(((List) searchValue).toArray()));
-                        System.out.println("Add  predicat: " + searchValue);
+                        lstPredicate.add(om.get(fieldName.substring(0, fieldName.lastIndexOf("List"))).in(((List) searchValue).toArray()));                        
                     } else {
                         try {
                             cls.getMethod("set" + fieldName, new Class[]{m.getReturnType()});
@@ -144,7 +178,6 @@ public class SEDDaoBean implements SEDDaoInterface {
                         } else if (fieldName.endsWith("To") && searchValue instanceof Comparable) {
                             lstPredicate.add(cb.lessThan(om.get(fieldName.substring(0, fieldName.lastIndexOf("To"))), (Comparable) searchValue));
                         } else if (searchValue instanceof String && !((String) searchValue).isEmpty()) {
-                            System.out.println("Add param: '" + fieldName + "' value: '" + searchValue + "'");
                             lstPredicate.add(cb.equal(om.get(fieldName), searchValue));
                         }
 
@@ -160,6 +193,17 @@ public class SEDDaoBean implements SEDDaoInterface {
         return cq;
     }
 
+    /**
+     *
+     * @param <T>
+     * @param type
+     * @param startingAt
+     * @param maxResultCnt
+     * @param sortField
+     * @param sortOrder
+     * @param filters
+     * @return
+     */
     @Override
     public <T> List<T> getDataList(Class<T> type, int startingAt, int maxResultCnt, String sortField, String sortOrder, Object filters) {
         long l = LOG.logStart(type, startingAt, maxResultCnt, sortField, sortOrder, filters);
@@ -181,6 +225,13 @@ public class SEDDaoBean implements SEDDaoInterface {
         return lstResult;
     }
 
+    /**
+     *
+     * @param <T>
+     * @param type
+     * @param filters
+     * @return
+     */
     @Override
     public <T> long getDataListCount(Class<T> type, Object filters) {
         long l = LOG.logStart(type, filters);
@@ -190,6 +241,12 @@ public class SEDDaoBean implements SEDDaoInterface {
         return res;
     }
 
+    /**
+     *
+     * @param action
+     * @param convId
+     * @return
+     */
     @Override
     public List<MSHInMail> getInMailConvIdAndAction(String action, String convId) {
         long l = LOG.logStart(action, convId);
@@ -202,6 +259,11 @@ public class SEDDaoBean implements SEDDaoInterface {
         return lst;
     }
 
+    /**
+     *
+     * @param type
+     * @return
+     */
     @Override
     public SEDTaskExecution getLastSuccesfullTaskExecution(String type) {
         long l = LOG.logStart();
@@ -222,6 +284,13 @@ public class SEDDaoBean implements SEDDaoInterface {
 
     }
 
+    /**
+     *
+     * @param <T>
+     * @param type
+     * @param mailId
+     * @return
+     */
     @Override
     public <T> T getMailById(Class<T> type, BigInteger mailId) {
         long l = LOG.logStart(type, mailId);
@@ -232,6 +301,13 @@ public class SEDDaoBean implements SEDDaoInterface {
         return result;
     }
 
+    /**
+     *
+     * @param <T>
+     * @param type
+     * @param mailId
+     * @return
+     */
     @Override
     public <T> List<T> getMailEventList(Class<T> type, BigInteger mailId) {
         long l = LOG.logStart(type, mailId);
@@ -242,6 +318,12 @@ public class SEDDaoBean implements SEDDaoInterface {
         return mailEvents;
     }
 
+    /**
+     *
+     * @param <T>
+     * @param o
+     * @return
+     */
     public <T> boolean remove(T o) {
         long l = LOG.logStart();
         boolean suc = false;
@@ -261,11 +343,25 @@ public class SEDDaoBean implements SEDDaoInterface {
         return suc;
     }
 
+    /**
+     *
+     * @param bi
+     * @throws StorageException
+     */
     @Override
     public void removeInMail(BigInteger bi) throws StorageException {
         removeMail(MSHInMail.class, MSHInEvent.class, bi);
     }
 
+    /**
+     *
+     * @param <T>
+     * @param <E>
+     * @param type
+     * @param typeEvent
+     * @param bi
+     * @throws StorageException
+     */
     public <T, E> void removeMail(Class<T> type, Class<E> typeEvent, BigInteger bi) throws StorageException {
         long l = LOG.logStart(type);
         T mail = getMailById(type, bi);
@@ -296,11 +392,22 @@ public class SEDDaoBean implements SEDDaoInterface {
         LOG.logEnd(l);
     }
 
+    /**
+     *
+     * @param bi
+     * @throws StorageException
+     */
     @Override
     public void removeOutMail(BigInteger bi) throws StorageException {
         removeMail(MSHOutMail.class, MSHOutEvent.class, bi);
     }
 
+    /**
+     *
+     * @param mail
+     * @param applicationId
+     * @throws StorageException
+     */
     @Override
     public void serializeInMail(MSHInMail mail, String applicationId) throws StorageException {
         long l = LOG.logStart();
@@ -333,6 +440,14 @@ public class SEDDaoBean implements SEDDaoInterface {
         LOG.logEnd(l);
     }
 
+    /**
+     *
+     * @param mail
+     * @param userID
+     * @param applicationId
+     * @param pmodeId
+     * @throws StorageException
+     */
     @Override
     public void serializeOutMail(MSHOutMail mail, String userID, String applicationId, String pmodeId) throws StorageException {
         long l = LOG.logStart();
@@ -383,11 +498,27 @@ public class SEDDaoBean implements SEDDaoInterface {
 
     }
 
+    /**
+     *
+     * @param mail
+     * @param status
+     * @param desc
+     * @throws StorageException
+     */
     @Override
     public void setStatusToInMail(MSHInMail mail, SEDInboxMailStatus status, String desc) throws StorageException {
         setStatusToInMail(mail, status, desc, null, null);
     }
 
+    /**
+     *
+     * @param mail
+     * @param status
+     * @param desc
+     * @param userID
+     * @param applicationId
+     * @throws StorageException
+     */
     @Override
     public void setStatusToInMail(MSHInMail mail, SEDInboxMailStatus status, String desc, String userID, String applicationId) throws StorageException {
         long l = LOG.logStart();
@@ -439,11 +570,27 @@ public class SEDDaoBean implements SEDDaoInterface {
 
     }
 
+    /**
+     *
+     * @param mail
+     * @param status
+     * @param desc
+     * @throws StorageException
+     */
     @Override
     public void setStatusToOutMail(MSHOutMail mail, SEDOutboxMailStatus status, String desc) throws StorageException {
         setStatusToOutMail(mail, status, desc, null, null);
     }
 
+    /**
+     *
+     * @param mail
+     * @param status
+     * @param desc
+     * @param userID
+     * @param applicationId
+     * @throws StorageException
+     */
     @Override
     public void setStatusToOutMail(MSHOutMail mail, SEDOutboxMailStatus status, String desc, String userID, String applicationId) throws StorageException {
         long l = LOG.logStart();
@@ -499,6 +646,12 @@ public class SEDDaoBean implements SEDDaoInterface {
         LOG.logEnd(l);
     }
 
+    /**
+     *
+     * @param <T>
+     * @param o
+     * @return
+     */
     public <T> boolean update(T o) {
         long l = LOG.logStart();
         boolean suc = false;
@@ -520,11 +673,23 @@ public class SEDDaoBean implements SEDDaoInterface {
 
     ;
     
+    /**
+     *
+     * @param ad
+     * @return
+     */
     @Override
     public boolean updateExecutionTask(SEDTaskExecution ad) {
         return update(ad);
     }
 
+    /**
+     *
+     * @param mail
+     * @param statusDesc
+     * @param user
+     * @throws StorageException
+     */
     @Override
     public void updateInMail(MSHInMail mail, String statusDesc, String user) throws StorageException {
         long l = LOG.logStart();

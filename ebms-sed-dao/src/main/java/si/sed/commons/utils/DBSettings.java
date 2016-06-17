@@ -48,32 +48,96 @@ import static si.sed.commons.utils.abst.ASettings.newProperties;
 @TransactionManagement(TransactionManagementType.BEAN)
 public class DBSettings implements DBSettingsInterface {
 
+    /**
+     *
+     */
     @Resource
     public UserTransaction mutUTransaction;
 
+    /**
+     *
+     */
     @PersistenceContext(unitName = "ebMS_SED_PU", name = "ebMS_SED_PU")
     public EntityManager memEManager;
 
+    /**
+     *
+     */
     protected SEDLogger mlog = new SEDLogger(DBSettings.class);
+
+    /**
+     *
+     */
     final protected Properties mprpProperties = newProperties();
 
+    /**
+     *
+     */
     protected TimerTask mRefreshTask;
+
+    /**
+     *
+     */
     protected Timer mtTimer = new Timer(true);
 
+    /**
+     *
+     */
     protected long m_iLastRefreshTime = 0;
+
+    /**
+     *
+     */
     protected long m_iRefreshInterval = 1800 * 1000; // 30 min
+
+    /**
+     *
+     */
     protected static final String SYSTEM_SETTINGS = "SYSTEM";
+
+    /**
+     *
+     */
     protected static final String SED_SETTINGS = "SED";
 
+    /**
+     *
+     */
     protected static final String PMODE_FILE = "pmode-conf.xml";
+
+    /**
+     *
+     */
     protected static final String KEY_PASSWD_FILE = "key-passwords.properties";
+
+    /**
+     *
+     */
     protected static final String SEC_CONF_FILE = "security-conf.properties";
+
+    /**
+     *
+     */
     protected static final String LOG_CONF_FILE = "sed-log4j.properties";
+
+    /**
+     *
+     */
     public static String S_PROPERTY_FILE = "config.xml";
 
+    /**
+     *
+     */
     protected static final String S_PROP_SED_DOMAIN = "sed.domain";
+
+    /**
+     *
+     */
     protected static final String S_PROP_SED_DOMAIN_DEF = "sed-domain.org";
 
+    /**
+     *
+     */
     public DBSettings() {
         this.mRefreshTask = new TimerTask() {
             @Override
@@ -91,6 +155,9 @@ public class DBSettings implements DBSettingsInterface {
 
     }
 
+    /**
+     *
+     */
     final protected void refreshData() {
         long l = mlog.logStart();
         //----------------------------------
@@ -117,6 +184,9 @@ public class DBSettings implements DBSettingsInterface {
         mlog.logEnd(l);
     }
 
+    /**
+     *
+     */
     @Override
     public void initialize() {
         // set system properties
@@ -137,24 +207,40 @@ public class DBSettings implements DBSettingsInterface {
 
     }
 
+    /**
+     *
+     * @return
+     */
     @Lock(LockType.READ)
     @Override
     public String getPModeFileName() {
         return getData(SEDSystemProperties.SYS_PROP_PMODE);
     }
 
+    /**
+     *
+     * @return
+     */
     @Lock(LockType.READ)
     @Override
     public String getDomain() {
         return getData(S_PROP_SED_DOMAIN);
     }
 
+    /**
+     *
+     * @return
+     */
     @Lock(LockType.READ)
     @Override
     public String getHomeFolderPath() {
         return System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR, SEDSystemProperties.SYS_PROP_HOME_DIR_DEF);
     }
 
+    /**
+     *
+     * @return
+     */
     @Lock(LockType.READ)
     @Override
     public String getSecurityFolderPath() {
@@ -185,7 +271,7 @@ public class DBSettings implements DBSettingsInterface {
             if (strValue == null) {
                 mprpProperties.remove(strValue);
                 removeProperty(strValue);
-            } else if (mprpProperties.get(strKey) != null || !mprpProperties.get(strKey).equals(strValue)) {
+            } else if (mprpProperties.get(strKey) != null && !mprpProperties.get(strKey).equals(strValue)) {
                 mprpProperties.setProperty(strKey, strValue);
                 replaceProperty(strKey, strValue, group);
             }
@@ -195,6 +281,10 @@ public class DBSettings implements DBSettingsInterface {
         }
     }
 
+    /**
+     *
+     * @param key
+     */
     protected void removeProperty(String key) {
         long l = mlog.logStart(key);
         try {
@@ -214,12 +304,18 @@ public class DBSettings implements DBSettingsInterface {
                     getUserTransaction().rollback();
                 }
             } catch (SystemException ex1) {
-                // ignore
+                mlog.logWarn(l, "Error rollback transaction", ex1);
             }
         }
         mlog.logEnd(l, key);
     }
 
+    /**
+     *
+     * @param key
+     * @param value
+     * @param group
+     */
     protected void replaceProperty(String key, String value, String group) {
         long l = mlog.logStart(key);
         try {
@@ -243,12 +339,18 @@ public class DBSettings implements DBSettingsInterface {
                     getUserTransaction().rollback();
                 }
             } catch (SystemException ex1) {
-                // ignore
+                mlog.logWarn(l, "Error rollback transaction", ex1);
             }
         }
         mlog.logEnd(l, key);
     }
 
+    /**
+     *
+     * @param key
+     * @param value
+     * @param group
+     */
     protected void storeProperty(String key, String value, String group) {
         long l = mlog.logStart(key);
         try {
@@ -269,7 +371,7 @@ public class DBSettings implements DBSettingsInterface {
                     getUserTransaction().rollback();
                 }
             } catch (SystemException ex1) {
-                // ignore
+                mlog.logWarn(l, "Error rollback transaction", ex1);
             }
         }
         mlog.logEnd(l, key);
@@ -310,17 +412,29 @@ public class DBSettings implements DBSettingsInterface {
         return System.getProperty(SEDSystemProperties.SYS_PROP_JNDI_PREFIX, "java:/jboss/");
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public Properties getProperties() {
         return mprpProperties;
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public List<SEDProperty> getSEDProperties() {
         TypedQuery<SEDProperty> q = getEntityManager().createNamedQuery("SEDProperty.getAll", SEDProperty.class);
         return q.getResultList();
     }
 
+    /**
+     *
+     * @param prps
+     */
     @Override
     public void setSEDProperties(List<SEDProperty> prps) {
         if (prps != null && !prps.isEmpty()) {

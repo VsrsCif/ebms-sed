@@ -24,26 +24,70 @@ import si.sed.commons.utils.sec.XMLSignatureUtils;
  */
 public abstract class DocumentBuilder {
 
+    /**
+     *
+     */
     public static final String CREA_V1 = "CREA_V1";
+
+    /**
+     *
+     */
     protected static final String DELIVERY_TYPE = "Legal-ZPP2";
+
+    /**
+     *
+     */
     protected static final String DOCUMENT_TYPE = "Message";
+
+    /**
+     *
+     */
     protected static final String ENC_TYPE_B64 = "base64";
+
+    /**
+     *
+     */
     protected static final String ENC_TYPE_UTF8 = "UTF-8";
     private static final String HLSSDK_JKSPATH = "JKSPATH";
+
+    /**
+     *
+     */
     protected static final String IDPFX_DATA = "dat-test";
 
     private static final String IDPFX_SIG = "sig-test";
     private static final String IDPFX_SIG_PROP = "sigprop-test";
+
+    /**
+     *
+     */
     protected static final String IDPFX_VIS = "vis-test";
+
+    /**
+     *
+     */
     protected static final String MIME_PDF = "application/pdf";
+
+    /**
+     *
+     */
     protected static final String MIME_TXT = "text/xml";
     private static final String SIGNATURE_ELEMENT_NAME = "Signatures";
     // schema type
+
+    /**
+     *
+     */
     public static final String SOD_V1 = "SOD_V1";
     private static final String XAdESCertificateDigestAlgorithm = "http://www.w3.org/2000/09/xmldsig#sha1";
     private static final String XAdESignatureProductionPlace = "Ljubljana";
     private static final String XMLHEADER = "<?";
 
+    /**
+     *
+     * @param strVal
+     * @param strFile
+     */
     public static void writeToFile(String strVal, String strFile) {
         FileOutputStream fos = null;
         try {
@@ -63,6 +107,13 @@ public abstract class DocumentBuilder {
     private XMLSignatureUtils mssuSignUtils;
     StorageUtils msuStorageUtils = new StorageUtils();
 
+    /**
+     *
+     * @param jaxBDoc
+     * @param cls
+     * @return
+     * @throws SEDSecurityException
+     */
     protected Document convertEpDoc2W3cDoc(Object jaxBDoc, Class[] cls) throws SEDSecurityException {
         Document xDoc = null;
         try {
@@ -87,8 +138,19 @@ public abstract class DocumentBuilder {
         return xDoc;
     }
 
+    /**
+     *
+     * @param dce
+     * @param fos
+     * @param key
+     * @throws SEDSecurityException
+     */
     public abstract void createMail(MSHOutMail dce, FileOutputStream fos, KeyStore.PrivateKeyEntry key) throws SEDSecurityException;
 
+    /**
+     *
+     * @return
+     */
     public XMLSignatureUtils getSignUtils() {
         if (mssuSignUtils == null) {
             mssuSignUtils = new XMLSignatureUtils();
@@ -111,10 +173,24 @@ public abstract class DocumentBuilder {
         return medSigJDK;
     }
      */
+
+    /**
+     *
+     * @return
+     */
+
     protected long getTime() {
         return Calendar.getInstance().getTimeInMillis();
     }
 
+    /**
+     *
+     * @param xDoc
+     * @param strIds
+     * @param fos
+     * @param key
+     * @throws SEDSecurityException
+     */
     protected synchronized void singDocument(Document xDoc, List<String[]> strIds,
             FileOutputStream fos, KeyStore.PrivateKeyEntry key) throws SEDSecurityException {
         long t = getTime();

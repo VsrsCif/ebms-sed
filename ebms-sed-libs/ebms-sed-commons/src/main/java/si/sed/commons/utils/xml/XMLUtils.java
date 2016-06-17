@@ -65,6 +65,14 @@ import org.xml.sax.SAXException;
  */
 public class XMLUtils {
 
+    /**
+     *
+     * @param xml
+     * @return
+     * @throws SAXException
+     * @throws ParserConfigurationException
+     * @throws IOException
+     */
     public static Document bytesToDom(byte[] xml)
             throws SAXException, ParserConfigurationException, IOException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -74,26 +82,64 @@ public class XMLUtils {
 
     }
 
+    /**
+     *
+     * @param fXMLFilePath
+     * @param cls
+     * @return
+     * @throws JAXBException
+     */
     public static Object deserialize(File fXMLFilePath, Class cls) throws JAXBException {
         final Unmarshaller um = JAXBContext.newInstance(cls).createUnmarshaller();
         return um.unmarshal(fXMLFilePath);
     }
 
+    /**
+     *
+     * @param xml
+     * @param cls
+     * @return
+     * @throws JAXBException
+     */
     public static Object deserialize(String xml, Class cls) throws JAXBException {
         final Unmarshaller um = JAXBContext.newInstance(cls).createUnmarshaller();
         return um.unmarshal(new ByteArrayInputStream(xml.getBytes()));
     }
 
+    /**
+     *
+     * @param io
+     * @param cls
+     * @return
+     * @throws JAXBException
+     */
     public static Object deserialize(InputStream io, Class cls) throws JAXBException {
         final Unmarshaller um = JAXBContext.newInstance(cls).createUnmarshaller();
         return um.unmarshal(io);
     }
 
+    /**
+     *
+     * @param elmnt
+     * @param cls
+     * @return
+     * @throws JAXBException
+     */
     public static Object deserialize(Element elmnt, Class cls) throws JAXBException {
         final Unmarshaller um = JAXBContext.newInstance(cls).createUnmarshaller();
         return um.unmarshal(elmnt);
     }
 
+    /**
+     *
+     * @param source
+     * @param xsltSource
+     * @param cls
+     * @return
+     * @throws TransformerConfigurationException
+     * @throws JAXBException
+     * @throws TransformerException
+     */
     public static synchronized Object deserialize(InputStream source, InputStream xsltSource, Class cls) throws TransformerConfigurationException, JAXBException, TransformerException {
         Object obj = null;
         JAXBContext jc = JAXBContext.newInstance(cls);
@@ -112,6 +158,14 @@ public class XMLUtils {
         return obj;
     }
 
+    /**
+     *
+     * @param xmlIS
+     * @return
+     * @throws IOException
+     * @throws ParserConfigurationException
+     * @throws SAXException
+     */
     public static Document deserializeToDom(InputStream xmlIS) throws IOException, ParserConfigurationException, SAXException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
@@ -121,6 +175,14 @@ public class XMLUtils {
         return builder.parse(xmlIS);
     }
 
+    /**
+     *
+     * @param xmlFile
+     * @return
+     * @throws IOException
+     * @throws ParserConfigurationException
+     * @throws SAXException
+     */
     public static Document deserializeToDom(File xmlFile) throws IOException, ParserConfigurationException, SAXException {
         Document doc = null;
         try (FileInputStream fis = new FileInputStream(xmlFile)) {
@@ -129,10 +191,30 @@ public class XMLUtils {
         return doc;
     }
 
+    /**
+     *
+     * @param xml
+     * @return
+     * @throws IOException
+     * @throws ParserConfigurationException
+     * @throws SAXException
+     */
     public static Document deserializeToDom(String xml) throws IOException, ParserConfigurationException, SAXException {
         return deserializeToDom(new ByteArrayInputStream(xml.getBytes()));
     }
 
+    /**
+     *
+     * @param source
+     * @param xsltSource
+     * @return
+     * @throws TransformerConfigurationException
+     * @throws JAXBException
+     * @throws TransformerException
+     * @throws ParserConfigurationException
+     * @throws SAXException
+     * @throws IOException
+     */
     public static synchronized Document deserializeToDom(InputStream source, InputStream xsltSource) throws TransformerConfigurationException, JAXBException, TransformerException, ParserConfigurationException, SAXException, IOException {
         Document obj;
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -150,6 +232,11 @@ public class XMLUtils {
         return obj;
     }
 
+    /**
+     *
+     * @param unformattedXml
+     * @return
+     */
     public static String format(String unformattedXml) {
         String xmlString = null;
         try {
@@ -167,6 +254,15 @@ public class XMLUtils {
         return xmlString;
     }
 
+    /**
+     *
+     * @param source
+     * @param xsltSource
+     * @return
+     * @throws TransformerConfigurationException
+     * @throws JAXBException
+     * @throws TransformerException
+     */
     public static synchronized String getElementValue(InputStream source, InputStream xsltSource) throws TransformerConfigurationException, JAXBException, TransformerException {
         TransformerFactory factory = TransformerFactory.newInstance();
         Transformer transformer;
@@ -177,6 +273,13 @@ public class XMLUtils {
         return sw.toString();
     }
 
+    /**
+     *
+     * @param obj
+     * @return
+     * @throws JAXBException
+     * @throws ParserConfigurationException
+     */
     public static Document jaxbToDocument(Object obj) throws JAXBException, ParserConfigurationException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder db = factory.newDocumentBuilder();
@@ -187,18 +290,37 @@ public class XMLUtils {
         return doc;
     }
 
+    /**
+     *
+     * @param obj
+     * @return
+     * @throws JAXBException
+     */
     public static byte[] serialize(Object obj) throws JAXBException {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         serialize(obj, bos);
         return bos.toByteArray();
     }
 
+    /**
+     *
+     * @param obj
+     * @param os
+     * @throws JAXBException
+     */
     public static void serialize(Object obj, OutputStream os) throws JAXBException {
         final Marshaller m = JAXBContext.newInstance(obj.getClass()).createMarshaller();
         m.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
         m.marshal(obj, os);
     }
 
+    /**
+     *
+     * @param obj
+     * @param filename
+     * @throws JAXBException
+     * @throws FileNotFoundException
+     */
     public static void serialize(Object obj, String filename) throws JAXBException, FileNotFoundException {
         final Marshaller m = JAXBContext.newInstance(obj.getClass()).createMarshaller();
         m.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
@@ -206,6 +328,13 @@ public class XMLUtils {
         m.marshal(obj, new FileOutputStream(filename));
     }
 
+    /**
+     *
+     * @param obj
+     * @param file
+     * @throws JAXBException
+     * @throws FileNotFoundException
+     */
     public static void serialize(Object obj, File file) throws JAXBException, FileNotFoundException {
         final Marshaller m = JAXBContext.newInstance(obj.getClass()).createMarshaller();
         m.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
@@ -213,6 +342,13 @@ public class XMLUtils {
         m.marshal(obj, new FileOutputStream(file));
     }
 
+    /**
+     *
+     * @param obj
+     * @param w
+     * @throws JAXBException
+     * @throws FileNotFoundException
+     */
     public static void serialize(Object obj, Writer w) throws JAXBException, FileNotFoundException {
         final Marshaller m = JAXBContext.newInstance(obj.getClass()).createMarshaller();
         m.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
@@ -220,12 +356,23 @@ public class XMLUtils {
         m.marshal(obj, w);
     }
 
+    /**
+     *
+     * @param obj
+     * @throws JAXBException
+     */
     public static void serializeToSTD(Object obj) throws JAXBException {
         final Marshaller m = JAXBContext.newInstance(obj.getClass()).createMarshaller();
         m.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
         m.marshal(obj, System.out);
     }
 
+    /**
+     *
+     * @param obj
+     * @return
+     * @throws JAXBException
+     */
     public static String serializeToString(Object obj) throws JAXBException {
         java.io.StringWriter sw = new StringWriter();
         final Marshaller m = JAXBContext.newInstance(obj.getClass()).createMarshaller();
@@ -235,6 +382,12 @@ public class XMLUtils {
         return sw.toString();
     }
 
+    /**
+     *
+     * @param rootElement
+     * @param setXmlDecl
+     * @return
+     */
     public static String serializeToString(Element rootElement, boolean setXmlDecl) {
         DOMImplementationLS lsImpl = (DOMImplementationLS) rootElement.getOwnerDocument().getImplementation().getFeature("LS", "3.0");
         LSSerializer serializer = lsImpl.createLSSerializer();
@@ -242,6 +395,18 @@ public class XMLUtils {
         return serializer.writeToString(rootElement);
     }
 
+    /**
+     *
+     * @param source
+     * @param xsltSource
+     * @return
+     * @throws TransformerConfigurationException
+     * @throws JAXBException
+     * @throws TransformerException
+     * @throws ParserConfigurationException
+     * @throws SAXException
+     * @throws IOException
+     */
     public static synchronized Document transform(Element source, InputStream xsltSource) throws TransformerConfigurationException, JAXBException, TransformerException, ParserConfigurationException, SAXException, IOException {
         Document obj = null;
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -256,6 +421,13 @@ public class XMLUtils {
         return obj;
     }
 
+    /**
+     *
+     * @param jabxObj
+     * @param schXsd
+     * @param xsdResourceFolder
+     * @return
+     */
     public static String validateBySchema(Object jabxObj, InputStream schXsd, String xsdResourceFolder) {
         String res = "";
         try {
@@ -270,6 +442,13 @@ public class XMLUtils {
 
     }
 
+    /**
+     *
+     * @param xml
+     * @param schXsd
+     * @param xsdResourceFolder
+     * @return
+     */
     public static String validateBySchema(Source xml, InputStream schXsd, String xsdResourceFolder) {
         String res = "";
 

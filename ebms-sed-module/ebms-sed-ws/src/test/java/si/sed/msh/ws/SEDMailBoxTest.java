@@ -13,14 +13,13 @@ import java.nio.file.StandardCopyOption;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.jms.JMSException;
 import javax.jms.Queue;
 import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.AfterClass;
 import static org.junit.Assert.*;
@@ -77,13 +76,23 @@ import si.sed.msh.test.db.MockUserTransaction;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class SEDMailBoxTest extends TestUtils {
 
+    /**
+     *
+     */
+    public static final Logger LOG = Logger.getLogger(SEDMailBoxTest.class);
+
+    
     static SEDMailBox mTestInstance = new SEDMailBox();
     static EntityManagerFactory memfFactory = null;
     static EntityManagerFactory memfMSHFactory = null;
 
+    /**
+     *
+     * @throws Exception
+     */
     @BeforeClass
     public static void startClass() throws Exception {
-        System.out.println("SETUP");
+
         try {
             //---------------------------------            
             //set logger
@@ -118,10 +127,14 @@ public class SEDMailBoxTest extends TestUtils {
 
             // set lookup 
         } catch (NamingException | JMSException ex) {
-            Logger.getLogger(SEDMailBoxTest.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.error("ERROR startClass", ex);
         }
     }
 
+    /**
+     *
+     * @throws Exception
+     */
     @AfterClass
     public static void tearDownClass() throws Exception {
     }
@@ -252,6 +265,9 @@ public class SEDMailBoxTest extends TestUtils {
         return om;
     }
 
+    /**
+     *
+     */
     @Before
     public void setUp() {
 
@@ -412,6 +428,9 @@ public class SEDMailBoxTest extends TestUtils {
 
     }
 
+    /**
+     *
+     */
     @After
     public void tearDown() {
     }
@@ -423,7 +442,7 @@ public class SEDMailBoxTest extends TestUtils {
      */
     @Test
     public void test_A_SubmitMail() throws Exception {
-        System.out.println("test_A_SubmitMail");
+        LOG.info("test_A_SubmitMail");
         // create request
         SubmitMailRequest smr = new SubmitMailRequest();
         smr.setControl(createControl());
@@ -450,7 +469,7 @@ public class SEDMailBoxTest extends TestUtils {
      */
     @Test
     public void test_B_SubmitMail_ValidationOfRequest() throws Exception {
-        System.out.println("test_B_SubmitMail_ValidationOfRequest");
+        LOG.info("test_B_SubmitMail_ValidationOfRequest");
         // create sumbmit OK mail
         SubmitMailRequest smr = new SubmitMailRequest();
         smr.setControl(createControl());
@@ -537,7 +556,7 @@ public class SEDMailBoxTest extends TestUtils {
      */
     @Test
     public void test_C_SubmitMail_ExistsMail() throws Exception {
-        System.out.println("test_C_SubmitMail_ExistsMail");
+        LOG.info("test_C_SubmitMail_ExistsMail");
         // create request
         SubmitMailRequest smr = new SubmitMailRequest();
         smr.setControl(createControl());
@@ -559,10 +578,11 @@ public class SEDMailBoxTest extends TestUtils {
     /**
      * Test of getOutMailList method, of class SEDMailBox. Method tests search
      * parameters
+     * @throws java.lang.Exception
      */
     @Test
     public void test_D_GetOutMailList() throws Exception {
-        System.out.println("test_D_GetOutMailList");
+        LOG.info("test_D_GetOutMailList");
         OutMailListRequest omr = new OutMailListRequest();
         omr.setControl(createControl());
         omr.setData(new OutMailListRequest.Data());
@@ -667,7 +687,7 @@ public class SEDMailBoxTest extends TestUtils {
         assertEquals("Test ReceiverEBox response id", om.getId(), mlr.getRData().getOutMails().get(0).getId());
 
         //test search for SubmittedDateFrom
-        omr.getData().setSubmittedDateFrom(dt);;
+        omr.getData().setSubmittedDateFrom(dt);
         mlr = mTestInstance.getOutMailList(omr);
         assertEquals("SubmittedDateFrom Response/RControl/@returnValue", mlr.getRControl().getReturnValue().intValue(), SVEVReturnValue.OK.getValue());
         assertEquals("Test SubmittedDateFrom parameter", TEST_CNT + 1, mlr.getRData().getOutMails().size());
@@ -693,10 +713,11 @@ public class SEDMailBoxTest extends TestUtils {
 
     /**
      * Test of getOutMailEventList method, of class SEDMailBox.
+     * @throws java.lang.Exception
      */
     @Test
     public void test_E_GetOutMailEventList() throws Exception {
-        System.out.println("test_E_GetOutMailEventList");
+        LOG.info("test_E_GetOutMailEventList");
 
         //submit mail
         OutMail om = createOutMail();
@@ -740,10 +761,11 @@ public class SEDMailBoxTest extends TestUtils {
 
     /**
      * Test of getInMailList method, of class SEDMailBox.
+     * @throws java.lang.Exception
      */
     @Test
     public void test_F_GetInMailList() throws Exception {
-        System.out.println("test_F_GetInMailList");
+        LOG.info("test_F_GetInMailList");
         // prepare
         InMail im = createInMail();
         storeInMail(im);
@@ -873,10 +895,11 @@ public class SEDMailBoxTest extends TestUtils {
 
     /**
      * Test of getInMailEventList method, of class SEDMailBox.
+     * @throws java.lang.Exception
      */
     @Test
     public void test_G_GetInMailEventList() throws Exception {
-        System.out.println("test_G_GetInMailEventList");
+        LOG.info("test_G_GetInMailEventList");
 
         //store mail
         InMail im = createInMail();
@@ -906,10 +929,11 @@ public class SEDMailBoxTest extends TestUtils {
 
     /**
      * Test of getInMail method, of class SEDMailBox.
+     * @throws java.lang.Exception
      */
     @Test
     public void test_H_GetInMail() throws Exception {
-        System.out.println("test_H_GetInMail");
+        LOG.info("test_H_GetInMail");
 
         //store mail
         InMail im = createInMail();
@@ -936,10 +960,11 @@ public class SEDMailBoxTest extends TestUtils {
 
     /**
      * Test of modifyInMail method, of class SEDMailBox.
+     * @throws java.lang.Exception
      */
     @Test
     public void test_I_ModifyInMail() throws Exception {
-        System.out.println("test_I_ModifyInMail");
+        LOG.info("test_I_ModifyInMail");
 
         //store mail
         InMail im = createInMail();
@@ -976,10 +1001,11 @@ public class SEDMailBoxTest extends TestUtils {
 
     /**
      * Test of modifyInMail method, of class SEDMailBox.
+     * @throws java.lang.Exception
      */
     @Test
     public void test_J_ModifyOutMail() throws Exception {
-        System.out.println("test_J_ModifyOutMail");
+        LOG.info("test_J_ModifyOutMail");
 
         // assert abort
         assertModifyOutMail(createOutMail(), SEDOutboxMailStatus.SUBMITTED, ModifOutActionCode.ABORT, SEDOutboxMailStatus.CANCELED, null);

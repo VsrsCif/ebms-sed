@@ -70,16 +70,26 @@ import si.sed.commons.utils.sec.KeystoreUtils;
  */
 public class EBMSOutInterceptor extends AbstractEBMSInterceptor {
 
+    /**
+     *
+     */
     protected final SEDLogger mlog = new SEDLogger(EBMSOutInterceptor.class);
 
     EBMSUtils mEBMSUtil = new EBMSUtils();
 
+    /**
+     *
+     */
     public EBMSOutInterceptor() {
         super(Phase.PRE_PROTOCOL);
         addAfter(SAAJOutInterceptor.class.getName());
 
     }
 
+    /**
+     *
+     * @param msg
+     */
     @Override
     public void handleMessage(SoapMessage msg) {
         long l = mlog.logStart(msg);
@@ -294,6 +304,10 @@ public class EBMSOutInterceptor extends AbstractEBMSInterceptor {
 
     }
 
+    /**
+     *
+     * @param message
+     */
     @Override
     public void handleFault(SoapMessage message) {
         super.handleFault(message); //To change body of generated methods, choose Tools | Templates.

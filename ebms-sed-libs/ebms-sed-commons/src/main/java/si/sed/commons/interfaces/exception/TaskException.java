@@ -26,33 +26,72 @@ public class TaskException extends Exception {
 
     TaskExceptionCode nTEC;
 
+    /**
+     *
+     * @param tc
+     */
     public TaskException(TaskExceptionCode tc) {
         super(tc.getDesc());
         nTEC = tc;
     }
 
+    /**
+     *
+     * @param tc
+     * @param message
+     */
     public TaskException(TaskExceptionCode tc, String message) {
         super(message);
         nTEC = tc;
     }
 
+    /**
+     *
+     * @param tc
+     * @param message
+     * @param cause
+     */
     public TaskException(TaskExceptionCode tc, String message, Throwable cause) {
         super(message, cause);
         nTEC = tc;
     }
 
+    /**
+     *
+     * @param tc
+     * @param cause
+     */
     public TaskException(TaskExceptionCode tc, Throwable cause) {
         super(cause);
         nTEC = tc;
     }
 
+    /**
+     *
+     * @param tc
+     * @param message
+     * @param cause
+     * @param enableSuppression
+     * @param writableStackTrace
+     */
     public TaskException(TaskExceptionCode tc, String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
         nTEC = tc;
     }
 
+    /**
+     *
+     */
     public enum TaskExceptionCode {
+
+        /**
+         *
+         */
         InitException(1, "Init exception"),
+
+        /**
+         *
+         */
         ProcessException(2, "Execution error"),;
 
         int iCode;
@@ -63,10 +102,18 @@ public class TaskException extends Exception {
             strDesc = desc;
         }
 
+        /**
+         *
+         * @return
+         */
         public int getCode() {
             return iCode;
         }
 
+        /**
+         *
+         * @return
+         */
         public String getDesc() {
             return strDesc;
         }

@@ -34,6 +34,10 @@ import si.sed.commons.SEDGUIConstants;
 import si.sed.commons.utils.SEDLogger;
 import si.sed.msh.web.abst.AbstractJSFView;
 
+/**
+ *
+ * @author sluzba
+ */
 @SessionScoped
 @ManagedBean(name = "userSessionData")
 public class UserSessionData extends AbstractJSFView {
@@ -43,15 +47,27 @@ public class UserSessionData extends AbstractJSFView {
     private LoginManager loginManager;
     private String mstrCurrentSEDBox;
 
+    /**
+     *
+     * @return
+     */
     public String getCurrentSEDBox() {
         return mstrCurrentSEDBox == null
                 && getUserEBoxes() != null && !getUserEBoxes().isEmpty() ? getUserEBoxes().get(0) : mstrCurrentSEDBox;
     }
 
+    /**
+     *
+     * @return
+     */
     public LoginManager getLoginManager() {
         return loginManager;
     }
 
+    /**
+     *
+     * @return
+     */
     public SEDUser getUser() {
         long l = LOG.logStart();
         FacesContext context = facesContext();
@@ -67,6 +83,10 @@ public class UserSessionData extends AbstractJSFView {
         return su;
     }
 
+    /**
+     *
+     * @return
+     */
     public List<String> getUserEBoxes() {
         List<String> lst = new ArrayList<>();
         SEDUser usr = getUser();
@@ -78,16 +98,27 @@ public class UserSessionData extends AbstractJSFView {
         return lst;
     }
 
+    /**
+     *
+     */
     public void onReorder() {
         FacesContext context = FacesContext.getCurrentInstance();
         context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "List Reordered", null));
     }
 
+    /**
+     *
+     * @param event
+     */
     public void onSelect(SelectEvent event) {
         FacesContext context = FacesContext.getCurrentInstance();
         context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Item Selected", event.getObject().toString()));
     }
 
+    /**
+     *
+     * @param event
+     */
     public void onTransfer(TransferEvent event) {
         /* StringBuilder builder = new StringBuilder();
         for(Object item : event.getItems()) {
@@ -102,15 +133,27 @@ public class UserSessionData extends AbstractJSFView {
         FacesContext.getCurrentInstance().addMessage(null, msg);*/
     }
 
+    /**
+     *
+     * @param event
+     */
     public void onUnselect(UnselectEvent event) {
         FacesContext context = FacesContext.getCurrentInstance();
         context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Item Unselected", event.getObject().toString()));
     }
 
+    /**
+     *
+     * @param strCurrBox
+     */
     public void setCurrentSEDBox(String strCurrBox) {
         mstrCurrentSEDBox = strCurrBox;
     }
 
+    /**
+     *
+     * @param loginManager
+     */
     public void setLoginManager(LoginManager loginManager) {
         this.loginManager = loginManager;
     }

@@ -55,25 +55,50 @@ import si.jrc.msh.utils.EBMSLogUtils;
 import si.jrc.msh.utils.EbMSConstants;
 import si.sed.commons.utils.SEDLogger;
 
+/**
+ *
+ * @author sluzba
+ */
 public class EBMSLogInInterceptor extends AbstractLoggingInterceptor {
 
     private static final Logger LOG = LogUtils.getLogger(EBMSLogInInterceptor.class);
+
+    /**
+     *
+     */
     protected final SEDLogger mlog = new SEDLogger(EBMSLogInInterceptor.class);
 
+    /**
+     *
+     */
     public EBMSLogInInterceptor() {
         super(Phase.RECEIVE);
     }
 
+    /**
+     *
+     * @param loggingMessage
+     * @return
+     */
     protected String formatLoggingMessage(LoggingMessage loggingMessage) {
 
         return loggingMessage.toString();
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     protected Logger getLogger() {
         return LOG;
     }
 
+    /**
+     *
+     * @param message
+     * @return
+     */
     public String getURI(Message message) {
         String uri = (String) message.get(Message.REQUEST_URL);
         if (uri == null) {
@@ -93,6 +118,11 @@ public class EBMSLogInInterceptor extends AbstractLoggingInterceptor {
         return uri;
     }
 
+    /**
+     *
+     * @param msg
+     * @throws Fault
+     */
     public void handleMessage(Message msg) throws Fault {
         long l = mlog.logStart();
         Logger logger = LOG;
@@ -124,6 +154,14 @@ public class EBMSLogInInterceptor extends AbstractLoggingInterceptor {
         }
     }
 
+    /**
+     *
+     * @param message
+     * @param is
+     * @param buffer
+     * @param encoding
+     * @param ct
+     */
     protected void logInputStream(Message message, InputStream is, LoggingMessage buffer,
             String encoding, String ct) {
         CachedOutputStream bos = new CachedOutputStream();
@@ -164,6 +202,12 @@ public class EBMSLogInInterceptor extends AbstractLoggingInterceptor {
         }
     }
 
+    /**
+     *
+     * @param message
+     * @param reader
+     * @param buffer
+     */
     protected void logReader(Message message, Reader reader, LoggingMessage buffer) {
         try {
             CachedWriter writer = new CachedWriter();
@@ -184,6 +228,12 @@ public class EBMSLogInInterceptor extends AbstractLoggingInterceptor {
         }
     }
 
+    /**
+     *
+     * @param logger
+     * @param message
+     * @throws Fault
+     */
     protected void logging(Logger logger, Message message) throws Fault {
         if (message.containsKey(LoggingMessage.ID_KEY)) {
             return;

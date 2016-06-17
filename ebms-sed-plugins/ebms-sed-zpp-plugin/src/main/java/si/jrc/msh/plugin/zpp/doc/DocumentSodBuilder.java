@@ -37,6 +37,13 @@ public class DocumentSodBuilder extends DocumentBuilder {
     private static final String NM_DATA = "http://www.sodisce.si/2010/mail/Document/ObjectType/Data";
     private static final String NM_VIS = "http://www.sodisce.si/2010/mail/Document/ObjectType/Visualisation";
 
+    /**
+     *
+     * @param dce
+     * @param fos
+     * @param key
+     * @throws SEDSecurityException
+     */
     @Override
     public void createMail(MSHOutMail dce, FileOutputStream fos, KeyStore.PrivateKeyEntry key)
             throws SEDSecurityException {

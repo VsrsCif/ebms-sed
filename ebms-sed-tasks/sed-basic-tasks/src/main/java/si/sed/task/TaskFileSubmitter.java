@@ -28,8 +28,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import javax.ejb.EJB;
 import javax.ejb.Local;
@@ -282,7 +280,7 @@ public class TaskFileSubmitter implements TaskExecutionInterface {
             mout.getMSHOutPayload().getMSHOutParts().add(mp);
         }
 
-        String pmodeId = mout.getService() + ":" + Utils.getDomainFromAddress(mout.getReceiverEBox());;
+        String pmodeId = mout.getService() + ":" + Utils.getDomainFromAddress(mout.getReceiverEBox());
         PMode pm = null;
         try {
             pm = mpModeManager.getPModeById(pmodeId);

@@ -15,17 +15,45 @@ import javax.ejb.Local;
 @Local
 public interface PluginDescriptionInterface {
 
+    /**
+     *
+     * @return
+     */
     String getSettingUrlContext();
 
+    /**
+     *
+     * @return
+     */
     List<String> getTaskJNDIs();
 
+    /**
+     *
+     * @return
+     */
     String getJNDIOutInterceptor();
 
+    /**
+     *
+     * @return
+     */
     String getJNDIInInterceptor();
 
+    /**
+     *
+     * @return
+     */
     String getType();
 
+    /**
+     *
+     * @return
+     */
     String getName();
 
+    /**
+     *
+     * @return
+     */
     String getDesc();
 }

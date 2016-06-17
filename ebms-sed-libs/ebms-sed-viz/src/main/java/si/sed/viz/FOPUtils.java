@@ -31,6 +31,11 @@ public class FOPUtils {
     FopFactory mfopFactorory = null;
     File msfConfigFile;
 
+    /**
+     *
+     * @param configfile
+     * @param xsltFolder
+     */
     public FOPUtils(File configfile, String xsltFolder) {
         msfConfigFile = configfile;
         mTransformationFolder = xsltFolder;
@@ -52,6 +57,16 @@ public class FOPUtils {
             ex.printStackTrace();
         }
      */
+
+    /**
+     *
+     * @param outMail
+     * @param f
+     * @param xslt
+     * @param mime
+     * @throws FOPException
+     */
+
     public void generateVisualization(Object outMail, File f, FopTransformations xslt, String mime) throws FOPException {
 
         File fxslt = getTransformatinoFile(xslt);
@@ -67,6 +82,14 @@ public class FOPUtils {
         }
     }
 
+    /**
+     *
+     * @param src
+     * @param out
+     * @param xslt
+     * @param mime
+     * @throws FOPException
+     */
     public void generateVisualization(Source src, OutputStream out, Source xslt, String mime) throws FOPException {
 
         try {
@@ -90,6 +113,13 @@ public class FOPUtils {
         }
     }
 
+    /**
+     *
+     * @param src
+     * @param out
+     * @param xslt
+     * @throws FOPException
+     */
     public void generateVisualizationToHtml(Source src, OutputStream out, Source xslt) throws FOPException {
 
         try {
@@ -150,10 +180,24 @@ public class FOPUtils {
 
     }
 
+    /**
+     *
+     */
     public enum FopTransformations {
 
+        /**
+         *
+         */
         DeliveryNotification("LegalDelivery_ZPP-DeliveryNotification.fo"),
+
+        /**
+         *
+         */
         AdviceOfDelivery("LegalDelivery_ZPP-AdviceOfDelivery.fo"),
+
+        /**
+         *
+         */
         AdviceOfDeliveryFiction("LegalDelivery_ZPP-AdviceOfDeliveryFiction.fo");
 
         private final String mstrfileName;
@@ -162,6 +206,10 @@ public class FOPUtils {
             mstrfileName = filename;
         }
 
+        /**
+         *
+         * @return
+         */
         public String getFileName() {
             return mstrfileName;
         }

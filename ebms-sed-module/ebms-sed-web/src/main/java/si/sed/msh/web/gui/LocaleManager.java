@@ -11,25 +11,44 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 
+/**
+ *
+ * @author sluzba
+ */
 @ManagedBean
 @SessionScoped
 public class LocaleManager {
 
     private Locale locale;
 
+    /**
+     *
+     * @return
+     */
     public String getLanguage() {
         return locale.getLanguage();
     }
 
+    /**
+     *
+     * @return
+     */
     public Locale getLocale() {
         return locale;
     }
 
+    /**
+     *
+     */
     @PostConstruct
     public void init() {
         locale = FacesContext.getCurrentInstance().getExternalContext().getRequestLocale();
     }
 
+    /**
+     *
+     * @param language
+     */
     public void setLanguage(String language) {
         locale = new Locale(language);
         FacesContext.getCurrentInstance().getViewRoot().setLocale(locale);

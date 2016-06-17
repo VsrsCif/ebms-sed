@@ -78,6 +78,10 @@ public class MSHScheduler implements SEDSchedulerInterface {
         }
     }
 
+    /**
+     *
+     * @param timer
+     */
     @Timeout
     @Override
     public void timeout(Timer timer) {
@@ -173,14 +177,22 @@ public class MSHScheduler implements SEDSchedulerInterface {
 
     private void checkTest() {
         int i = checks.incrementAndGet();
-        System.out.println("checkTest: " + i);
+        LOG.log("checkTest: " + i);
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public int getChecks() {
         return checks.get();
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public TimerService getServices() {
         return timerService;

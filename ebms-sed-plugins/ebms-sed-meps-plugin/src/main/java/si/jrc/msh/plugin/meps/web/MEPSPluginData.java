@@ -48,14 +48,26 @@ public class MEPSPluginData {
     @Resource
     WebServiceContext context;
 
+    /**
+     *
+     * @return
+     */
     protected ExternalContext externalContext() {
         return facesContext().getExternalContext();
     }
 
+    /**
+     *
+     * @return
+     */
     protected FacesContext facesContext() {
         return FacesContext.getCurrentInstance();
     }
 
+    /**
+     *
+     * @return
+     */
     public String getBuildVersion() {
         String strBuildVer = "";
         Manifest p;
@@ -73,28 +85,52 @@ public class MEPSPluginData {
         return strBuildVer;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getClientIP() {
         return ((HttpServletRequest) externalContext().getRequest()).getRemoteAddr();
     }
 
+    /**
+     *
+     * @return
+     */
     public String getHomeFolder() {
         return System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR);
     }
 
+    /**
+     *
+     * @return
+     */
     public String getPluginsFolder() {
         return SEDSystemProperties.SYS_PROP_FOLDER_PLUGINS_DEF;
 
     }
 
+    /**
+     *
+     * @return
+     */
     public String getSecurityFileName() {
         return SEDSystemProperties.SYS_PROP_CERT_DEF;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getStorageFolder() {
         return SEDSystemProperties.SYS_PROP_FOLDER_STORAGE_DEF;
 
     }
 
+    /**
+     *
+     * @return
+     */
     public List<String> getSystemPropertyKeys() {
         Set<String> s = System.getProperties().stringPropertyNames();
         List<String> lst = new ArrayList<>(s);
@@ -103,22 +139,38 @@ public class MEPSPluginData {
 
     }
 
+    /**
+     *
+     * @param strVal
+     * @return
+     */
     public String getSystemPropertyValue(String strVal) {
         return System.getProperty(strVal);
 
     }
 
+    /**
+     *
+     * @param event
+     */
     public void onCancel(RowEditEvent event) {
         //FacesMessage msg = new FacesMessage("Item Cancelled");   
         //FacesContext.getCurrentInstance().addMessage(null, msg); 
         //orderList.remove((OrderBean) event.getObject());
     }
 
+    /**
+     *
+     * @param event
+     */
     public void onEdit(RowEditEvent event) {
         //FacesMessage msg = new FacesMessage("Item Edited",((OrderBean) event.getObject()).getItem());
         //FacesContext.getCurrentInstance().addMessage(null, msg);
     }
 
+    /**
+     *
+     */
     public void refreshMainPanel() {
         FacesContext facesContext = facesContext();
         String refreshpage = "MainPanel";

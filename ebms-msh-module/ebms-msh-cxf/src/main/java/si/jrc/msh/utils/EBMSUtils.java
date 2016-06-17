@@ -66,6 +66,9 @@ public class EBMSUtils {
 
     private static final String ID_PREFIX_ = "SED-";
 
+    /**
+     *
+     */
     protected final SEDLogger mlog = new SEDLogger(MshClient.class);
 
     private MessageInfo createMessageInfo(String senderDomain, String refToMessage, Date timestamp) {
@@ -83,6 +86,11 @@ public class EBMSUtils {
         return mi;
     }
 
+    /**
+     *
+     * @param version
+     * @return
+     */
     public Messaging createMessaging(SoapVersion version) {
         Messaging msg = new Messaging();
         //ID must be an NCName. This means that it must start with a letter or underscore, 
@@ -91,12 +99,20 @@ public class EBMSUtils {
         if (version.getVersion() != 1.1) {
             msg.setMustUnderstand(Boolean.TRUE);
         } else {
-            msg.setS11MustUnderstand(Boolean.TRUE);;
+            msg.setS11MustUnderstand(Boolean.TRUE);
         }
         return msg;
 
     }
 
+    /**
+     *
+     * @param pm
+     * @param mo
+     * @param senderDomain
+     * @param timestamp
+     * @return
+     */
     public UserMessage createUserMessage(PMode pm, MSHOutMail mo, String senderDomain, Date timestamp) {
         UserMessage usgMsg = new UserMessage();
 
@@ -239,6 +255,14 @@ public class EBMSUtils {
         return usgMsg;
     }
 
+    /**
+     *
+     * @param userMessage
+     * @param senderDomain
+     * @param inboundMail
+     * @param timestamp
+     * @return
+     */
     public SignalMessage generateAS4ReceiptSignal(UserMessage userMessage, String senderDomain, File inboundMail, Date timestamp) {
         SignalMessage sigMsg = new SignalMessage();
         try (FileInputStream fos = new FileInputStream(inboundMail);
@@ -259,6 +283,14 @@ public class EBMSUtils {
         return sigMsg;
     }
 
+    /**
+     *
+     * @param refMessageId
+     * @param senderDomain
+     * @param inboundMail
+     * @param timestamp
+     * @return
+     */
     public SignalMessage generateAS4ReceiptSignal(String refMessageId, String senderDomain, Element inboundMail, Date timestamp) {
         SignalMessage sigMsg = new SignalMessage();
         try (InputStream isXSLT = getClass().getResourceAsStream("/xslt/soap2AS4Receipt.xsl")) {
@@ -278,6 +310,13 @@ public class EBMSUtils {
         return sigMsg;
     }
 
+    /**
+     *
+     * @param ebError
+     * @param senderDomain
+     * @param timestamp
+     * @return
+     */
     public SignalMessage generateErrorSignal(EBMSError ebError, String senderDomain, Date timestamp) {
         SignalMessage sigMsg = new SignalMessage();
         // generate  MessageInfo
@@ -297,6 +336,12 @@ public class EBMSUtils {
         return sigMsg;
     }
 
+    /**
+     *
+     * @param um
+     * @return
+     * @throws EBMSError
+     */
     public MSHInMail userMessage2MSHMail(UserMessage um) throws EBMSError {
         long l = mlog.logStart();
 

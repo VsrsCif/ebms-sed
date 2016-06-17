@@ -15,11 +15,22 @@ public class EBMSError extends Exception {
     String refToMessage;
     String subMessage;
 
+    /**
+     *
+     * @param ec
+     * @param refToMsg
+     */
     public EBMSError(EBMSErrorCode ec, String refToMsg) {
         ebmsErrorCode = ec;
         refToMessage = refToMsg;
     }
 
+    /**
+     *
+     * @param ec
+     * @param refToMsg
+     * @param message
+     */
     public EBMSError(EBMSErrorCode ec, String refToMsg, String message) {
         super(ec.getName());
         ebmsErrorCode = ec;
@@ -28,6 +39,13 @@ public class EBMSError extends Exception {
 
     }
 
+    /**
+     *
+     * @param ec
+     * @param refToMsg
+     * @param message
+     * @param cause
+     */
     public EBMSError(EBMSErrorCode ec, String refToMsg, String message, Throwable cause) {
         super(ec.getName(), cause);
         ebmsErrorCode = ec;
@@ -35,6 +53,12 @@ public class EBMSError extends Exception {
         subMessage = message;
     }
 
+    /**
+     *
+     * @param ec
+     * @param refToMsg
+     * @param cause
+     */
     public EBMSError(EBMSErrorCode ec, String refToMsg, Throwable cause) {
         super(ec.getName(), cause);
         ebmsErrorCode = ec;
@@ -42,14 +66,26 @@ public class EBMSError extends Exception {
 
     }
 
+    /**
+     *
+     * @return
+     */
     public EBMSErrorCode getEbmsErrorCode() {
         return ebmsErrorCode;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getRefToMessage() {
         return refToMessage;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getSubMessage() {
         return subMessage;
     }

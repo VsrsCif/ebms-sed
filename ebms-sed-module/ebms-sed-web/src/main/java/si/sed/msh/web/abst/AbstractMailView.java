@@ -43,19 +43,42 @@ import si.sed.msh.web.gui.OutMailDataView;
 /**
  *
  * @author Jože Rihtaršič
+ * @param <S>
  */
 public abstract class AbstractMailView<T, S> {
 
+    /**
+     *
+     */
     protected static final SimpleDateFormat SDF_DDMMYYY_HH_MM_SS = new SimpleDateFormat("dd.MM.YYYY HH:mm:ss");
 
+    /**
+     *
+     */
     protected T mMail;
+
+    /**
+     *
+     */
     protected AbstractMailDataModel<T> mMailModel = null;
     StringFormater mStringFomrater = new StringFormater();
+
+    /**
+     *
+     */
     protected int mTabActiveIndex = 0;
+
+    /**
+     *
+     */
     protected List<S> mlstMailEvents = null;
 
     private DualListModel<String> msbCBExportDualList = new DualListModel<>();
 
+    /**
+     *
+     * @return
+     */
     public StreamedContent exportTableData() {
 
         List<String> mehtods = getCurrentPickupDualExportData().getTarget();
@@ -84,14 +107,27 @@ public abstract class AbstractMailView<T, S> {
         return null;
     }
 
+    /**
+     *
+     * @param date
+     * @return
+     */
     public String formatDate(Date date) {
         return SDF_DDMMYYY_HH_MM_SS.format(date);
     }
 
+    /**
+     *
+     * @return
+     */
     public T getCurrentMail() {
         return mMail;
     }
 
+    /**
+     *
+     * @return
+     */
     public DualListModel<String> getCurrentPickupDualExportData() {
 
         List<String> sbIDs = new ArrayList<>();
@@ -112,22 +148,48 @@ public abstract class AbstractMailView<T, S> {
         return msbCBExportDualList = new DualListModel<>(sbIDs, sbTrg);
     }
 
+    /**
+     *
+     * @param bi
+     * @return
+     */
     abstract public StreamedContent getFile(BigInteger bi);
 
+    /**
+     *
+     * @return
+     */
     public List<S> getMailEvents() {
         return mlstMailEvents;
     }
 
+    /**
+     *
+     * @return
+     */
     public LazyDataModel<T> getMailList() {
         return mMailModel;
     }
 
+    /**
+     *
+     * @param status
+     * @return
+     */
     abstract public String getStatusColor(String status);
 
+    /**
+     *
+     * @return
+     */
     public int getTabActiveIndex() {
         return mTabActiveIndex;
     }
 
+    /**
+     *
+     * @param event
+     */
     public void onRowSelect(SelectEvent event) {
         if (event != null) {
             setCurrentMail((T) event.getObject());
@@ -136,10 +198,18 @@ public abstract class AbstractMailView<T, S> {
         }
     }
 
+    /**
+     *
+     * @param event
+     */
     public void onRowUnselect(UnselectEvent event) {
         setCurrentMail(null);
     }
 
+    /**
+     *
+     * @param event
+     */
     public void onTabChange(TabChangeEvent event) {
         if (event != null) {
             TabView tv = (TabView) event.getComponent();
@@ -149,27 +219,53 @@ public abstract class AbstractMailView<T, S> {
         }
     }
 
+    /**
+     *
+     * @param om
+     * @return
+     */
     public int rowIndex(T om) {
         return mMailModel.getRowIndex();
     }
 
+    /**
+     *
+     * @param event
+     */
     public void search(ActionEvent event) {
         String res = (String) event.getComponent().getAttributes().get("status");
     }
 
+    /**
+     *
+     * @param mail
+     */
     public void setCurrentMail(T mail) {
         this.mMail = mail;
         updateEventList();
     }
 
+    /**
+     *
+     * @param dl
+     */
     public void setCurrentPickupDualExportData(DualListModel<String> dl) {
         msbCBExportDualList = dl;
     }
 
+    /**
+     *
+     * @param itindex
+     */
     public void setTabActiveIndex(int itindex) {
         mTabActiveIndex = itindex;
     }
 
-    ;abstract public void updateEventList();
+    ;
+
+    /**
+     *
+     */
+    abstract public void updateEventList();
 
 }

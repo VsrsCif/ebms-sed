@@ -44,20 +44,67 @@ import si.sed.commons.utils.Utils;
  */
 public class KeystoreUtils {
 
+    /**
+     *
+     */
     public static final String SEC_PROVIDER = "org.apache.ws.security.crypto.provider";
+
+    /**
+     *
+     */
     public static final String SEC_PROIDER_MERLIN = "org.apache.wss4j.common.crypto.Merlin";
+
+    /**
+     *
+     */
     public static final String SEC_MERLIN_KEYSTORE_FILE = "org.apache.ws.security.crypto.merlin.keystore.file";
+
+    /**
+     *
+     */
     public static final String SEC_MERLIN_KEYSTORE_TYPE = "org.apache.ws.security.crypto.merlin.keystore.type";
+
+    /**
+     *
+     */
     public static final String SEC_MERLIN_KEYSTORE_PASS = "org.apache.ws.security.crypto.merlin.keystore.password";
+
+    /**
+     *
+     */
     public static final String SEC_MERLIN_KEYSTORE_ALIAS = "org.apache.ws.security.crypto.merlin.keystore.alias";
 
+    /**
+     *
+     */
     public static final String SEC_MERLIN_TRUSTSTORE_FILE = "org.apache.ws.security.crypto.merlin.truststore.file";
+
+    /**
+     *
+     */
     public static final String SEC_MERLIN_TRUSTSTORE_TYPE = "org.apache.ws.security.crypto.merlin.truststore.type";
+
+    /**
+     *
+     */
     public static final String SEC_MERLIN_TRUSTSTORE_PASS = "org.apache.ws.security.crypto.merlin.truststore.password";
+
+    /**
+     *
+     */
     public static final String SEC_MERLIN_TRUSTSTORE_ALIAS = "org.apache.ws.security.crypto.merlin.truststore.alias";
 
+    /**
+     *
+     */
     protected final SEDLogger mlog = new SEDLogger(KeystoreUtils.class);
 
+    /**
+     *
+     * @param sc
+     * @return
+     * @throws SEDSecurityException
+     */
     public static KeyStore getKeystore(SEDCertStore sc) throws SEDSecurityException {
         KeyStore keyStore = null;
         try (FileInputStream fis = new FileInputStream(Utils.replaceProperties(sc.getFilePath()))) {
@@ -68,6 +115,14 @@ public class KeystoreUtils {
         return keyStore;
     }
 
+    /**
+     *
+     * @param isTrustStore
+     * @param trustStoreType
+     * @param password
+     * @return
+     * @throws SEDSecurityException
+     */
     public static KeyStore getKeystore(InputStream isTrustStore, String trustStoreType, char[] password) throws SEDSecurityException {
         KeyStore keyStore = null;
         try {
@@ -86,6 +141,14 @@ public class KeystoreUtils {
         return keyStore;
     }
 
+    /**
+     *
+     * @param ks
+     * @param alias
+     * @param passwd
+     * @return
+     * @throws SEDSecurityException
+     */
     public KeyStore.PrivateKeyEntry getPrivateKeyEntryForAlias(KeyStore ks, String alias, String passwd) throws SEDSecurityException {
 
         if (alias == null) {
@@ -104,6 +167,14 @@ public class KeystoreUtils {
         return rsaKey;
     }
 
+    /**
+     *
+     * @param ks
+     * @param alias
+     * @param psswd
+     * @return
+     * @throws SEDSecurityException
+     */
     public Key getPrivateKeyForAlias(KeyStore ks, String alias, String psswd) throws SEDSecurityException {
 
         if (alias == null) {
@@ -119,6 +190,13 @@ public class KeystoreUtils {
         return rsaKey;
     }
 
+    /**
+     *
+     * @param lst
+     * @param cert
+     * @return
+     * @throws SEDSecurityException
+     */
     public Key getPrivateKeyForX509Cert(List<SEDCertStore> lst, X509Certificate cert) throws SEDSecurityException {
 
         // find alias
@@ -144,6 +222,13 @@ public class KeystoreUtils {
         return k;
     }
 
+    /**
+     *
+     * @param ks
+     * @param cert
+     * @return
+     * @throws SEDSecurityException
+     */
     public String getPrivateKeyAliasForX509Cert(KeyStore ks, X509Certificate cert) throws SEDSecurityException {
 
         // find alias
@@ -167,6 +252,14 @@ public class KeystoreUtils {
 
     }
 
+    /**
+     *
+     * @param ks
+     * @param cert
+     * @param psswd
+     * @return
+     * @throws SEDSecurityException
+     */
     public Key getPrivateKeyForX509Cert(KeyStore ks, X509Certificate cert, String psswd) throws SEDSecurityException {
 
         // find alias
@@ -190,6 +283,13 @@ public class KeystoreUtils {
 
     }
 
+    /**
+     *
+     * @param ks
+     * @param alias
+     * @return
+     * @throws SEDSecurityException
+     */
     public X509Certificate getTrustedCertForAlias(KeyStore ks, String alias) throws SEDSecurityException {
         X509Certificate cert = null;
         try {
@@ -202,6 +302,14 @@ public class KeystoreUtils {
         return cert;
     }
 
+    /**
+     *
+     * @param filepath
+     * @param type
+     * @param password
+     * @return
+     * @throws SEDSecurityException
+     */
     public KeyStore openKeyStore(String filepath, String type, char[] password) throws SEDSecurityException {
         try (FileInputStream fis = new FileInputStream(Utils.replaceProperties(filepath))) {
             return getKeystore(fis, type, password);
@@ -210,6 +318,12 @@ public class KeystoreUtils {
         }
     }
 
+    /**
+     *
+     * @param ks
+     * @return
+     * @throws SEDSecurityException
+     */
     public List<String> getKeyStoreAliases(KeyStore ks) throws SEDSecurityException {
         List<String> lst = new ArrayList<>();
         try {
@@ -224,6 +338,12 @@ public class KeystoreUtils {
         return lst;
     }
 
+    /**
+     *
+     * @param ks
+     * @return
+     * @throws SEDSecurityException
+     */
     public List<SEDCertificate> getKeyStoreSEDCertificates(KeyStore ks) throws SEDSecurityException {
         List<SEDCertificate> lst = new ArrayList<>();
         try {
@@ -255,6 +375,12 @@ public class KeystoreUtils {
         return lst;
     }
 
+    /**
+     *
+     * @param alias
+     * @param cs
+     * @return
+     */
     public static Properties getSignProperties(String alias, SEDCertStore cs) {
         Properties signProperties = new Properties();
         signProperties.put(SEC_PROVIDER, SEC_PROIDER_MERLIN);
@@ -265,6 +391,12 @@ public class KeystoreUtils {
         return signProperties;
     }
 
+    /**
+     *
+     * @param alias
+     * @param cs
+     * @return
+     */
     public static Properties getVerifySignProperties(String alias, SEDCertStore cs) {
         Properties signVerProperties = new Properties();
         signVerProperties.put(SEC_PROVIDER, SEC_PROIDER_MERLIN);
@@ -275,6 +407,13 @@ public class KeystoreUtils {
         return signVerProperties;
     }
 
+    /**
+     *
+     * @param alias
+     * @param cs
+     * @return
+     * @throws SEDSecurityException
+     */
     public KeyStore.PrivateKeyEntry getPrivateKeyEntryForAlias(String alias, SEDCertStore cs) throws SEDSecurityException {
 
         if (alias == null) {

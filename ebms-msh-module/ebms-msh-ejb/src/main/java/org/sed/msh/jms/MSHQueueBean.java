@@ -39,6 +39,9 @@ import si.sed.commons.utils.Utils;
 @TransactionManagement(TransactionManagementType.BEAN)
 public class MSHQueueBean implements MessageListener {
 
+    /**
+     *
+     */
     public static final SEDLogger LOG = new SEDLogger(MSHQueueBean.class);
 
     @EJB(mappedName = SEDJNDI.JNDI_SEDDAO)
@@ -49,9 +52,16 @@ public class MSHQueueBean implements MessageListener {
     MshClient mmshClient = new MshClient();
     PModeManager mpModeManager = new PModeManager();
 
+    /**
+     *
+     */
     public MSHQueueBean() {
     }
 
+    /**
+     *
+     * @param msg
+     */
     @Override
     public void onMessage(Message msg) {
         long t = LOG.logStart();

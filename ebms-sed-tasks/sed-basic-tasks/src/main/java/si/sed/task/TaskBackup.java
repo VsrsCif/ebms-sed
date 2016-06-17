@@ -52,11 +52,29 @@ import si.sed.commons.utils.xml.XMLUtils;
 @Local(TaskExecutionInterface.class)
 public class TaskBackup implements TaskExecutionInterface {
 
+    /**
+     *
+     */
     public static String KEY_EXPORT_FOLDER = "backup.folder";
+
+    /**
+     *
+     */
     public static String KEY_CHUNK_SIZE = "backup.chunk.size";
+
+    /**
+     *
+     */
     public static String KEY_DELETE_OLD = "backup.clear.first";
 
+    /**
+     *
+     */
     public static SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
+
+    /**
+     *
+     */
     public static String STORAGE_FOLDER = "storage";
 
     StorageUtils mSU = new StorageUtils();
@@ -71,6 +89,12 @@ public class TaskBackup implements TaskExecutionInterface {
     @EJB(mappedName = SEDJNDI.JNDI_SEDLOOKUPS)
     SEDLookupsInterface mLookups;
 
+    /**
+     *
+     * @param p
+     * @return
+     * @throws TaskException
+     */
     @Override
     public String executeTask(Properties p) throws TaskException {
         long l = LOG.logStart();
@@ -170,6 +194,14 @@ public class TaskBackup implements TaskExecutionInterface {
         return bck;
     }
 
+    /**
+     *
+     * @param to
+     * @param f
+     * @param iChunkSize
+     * @return
+     * @throws TaskException
+     */
     public String archiveOutMails(Date to, File f, int iChunkSize) throws TaskException {
         StringWriter sw = new StringWriter();
         MSHOutMailList noList = new MSHOutMailList();
@@ -223,6 +255,14 @@ public class TaskBackup implements TaskExecutionInterface {
 
     }
 
+    /**
+     *
+     * @param to
+     * @param f
+     * @param iChunkSize
+     * @return
+     * @throws TaskException
+     */
     public String archiveInMails(Date to, File f, int iChunkSize) throws TaskException {
         StringWriter sw = new StringWriter();
         MSHInMailList noList = new MSHInMailList();
@@ -277,6 +317,11 @@ public class TaskBackup implements TaskExecutionInterface {
         return sw.toString();
     }
 
+    /**
+     *
+     * @param path
+     * @throws IOException
+     */
     public static void removeRecursive(Path path) throws IOException {
         Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
             @Override
@@ -333,6 +378,12 @@ public class TaskBackup implements TaskExecutionInterface {
         p.setProperty(KEY_DELETE_OLD, "Clear backup folder (true/false)");
         return p;
     }*/
+
+    /**
+     *
+     * @return
+     */
+
     @Override
     public SEDTaskType getTaskDefinition() {
         SEDTaskType tt = new SEDTaskType();

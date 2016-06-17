@@ -42,6 +42,10 @@ import si.sed.commons.utils.StringFormater;
 import si.sed.commons.utils.Utils;
 import si.sed.commons.utils.xml.XMLUtils;
 
+/**
+ *
+ * @author sluzba
+ */
 @WebServiceProvider(serviceName = "ebms")
 @ServiceMode(value = Service.Mode.MESSAGE)
 @BindingType(SOAPBinding.SOAP12HTTP_BINDING)
@@ -70,6 +74,9 @@ public class EBMSEndpoint implements Provider<SOAPMessage> {
     @Resource
     WebServiceContext wsContext;
 
+    /**
+     *
+     */
     public EBMSEndpoint() {
 
     }

@@ -30,14 +30,27 @@ public class XSLTExtensions {
     private static final SimpleDateFormat S_DATE_FORMAT = new SimpleDateFormat("dd.MM.yyyy");
     private static final SimpleDateFormat S_DATE_TIME_FORMAT = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
 
+    /**
+     *
+     * @return
+     */
     public static Object currentDate() {
         return S_DATE_FORMAT.format(Calendar.getInstance().getTime());
     }
 
+    /**
+     *
+     * @return
+     */
     public static Object currentDateTime() {
         return S_DATE_TIME_FORMAT.format(Calendar.getInstance().getTime());
     }
 
+    /**
+     *
+     * @param str
+     * @return
+     */
     public static Object formatDate(String str) {
         if (str == null || str.trim().isEmpty()) {
             return null;
@@ -47,6 +60,11 @@ public class XSLTExtensions {
         return S_DATE_FORMAT.format(dt);
     }
 
+    /**
+     *
+     * @param str
+     * @return
+     */
     public static Object getZPPFictionDate(String str) {
         if (str == null || str.trim().isEmpty()) {
             return null;

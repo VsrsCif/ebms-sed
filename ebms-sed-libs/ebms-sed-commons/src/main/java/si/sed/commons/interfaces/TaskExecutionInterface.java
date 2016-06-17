@@ -17,12 +17,22 @@ import si.sed.commons.interfaces.exception.TaskException;
 @Local
 public interface TaskExecutionInterface {
 
+    /**
+     *
+     * @param p
+     * @return
+     * @throws TaskException
+     */
     String executeTask(Properties p) throws TaskException;
     //String getType();
     //String getName();
     //String getDesc();
     //Properties getProperties();
 
+    /**
+     *
+     * @return
+     */
     SEDTaskType getTaskDefinition();
 
 }

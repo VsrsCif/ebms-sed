@@ -26,6 +26,13 @@ import si.sed.commons.interfaces.exception.TaskException;
 @Local(TaskExecutionInterface.class)
 public class TaskEmailStatusReport extends TaskEmailReport {
 
+    /**
+     *
+     * @param p
+     * @param sw
+     * @return
+     * @throws TaskException
+     */
     @Override
     public String generateMailReport(Properties p, StringWriter sw) throws TaskException {
 
@@ -104,6 +111,10 @@ public class TaskEmailStatusReport extends TaskEmailReport {
         return swBody.toString();
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public SEDTaskType getTaskDefinition() {
         SEDTaskType tt = super.getMailTaskDefinition();

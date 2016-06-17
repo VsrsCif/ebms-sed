@@ -27,6 +27,7 @@ import si.sed.commons.utils.SEDLogger;
 
 /**
  *
+ * @author sluzba
  */
 public class EBMSLogOutInterceptor extends AbstractLoggingInterceptor {
 
@@ -34,35 +35,64 @@ public class EBMSLogOutInterceptor extends AbstractLoggingInterceptor {
     private static final String LOG_SETUP = EBMSLogOutInterceptor.class.getName() + ".log-setup";
     SEDLogger mlog = new SEDLogger(EBMSLogOutInterceptor.class);
 
+    /**
+     *
+     * @param phase
+     */
     public EBMSLogOutInterceptor(String phase) {
         super(phase);
         addBefore(StaxOutInterceptor.class.getName());
     }
 
+    /**
+     *
+     */
     public EBMSLogOutInterceptor() {
         this(Phase.PRE_STREAM);
     }
 
+    /**
+     *
+     * @param lim
+     */
     public EBMSLogOutInterceptor(int lim) {
         this();
         limit = lim;
     }
 
+    /**
+     *
+     * @param w
+     */
     public EBMSLogOutInterceptor(PrintWriter w) {
         this();
         this.writer = w;
     }
 
+    /**
+     *
+     * @param buffer
+     * @return
+     */
     protected String formatLoggingMessage(LoggingMessage buffer) {
         return buffer.toString();
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     protected Logger getLogger() {
         return LOG;
 
     }
 
+    /**
+     *
+     * @param message
+     * @throws Fault
+     */
     @Override
     public void handleMessage(Message message) throws Fault {
         long l = mlog.logStart();
@@ -71,7 +101,6 @@ public class EBMSLogOutInterceptor extends AbstractLoggingInterceptor {
         final Writer iowriter = message.getContent(Writer.class);
         boolean isRequestor = MessageUtils.isRequestor(message);
         if (os == null && iowriter == null) {
-            System.out.println("DO NOT LOG! os == null && iowriter == null!");
             return;
         }
         File fStore = null;

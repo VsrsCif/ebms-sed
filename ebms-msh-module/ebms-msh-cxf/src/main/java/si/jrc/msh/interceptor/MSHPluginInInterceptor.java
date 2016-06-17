@@ -34,12 +34,23 @@ import si.sed.commons.utils.SEDLogger;
  */
 public class MSHPluginInInterceptor extends AbstractSoapInterceptor {
 
+    /**
+     *
+     */
     protected final SEDLogger mlog = new SEDLogger(MSHPluginInInterceptor.class);
 
+    /**
+     *
+     */
     public MSHPluginInInterceptor() {
         super(Phase.PRE_INVOKE);
     }
 
+    /**
+     *
+     * @param msg
+     * @throws Fault
+     */
     @Override
     public void handleMessage(SoapMessage msg) throws Fault {
         long l = mlog.logStart();
@@ -51,13 +62,11 @@ public class MSHPluginInInterceptor extends AbstractSoapInterceptor {
             // todo
             String str = pmd.getLegs().get(0).getBusinessInfo().getService().getInPlugin();
             if (str != null) {
-                System.out.println("LOOKUP " + str);
-
                 try {
                     SoapInterceptorInterface example = InitialContext.doLookup(str);
                     example.handleMessage(msg);
                 } catch (NamingException ex) {
-                    ex.printStackTrace();
+                    mlog.logError(l, ex);
                 }
                 /*
                 String[] lst = str.split("!");
@@ -75,7 +84,7 @@ public class MSHPluginInInterceptor extends AbstractSoapInterceptor {
                     SoapInterceptorInterface example = InitialContext.doLookup(str);
                     example.handleMessage(msg);
                 } catch (NamingException ex) {
-                    ex.printStackTrace();
+                 mlog.logError(l, ex);
                 }
 
                 /*String[] lst = str.split("!");

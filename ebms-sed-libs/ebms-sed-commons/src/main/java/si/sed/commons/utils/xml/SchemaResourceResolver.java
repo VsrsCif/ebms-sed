@@ -52,6 +52,10 @@ public class SchemaResourceResolver implements LSResourceResolver {
 
     private final String contextFolder;
 
+    /**
+     *
+     * @param contextFolder
+     */
     public SchemaResourceResolver(String contextFolder) {
         this.contextFolder = contextFolder;
     }

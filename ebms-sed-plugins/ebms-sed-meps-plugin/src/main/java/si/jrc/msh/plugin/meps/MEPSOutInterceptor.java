@@ -21,11 +21,19 @@ import si.sed.commons.interfaces.SoapInterceptorInterface;
 @TransactionManagement(TransactionManagementType.BEAN)
 public class MEPSOutInterceptor implements SoapInterceptorInterface {
 
+    /**
+     *
+     * @param t
+     */
     @Override
     public void handleFault(SoapMessage t) {
 
     }
 
+    /**
+     *
+     * @param msg
+     */
     @Override
     public void handleMessage(SoapMessage msg) {
         // create one pdf with white pages

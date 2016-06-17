@@ -30,16 +30,32 @@ public class CronExecutionModel extends AbstractMailDataModel<SEDTaskExecution> 
 
     CronExecutionFilter imtFilter = new CronExecutionFilter();
 
+    /**
+     *
+     * @param type
+     * @param userSessionData
+     * @param db
+     */
     public CronExecutionModel(Class<SEDTaskExecution> type, UserSessionData userSessionData, SEDDaoInterface db) {
         super(type);
         setUserSessionData(userSessionData, db);
     }
 
+    /**
+     *
+     * @param inMail
+     * @return
+     */
     @Override
     public Object getRowKey(SEDTaskExecution inMail) {
         return inMail.getId();
     }
 
+    /**
+     *
+     * @param inMailId
+     * @return
+     */
     @Override
     public SEDTaskExecution getRowData(String inMailId) {
         BigInteger id = new BigInteger(inMailId);
@@ -53,6 +69,10 @@ public class CronExecutionModel extends AbstractMailDataModel<SEDTaskExecution> 
         return null;
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public Object externalFilters() {
         if (imtFilter == null) {
@@ -62,10 +82,18 @@ public class CronExecutionModel extends AbstractMailDataModel<SEDTaskExecution> 
         return imtFilter;
     }
 
+    /**
+     *
+     * @return
+     */
     public CronExecutionFilter getFilter() {
         return imtFilter;
     }
 
+    /**
+     *
+     * @param imtFilter
+     */
     public void setFilter(CronExecutionFilter imtFilter) {
         this.imtFilter = imtFilter;
     }

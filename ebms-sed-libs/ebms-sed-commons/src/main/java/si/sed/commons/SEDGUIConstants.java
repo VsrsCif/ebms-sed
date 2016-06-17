@@ -11,5 +11,8 @@ package si.sed.commons;
  */
 public class SEDGUIConstants {
 
+    /**
+     *
+     */
     public static final String SESSION_USER_VARIABLE_NAME = "sed-user";
 }

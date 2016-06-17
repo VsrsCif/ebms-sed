@@ -51,6 +51,10 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import si.sed.commons.exception.SEDSecurityException;
 
+/**
+ *
+ * @author sluzba
+ */
 public class XMLSignatureUtils {
 
     private static final String HTTPHeader_ContentType = "Content-Type";
@@ -67,6 +71,10 @@ public class XMLSignatureUtils {
     private static final String XML_SIGNATURE_PROVIDER_PROP = "jsr105Provider";
     private static final String XML_SIGNATURE_PROVIDER_VALUE_1 = "org.jcp.xml.dsig.internal.dom.XMLDSigRI";
     private static final String XML_SIGNATURE_PROVIDER_VALUE_2 = "org.apache.jcp.xml.dsig.internal.dom.XMLDSigRI";
+
+    /**
+     *
+     */
     protected static final Logger mlgLogger = Logger.getLogger(XMLSignatureUtils.class.getName());
 
     private static UnsignedProperties createUnsignedPriperties(String signUriId) {
@@ -83,6 +91,11 @@ public class XMLSignatureUtils {
         return uns;
     }
 
+    /**
+     *
+     * @param strVal
+     * @return
+     */
     public static String getUUID(String strVal) {
         StringBuilder sb = new StringBuilder();
         sb.setLength(0); // clear
@@ -139,15 +152,10 @@ public class XMLSignatureUtils {
             } catch (MarshalException | XMLSignatureException ex) {
                 mlgLogger.error("SvevSignatureUtils.", ex);
             } catch (Exception ex) {
-                ex.printStackTrace();
                 mlgLogger.error("SvevSignatureUtils.", ex);
             }
 
-        } catch (ParserConfigurationException ex) {
-            mlgLogger.error("SvevSignatureUtils.", ex);
-        } catch (NoSuchAlgorithmException ex) {
-            mlgLogger.error("SvevSignatureUtils.", ex);
-        } catch (InvalidAlgorithmParameterException ex) {
+        } catch (ParserConfigurationException | NoSuchAlgorithmException | InvalidAlgorithmParameterException ex) {
             mlgLogger.error("SvevSignatureUtils.", ex);
         }
         return strDigest;
@@ -268,6 +276,13 @@ public class XMLSignatureUtils {
         return respDoc;
     }
 
+    /**
+     *
+     * @param lst
+     * @param fac
+     * @return
+     * @throws SEDSecurityException
+     */
     public List<Reference> createReferenceList(List<String[]> lst, XMLSignatureFactory fac) throws SEDSecurityException {
         long t = getTime();
         List<Reference> lstRef = new ArrayList<Reference>();
@@ -290,6 +305,13 @@ public class XMLSignatureUtils {
         return lstRef;
     }
 
+    /**
+     *
+     * @param lst
+     * @param fac
+     * @return
+     * @throws SEDSecurityException
+     */
     public SignedInfo createSignedInfo(List<String[]> lst, XMLSignatureFactory fac) throws SEDSecurityException {
         long t = getTime();
         SignedInfo si = null;
@@ -346,6 +368,12 @@ public class XMLSignatureUtils {
 
     }
 
+    /**
+     *
+     * @param cert
+     * @param fac
+     * @return
+     */
     public KeyInfo createXAdESKeyInfo(X509Certificate cert, XMLSignatureFactory fac) {
         KeyInfoFactory kif = fac.getKeyInfoFactory();
         // add certificate to signature:         
@@ -360,6 +388,16 @@ public class XMLSignatureUtils {
         return kif.newKeyInfo(items);
     }
 
+    /**
+     *
+     * @param sigId
+     * @param strSigValId
+     * @param strSigPropId
+     * @param cert
+     * @param doc
+     * @return
+     * @throws SEDSecurityException
+     */
     public XMLStructure createXAdESQualifyingProperties(String sigId, String strSigValId, String strSigPropId, X509Certificate cert, Document doc) throws SEDSecurityException {
         long t = getTime();
         XMLStructure content = null;
@@ -386,29 +424,52 @@ public class XMLSignatureUtils {
         return content;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getResultLogFolder() {
         return mstrResultLogFolder;
     }
 
+    /**
+     *
+     * @return
+     */
     protected long getTime() {
         return Calendar.getInstance().getTimeInMillis();
     }
 
+    /**
+     *
+     * @param hash
+     * @return
+     * @throws SEDSecurityException
+     */
     public Element getTimeStamp(String hash) throws SEDSecurityException {
         String reg = String.format(TIMESTAMP_REQUEST, hash, Calendar.getInstance().getTimeInMillis());
         Document d = callTimestampService(reg, getTimeStampServerUrl(), null, null);
         setIdnessToElemetns(d.getDocumentElement());
-        Element e = d.getElementById("TimeStampToken");;
+        Element e = d.getElementById("TimeStampToken");
         if (e == null) {
             e = (Element) d.getElementsByTagName("dsig:Signature").item(0);
         }
         return e;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getTimeStampServerUrl() {
         return mstrTimeStampServerUrl;
     }
 
+    /**
+     *
+     * @return
+     * @throws SEDSecurityException
+     */
     public XMLSignatureFactory getXMLSignatureFactory() throws SEDSecurityException {
         long t = getTime();
         //org.jcp.xml.dsig.internal.dom.DOMXMLSignatureFactory
@@ -441,14 +502,31 @@ public class XMLSignatureUtils {
 
     }
 
+    /**
+     *
+     * @param strMethod
+     * @param iStartTime
+     */
     protected void logEnd(final String strMethod, long iStartTime) {
         mlgLogger.info(strMethod + ": - END (" + (getTime() - iStartTime) + "ms)");
     }
 
+    /**
+     *
+     * @param strMethod
+     * @param strMessage
+     * @param iStartTime
+     * @param ex
+     */
     protected void logError(final String strMethod, String strMessage, long iStartTime, Exception ex) {
         mlgLogger.error(strMethod + ": - ERROR:" + strMethod + ":(" + (getTime() - iStartTime) + "ms)", ex);
     }
 
+    /**
+     *
+     * @param strMethod
+     * @return
+     */
     protected long logStart(final String strMethod) {
         long t = getTime();
         mlgLogger.info(strMethod + ": - BEGIN");
@@ -473,14 +551,30 @@ public class XMLSignatureUtils {
         }
     }
 
+    /**
+     *
+     * @param sResultLogFolder
+     */
     public void setResultLogFolder(String sResultLogFolder) {
         this.mstrResultLogFolder = sResultLogFolder;
     }
 
+    /**
+     *
+     * @param mstrTimeStampServerUrl
+     */
     public void setTimeStampServerUrl(String mstrTimeStampServerUrl) {
         this.mstrTimeStampServerUrl = mstrTimeStampServerUrl;
     }
 
+    /**
+     *
+     * @param certPrivateKey
+     * @param sigParentElement
+     * @param strIds
+     * @param os
+     * @throws SEDSecurityException
+     */
     public void singDocument(KeyStore.PrivateKeyEntry certPrivateKey, Element sigParentElement, List<String[]> strIds, OutputStream os) throws SEDSecurityException {
         long t = logStart("SvevSignatureUtils.singDocument");
         // get XMLSignatureFactory implemenation
@@ -576,32 +670,38 @@ public class XMLSignatureUtils {
 
         // Check core validation status
         if (coreValidity == false) {
-            System.err.println("Signature failed core validation");
-            boolean sv = signature.getSignatureValue().validate(valContext);
-            System.out.println("signature validation status: " + sv);
+            logError("validateSignature", "Signature failed core validation", 0, null);
+            boolean sv = signature.getSignatureValue().validate(valContext);            
             // check the validation status of each Reference
             Iterator i = signature.getSignedInfo().getReferences().iterator();
             for (int j = 0; i.hasNext(); j++) {
                 Reference r = ((Reference) i.next());
                 boolean refValid = r.validate(valContext);
-                System.out.println("ref[" + j + ", id: " + r.getURI() + "] validity status: " + refValid);
+                String msg = "ref[" + j + ", id: " + r.getURI() + "] validity status: " + refValid;
+                logError("validateSignature", "Signature failed core validation", 0, null);
             }
         } else {
-            System.out.println("Signature passed core validation");
             boolean sv = signature.getSignatureValue().validate(valContext);
-            System.out.println("signature validation status: " + sv);
             // check the validation status of each Reference
             Iterator i = signature.getSignedInfo().getReferences().iterator();
             for (int j = 0; i.hasNext(); j++) {
                 Reference r = ((Reference) i.next());
 
                 boolean refValid = r.validate(valContext);
-                System.out.println("ref[" + j + ", id: " + r.getURI() + "] validity status: " + refValid);
+                String msg = "ref[" + j + ", id: " + r.getURI() + "] validity status: " + refValid;
+                logError("validateSignature", "Signature failed core validation", 0, null);                
             }
         }
 
     }
 
+    /**
+     *
+     * @param fDoc
+     * @throws SEDSecurityException
+     * @throws XMLSignatureException
+     * @throws MarshalException
+     */
     public void validateXmlDSigSignature(File fDoc) throws SEDSecurityException, XMLSignatureException, MarshalException {
         FileInputStream fis = null;
         try {
@@ -620,6 +720,13 @@ public class XMLSignatureUtils {
         }
     }
 
+    /**
+     *
+     * @param is
+     * @throws SEDSecurityException
+     * @throws XMLSignatureException
+     * @throws MarshalException
+     */
     public void validateXmlDSigSignature(InputStream is) throws SEDSecurityException, XMLSignatureException, MarshalException {
         long t = logStart("SvevSignatureUtils.validateXmlDSigSignature");
 
@@ -654,6 +761,14 @@ public class XMLSignatureUtils {
 
     }
 
+    /**
+     *
+     * @param in
+     * @param logFolder
+     * @param fileNamePrefix
+     * @param fileNameSuffix
+     * @return
+     */
     public File writeToFile(InputStream in, String logFolder, String fileNamePrefix, String fileNameSuffix) {
         FileOutputStream out = null;
         File f = null;

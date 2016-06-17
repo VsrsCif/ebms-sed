@@ -77,15 +77,29 @@ public class ZPPOutInterceptor implements SoapInterceptorInterface {
     @EJB(mappedName = SEDJNDI.JNDI_SEDDAO)
     SEDDaoInterface mDB;
 
+    /**
+     *
+     */
     protected final SEDLogger LOG = new SEDLogger(ZPPOutInterceptor.class);
     DocumentSodBuilder dsbSodBuilder = new DocumentSodBuilder();
+
+    /**
+     *
+     */
     protected final SEDCrypto.SymEncAlgorithms mAlgorithem = SEDCrypto.SymEncAlgorithms.AES128_CBC;
 
+    /**
+     *
+     */
     @PersistenceContext(unitName = "ebMS_ZPP_PU", name = "ebMS_ZPP_PU")
     public EntityManager memEManager;
     FOPUtils mfpFop = null;
     HashUtils mpHU = new HashUtils();
     SEDCrypto mscCrypto = new SEDCrypto();
+
+    /**
+     *
+     */
     @Resource
     public UserTransaction mutUTransaction;
 
@@ -133,6 +147,10 @@ public class ZPPOutInterceptor implements SoapInterceptorInterface {
         return op;
     }
 
+    /**
+     *
+     * @return
+     */
     public FOPUtils getFOP() {
         if (mfpFop == null) {
             File fconf = new File(System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR) + File.separator
@@ -158,11 +176,19 @@ public class ZPPOutInterceptor implements SoapInterceptorInterface {
         return sk;
     }
 
+    /**
+     *
+     * @param t
+     */
     @Override
     public void handleFault(SoapMessage t) {
         // ignore
     }
 
+    /**
+     *
+     * @param msg
+     */
     @Override
     public void handleMessage(SoapMessage msg) {
         long l = LOG.logStart(msg);
