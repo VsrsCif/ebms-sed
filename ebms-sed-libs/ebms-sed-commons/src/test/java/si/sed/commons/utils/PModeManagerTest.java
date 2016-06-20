@@ -16,6 +16,7 @@
  */
 package si.sed.commons.utils;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import javax.xml.bind.JAXBException;
 import org.apache.log4j.ConsoleAppender;
@@ -25,6 +26,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.junit.After;
 import org.msh.svev.pmode.PModes;
+import si.sed.commons.SEDSystemProperties;
 import si.sed.commons.exception.PModeException;
 import si.sed.commons.utils.xml.XMLUtils;
 
@@ -38,6 +40,9 @@ public class PModeManagerTest {
      *
      */
     public PModeManagerTest() {
+        
+         System.setProperty(SEDSystemProperties.SYS_PROP_HOME_DIR, ".");
+         System.setProperty(SEDSystemProperties.SYS_PROP_PMODE, "test-pmode.xml");
 
         ConsoleAppender console = new ConsoleAppender(); //create appender
         //configure the appender
