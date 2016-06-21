@@ -16,6 +16,7 @@
  */
 package si.sed.task;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -209,24 +210,26 @@ public class TaskArchive implements TaskExecutionInterface {
 
         // delete record if archive succedded
         if (bDelRecords) {
-            try (FileReader fr = new FileReader(fbackMails)) {
-                String line = "";
-                while (line != null) {
+
+                try(BufferedReader br = new BufferedReader(new FileReader(fbackMails))) {
+                
+                String line;
+                while ((line = br.readLine()) != null) {
                     String data[] = line.split(":");
-                    if (data[0].equals(MSHOutMail.class.getName())) {
+                    if (data[0].equals(MSHOutMail.class.getSimpleName())) {
                         try {
                             mdao.removeOutMail(new BigInteger(data[1]));
                         } catch (StorageException ex) {
-                            LOG.logError(l, "Error removeing archived out mail: " + line, ex);
+                            LOG.logError(l, "Error removing archived out mail: " + line, ex);
                         }
-                    } else if (data[0].equals(MSHInMail.class.getName())) {
+                    } else if (data[0].equals(MSHInMail.class.getSimpleName())) {
                         try {
                             mdao.removeInMail(new BigInteger(data[1]));
                         } catch (StorageException ex) {
-                            LOG.logError(l, "Error removeing archived out mail: " + line, ex);
+                            LOG.logError(l, "Error removing archived out mail: " + line, ex);
                         }
                     } else {
-                        LOG.logError(0, "Unknown object: " + line, null);
+                        LOG.logError(l, "Unknown object: " + line, null);
                         continue;
                     }
                     // delete record()
@@ -258,12 +261,7 @@ public class TaskArchive implements TaskExecutionInterface {
 
     private File initFolders(String rootFolder, String archFolder) throws TaskException {
         File f = new File(Utils.replaceProperties(rootFolder));
-        if (f.exists()) {
-
-            throw new TaskException(TaskException.TaskExceptionCode.InitException,
-                    "Arhive: '" + f.getAbsolutePath() + "' already exists!");
-
-        }
+        
 
         if (!f.exists() && !f.mkdirs()) {
             throw new TaskException(TaskException.TaskExceptionCode.InitException,

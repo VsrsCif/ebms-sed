@@ -113,8 +113,18 @@ public class AdminSEDCronJobView extends AbstractAdminJSFView<SEDCronJob> {
         ecj.setMonth("*");
         ecj.setDayOfWeek("*");
 
-        ecj.setSEDTask(new SEDTask());
+        SEDTask tsk = new SEDTask();
+        List<SEDTaskType> stkst =  mdbLookups.getSEDTaskTypes();
+        String firstTask = null;
+        if (stkst.size()>0){
+            firstTask = stkst.get(0).getType();
+        }
+        
+        ecj.setSEDTask(tsk);
+        
+        
         setNew(ecj);
+        setEditableTask(firstTask);
 
     }
 

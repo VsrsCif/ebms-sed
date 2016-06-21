@@ -30,20 +30,20 @@
 
                      >
             <p:ajax event="rowDblselect" listener="#{adminSEDTaskTypeView.startEditSelected()}" 
-                    update=":dlgTaskType:cronDialogForm:taskType"
+                    update=":dlgTaskType:taskTypeDialogForm:taskType"
                     oncomplete="PF('taskTypeDialog').show()"/>
 
             <f:facet name="header">
                 <p:commandButton value="#{msg['Add']}"  styleClass="toolbar-Button" icon="ui-icon-sed-add" 
                                  actionListener="#{adminSEDTaskTypeView.createEditable()}"
                                  oncomplete="PF('taskTypeDialog').show()" 
-                                 update=":dlgTaskType:cronDialogForm:taskType"
+                                 update=":dlgTaskType:taskTypeDialogForm:taskType"
 
                                  />
                 <p:commandButton value="#{msg['Edit']}"  styleClass="toolbar-Button" icon="ui-icon-sed-edit" 
                                  oncomplete="PF('taskTypeDialog').show()"                                                                   
                                  actionListener="#{adminSEDTaskTypeView.startEditSelected()}"
-                                 update=":dlgTaskType:cronDialogForm:taskType"
+                                 update=":dlgTaskType:taskTypeDialogForm:taskType"
                                  />
                 <p:commandButton value="#{msg['Delete']}" styleClass="toolbar-Button" icon="ui-icon-sed-remove" 
                                  actionListener="#{adminSEDTaskTypeView.removeSelected()}" update=":forms:SettingsCron:TblTaskType" />

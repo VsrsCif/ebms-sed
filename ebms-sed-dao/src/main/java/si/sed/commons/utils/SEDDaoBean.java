@@ -371,10 +371,11 @@ public class SEDDaoBean implements SEDDaoInterface {
             // remove events
             List<E> lst = getMailEventList(typeEvent, bi);
             for (E e : lst) {
-                remove(e);
+                memEManager.remove(memEManager.contains(e) ? e : memEManager.merge(e));
+                
             }
             //remove mail
-            memEManager.remove(mail);
+            memEManager.remove(memEManager.contains(mail) ?mail : memEManager.merge(mail) );
             mutUTransaction.commit();
         } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
             {
