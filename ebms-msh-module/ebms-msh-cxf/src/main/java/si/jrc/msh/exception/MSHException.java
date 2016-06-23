@@ -80,7 +80,8 @@ public class MSHException extends Exception {
             messageParams = newMP;
 
         }
-        return String.format(mshErrorCode.getDescriptionFormat(), (Object[]) messageParams);
+        return String.format(mshErrorCode.getDescriptionFormat(),
+                (Object[]) messageParams);
     }
 
 }

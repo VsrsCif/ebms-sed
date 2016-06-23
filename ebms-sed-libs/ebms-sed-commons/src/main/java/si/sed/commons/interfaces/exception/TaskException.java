@@ -74,7 +74,9 @@ public class TaskException extends Exception {
      * @param enableSuppression
      * @param writableStackTrace
      */
-    public TaskException(TaskExceptionCode tc, String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+    public TaskException(TaskExceptionCode tc, String message, Throwable cause,
+            boolean enableSuppression,
+            boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
         nTEC = tc;
     }

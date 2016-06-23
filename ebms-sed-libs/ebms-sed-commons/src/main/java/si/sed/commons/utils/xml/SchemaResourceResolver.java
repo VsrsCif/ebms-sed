@@ -24,6 +24,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
+import static org.apache.log4j.Logger.getLogger;
 import org.w3c.dom.ls.LSInput;
 import org.w3c.dom.ls.LSResourceResolver;
 
@@ -34,7 +35,8 @@ import org.w3c.dom.ls.LSResourceResolver;
 public class SchemaResourceResolver implements LSResourceResolver {
 
     private static final String XML_NAMESPACE = "http://www.w3.org/TR/REC-xml";
-    private static final String XSD_NAMESPACE = "http://www.w3.org/2001/XMLSchema";
+    private static final String XSD_NAMESPACE =
+            "http://www.w3.org/2001/XMLSchema";
 
     private static URI getTargetURI(String baseURI, String relativePath) {
         URI targetURI = null;
@@ -43,7 +45,9 @@ public class SchemaResourceResolver implements LSResourceResolver {
             targetURI = (new URI(baseURI)).resolve(relativePath);
         } catch (URISyntaxException ex) {
             throw new RuntimeException(
-                    "Could not resolve target URI  (baseURI:'" + baseURI + "' + path: '" + relativePath + "' )- " + ex.getMessage()
+                    "Could not resolve target URI  (baseURI:'" + baseURI +
+                    "' + path: '" + relativePath + "' )- " + ex.
+                    getMessage()
             );
         }
 
@@ -61,10 +65,12 @@ public class SchemaResourceResolver implements LSResourceResolver {
     }
 
     @Override
-    public LSInput resolveResource(String type, String namespaceURI, String publicId, String systemId, String baseURI) {
+    public LSInput resolveResource(String type, String namespaceURI,
+            String publicId, String systemId, String baseURI) {
         if (!XSD_NAMESPACE.equals(type) && !XML_NAMESPACE.equals(type)) {
             throw new IllegalArgumentException(
-                    "Unexpected resource type [" + type + "], expected is [" + XSD_NAMESPACE + " or " + XML_NAMESPACE + " ]."
+                    "Unexpected resource type [" + type + "], expected is [" +
+                    XSD_NAMESPACE + " or " + XML_NAMESPACE + " ]."
             );
         }
         if (systemId == null) {
@@ -76,10 +82,12 @@ public class SchemaResourceResolver implements LSResourceResolver {
         String targetFullName = targetURI.getPath();
         LSInput input = null;
         try {
-            input = new SchemaInput(baseURI, publicId, systemId, getClass().getResourceAsStream(targetFullName));
+            input = new SchemaInput(baseURI, publicId, systemId,
+                    getClass().getResourceAsStream(targetFullName));
         } catch (Exception ex) {
             throw new RuntimeException(
-                    "Could not open resource stream -" + targetFullName + ", Error: " + ex.getMessage()
+                    "Could not open resource stream -" + targetFullName +
+                    ", Error: " + ex.getMessage()
             );
         }
 
@@ -93,11 +101,12 @@ class SchemaInput implements LSInput {
     final private String baseURI;
 
     private final BufferedInputStream inputStream;
-    Logger mlog = Logger.getLogger(SchemaInput.class);
+    Logger mlog = getLogger(SchemaInput.class);
     private String publicId;
     private String systemId;
 
-    public SchemaInput(String baseURI, String publicId, String sysId, InputStream input) {
+    public SchemaInput(String baseURI, String publicId, String sysId,
+            InputStream input) {
         this.baseURI = baseURI;
         this.publicId = publicId;
         this.systemId = sysId;
@@ -144,7 +153,9 @@ class SchemaInput implements LSInput {
             try {
                 return IOUtils.toString(inputStream);
             } catch (IOException e) {
-                mlog.error("Error reading resource: '" + baseURI + "'. Error: " + e.getMessage(), e);
+                mlog.error(
+                        "Error reading resource: '" + baseURI + "'. Error: " +
+                        e.getMessage(), e);
                 return null;
             }
         }

@@ -43,22 +43,28 @@ public class SEDCryptoTest {
             }
         } catch (IOException ex) {
             mfSecretFile = null;
-            Logger.getLogger(SEDCryptoTest.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SEDCryptoTest.class.getName()).log(Level.SEVERE,
+                    null, ex);
         }
         // set store key password parameters
-        System.getProperties().setProperty(SEDSystemProperties.SYS_PROP_HOME_DIR, "src/test/resources/certs");
+        System.getProperties().setProperty(SEDSystemProperties.SYS_PROP_HOME_DIR,
+                "src/test/resources/certs");
 
     }
 
     /**
      * Test of encrypt and decrypt file with class SEDCrypto.
+     *
      * @throws si.sed.commons.exception.SEDSecurityException
      */
     @Test
-    public void testAESEncryptDecryptFile() throws IOException, SEDSecurityException {
-        assertNotNull("Initialize error while creating temp test file", mfSecretFile);
+    public void testAESEncryptDecryptFile()
+            throws IOException, SEDSecurityException {
+        assertNotNull("Initialize error while creating temp test file",
+                mfSecretFile);
         SEDCrypto instance = new SEDCrypto();
-        for (SEDCrypto.SymEncAlgorithms alg : SEDCrypto.SymEncAlgorithms.values()) {
+        for (SEDCrypto.SymEncAlgorithms alg
+                : SEDCrypto.SymEncAlgorithms.values()) {
             // create test files
             File fEnc = File.createTempFile("secret_test", ".enc");
             File fDec = File.createTempFile("secret_test", ".dec");
@@ -69,7 +75,8 @@ public class SEDCryptoTest {
             // encrypt file
             instance.encryptFile(mfSecretFile, fEnc, skey);
             instance.decryptFile(fEnc, fDec, skey);
-            String result = new String(Files.readAllBytes(fDec.toPath()), "UTF-8");
+            String result = new String(Files.readAllBytes(fDec.toPath()),
+                    "UTF-8");
             assertEquals(TEST_DATA, result);
         }
     }
@@ -81,8 +88,10 @@ public class SEDCryptoTest {
      * @throws si.sed.commons.exception.SEDSecurityException
      */
     @Test
-    public void testEncryptAndDecryptKey() throws IOException, SEDSecurityException {
-        assertNotNull("Initialize error while creating temp test file", mfSecretFile);
+    public void testEncryptAndDecryptKey()
+            throws IOException, SEDSecurityException {
+        assertNotNull("Initialize error while creating temp test file",
+                mfSecretFile);
         SEDCrypto.SymEncAlgorithms alg = SEDCrypto.SymEncAlgorithms.AES128_CBC;
 
         // create test files
@@ -99,18 +108,24 @@ public class SEDCryptoTest {
         // encrypt file
         instance.encryptFile(mfSecretFile, fEnc, skey);
 
-        KeyStore ks = KeystoreUtils.getKeystore(SEDCryptoTest.class.getResourceAsStream(KEYSTORE), KEYSTORE_TYPE, KEYSTORE_PASSWORD.toCharArray());
-   
-   
+        KeyStore ks = KeystoreUtils.getKeystore(
+                SEDCryptoTest.class.getResourceAsStream(KEYSTORE), KEYSTORE_TYPE,
+                KEYSTORE_PASSWORD.toCharArray());
+
         // sign key cert
         X509Certificate ca = cu.getTrustedCertForAlias(ks, SIGN_KEY_ALIAS);
-        assertNotNull("Initialize error: cert with alias: '" + SIGN_KEY_ALIAS + "' not found in trustore: '" + KEYSTORE + "'!", ca);
+        assertNotNull(
+                "Initialize error: cert with alias: '" + SIGN_KEY_ALIAS +
+                "' not found in trustore: '" + KEYSTORE + "'!",
+                ca);
         // enc key
-        String encKey = instance.encryptKeyWithReceiverPublicKey(skey, ca, "receiver@test.sign.com", "key-id");
+        String encKey = instance.encryptKeyWithReceiverPublicKey(skey, ca,
+                "receiver@test.sign.com", "key-id");
         assertNotNull("Encrypting key not succeded!", encKey);
 
         // Decrypting key
-        KeyStore.PrivateKeyEntry ke = cu.getPrivateKeyEntryForAlias(ks, SIGN_KEY_ALIAS, KEY_PASSWORD);
+        KeyStore.PrivateKeyEntry ke = cu.getPrivateKeyEntryForAlias(ks,
+                SIGN_KEY_ALIAS, KEY_PASSWORD);
         Key decKey = instance.decryptKey(encKey, ke.getPrivateKey(), alg);
         assertNotNull("Decrypting key not succeded!", decKey);
 

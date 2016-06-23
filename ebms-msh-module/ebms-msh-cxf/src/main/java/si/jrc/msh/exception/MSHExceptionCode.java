@@ -35,7 +35,8 @@ public enum MSHExceptionCode {
     /**
      *
      */
-    InvalidPModeId("MSH:0101", "InvalidPModeId", "PMode with id: %s not exists", 1),
+    InvalidPModeId("MSH:0101", "InvalidPModeId", "PMode with id: %s not exists",
+            1),
 
     /**
      *
@@ -45,7 +46,8 @@ public enum MSHExceptionCode {
     /**
      *
      */
-    SecuritySettingsException("MSH:0103", "SecuritySettingsException", "Invalid PMode: %s. Error: %s", 3);
+    SecuritySettingsException("MSH:0103", "SecuritySettingsException",
+            "Invalid PMode: %s. Error: %s", 3);
 
     String code;
     String name;

@@ -117,6 +117,7 @@ public abstract class AbstractEBMSInterceptor extends AbstractSoapInterceptor {
      * @throws Fault
      */
     @Override
-    public abstract void handleMessage(SoapMessage t) throws Fault;
+    public abstract void handleMessage(SoapMessage t)
+            throws Fault;
 
 }

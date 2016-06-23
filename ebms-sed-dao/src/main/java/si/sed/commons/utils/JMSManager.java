@@ -55,19 +55,26 @@ public class JMSManager implements JMSManagerInterface {
      * @throws JMSException
      */
     @Override
-    public boolean executeProcessOnInMail(long inId, String command, String parameters) throws NamingException, JMSException {
+    public boolean executeProcessOnInMail(long inId, String command,
+            String parameters)
+            throws NamingException,
+            JMSException {
 
         boolean suc = false;
         InitialContext ic = null;
         Connection connection = null;
-        String msgFactoryJndiName = getJNDIPrefix() + SEDValues.EBMS_JMS_CONNECTION_FACTORY_JNDI;
-        String msgQueueJndiName = getJNDI_JMSPrefix() + SEDValues.JNDI_QUEUE_EXECUTION;
+        String msgFactoryJndiName = getJNDIPrefix() +
+                SEDValues.EBMS_JMS_CONNECTION_FACTORY_JNDI;
+        String msgQueueJndiName = getJNDI_JMSPrefix() +
+                SEDValues.JNDI_QUEUE_EXECUTION;
         try {
             ic = new InitialContext();
-            ConnectionFactory cf = (ConnectionFactory) ic.lookup(msgFactoryJndiName);
+            ConnectionFactory cf = (ConnectionFactory) ic.lookup(
+                    msgFactoryJndiName);
             Queue queue = (Queue) ic.lookup(msgQueueJndiName);
             connection = cf.createConnection();
-            Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+            Session session = connection.createSession(false,
+                    Session.AUTO_ACKNOWLEDGE);
             MessageProducer sender = session.createProducer(queue);
             Message message = session.createMessage();
 
@@ -114,28 +121,38 @@ public class JMSManager implements JMSManagerInterface {
      * @throws JMSException
      */
     @Override
-    public boolean sendMessage(long biPosiljkaId, String strPmodeId, int retry, long delay, boolean transacted) throws NamingException, JMSException {        
+    public boolean sendMessage(long biPosiljkaId, String strPmodeId, int retry,
+            long delay, boolean transacted)
+            throws
+            NamingException, JMSException {
         boolean suc = false;
         InitialContext ic = null;
         Connection connection = null;
-        String msgFactoryJndiName = getJNDIPrefix() + SEDValues.EBMS_JMS_CONNECTION_FACTORY_JNDI;
-        String msgQueueJndiName = getJNDI_JMSPrefix() + SEDValues.JNDI_QUEUE_EBMS;
+        String msgFactoryJndiName = getJNDIPrefix() +
+                SEDValues.EBMS_JMS_CONNECTION_FACTORY_JNDI;
+        String msgQueueJndiName = getJNDI_JMSPrefix() +
+                SEDValues.JNDI_QUEUE_EBMS;
         try {
             ic = new InitialContext();
-            ConnectionFactory cf = (ConnectionFactory) ic.lookup(msgFactoryJndiName);
+            ConnectionFactory cf = (ConnectionFactory) ic.lookup(
+                    msgFactoryJndiName);
             Queue queue = (Queue) ic.lookup(msgQueueJndiName);
             connection = cf.createConnection();
-            Session session = connection.createSession(transacted, Session.AUTO_ACKNOWLEDGE);
+            Session session = connection.createSession(transacted,
+                    Session.AUTO_ACKNOWLEDGE);
             MessageProducer sender = session.createProducer(queue);
             Message message = session.createMessage();
 
-            message.setLongProperty(SEDValues.EBMS_QUEUE_PARAM_MAIL_ID, biPosiljkaId);
-            message.setStringProperty(SEDValues.EBMS_QUEUE_PARAM_PMODE_ID, strPmodeId);
+            message.setLongProperty(SEDValues.EBMS_QUEUE_PARAM_MAIL_ID,
+                    biPosiljkaId);
+            message.setStringProperty(SEDValues.EBMS_QUEUE_PARAM_PMODE_ID,
+                    strPmodeId);
 
             message.setIntProperty(SEDValues.EBMS_QUEUE_PARAM_RETRY, retry);
             message.setLongProperty(SEDValues.EBMS_QUEUE_PARAM_DELAY, delay);
             message.setLongProperty(SEDValues.EBMS_QUEUE_DELAY_AMQ, delay);
-            message.setLongProperty(SEDValues.EBMS_QUEUE_DELAY_Artemis, System.currentTimeMillis() + delay);
+            message.setLongProperty(SEDValues.EBMS_QUEUE_DELAY_Artemis,
+                    System.currentTimeMillis() + delay);
 
             sender.send(message);
             suc = true;

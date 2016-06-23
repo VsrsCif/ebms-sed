@@ -7,11 +7,16 @@ package si.sed.commons.utils.sec;
 import java.security.Key;
 import java.security.KeyStoreException;
 import java.security.cert.CertificateFactory;
+import static java.security.cert.CertificateFactory.getInstance;
 import java.security.cert.X509Certificate;
 import java.util.Iterator;
 import javax.xml.crypto.*;
 import javax.xml.crypto.dsig.*;
+import static javax.xml.crypto.dsig.SignatureMethod.DSA_SHA1;
+import static javax.xml.crypto.dsig.SignatureMethod.RSA_SHA1;
 import javax.xml.crypto.dsig.keyinfo.*;
+import static javax.xml.crypto.dsig.keyinfo.X509Data.RAW_X509_CERTIFICATE_TYPE;
+import static javax.xml.crypto.dsig.keyinfo.X509Data.TYPE;
 
 /**
  *
@@ -32,14 +37,12 @@ public class XMLSignatureX509KeySelector extends KeySelector {
      */
     //@@@FIXME: this should also work for key types other than DSA/RSA
     private boolean algEquals(String algURI, String algName) {
-        if (algName.equalsIgnoreCase("DSA")
-                && algURI.equalsIgnoreCase(SignatureMethod.DSA_SHA1)) {
-            return true;
-        } else if (algName.equalsIgnoreCase("RSA")
-                && algURI.equalsIgnoreCase(SignatureMethod.RSA_SHA1)) {
+        if (algName.equalsIgnoreCase("DSA") &&
+                algURI.equalsIgnoreCase(DSA_SHA1)) {
             return true;
         } else {
-            return false;
+            return algName.equalsIgnoreCase("RSA") &&
+                    algURI.equalsIgnoreCase(RSA_SHA1);
         }
     }
 
@@ -59,10 +62,11 @@ public class XMLSignatureX509KeySelector extends KeySelector {
      * a match; otherwise null
      */
     private KeySelectorResult certSelect(X509Certificate xcert,
-            SignatureMethod sm) throws KeyStoreException {
+            SignatureMethod sm)
+            throws KeyStoreException {
         // skip non-signer certs
         //System.out.println("X509KeySelector.certSelect 1");
-    
+
         boolean[] keyUsage = xcert.getKeyUsage();
         if (keyUsage != null && keyUsage[0] == false) {
             return null;
@@ -87,9 +91,9 @@ public class XMLSignatureX509KeySelector extends KeySelector {
      * signature algorithm URI.
      */
     private String getPKAlgorithmOID(String algURI) {
-        if (algURI.equalsIgnoreCase(SignatureMethod.DSA_SHA1)) {
+        if (algURI.equalsIgnoreCase(DSA_SHA1)) {
             return "1.2.840.10040.4.1";
-        } else if (algURI.equalsIgnoreCase(SignatureMethod.RSA_SHA1)) {
+        } else if (algURI.equalsIgnoreCase(RSA_SHA1)) {
             return "1.2.840.113549.1.1";
         } else {
             return null;
@@ -99,7 +103,8 @@ public class XMLSignatureX509KeySelector extends KeySelector {
     @Override
     public KeySelectorResult select(KeyInfo keyInfo,
             KeySelector.Purpose purpose, AlgorithmMethod method,
-            XMLCryptoContext context) throws KeySelectorException {
+            XMLCryptoContext context)
+            throws KeySelectorException {
         //System.out.println("X509KeySelector.select ");
         SignatureMethod sm = (SignatureMethod) method;
 
@@ -127,20 +132,26 @@ public class XMLSignatureX509KeySelector extends KeySelector {
                     RetrievalMethod rm = (RetrievalMethod) kiType;
                     try {
                         KeySelectorResult ksr = null;
-                        if (rm.getType().equals(X509Data.RAW_X509_CERTIFICATE_TYPE)) {
-                            OctetStreamData data = (OctetStreamData) rm.dereference(context);
-                            CertificateFactory cf
-                                    = CertificateFactory.getInstance("X.509");
-                            X509Certificate cert = (X509Certificate) cf.generateCertificate(data.getOctetStream());
-                            ksr = certSelect(cert, sm);
-                        } else if (rm.getType().equals(X509Data.TYPE)) {
-                            //System.out.println("X509KeySelector.select 4");
-                            NodeSetData nd = (NodeSetData) rm.dereference(context);
-                            // convert nd to X509Data
-                            // ksr = x509DataSelect(xd, sm);
-                        } else {
-                            // skip; keyinfo type is not supported
-                            continue;
+                        switch (rm.getType()) {
+                            case RAW_X509_CERTIFICATE_TYPE:
+                                OctetStreamData data =
+                                        (OctetStreamData) rm.dereference(context);
+                                CertificateFactory cf = getInstance("X.509");
+                                X509Certificate cert =
+                                        (X509Certificate) cf.generateCertificate(
+                                                data.getOctetStream());
+                                ksr = certSelect(cert, sm);
+                                break;
+                            case TYPE:
+                                //System.out.println("X509KeySelector.select 4");
+                                NodeSetData nd = (NodeSetData) rm.dereference(
+                                        context);
+                                // convert nd to X509Data
+                                // ksr = x509DataSelect(xd, sm);
+                                break;
+                            default:
+                                // skip; keyinfo type is not supported
+                                continue;
                         }
                         if (ksr != null) {
                             return ksr;
@@ -230,7 +241,7 @@ public class XMLSignatureX509KeySelector extends KeySelector {
 	    // not supported: should use CertPath API
 	    }*/ else {
                 // skip all other entries
-                continue;
+
             }
 
         }

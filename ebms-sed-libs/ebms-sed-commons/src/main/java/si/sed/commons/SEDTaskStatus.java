@@ -25,17 +25,17 @@ public enum SEDTaskStatus {
     /**
      *
      */
-    INIT("INIT", "Task initialize.", "orange"), 
+    INIT("INIT", "Task initialize.", "orange"),
 
     /**
      *
      */
-    PROGRESS("PROGRESS", "Task is in progress.", "gray"), 
+    PROGRESS("PROGRESS", "Task is in progress.", "gray"),
 
     /**
      *
      */
-    SUCCESS("SUCCESS", "Task ended successfully", "blue"), 
+    SUCCESS("SUCCESS", "Task ended successfully", "blue"),
 
     /**
      *

@@ -14,8 +14,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Logger.getLogger;
 import org.msh.ebms.inbox.mail.MSHInMail;
 
 /**
@@ -39,20 +39,23 @@ public class StringFormater {
         StringWriter sw = new StringWriter();
         sw.write(i + ".");
 
-        for (String mth : methods) {
+        methods.stream().
+                forEach((mth) -> {
+                    try {
+                        Method md = cls.getDeclaredMethod("get" + mth);
+                        Object res = md.invoke(obj, new Object[0]);
 
-            try {
-                Method md = cls.getDeclaredMethod("get" + mth);
-                Object res = md.invoke(obj, new Object[0]);
+                        String value = object2String(res);
+                        sw.write(",");
+                        sw.write(value.replace("\\", "\\\\").replace(",", "\\,"));
 
-                String value = object2String(res);
-                sw.write(",");
-                sw.write(value.replace("\\", "\\\\").replace(",", "\\,"));
-
-            } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-                Logger.getLogger(StringFormater.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
+                    } catch (NoSuchMethodException | SecurityException |
+                            IllegalAccessException |
+                            IllegalArgumentException | InvocationTargetException ex) {
+                        getLogger(StringFormater.class.getName()).log(SEVERE,
+                                null, ex);
+                    }
+                });
 
         return sw.toString();
     }
@@ -73,11 +76,14 @@ public class StringFormater {
                 String strName = mt.getName().substring(3);
                 Object put = null;
                 try {
-                    if (mt.getParameterTypes() == null || mt.getParameterTypes().length == 0) {
+                    if (mt.getParameterTypes() == null ||
+                            mt.getParameterTypes().length == 0) {
                         put = mt.invoke(dce, new Object[0]);
                     }
-                } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-                    Logger.getLogger(StringFormater.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (IllegalAccessException | IllegalArgumentException |
+                        InvocationTargetException ex) {
+                    getLogger(StringFormater.class.getName()).log(SEVERE, null,
+                            ex);
                 }
                 hm.put(strName, put);
 
@@ -96,17 +102,17 @@ public class StringFormater {
 
         StringBuilder builder = new StringBuilder(str);
 
-        for (Map.Entry<String, Object> entry : values.entrySet()) {
+        values.entrySet().stream().
+                forEach((entry) -> {
+                    int start;
+                    String pattern = "${" + entry.getKey() + "}";
+                    String value = object2String(entry.getValue());
 
-            int start;
-            String pattern = "${" + entry.getKey() + "}";
-            String value = object2String(entry.getValue());
-
-            // Replace every occurence of %(key) with value
-            while ((start = builder.indexOf(pattern)) != -1) {
-                builder.replace(start, start + pattern.length(), value);
-            }
-        }
+                    // Replace every occurence of %(key) with value
+                    while ((start = builder.indexOf(pattern)) != -1) {
+                        builder.replace(start, start + pattern.length(), value);
+                    }
+                });
 
         return builder.toString();
     }

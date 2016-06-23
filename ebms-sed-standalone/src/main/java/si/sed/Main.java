@@ -60,17 +60,20 @@ public class Main {
 
     static {
         S_CONF = StandaloneSettings.getInstance();
-        System.out.println("INIT HOME_FOLDER:" + S_CONF.getHome().getAbsolutePath());
+        System.out.println("INIT HOME_FOLDER:" +
+                S_CONF.getHome().getAbsolutePath());
         // init home folder
         copyFromJar(SED_HOME_TEMPLATE, S_CONF.getHome().toPath());
         // inizialize log4j
         System.out.println("INIT LOG4J");
-        PropertyConfigurator.configure(S_CONF.getLogPropertiesFile().getAbsolutePath());
+        PropertyConfigurator.configure(
+                S_CONF.getLogPropertiesFile().getAbsolutePath());
     }
 
     protected final SEDLogger mlog = new SEDLogger(Main.class);
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args)
+            throws Exception {
 
         // start server
         Server server = new Server(S_CONF.getPort());
@@ -118,28 +121,39 @@ public class Main {
 
         try {
             // create derby database
-            String strDBPath = S_CONF.getHome().getAbsolutePath() + File.separator + "db" + File.separator + "ebms-sed";
+            String strDBPath = S_CONF.getHome().getAbsolutePath() +
+                    File.separator + "db" + File.separator + "ebms-sed";
             Properties properties = new Properties();
-            properties.put("javax.persistence.jdbc.url", "jdbc:derby:" + strDBPath + ";create=true");
-            properties.put("javax.persistence.jdbc.driver", "org.apache.derby.jdbc.EmbeddedDriver");
-            properties.put("hibernate.cache.provider_class", "org.hibernate.cache.NoCacheProvider");
-            properties.put("hibernate.dialect", "org.hibernate.dialect.DerbyTenSevenDialect");
+            properties.put("javax.persistence.jdbc.url", "jdbc:derby:" +
+                    strDBPath + ";create=true");
+            properties.put("javax.persistence.jdbc.driver",
+                    "org.apache.derby.jdbc.EmbeddedDriver");
+            properties.put("hibernate.cache.provider_class",
+                    "org.hibernate.cache.NoCacheProvider");
+            properties.put("hibernate.dialect",
+                    "org.hibernate.dialect.DerbyTenSevenDialect");
             properties.put("hibernate.archive.autodetection", "class");
             properties.put("hibernate.connection.autocommit", "false");
             if (Files.notExists(Paths.get(strDBPath))) {
                 properties.put("hibernate.hbm2ddl.auto", "create"); // overide properties
             }
 
-            EntityManagerFactory emf = Persistence.createEntityManagerFactory(PU_NAME, properties);
+            EntityManagerFactory emf = Persistence.createEntityManagerFactory(
+                    PU_NAME, properties);
             EntityManager em = emf.createEntityManager();
             UserTransaction ut = new JettyUserTransaction(em.getTransaction());
-            org.eclipse.jetty.plus.jndi.Resource myEntityManage = new org.eclipse.jetty.plus.jndi.Resource(webapp, PU_NAME,
-                    em);
+            org.eclipse.jetty.plus.jndi.Resource myEntityManage =
+                    new org.eclipse.jetty.plus.jndi.Resource(webapp,
+                            PU_NAME,
+                            em);
 
-            org.eclipse.jetty.plus.jndi.Resource myEntityManage2 = new org.eclipse.jetty.plus.jndi.Resource(webapp, PU_MSH_NAME,
-                    em);
+            org.eclipse.jetty.plus.jndi.Resource myEntityManage2 =
+                    new org.eclipse.jetty.plus.jndi.Resource(webapp,
+                            PU_MSH_NAME,
+                            em);
 
-            org.eclipse.jetty.plus.jndi.Transaction transactionMgr = new org.eclipse.jetty.plus.jndi.Transaction(ut);
+            org.eclipse.jetty.plus.jndi.Transaction transactionMgr =
+                    new org.eclipse.jetty.plus.jndi.Transaction(ut);
 
         } catch (NamingException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
@@ -147,28 +161,36 @@ public class Main {
 
     }
 
-    public static MSHQueueBean setJMSEnvironment(WebAppContext webapp) throws NamingException, JMSException {
+    public static MSHQueueBean setJMSEnvironment(WebAppContext webapp)
+            throws NamingException, JMSException {
         Properties p = new Properties();
-        p.put(Context.INITIAL_CONTEXT_FACTORY, "org.apache.activemq.jndi.ActiveMQInitialContextFactory");
-        p.put("java.naming.provider.url", "vm://localhost?broker.persistent=false");
+        p.put(Context.INITIAL_CONTEXT_FACTORY,
+                "org.apache.activemq.jndi.ActiveMQInitialContextFactory");
+        p.put("java.naming.provider.url",
+                "vm://localhost?broker.persistent=false");
         InitialContext context = new InitialContext(p);
-        ActiveMQConnectionFactory connectionFactory = (ActiveMQConnectionFactory) context.lookup(JNDI_CONNECTION_FACTORY);
+        ActiveMQConnectionFactory connectionFactory =
+                (ActiveMQConnectionFactory) context.
+                lookup(JNDI_CONNECTION_FACTORY);
 
         // Create a Connection
         Connection connection = connectionFactory.createConnection();
         connection.start();
         // Create a Session
-        Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+        Session session = connection.createSession(false,
+                Session.AUTO_ACKNOWLEDGE);
         // Create the destination Queue
         Queue mshQue = session.createQueue("queue/MSHQueue");
         // add consumer
         MessageConsumer mc = session.createConsumer(mshQue);
         MSHQueueBean mshConsumer = new MSHQueueBean();
         mc.setMessageListener(mshConsumer);
-        Resource myQueue = new org.eclipse.jetty.plus.jndi.Resource(webapp, "queue/MSHQueue",
+        Resource myQueue = new org.eclipse.jetty.plus.jndi.Resource(webapp,
+                "queue/MSHQueue",
                 mshQue);
 
-        Resource mConnectionFactory = new org.eclipse.jetty.plus.jndi.Resource(webapp, JNDI_CONNECTION_FACTORY,
+        Resource mConnectionFactory = new org.eclipse.jetty.plus.jndi.Resource(
+                webapp, JNDI_CONNECTION_FACTORY,
                 connectionFactory);
         return mshConsumer;
     }
@@ -194,16 +216,20 @@ public class Main {
 
     public static void copyPath(Path path) {
         try {
-            Path target = Paths.get(S_CONF.getHome().getAbsolutePath() + path.toString().substring(SED_HOME_TEMPLATE.length()));
+            Path target = Paths.get(S_CONF.getHome().getAbsolutePath() +
+                    path.toString().substring(SED_HOME_TEMPLATE.
+                            length()));
             if (!Files.exists(target, LinkOption.NOFOLLOW_LINKS)) {
                 if (Files.isDirectory(path)) {
                     Files.createDirectories(target);
                 } else {
-                    Files.copy(Main.class.getResourceAsStream(path.toString()), target, StandardCopyOption.REPLACE_EXISTING);
+                    Files.copy(Main.class.getResourceAsStream(path.toString()),
+                            target,
+                            StandardCopyOption.REPLACE_EXISTING);
                 }
             }
         } catch (IOException ex) {
-            ex.printStackTrace();
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }

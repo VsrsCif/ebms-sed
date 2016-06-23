@@ -56,15 +56,26 @@ public class PModeView extends AbstractAdminJSFView<PMode> {
     @PostConstruct
     public void init() {
         mLookupMep = new HashMap<>();
-        mLookupMep.put("One-Way MEP", "http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/oneWay");
-        mLookupMep.put("Two-Way MEP", "http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/twoWay");
+        mLookupMep.put("One-Way MEP",
+                "http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/oneWay");
+        mLookupMep.put("Two-Way MEP",
+                "http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/twoWay");
         mLookupMepBinding = new HashMap<>();
-        mLookupMepBinding.put("Push", "http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/push");
-        mLookupMepBinding.put("Pull", "http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/pull");
-        mLookupMepBinding.put("Sync", "http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/sync");
-        mLookupMepBinding.put("PushAndPush", "http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/pushAndPush");
-        mLookupMepBinding.put("PushAndPull", "http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/pushAndPull");
-        mLookupMepBinding.put("PullAndPush", "http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/pullAndPush");
+        mLookupMepBinding.put("Push",
+                "http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/push");
+        mLookupMepBinding.put("Pull",
+                "http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/pull");
+        mLookupMepBinding.put("Sync",
+                "http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/sync");
+        mLookupMepBinding.
+                put("PushAndPush",
+                        "http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/pushAndPush");
+        mLookupMepBinding.
+                put("PushAndPull",
+                        "http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/pushAndPull");
+        mLookupMepBinding.
+                put("PullAndPush",
+                        "http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/pullAndPush");
     }
 
     /**
@@ -72,7 +83,9 @@ public class PModeView extends AbstractAdminJSFView<PMode> {
      */
     @Override
     public void createEditable() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        PMode pmode = new PMode();
+        setNew(pmode);
+
     }
 
     /**
@@ -80,8 +93,17 @@ public class PModeView extends AbstractAdminJSFView<PMode> {
      */
     @Override
     public void removeSelected() {
-        if (getSelected() != null) {
-            pm.removePMode(getSelected());
+        long l = LOG.logStart();
+        try {
+            System.out.println("remove selected");
+            if (getSelected() != null) {
+                System.out.println("remove selected 1");
+                pm.removePMode(getSelected());
+            }
+            System.out.println("Save PModes");
+            pm.savePMode();
+        } catch (PModeException ex) {
+            LOG.logError(l, null, ex);
         }
     }
 
@@ -90,7 +112,20 @@ public class PModeView extends AbstractAdminJSFView<PMode> {
      */
     @Override
     public void persistEditable() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        long l = LOG.logStart();
+        PMode pmode = getEditable();
+        System.out.println("persistEditable");
+        if (pmode != null) {
+            System.out.println("persistEditable 2");
+            pm.add(pmode);
+            setEditable(null);
+            try {
+                System.out.println("age persistEditable");
+                pm.savePMode();
+            } catch (PModeException ex) {
+                LOG.logError(l, null, ex);
+            }
+        }
     }
 
     /**
@@ -98,7 +133,15 @@ public class PModeView extends AbstractAdminJSFView<PMode> {
      */
     @Override
     public void updateEditable() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        long l = LOG.logStart();
+        PMode pmode = getEditable();
+        if (pmode != null) {
+            try {
+                pm.savePMode();
+            } catch (PModeException ex) {
+                LOG.logError(l, null, ex);
+            }
+        }
     }
 
     /**
@@ -145,9 +188,16 @@ public class PModeView extends AbstractAdminJSFView<PMode> {
         PMode pmed = getEditable();
         if (pmed != null) {
             try {
-                PMode pmdNew = (PMode) XMLUtils.deserialize(strPMode, PMode.class);
-                setEditable(pmdNew);
-                pm.replace(pmdNew, pmed.getId());
+                PMode pmdNew = (PMode) XMLUtils.deserialize(strPMode,
+                        PMode.class);
+
+                if (pmed == getNew()) {
+                    setNew(pmdNew);
+                } else {
+                    setEditable(pmdNew);
+                    pm.replace(pmdNew, pmed.getId());
+                }
+
             } catch (JAXBException ex) {
                 LOG.logError(l, null, ex);
             }

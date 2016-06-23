@@ -61,7 +61,8 @@ import si.sed.commons.utils.SEDLogger;
  */
 public class EBMSLogInInterceptor extends AbstractLoggingInterceptor {
 
-    private static final Logger LOG = LogUtils.getLogger(EBMSLogInInterceptor.class);
+    private static final Logger LOG = LogUtils.getLogger(
+            EBMSLogInInterceptor.class);
 
     /**
      *
@@ -123,29 +124,38 @@ public class EBMSLogInInterceptor extends AbstractLoggingInterceptor {
      * @param msg
      * @throws Fault
      */
-    public void handleMessage(Message msg) throws Fault {
+    public void handleMessage(Message msg)
+            throws Fault {
         long l = mlog.logStart();
         Logger logger = LOG;
 
         boolean isRequestor = MessageUtils.isRequestor(msg);
-        String base = (String) msg.getExchange().get(EbMSConstants.EBMS_CP_BASE_LOG_SOAP_MESSAGE_FILE);
+        String base = (String) msg.getExchange().get(
+                EbMSConstants.EBMS_CP_BASE_LOG_SOAP_MESSAGE_FILE);
         File f = EBMSLogUtils.getInboundFileName(isRequestor, base);
         base = EBMSLogUtils.getBaseFileName(f);
-        msg.getExchange().put(EbMSConstants.EBMS_CP_BASE_LOG_SOAP_MESSAGE_FILE, base);
+        msg.getExchange().put(EbMSConstants.EBMS_CP_BASE_LOG_SOAP_MESSAGE_FILE,
+                base);
         msg.getExchange().put(EbMSConstants.EBMS_CP_IN_LOG_SOAP_MESSAGE_FILE, f);
 
-        mlog.log("In from: '" + getURI(msg) + "' " + (isRequestor ? "response" : "request") + " stored to:" + f.getName());
+        mlog.log("In from: '" + getURI(msg) + "' " + (isRequestor ? "response" :
+                "request") + " stored to:" + f.
+                getName());
         try {
             writer = new PrintWriter(f);
         } catch (FileNotFoundException ex) {
-            String errmsg = "Application error store outbound message to file: '" + f.getAbsolutePath() + "'! ";
+            String errmsg =
+                    "Application error store outbound message to file: '" +
+                    f.getAbsolutePath() + "'! ";
             mlog.logError(l, errmsg, ex);
         }
 
         try {
             writer = new PrintWriter(f);
         } catch (FileNotFoundException ex) {
-            String errmsg = "Application error store outbound message to file: '" + f.getAbsolutePath() + "'! ";
+            String errmsg =
+                    "Application error store outbound message to file: '" +
+                    f.getAbsolutePath() + "'! ";
             mlog.logError(l, errmsg, ex);
         }
 
@@ -162,7 +172,8 @@ public class EBMSLogInInterceptor extends AbstractLoggingInterceptor {
      * @param encoding
      * @param ct
      */
-    protected void logInputStream(Message message, InputStream is, LoggingMessage buffer,
+    protected void logInputStream(Message message, InputStream is,
+            LoggingMessage buffer,
             String encoding, String ct) {
         CachedOutputStream bos = new CachedOutputStream();
         if (threshold > 0) {
@@ -170,12 +181,13 @@ public class EBMSLogInInterceptor extends AbstractLoggingInterceptor {
         }
         try {
             // use the appropriate input stream and restore it later
-            InputStream bis = is instanceof DelegatingInputStream
-                    ? ((DelegatingInputStream) is).getInputStream() : is;
+            InputStream bis = is instanceof DelegatingInputStream ?
+                    ((DelegatingInputStream) is).getInputStream() : is;
 
             //only copy up to the limit since that's all we need to log
             //we can stream the rest
-            IOUtils.copyAtLeast(bis, bos, limit == -1 ? Integer.MAX_VALUE : limit);
+            IOUtils.copyAtLeast(bis, bos, limit == -1 ? Integer.MAX_VALUE :
+                    limit);
             bos.flush();
             bis = new SequenceInputStream(bos.getInputStream(), bis);
 
@@ -189,10 +201,12 @@ public class EBMSLogInInterceptor extends AbstractLoggingInterceptor {
             if (bos.getTempFile() != null) {
                 //large thing on disk...
                 buffer.getMessage().append("\nMessage (saved to tmp file):\n");
-                buffer.getMessage().append("Filename: ").append(bos.getTempFile().getAbsolutePath()).append("\n");
+                buffer.getMessage().append("Filename: ").append(
+                        bos.getTempFile().getAbsolutePath()).append("\n");
             }
             if (bos.size() > limit && limit != -1) {
-                buffer.getMessage().append("(message truncated to ").append(limit).append(" bytes)\n");
+                buffer.getMessage().append("(message truncated to ").append(
+                        limit).append(" bytes)\n");
             }
             writePayload(buffer.getPayload(), bos, encoding, ct);
 
@@ -208,7 +222,8 @@ public class EBMSLogInInterceptor extends AbstractLoggingInterceptor {
      * @param reader
      * @param buffer
      */
-    protected void logReader(Message message, Reader reader, LoggingMessage buffer) {
+    protected void logReader(Message message, Reader reader,
+            LoggingMessage buffer) {
         try {
             CachedWriter writer = new CachedWriter();
             IOUtils.copyAndCloseInput(reader, writer);
@@ -217,10 +232,12 @@ public class EBMSLogInInterceptor extends AbstractLoggingInterceptor {
             if (writer.getTempFile() != null) {
                 //large thing on disk...
                 buffer.getMessage().append("\nMessage (saved to tmp file):\n");
-                buffer.getMessage().append("Filename: ").append(writer.getTempFile().getAbsolutePath()).append("\n");
+                buffer.getMessage().append("Filename: ").append(
+                        writer.getTempFile().getAbsolutePath()).append("\n");
             }
             if (writer.size() > limit && limit != -1) {
-                buffer.getMessage().append("(message truncated to ").append(limit).append(" bytes)\n");
+                buffer.getMessage().append("(message truncated to ").append(
+                        limit).append(" bytes)\n");
             }
             writer.writeCacheTo(buffer.getPayload(), limit);
         } catch (Exception e) {
@@ -234,7 +251,8 @@ public class EBMSLogInInterceptor extends AbstractLoggingInterceptor {
      * @param message
      * @throws Fault
      */
-    protected void logging(Logger logger, Message message) throws Fault {
+    protected void logging(Logger logger, Message message)
+            throws Fault {
         if (message.containsKey(LoggingMessage.ID_KEY)) {
             return;
         }
@@ -244,8 +262,9 @@ public class EBMSLogInInterceptor extends AbstractLoggingInterceptor {
             message.getExchange().put(LoggingMessage.ID_KEY, id);
         }
         message.put(LoggingMessage.ID_KEY, id);
-        final LoggingMessage buffer
-                = new LoggingMessage("Inbound Message\n----------------------------", id);
+        final LoggingMessage buffer =
+                new LoggingMessage(
+                        "Inbound Message\n----------------------------", id);
 
         if (!Boolean.TRUE.equals(message.get(Message.DECOUPLED_CHANNEL_MESSAGE))) {
             // avoid logging the default responseCode 200 for the decoupled responses

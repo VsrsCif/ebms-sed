@@ -20,7 +20,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import static java.lang.String.format;
 import java.security.MessageDigest;
+import static java.security.MessageDigest.getInstance;
 import java.security.NoSuchAlgorithmException;
 import si.sed.commons.exception.HashException;
 
@@ -43,11 +45,13 @@ public class HashUtils {
      * @return
      * @throws HashException
      */
-    public String getMD5Hash(File file) throws HashException {
+    public String getMD5Hash(File file)
+            throws HashException {
         try (FileInputStream fis = new FileInputStream(file)) {
             return getMD5Hash(fis);
         } catch (IOException ex) {
-            throw new HashException("Error reading file '" + file.getAbsolutePath() + "'.", ex);
+            throw new HashException("Error reading file '" +
+                    file.getAbsolutePath() + "'.", ex);
         }
     }
 
@@ -57,7 +61,8 @@ public class HashUtils {
      * @return
      * @throws HashException
      */
-    public String getMD5Hash(String filePath) throws HashException {
+    public String getMD5Hash(String filePath)
+            throws HashException {
         try (FileInputStream fis = new FileInputStream(filePath)) {
             return getMD5Hash(fis);
         } catch (IOException ex) {
@@ -71,7 +76,8 @@ public class HashUtils {
      * @return
      * @throws HashException
      */
-    public String getMD5Hash(InputStream is) throws HashException {
+    public String getMD5Hash(InputStream is)
+            throws HashException {
         String strHash = null;
         try {
             MessageDigest md5 = getMD5MessageDigest();
@@ -87,19 +93,22 @@ public class HashUtils {
             //converting byte array to Hexadecimal String
             StringBuilder sb = new StringBuilder(2 * hash.length);
             for (byte b : hash) {
-                sb.append(String.format("%02x", b & 0xff));
+                sb.append(format("%02x", b & 0xff));
             }
             strHash = sb.toString();
         } catch (NoSuchAlgorithmException ex) {
-            throw new HashException("System error. Check deployment, missing MD5 (MessageDigest) algoritem.", ex);
+            throw new HashException(
+                    "System error. Check deployment, missing MD5 (MessageDigest) algoritem.",
+                    ex);
         } catch (IOException ex) {
             throw new HashException("Error reading inputstream", ex);
         }
         return strHash;
     }
 
-    private MessageDigest getMD5MessageDigest() throws NoSuchAlgorithmException {
-        return mdMD5 == null ? (mdMD5 = MessageDigest.getInstance(MessageDigest_MD5)) : mdMD5;
+    private MessageDigest getMD5MessageDigest()
+            throws NoSuchAlgorithmException {
+        return mdMD5 == null ? (mdMD5 = getInstance(MessageDigest_MD5)) : mdMD5;
     }
 
 }

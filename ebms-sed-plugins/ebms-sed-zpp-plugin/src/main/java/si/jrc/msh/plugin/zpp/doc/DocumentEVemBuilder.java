@@ -38,8 +38,10 @@ import si.sed.commons.utils.Utils;
  */
 public class DocumentEVemBuilder extends DocumentBuilder {
 
-    private static final String NM_DATA = "http://www.crea.si/Schemas/2004/Document/ObjectType/Data";
-    private static final String NM_VIS = "http://www.crea.si/Schemas/2004/Document/ObjectType/Visualisation";
+    private static final String NM_DATA =
+            "http://www.crea.si/Schemas/2004/Document/ObjectType/Data";
+    private static final String NM_VIS =
+            "http://www.crea.si/Schemas/2004/Document/ObjectType/Visualisation";
 
     /**
      *
@@ -49,7 +51,10 @@ public class DocumentEVemBuilder extends DocumentBuilder {
      * @throws SEDSecurityException
      */
     @Override
-    public void createMail(MSHOutMail dce, FileOutputStream fos, KeyStore.PrivateKeyEntry key) throws SEDSecurityException {
+    public void createMail(MSHOutMail dce, FileOutputStream fos,
+            KeyStore.PrivateKeyEntry key)
+            throws
+            SEDSecurityException {
         long t = getTime();
         mlgLogger.info("DocumentBuilder.createMail: begin ");
 
@@ -125,12 +130,14 @@ public class DocumentEVemBuilder extends DocumentBuilder {
                 lstSignatureIDS.add(new String[]{vst.getId(), NM_VIS});
                 doft = new DataObjectFormatType();
                 doft.setIdentifier(" ");
-                doft.setMimeType(d.getMimeType() == null ? "application/pdf" : d.getMimeType());
+                doft.setMimeType(d.getMimeType() == null ? "application/pdf" :
+                        d.getMimeType());
                 //doft.setMimeType(MIME_PDF);
                 doft.setEncoding(ENC_TYPE_B64);
                 ct = new ContentType();
                 emb = new EmbeddedDataType();
-                emb.getContent().add(Base64.getEncoder().encodeToString(msuStorageUtils.getByteArray(d.getFilepath())));
+                emb.getContent().add(Base64.getEncoder().encodeToString(
+                        msuStorageUtils.getByteArray(d.getFilepath())));
                 ct.setEmbeddedData(emb);
                 vst.setDataFormat(doft);
                 vst.setContent(ct);
@@ -151,18 +158,22 @@ public class DocumentEVemBuilder extends DocumentBuilder {
                         AttachmentType at = new AttachmentType();
                         at.setDescription(d.getDescription());
                         at.setId(Utils.getInstance().getGuidString());
-                        at.setFileName("sod_" + encId + "_" + id + "." + getFilePrefixForMimeType(d.getMimeType()));
+                        at.setFileName("sod_" + encId + "_" + id + "." +
+                                getFilePrefixForMimeType(d.getMimeType()));
 
                         lstSignatureIDS.add(new String[]{at.getId(), NM_VIS});
                         DataObjectFormatType atft = new DataObjectFormatType();
                         atft.setIdentifier(Utils.getInstance().getGuidString());
-                        atft.setMimeType(d.getMimeType() == null ? "application/pdf" : d.getMimeType());
+                        atft.setMimeType(d.getMimeType() == null ?
+                                "application/pdf" : d.getMimeType());
 
                         //doft.setMimeType(MIME_PDF);
                         atft.setEncoding(ENC_TYPE_B64);
                         ContentType atct = new ContentType();
                         EmbeddedDataType atemb = new EmbeddedDataType();
-                        emb.getContent().add(Base64.getEncoder().encodeToString(msuStorageUtils.getByteArray(d.getFilepath())));
+                        emb.getContent().add(Base64.getEncoder().encodeToString(
+                                msuStorageUtils.getByteArray(d.
+                                        getFilepath())));
 
                         atct.setEmbeddedData(atemb);
 
@@ -174,9 +185,13 @@ public class DocumentEVemBuilder extends DocumentBuilder {
                     }
                 }
             } catch (StorageException ex) {
-                String strMsg = "DocumentCreaBuilder.createMail: error reading file'" + ex.getMessage() + "'.";
+                String strMsg =
+                        "DocumentCreaBuilder.createMail: error reading file'" +
+                        ex.getMessage() + "'.";
                 mlgLogger.error(strMsg, ex);
-                throw new SEDSecurityException(SEDSecurityException.SEDSecurityExceptionCode.CreateSignatureException, ex);
+                throw new SEDSecurityException(
+                        SEDSecurityException.SEDSecurityExceptionCode.CreateSignatureException,
+                        ex);
             }
         }
 
@@ -184,14 +199,16 @@ public class DocumentEVemBuilder extends DocumentBuilder {
         // --------------------- sign data  ----------------------
         document.setSignatures(new SignaturesType());
         // convert to w3c document
-        org.w3c.dom.Document dw3c = convertEpDoc2W3cDoc(document, new Class[]{Document.class, Message.class
+        org.w3c.dom.Document dw3c = convertEpDoc2W3cDoc(document, new Class[]{
+            Document.class, Message.class
         });
         // sign document and return value
 
         singDocument(dw3c, lstSignatureIDS, fos, key);
 
         mlgLogger.info(
-                "DocumentBuilder.DocumentCreaBuilder: - end (" + (getTime() - t) + "ms)");
+                "DocumentBuilder.DocumentCreaBuilder: - end (" + (getTime() - t) +
+                "ms)");
     }
     static Properties mstrMimeTypes = null;
 
@@ -206,13 +223,18 @@ public class DocumentEVemBuilder extends DocumentBuilder {
         if (mstrMimeTypes == null) {
             mstrMimeTypes = new Properties();
             try {
-                mstrMimeTypes.load(DocumentEVemBuilder.class.getResourceAsStream("/mimetypes.properties"));
+                mstrMimeTypes.load(
+                        DocumentEVemBuilder.class.getResourceAsStream(
+                                "/mimetypes.properties"));
             } catch (IOException ex) {
-                Logger.getLogger(DocumentEVemBuilder.class.getName()).error("DocumentCreaBuilder.getFilePrefixForMimeType: Error reading resource /mimetypes.properties" + ex);
+                Logger.getLogger(DocumentEVemBuilder.class.getName()).error(
+                        "DocumentCreaBuilder.getFilePrefixForMimeType: Error reading resource /mimetypes.properties" +
+                        ex);
             }
         }
 
-        if (mimetype != null && mstrMimeTypes.containsKey(mimetype.trim().toLowerCase())) {
+        if (mimetype != null && mstrMimeTypes.containsKey(
+                mimetype.trim().toLowerCase())) {
             strRes = mstrMimeTypes.getProperty(mimetype.trim().toLowerCase());
         }
         return strRes != null ? strRes : "bin";

@@ -61,7 +61,9 @@ public class SEDCrypto {
      * @return
      * @throws SEDSecurityException
      */
-    public Key decryptEncryptedKey(Element elKey, Key rsaKey, SymEncAlgorithms targetKeyAlg) throws SEDSecurityException {
+    public Key decryptEncryptedKey(Element elKey, Key rsaKey,
+            SymEncAlgorithms targetKeyAlg)
+            throws SEDSecurityException {
 
         Key keyDec = null;
 
@@ -70,7 +72,10 @@ public class SEDCrypto {
             keyCipher = XMLCipher.getInstance(ENC_SIMETRIC_KEY_ALG);
             keyCipher.init(XMLCipher.UNWRAP_MODE, null);
         } catch (XMLEncryptionException ex) {
-            throw new SEDSecurityException(SEDSecurityException.SEDSecurityExceptionCode.NoSuchAlgorithm, ex, ENC_SIMETRIC_KEY_ALG);
+            throw new SEDSecurityException(
+                    SEDSecurityException.SEDSecurityExceptionCode.NoSuchAlgorithm,
+                    ex,
+                    ENC_SIMETRIC_KEY_ALG);
         }
 
         // get cert
@@ -80,7 +85,10 @@ public class SEDCrypto {
             key = keyCipher.loadEncryptedKey(elKey.getOwnerDocument(), elKey);
             xc = key.getKeyInfo().getX509Certificate();
         } catch (XMLEncryptionException | KeyResolverException ex) {
-            throw new SEDSecurityException(SEDSecurityException.SEDSecurityExceptionCode.EncryptionException, ex, ex.getMessage());
+            throw new SEDSecurityException(
+                    SEDSecurityException.SEDSecurityExceptionCode.EncryptionException,
+                    ex, ex.
+                    getMessage());
         }
         /*Key rsaKey = CertificateUtils.getInstance().getPrivateKeyForX509Cert(xc);
         if (rsaKey == null){
@@ -95,7 +103,10 @@ public class SEDCrypto {
             //key.getEncryptionMethod().getAlgorithm()
             keyDec = chDec.decryptKey(key, targetKeyAlg.getURI());
         } catch (XMLEncryptionException ex) {
-            throw new SEDSecurityException(SEDSecurityException.SEDSecurityExceptionCode.EncryptionException, ex, ex.getMessage());
+            throw new SEDSecurityException(
+                    SEDSecurityException.SEDSecurityExceptionCode.EncryptionException,
+                    ex, ex.
+                    getMessage());
         }
 
         return keyDec;
@@ -110,12 +121,16 @@ public class SEDCrypto {
      * @param skey - secret key to encrypt stream
      * @throws SEDSecurityException
      */
-    public void decryptFile(File fIn, File fOut, Key skey) throws SEDSecurityException {
+    public void decryptFile(File fIn, File fOut, Key skey)
+            throws SEDSecurityException {
         try (FileInputStream fis = new FileInputStream(fIn);
                 FileOutputStream fos = new FileOutputStream(fOut)) {
             encryptDecryptStream(fis, fos, skey, Cipher.DECRYPT_MODE);
         } catch (IOException ex) {
-            throw new SEDSecurityException(SEDSecurityException.SEDSecurityExceptionCode.ReadWriteFileException, ex, ex.getMessage());
+            throw new SEDSecurityException(
+                    SEDSecurityException.SEDSecurityExceptionCode.ReadWriteFileException,
+                    ex, ex.
+                    getMessage());
         }
     }
 
@@ -127,14 +142,18 @@ public class SEDCrypto {
      * @return
      * @throws SEDSecurityException
      */
-    public Key decryptKey(String strKey, Key rsaKey, SymEncAlgorithms targetKeyAlg) throws SEDSecurityException {
+    public Key decryptKey(String strKey, Key rsaKey,
+            SymEncAlgorithms targetKeyAlg)
+            throws SEDSecurityException {
 
         Key keyDec = null;
         Document doc;
         try {
             doc = XMLUtils.deserializeToDom(strKey);
         } catch (IOException | ParserConfigurationException | SAXException ex) {
-            throw new SEDSecurityException(SEDSecurityException.SEDSecurityExceptionCode.InvalidKey, ex, ex.getMessage());
+            throw new SEDSecurityException(
+                    SEDSecurityException.SEDSecurityExceptionCode.InvalidKey, ex,
+                    ex.getMessage());
         }
 
         XMLCipher keyCipher;
@@ -142,7 +161,10 @@ public class SEDCrypto {
             keyCipher = XMLCipher.getInstance(ENC_SIMETRIC_KEY_ALG);
             keyCipher.init(XMLCipher.UNWRAP_MODE, null);
         } catch (XMLEncryptionException ex) {
-            throw new SEDSecurityException(SEDSecurityException.SEDSecurityExceptionCode.NoSuchAlgorithm, ex, ENC_SIMETRIC_KEY_ALG);
+            throw new SEDSecurityException(
+                    SEDSecurityException.SEDSecurityExceptionCode.NoSuchAlgorithm,
+                    ex,
+                    ENC_SIMETRIC_KEY_ALG);
         }
 
         // get cert
@@ -152,7 +174,10 @@ public class SEDCrypto {
             key = keyCipher.loadEncryptedKey(doc, doc.getDocumentElement());
             xc = key.getKeyInfo().getX509Certificate();
         } catch (XMLEncryptionException | KeyResolverException ex) {
-            throw new SEDSecurityException(SEDSecurityException.SEDSecurityExceptionCode.EncryptionException, ex, ex.getMessage());
+            throw new SEDSecurityException(
+                    SEDSecurityException.SEDSecurityExceptionCode.EncryptionException,
+                    ex, ex.
+                    getMessage());
         }
         /*Key rsaKey = CertificateUtils.getInstance().getPrivateKeyForX509Cert(xc);
         if (rsaKey == null){
@@ -167,7 +192,10 @@ public class SEDCrypto {
             //key.getEncryptionMethod().getAlgorithm()
             keyDec = chDec.decryptKey(key, targetKeyAlg.getURI());
         } catch (XMLEncryptionException ex) {
-            throw new SEDSecurityException(SEDSecurityException.SEDSecurityExceptionCode.EncryptionException, ex, ex.getMessage());
+            throw new SEDSecurityException(
+                    SEDSecurityException.SEDSecurityExceptionCode.EncryptionException,
+                    ex, ex.
+                    getMessage());
         }
 
         return keyDec;
@@ -182,7 +210,8 @@ public class SEDCrypto {
      * @param skey - secret key to denrypt stream
      * @throws SEDSecurityException
      */
-    public void decryptStream(InputStream is, OutputStream os, Key skey) throws SEDSecurityException {
+    public void decryptStream(InputStream is, OutputStream os, Key skey)
+            throws SEDSecurityException {
         encryptDecryptStream(is, os, skey, Cipher.DECRYPT_MODE);
     }
 
@@ -192,21 +221,28 @@ public class SEDCrypto {
      * @return
      * @throws SEDSecurityException
      */
-    public EncryptedKey element2SimetricEncryptedKey(Element e) throws SEDSecurityException {
+    public EncryptedKey element2SimetricEncryptedKey(Element e)
+            throws SEDSecurityException {
 
         XMLCipher keyCipher;
         try {
             keyCipher = XMLCipher.getInstance(ENC_SIMETRIC_KEY_ALG);
             keyCipher.init(XMLCipher.UNWRAP_MODE, null);
         } catch (XMLEncryptionException ex) {
-            throw new SEDSecurityException(SEDSecurityException.SEDSecurityExceptionCode.NoSuchAlgorithm, ex, ENC_SIMETRIC_KEY_ALG);
+            throw new SEDSecurityException(
+                    SEDSecurityException.SEDSecurityExceptionCode.NoSuchAlgorithm,
+                    ex,
+                    ENC_SIMETRIC_KEY_ALG);
         }
 
         EncryptedKey key;
         try {
             key = keyCipher.loadEncryptedKey(e.getOwnerDocument(), e);
         } catch (XMLEncryptionException ex) {
-            throw new SEDSecurityException(SEDSecurityException.SEDSecurityExceptionCode.EncryptionException, ex, ex.getMessage());
+            throw new SEDSecurityException(
+                    SEDSecurityException.SEDSecurityExceptionCode.EncryptionException,
+                    ex, ex.
+                    getMessage());
         }
         return key;
     }
@@ -220,20 +256,32 @@ public class SEDCrypto {
      * @param chiperMode - chiper mode: Cipher.ENCRYPT_MODE, Cipher.DECRYPT_MODE
      * @throws SEDSecurityException
      */
-    private void encryptDecryptStream(InputStream is, OutputStream os, Key skey, int chiperMode) throws SEDSecurityException {
+    private void encryptDecryptStream(InputStream is, OutputStream os, Key skey,
+            int chiperMode)
+            throws
+            SEDSecurityException {
 
         Cipher dcipher;
         try {
             dcipher = Cipher.getInstance(skey.getAlgorithm());
         } catch (NoSuchAlgorithmException ex) {
-            throw new SEDSecurityException(SEDSecurityException.SEDSecurityExceptionCode.NoSuchAlgorithm, ex, skey.getAlgorithm());
+            throw new SEDSecurityException(
+                    SEDSecurityException.SEDSecurityExceptionCode.NoSuchAlgorithm,
+                    ex, skey.
+                    getAlgorithm());
         } catch (NoSuchPaddingException ex) {
-            throw new SEDSecurityException(SEDSecurityException.SEDSecurityExceptionCode.NoSuchPadding, ex, skey.getAlgorithm(), ex.getMessage());
+            throw new SEDSecurityException(
+                    SEDSecurityException.SEDSecurityExceptionCode.NoSuchPadding,
+                    ex, skey.
+                    getAlgorithm(), ex.getMessage());
         }
         try {
             dcipher.init(chiperMode, skey);
         } catch (InvalidKeyException ex) {
-            throw new SEDSecurityException(SEDSecurityException.SEDSecurityExceptionCode.InvalidKey, ex, skey.getAlgorithm(), ex.getMessage());
+            throw new SEDSecurityException(
+                    SEDSecurityException.SEDSecurityExceptionCode.InvalidKey, ex,
+                    skey.
+                    getAlgorithm(), ex.getMessage());
         }
 
         try (CipherOutputStream cos = new CipherOutputStream(os, dcipher)) {
@@ -244,7 +292,10 @@ public class SEDCrypto {
                 cos.write(block, 0, i);
             }
         } catch (IOException ex) {
-            throw new SEDSecurityException(SEDSecurityException.SEDSecurityExceptionCode.ReadWriteFileException, ex, ex.getMessage());
+            throw new SEDSecurityException(
+                    SEDSecurityException.SEDSecurityExceptionCode.ReadWriteFileException,
+                    ex, ex.
+                    getMessage());
         }
     }
 
@@ -256,12 +307,16 @@ public class SEDCrypto {
      * @param skey - secret key to encrypt stream
      * @throws SEDSecurityException
      */
-    public void encryptFile(File fIn, File fOut, Key skey) throws SEDSecurityException {
+    public void encryptFile(File fIn, File fOut, Key skey)
+            throws SEDSecurityException {
         try (FileInputStream fis = new FileInputStream(fIn);
                 FileOutputStream fos = new FileOutputStream(fOut)) {
             encryptDecryptStream(fis, fos, skey, Cipher.ENCRYPT_MODE);
         } catch (IOException ex) {
-            throw new SEDSecurityException(SEDSecurityException.SEDSecurityExceptionCode.ReadWriteFileException, ex, ex.getMessage());
+            throw new SEDSecurityException(
+                    SEDSecurityException.SEDSecurityExceptionCode.ReadWriteFileException,
+                    ex, ex.
+                    getMessage());
         }
     }
 
@@ -277,7 +332,9 @@ public class SEDCrypto {
      * @throws SEDSecurityException
      *
      */
-    public String encryptKeyWithReceiverPublicKey(Key key, X509Certificate rsaCert, String recipient, String keyId) throws SEDSecurityException {
+    public String encryptKeyWithReceiverPublicKey(Key key,
+            X509Certificate rsaCert, String recipient, String keyId)
+            throws SEDSecurityException {
 
         // create document factory
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -286,7 +343,10 @@ public class SEDCrypto {
         try {
             db = dbf.newDocumentBuilder();
         } catch (ParserConfigurationException ex) {
-            throw new SEDSecurityException(SEDSecurityException.SEDSecurityExceptionCode.EncryptionException, ex, ex.getMessage());
+            throw new SEDSecurityException(
+                    SEDSecurityException.SEDSecurityExceptionCode.EncryptionException,
+                    ex, ex.
+                    getMessage());
         }
         Document document = db.newDocument();
 
@@ -295,12 +355,18 @@ public class SEDCrypto {
 
             keyCipher = XMLCipher.getInstance(ENC_SIMETRIC_KEY_ALG);
         } catch (XMLEncryptionException ex) {
-            throw new SEDSecurityException(SEDSecurityException.SEDSecurityExceptionCode.NoSuchAlgorithm, ex, ENC_SIMETRIC_KEY_ALG);
+            throw new SEDSecurityException(
+                    SEDSecurityException.SEDSecurityExceptionCode.NoSuchAlgorithm,
+                    ex,
+                    ENC_SIMETRIC_KEY_ALG);
         }
         try {
             keyCipher.init(XMLCipher.WRAP_MODE, rsaCert.getPublicKey());
         } catch (XMLEncryptionException ex) {
-            throw new SEDSecurityException(SEDSecurityException.SEDSecurityExceptionCode.EncryptionException, ex, ex.getMessage());
+            throw new SEDSecurityException(
+                    SEDSecurityException.SEDSecurityExceptionCode.EncryptionException,
+                    ex, ex.
+                    getMessage());
         }
 
         EncryptedKey encryptedKey;
@@ -310,13 +376,16 @@ public class SEDCrypto {
             encryptedKey.setCarriedName(rsaCert.getSubjectDN().toString());
             encryptedKey.setRecipient(recipient);
             //  add reference list
-            ReferenceList dataRefList = keyCipher.createReferenceList(ReferenceList.DATA_REFERENCE);
+            ReferenceList dataRefList = keyCipher.createReferenceList(
+                    ReferenceList.DATA_REFERENCE);
             Reference dataRef1 = dataRefList.newDataReference(keyId);
             dataRefList.add(dataRef1);
             encryptedKey.setReferenceList(dataRefList);
             // add cert data
-            org.apache.xml.security.keys.KeyInfo keyInfo2 = new org.apache.xml.security.keys.KeyInfo(document);
-            KeyName kn = new KeyName(document, rsaCert.getSubjectDN().toString());
+            org.apache.xml.security.keys.KeyInfo keyInfo2 =
+                    new org.apache.xml.security.keys.KeyInfo(document);
+            KeyName kn =
+                    new KeyName(document, rsaCert.getSubjectDN().toString());
             keyInfo2.add(kn);
             X509Data x509Data = new X509Data(document);
             x509Data.addCertificate(rsaCert);
@@ -324,7 +393,10 @@ public class SEDCrypto {
             encryptedKey.setKeyInfo(keyInfo2);
 
         } catch (XMLSecurityException ex) {
-            throw new SEDSecurityException(SEDSecurityException.SEDSecurityExceptionCode.EncryptionException, ex, ex.getMessage());
+            throw new SEDSecurityException(
+                    SEDSecurityException.SEDSecurityExceptionCode.EncryptionException,
+                    ex, ex.
+                    getMessage());
         }
 
         /*
@@ -342,7 +414,8 @@ public class SEDCrypto {
      * @param skey - secret key to encrypt stream
      * @throws SEDSecurityException
      */
-    public void encryptStream(InputStream is, OutputStream os, Key skey) throws SEDSecurityException {
+    public void encryptStream(InputStream is, OutputStream os, Key skey)
+            throws SEDSecurityException {
         encryptDecryptStream(is, os, skey, Cipher.ENCRYPT_MODE);
 
     }
@@ -356,7 +429,9 @@ public class SEDCrypto {
      * @return
      * @throws SEDSecurityException
      */
-    public Element encryptedKeyWithReceiverPublicKey(Key key, X509Certificate rsaCert, String recipient, String keyId) throws SEDSecurityException {
+    public Element encryptedKeyWithReceiverPublicKey(Key key,
+            X509Certificate rsaCert, String recipient, String keyId)
+            throws SEDSecurityException {
 
         // create document factory
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -365,7 +440,10 @@ public class SEDCrypto {
         try {
             db = dbf.newDocumentBuilder();
         } catch (ParserConfigurationException ex) {
-            throw new SEDSecurityException(SEDSecurityException.SEDSecurityExceptionCode.EncryptionException, ex, ex.getMessage());
+            throw new SEDSecurityException(
+                    SEDSecurityException.SEDSecurityExceptionCode.EncryptionException,
+                    ex, ex.
+                    getMessage());
         }
         Document document = db.newDocument();
 
@@ -374,12 +452,18 @@ public class SEDCrypto {
 
             keyCipher = XMLCipher.getInstance(ENC_SIMETRIC_KEY_ALG);
         } catch (XMLEncryptionException ex) {
-            throw new SEDSecurityException(SEDSecurityException.SEDSecurityExceptionCode.NoSuchAlgorithm, ex, ENC_SIMETRIC_KEY_ALG);
+            throw new SEDSecurityException(
+                    SEDSecurityException.SEDSecurityExceptionCode.NoSuchAlgorithm,
+                    ex,
+                    ENC_SIMETRIC_KEY_ALG);
         }
         try {
             keyCipher.init(XMLCipher.WRAP_MODE, rsaCert.getPublicKey());
         } catch (XMLEncryptionException ex) {
-            throw new SEDSecurityException(SEDSecurityException.SEDSecurityExceptionCode.EncryptionException, ex, ex.getMessage());
+            throw new SEDSecurityException(
+                    SEDSecurityException.SEDSecurityExceptionCode.EncryptionException,
+                    ex, ex.
+                    getMessage());
         }
 
         EncryptedKey encryptedKey;
@@ -389,13 +473,16 @@ public class SEDCrypto {
             encryptedKey.setCarriedName(rsaCert.getSubjectDN().toString());
             encryptedKey.setRecipient(recipient);
             //  add reference list
-            ReferenceList dataRefList = keyCipher.createReferenceList(ReferenceList.DATA_REFERENCE);
+            ReferenceList dataRefList = keyCipher.createReferenceList(
+                    ReferenceList.DATA_REFERENCE);
             Reference dataRef1 = dataRefList.newDataReference(keyId);
             dataRefList.add(dataRef1);
             encryptedKey.setReferenceList(dataRefList);
             // add cert data
-            org.apache.xml.security.keys.KeyInfo keyInfo2 = new org.apache.xml.security.keys.KeyInfo(document);
-            KeyName kn = new KeyName(document, rsaCert.getSubjectDN().toString());
+            org.apache.xml.security.keys.KeyInfo keyInfo2 =
+                    new org.apache.xml.security.keys.KeyInfo(document);
+            KeyName kn =
+                    new KeyName(document, rsaCert.getSubjectDN().toString());
             keyInfo2.add(kn);
             X509Data x509Data = new X509Data(document);
             x509Data.addCertificate(rsaCert);
@@ -403,7 +490,10 @@ public class SEDCrypto {
             encryptedKey.setKeyInfo(keyInfo2);
 
         } catch (XMLSecurityException ex) {
-            throw new SEDSecurityException(SEDSecurityException.SEDSecurityExceptionCode.EncryptionException, ex, ex.getMessage());
+            throw new SEDSecurityException(
+                    SEDSecurityException.SEDSecurityExceptionCode.EncryptionException,
+                    ex, ex.
+                    getMessage());
         }
 
         /*
@@ -419,13 +509,18 @@ public class SEDCrypto {
      * @return
      * @throws SEDSecurityException
      */
-    public X509Certificate getCertificate(InputStream in) throws SEDSecurityException {
+    public X509Certificate getCertificate(InputStream in)
+            throws SEDSecurityException {
         X509Certificate cert;
         try {
-            CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
+            CertificateFactory certFactory = CertificateFactory.getInstance(
+                    "X.509");
             cert = (X509Certificate) certFactory.generateCertificate(in);
         } catch (CertificateException ex) {
-            throw new SEDSecurityException(SEDSecurityException.SEDSecurityExceptionCode.CertificateException, ex, ex.getMessage());
+            throw new SEDSecurityException(
+                    SEDSecurityException.SEDSecurityExceptionCode.CertificateException,
+                    ex, ex.
+                    getMessage());
         }
         return cert;
 
@@ -438,12 +533,16 @@ public class SEDCrypto {
      * @return generated secret key
      * @throws SEDSecurityException
      */
-    public SecretKey getKey(SymEncAlgorithms ag) throws SEDSecurityException {
+    public SecretKey getKey(SymEncAlgorithms ag)
+            throws SEDSecurityException {
         KeyGenerator kgen;
         try {
             kgen = KeyGenerator.getInstance(ag.getJCEName());
         } catch (NoSuchAlgorithmException ex) {
-            throw new SEDSecurityException(SEDSecurityException.SEDSecurityExceptionCode.NoSuchAlgorithm, ex, ag.getJCEName());
+            throw new SEDSecurityException(
+                    SEDSecurityException.SEDSecurityExceptionCode.NoSuchAlgorithm,
+                    ex, ag.
+                    getJCEName());
         }
         if (ag.getKeyLength() != -1) {
             kgen.init(ag.getKeyLength());
@@ -459,12 +558,12 @@ public class SEDCrypto {
         /**
          *
          */
-        AES128_CBC("http://www.w3.org/2001/04/xmlenc#aes128-cbc", "AES", 128), 
+        AES128_CBC("http://www.w3.org/2001/04/xmlenc#aes128-cbc", "AES", 128),
 
         /**
          *
          */
-        AES192_CBC("http://www.w3.org/2001/04/xmlenc#aes192-cbc", "AES", 192), 
+        AES192_CBC("http://www.w3.org/2001/04/xmlenc#aes192-cbc", "AES", 192),
 
         /**
          *

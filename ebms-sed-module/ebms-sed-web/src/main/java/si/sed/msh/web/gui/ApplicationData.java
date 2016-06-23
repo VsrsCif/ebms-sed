@@ -45,14 +45,16 @@ public class ApplicationData extends AbstractJSFView {
      *
      */
     public void exportLookupsWithNoPasswords() {
-        msedLookups.exportLookups(new File(System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR)), false);
+        msedLookups.exportLookups(new File(System.getProperty(
+                SEDSystemProperties.SYS_PROP_HOME_DIR)), false);
     }
 
     /**
      *
      */
     public void exportLookupsWithPasswords() {
-        msedLookups.exportLookups(new File(System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR)), true);
+        msedLookups.exportLookups(new File(System.getProperty(
+                SEDSystemProperties.SYS_PROP_HOME_DIR)), true);
     }
 
     /**
@@ -63,7 +65,9 @@ public class ApplicationData extends AbstractJSFView {
         String strBuildVer = "";
         Manifest p;
         File manifestFile = null;
-        String home = FacesContext.getCurrentInstance().getExternalContext().getRealPath("/");
+        String home =
+                FacesContext.getCurrentInstance().getExternalContext().getRealPath(
+                        "/");
         manifestFile = new File(home, "META-INF/MANIFEST.MF");
         try (FileInputStream fis = new FileInputStream(manifestFile)) {
             p = new Manifest();
@@ -106,9 +110,12 @@ public class ApplicationData extends AbstractJSFView {
      */
     public List<String> getPlugins() {
         List<String> plLSt = new ArrayList<>();
-        File fldPlugins = new File(System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR) + File.separator + SEDSystemProperties.SYS_PROP_FOLDER_PLUGINS_DEF);
+        File fldPlugins = new File(
+                System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR) +
+                File.separator + SEDSystemProperties.SYS_PROP_FOLDER_PLUGINS_DEF);
         if (fldPlugins.exists() && fldPlugins.isDirectory()) {
-            for (File f : fldPlugins.listFiles((File dir, String name) -> name.toLowerCase().endsWith(".jar"))) {
+            for (File f : fldPlugins.listFiles((File dir, String name) ->
+                    name.toLowerCase().endsWith(".jar"))) {
                 plLSt.add(f.getName());
             }
         }

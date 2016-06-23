@@ -41,10 +41,12 @@ public class JEELogInterceptor {
             try {
 
                 MessageContext msgCtxt = mwsCtxt.getMessageContext();
-                HttpServletRequest req = (HttpServletRequest) msgCtxt.get(MessageContext.SERVLET_REQUEST);
+                HttpServletRequest req = (HttpServletRequest) msgCtxt.get(
+                        MessageContext.SERVLET_REQUEST);
                 clientIP = req.getRemoteAddr();
             } catch (Exception exc) {
-                mlgLogger.error("JEELogInterceptor.getCurrrentRemoteIP  ERROR", exc);
+                mlgLogger.error("JEELogInterceptor.getCurrrentRemoteIP  ERROR",
+                        exc);
             }
         }
         return clientIP;
@@ -74,22 +76,27 @@ public class JEELogInterceptor {
      * @throws Exception
      */
     @AroundInvoke
-    public Object intercept(InvocationContext context) throws Exception {
+    public Object intercept(InvocationContext context)
+            throws Exception {
         String ip = getCurrrentRemoteIP();
         String methodName = context.getMethod().getName();
 
         long l = getTime();
-        mlgLogger.debug(String.format(logFormatBegin, methodName, ip, "BEGIN", ""));
+        mlgLogger.debug(String.format(logFormatBegin, methodName, ip, "BEGIN",
+                ""));
 
         Object result = null;
         try {
             result = context.proceed();
         } catch (Exception e) {
-            mlgLogger.error(String.format(logFormat, methodName, ip, "ERROR", e.getMessage(), getDuration(l)), e);
-            mlgLogger.error("Parameters: " + paramsToString(context.getParameters()));
+            mlgLogger.error(String.format(logFormat, methodName, ip, "ERROR",
+                    e.getMessage(), getDuration(l)), e);
+            mlgLogger.error("Parameters: " + paramsToString(
+                    context.getParameters()));
             throw e;
         }
-        mlgLogger.info(String.format(logFormat, methodName, ip, "END", "", getDuration(l)));
+        mlgLogger.info(String.format(logFormat, methodName, ip, "END", "",
+                getDuration(l)));
         return result;
     }
 
@@ -101,8 +108,10 @@ public class JEELogInterceptor {
      * @param strMessage
      * @param ex
      */
-    public void logError(String method, String pip, long lTime, String strMessage, Exception ex) {
-        mlgLogger.error(method + ": - ERROR MSG: '" + strMessage + "' ( " + (getTime() - lTime) + " ms )", ex);
+    public void logError(String method, String pip, long lTime,
+            String strMessage, Exception ex) {
+        mlgLogger.error(method + ": - ERROR MSG: '" + strMessage + "' ( " +
+                (getTime() - lTime) + " ms )", ex);
     }
 
     /**
@@ -112,7 +121,11 @@ public class JEELogInterceptor {
      * @param ex
      */
     public void logError(String method, long lTime, Exception ex) {
-        mlgLogger.error(method + ": - ERROR MSG: '" + (ex != null ? ex.getMessage() : "") + "' ( " + (getTime() - lTime) + " ms )", ex);
+        mlgLogger.error(
+                method + ": - ERROR MSG: '" +
+                (ex != null ? ex.getMessage() : "") + "' ( " + (getTime() -
+                lTime) + " ms )",
+                ex);
     }
 
     /**
@@ -122,8 +135,10 @@ public class JEELogInterceptor {
      * @param strMessage
      * @param ex
      */
-    public void logWarn(String method, long lTime, String strMessage, Exception ex) {
-        mlgLogger.warn(method + ": - Warn MSG: '" + strMessage + "' ( " + (getTime() - lTime) + " ms )", ex);
+    public void logWarn(String method, long lTime, String strMessage,
+            Exception ex) {
+        mlgLogger.warn(method + ": - Warn MSG: '" + strMessage + "' ( " +
+                (getTime() - lTime) + " ms )", ex);
     }
 
     /**
@@ -166,7 +181,8 @@ public class JEELogInterceptor {
             m.marshal(obj, sw);
             strRes = sw.toString();
         } catch (JAXBException ex) {
-            mlgLogger.warn("Error marshal object: '" + obj + "'. Error:  " + ex.toString() + ", " + ex.getMessage());
+            mlgLogger.warn("Error marshal object: '" + obj + "'. Error:  " +
+                    ex.toString() + ", " + ex.getMessage());
             strRes = obj.toString();
         }
         return strRes;

@@ -9,6 +9,7 @@ import java.io.StringWriter;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.internet.InternetAddress;
+import static javax.mail.internet.InternetAddress.getLocalAddress;
 import javax.mail.internet.MimeMessage;
 
 /**
@@ -38,7 +39,7 @@ public class EVIPMimeMessage extends MimeMessage {
     public String getUniqueMessageIDValue(Session ssn) {
         String suffix = null;
 
-        InternetAddress addr = InternetAddress.getLocalAddress(ssn);
+        InternetAddress addr = getLocalAddress(ssn);
         if (addr != null) {
             suffix = addr.getAddress();
         } else {
@@ -62,7 +63,8 @@ public class EVIPMimeMessage extends MimeMessage {
      * @throws MessagingException
      */
     @Override
-    public void updateMessageID() throws MessagingException {
+    public void updateMessageID()
+            throws MessagingException {
         setHeader("Message-ID", "<" + getUniqueMessageIDValue(session) + ">");
     }
 

@@ -39,7 +39,8 @@ public class SVEVConstants {
     /**
      *
      */
-    public static final String SVEV_ACTION_DeliveryNotification = "DeliveryNotification";
+    public static final String SVEV_ACTION_DeliveryNotification =
+            "DeliveryNotification";
 
     /**
      *
@@ -49,6 +50,7 @@ public class SVEVConstants {
     /**
      *
      */
-    public static final String SVEV_ACTION_FictionNotification = "FictionNotification";
+    public static final String SVEV_ACTION_FictionNotification =
+            "FictionNotification";
 
 }

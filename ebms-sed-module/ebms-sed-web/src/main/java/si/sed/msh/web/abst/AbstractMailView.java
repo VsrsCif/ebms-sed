@@ -50,7 +50,8 @@ public abstract class AbstractMailView<T, S> {
     /**
      *
      */
-    protected static final SimpleDateFormat SDF_DDMMYYY_HH_MM_SS = new SimpleDateFormat("dd.MM.YYYY HH:mm:ss");
+    protected static final SimpleDateFormat SDF_DDMMYYY_HH_MM_SS =
+            new SimpleDateFormat("dd.MM.YYYY HH:mm:ss");
 
     /**
      *
@@ -98,9 +99,11 @@ public abstract class AbstractMailView<T, S> {
             fw.flush();
             fw.close();
 
-            return new DefaultStreamedContent(new FileInputStream(f), "text/plain", "export-data.txt", "utf-8");
+            return new DefaultStreamedContent(new FileInputStream(f),
+                    "text/plain", "export-data.txt", "utf-8");
         } catch (IOException ex) {
-            Logger.getLogger(OutMailDataView.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(OutMailDataView.class.getName()).log(Level.SEVERE,
+                    null, ex);
         } finally {
 
         }

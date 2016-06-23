@@ -18,15 +18,20 @@ package si.sed.commons.utils;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import static java.io.File.createTempFile;
+import static java.io.File.separator;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import static java.lang.String.format;
+import static java.lang.System.getProperty;
 import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import si.sed.commons.MimeValues;
-import si.sed.commons.SEDSystemProperties;
+import static java.util.Calendar.getInstance;
+import static si.sed.commons.MimeValues.getSuffixBYMimeType;
+import static si.sed.commons.SEDSystemProperties.SYS_PROP_FOLDER_STORAGE_DEF;
+import static si.sed.commons.SEDSystemProperties.SYS_PROP_HOME_DIR;
 import si.sed.commons.exception.StorageException;
 
 /**
@@ -44,7 +49,8 @@ public class StorageUtils {
      *
      */
     public static final String S_OUT_PREFIX = "out_";
-    private static final SimpleDateFormat msdfFolderDateFormat = new SimpleDateFormat("yyyyMMdd");
+    private static final SimpleDateFormat msdfFolderDateFormat =
+            new SimpleDateFormat("yyyyMMdd");
 
     /**
      *
@@ -52,12 +58,14 @@ public class StorageUtils {
      * @param destFile
      * @throws IOException
      */
-    public static synchronized void copyFile(File sourceFile, File destFile) throws IOException {
+    public static synchronized void copyFile(File sourceFile, File destFile)
+            throws IOException {
         if (!destFile.exists()) {
             destFile.createNewFile();
         }
         try (FileChannel source = new FileInputStream(sourceFile).getChannel();
-                FileChannel destination = new FileOutputStream(destFile).getChannel()) {
+                FileChannel destination =
+                new FileOutputStream(destFile).getChannel()) {
             destination.transferFrom(source, 0, source.size());
         }
     }
@@ -69,14 +77,19 @@ public class StorageUtils {
      * @throws IOException
      * @throws StorageException
      */
-    public static synchronized void copyFileToFolder(String storageFilePath, File folder) throws IOException, StorageException {
+    public static synchronized void copyFileToFolder(String storageFilePath,
+            File folder)
+            throws IOException,
+            StorageException {
         if (!folder.exists() && !folder.mkdirs()) {
-            throw new IOException("Could not create export folder: " + folder.getAbsolutePath());
+            throw new IOException("Could not create export folder: " +
+                    folder.getAbsolutePath());
         }
         File destFile = new File(folder, storageFilePath);
         File pf = destFile.getParentFile();
         if (!pf.exists() && !pf.mkdirs()) {
-            throw new IOException("Could not create folder: " + pf.getAbsolutePath());
+            throw new IOException("Could not create folder: " +
+                    pf.getAbsolutePath());
         }
 
         copyFile(getFile(storageFilePath), destFile);
@@ -89,20 +102,27 @@ public class StorageUtils {
      * @throws IOException
      * @throws StorageException
      */
-    public static synchronized void copyInFile(String strInFileName, File destFile) throws IOException, StorageException {
+    public static synchronized void copyInFile(String strInFileName,
+            File destFile)
+            throws IOException, StorageException {
         copyFile(getFile(strInFileName), destFile);
     }
 
     /**
      *
-     * @return
-     * @throws StorageException
+     * @return @throws StorageException
      */
-    public static synchronized File currentStorageFolder() throws StorageException {
+    public static synchronized File currentStorageFolder()
+            throws StorageException {
 
-        File f = new File(System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR) + File.separator + SEDSystemProperties.SYS_PROP_FOLDER_STORAGE_DEF + File.separator + currentStorageFolderName());
+        File f = new File(
+                getProperty(SYS_PROP_HOME_DIR) + separator +
+                SYS_PROP_FOLDER_STORAGE_DEF + separator +
+                currentStorageFolderName());
         if (!f.exists() && !f.mkdirs()) {
-            throw new StorageException(String.format("Error occurred while creating storage folder: '%s'", f.getAbsolutePath()));
+            throw new StorageException(format(
+                    "Error occurred while creating storage folder: '%s'",
+                    f.getAbsolutePath()));
         }
         return f;
     }
@@ -112,7 +132,7 @@ public class StorageUtils {
      * @return
      */
     public static synchronized String currentStorageFolderName() {
-        return msdfFolderDateFormat.format(Calendar.getInstance().getTime());
+        return msdfFolderDateFormat.format(getInstance().getTime());
     }
 
     /**
@@ -121,8 +141,10 @@ public class StorageUtils {
      * @return
      * @throws StorageException
      */
-    public static synchronized File getFile(String storagePath) throws StorageException {
-        File f = new File(System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR) + File.separator + storagePath);
+    public static synchronized File getFile(String storagePath)
+            throws StorageException {
+        File f = new File(getProperty(SYS_PROP_HOME_DIR) + separator +
+                storagePath);
         return f;
     }
 
@@ -133,12 +155,15 @@ public class StorageUtils {
      * @return
      * @throws StorageException
      */
-    public static File getNewStorageFile(String suffix, String prefix) throws StorageException {
+    public static File getNewStorageFile(String suffix, String prefix)
+            throws StorageException {
         File fStore;
         try {
-            fStore = File.createTempFile(prefix, "." + suffix, currentStorageFolder());
+            fStore =
+                    createTempFile(prefix, "." + suffix, currentStorageFolder());
         } catch (IOException ex) {
-            throw new StorageException("Error occurred while creating storage file", ex);
+            throw new StorageException(
+                    "Error occurred while creating storage file", ex);
         }
         return fStore;
     }
@@ -149,17 +174,18 @@ public class StorageUtils {
      * @return
      */
     public static String getRelativePath(File path) {
-        File hdir = new File(System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR));
+        File hdir = new File(getProperty(SYS_PROP_HOME_DIR));
         if (path.getAbsolutePath().startsWith(hdir.getAbsolutePath())) {
-            String rp = path.getAbsolutePath().substring(hdir.getAbsolutePath().length());
-            rp = rp.startsWith(File.separator) ? rp.substring(1) : rp;
+            String rp = path.getAbsolutePath().substring(
+                    hdir.getAbsolutePath().length());
+            rp = rp.startsWith(separator) ? rp.substring(1) : rp;
             return rp;
         }
 
-        String base = System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR);
+        String base = getProperty(SYS_PROP_HOME_DIR);
 
-        String[] basePaths = base.split(File.separator);
-        String[] otherPaths = path.getParent().split(File.separator);
+        String[] basePaths = base.split(separator);
+        String[] otherPaths = path.getParent().split(separator);
         int n = 0;
         for (; n < basePaths.length && n < otherPaths.length; n++) {
             if (basePaths[n].equals(otherPaths[n]) == false) {
@@ -169,12 +195,12 @@ public class StorageUtils {
         StringBuilder tmp = new StringBuilder();
         for (int m = n; m < basePaths.length - 1; m++) {
             tmp.append("..");
-            tmp.append(File.separator);
+            tmp.append(separator);
         }
 
         for (int m = n; m < otherPaths.length; m++) {
             tmp.append(otherPaths[m]);
-            tmp.append(File.separator);
+            tmp.append(separator);
         }
         // add filename
         tmp.append(path.getName());
@@ -187,7 +213,8 @@ public class StorageUtils {
      * @throws IOException
      * @throws StorageException
      */
-    public static synchronized void removeFile(String strInFileName) throws IOException, StorageException {
+    public static synchronized void removeFile(String strInFileName)
+            throws IOException, StorageException {
         File f = getFile(strInFileName);
         f.delete();
     }
@@ -198,7 +225,8 @@ public class StorageUtils {
      * @return
      * @throws StorageException
      */
-    public byte[] getByteArray(String storagePath) throws StorageException {
+    public byte[] getByteArray(String storagePath)
+            throws StorageException {
         byte[] bin = null;
         File f = getFile(storagePath);
 
@@ -207,7 +235,8 @@ public class StorageUtils {
                 bin = new byte[fis.available()];
                 fis.read(bin);
             } catch (IOException ex) {
-                throw new StorageException("Error occurred while creating storage file", ex);
+                throw new StorageException(
+                        "Error occurred while creating storage file", ex);
             }
         }
         return bin;
@@ -221,7 +250,8 @@ public class StorageUtils {
      * @return
      * @throws StorageException
      */
-    public File storeFile(String prefix, String suffix, byte[] buffer) throws StorageException {
+    public File storeFile(String prefix, String suffix, byte[] buffer)
+            throws StorageException {
         return storeFile(prefix, suffix, new ByteArrayInputStream(buffer));
     }
 
@@ -233,7 +263,8 @@ public class StorageUtils {
      * @return
      * @throws StorageException
      */
-    public File storeFile(String prefix, String suffix, InputStream inStream) throws StorageException {
+    public File storeFile(String prefix, String suffix, InputStream inStream)
+            throws StorageException {
         File fStore = getNewStorageFile(suffix, prefix);
 
         try (FileOutputStream fos = new FileOutputStream(fStore)) {
@@ -246,7 +277,9 @@ public class StorageUtils {
             }
 
         } catch (IOException ex) {
-            throw new StorageException(String.format("Error occurred while writing to file: '%s'", fStore.getAbsolutePath()));
+            throw new StorageException(format(
+                    "Error occurred while writing to file: '%s'",
+                    fStore.getAbsolutePath()));
         }
         return fStore;
     }
@@ -258,8 +291,9 @@ public class StorageUtils {
      * @return
      * @throws StorageException
      */
-    public File storeInFile(String mimeType, byte[] buffer) throws StorageException {
-        return storeFile(S_IN_PREFIX, MimeValues.getSuffixBYMimeType(mimeType), buffer);
+    public File storeInFile(String mimeType, byte[] buffer)
+            throws StorageException {
+        return storeFile(S_IN_PREFIX, getSuffixBYMimeType(mimeType), buffer);
     }
 
     /**
@@ -269,16 +303,21 @@ public class StorageUtils {
      * @return
      * @throws StorageException
      */
-    public File storeInFile(String mimeType, File fIn) throws StorageException {
+    public File storeInFile(String mimeType, File fIn)
+            throws StorageException {
         if (fIn.exists()) {
-            throw new StorageException(String.format("File in message: '%s' not exists ", fIn.getAbsolutePath()));
+            throw new StorageException(format(
+                    "File in message: '%s' not exists ", fIn.getAbsolutePath()));
         }
-        File fStore = getNewStorageFile(S_IN_PREFIX, MimeValues.getSuffixBYMimeType(mimeType));
+        File fStore = getNewStorageFile(S_IN_PREFIX, getSuffixBYMimeType(
+                mimeType));
 
         try {
             copyFile(fIn, fStore);
         } catch (IOException ex) {
-            throw new StorageException(String.format("Error occurred while copying file: '%s' to file: %s", fIn.getAbsolutePath(), fStore.getAbsolutePath()));
+            throw new StorageException(format(
+                    "Error occurred while copying file: '%s' to file: %s", fIn.
+                    getAbsolutePath(), fStore.getAbsolutePath()));
         }
 
         return fStore;
@@ -291,8 +330,9 @@ public class StorageUtils {
      * @return
      * @throws StorageException
      */
-    public File storeInFile(String mimeType, InputStream is) throws StorageException {
-        return storeFile(S_IN_PREFIX, MimeValues.getSuffixBYMimeType(mimeType), is);
+    public File storeInFile(String mimeType, InputStream is)
+            throws StorageException {
+        return storeFile(S_IN_PREFIX, getSuffixBYMimeType(mimeType), is);
     }
 
     /**
@@ -302,8 +342,9 @@ public class StorageUtils {
      * @return
      * @throws StorageException
      */
-    public File storeOutFile(String mimeType, byte[] buffer) throws StorageException {
-        return storeFile(S_OUT_PREFIX, MimeValues.getSuffixBYMimeType(mimeType), buffer);
+    public File storeOutFile(String mimeType, byte[] buffer)
+            throws StorageException {
+        return storeFile(S_OUT_PREFIX, getSuffixBYMimeType(mimeType), buffer);
     }
 
     /**
@@ -313,16 +354,21 @@ public class StorageUtils {
      * @return
      * @throws StorageException
      */
-    public File storeOutFile(String mimeType, File fIn) throws StorageException {
+    public File storeOutFile(String mimeType, File fIn)
+            throws StorageException {
         if (!fIn.exists()) {
-            throw new StorageException(String.format("File in message: '%s' not exists ", fIn.getAbsolutePath()));
+            throw new StorageException(format(
+                    "File in message: '%s' not exists ", fIn.getAbsolutePath()));
         }
-        File fStore = getNewStorageFile(S_OUT_PREFIX, MimeValues.getSuffixBYMimeType(mimeType));
+        File fStore = getNewStorageFile(S_OUT_PREFIX, getSuffixBYMimeType(
+                mimeType));
 
         try {
             copyFile(fIn, fStore);
         } catch (IOException ex) {
-            throw new StorageException(String.format("Error occurred while copying file: '%s' to file: %s", fIn.getAbsolutePath(), fStore.getAbsolutePath()));
+            throw new StorageException(format(
+                    "Error occurred while copying file: '%s' to file: %s", fIn.
+                    getAbsolutePath(), fStore.getAbsolutePath()));
         }
 
         return fStore;

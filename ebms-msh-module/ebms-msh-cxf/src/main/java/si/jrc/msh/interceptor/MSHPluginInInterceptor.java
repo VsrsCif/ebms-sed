@@ -52,7 +52,8 @@ public class MSHPluginInInterceptor extends AbstractSoapInterceptor {
      * @throws Fault
      */
     @Override
-    public void handleMessage(SoapMessage msg) throws Fault {
+    public void handleMessage(SoapMessage msg)
+            throws Fault {
         long l = mlog.logStart();
         PMode pmd = msg.getExchange().get(PMode.class);
         MSHInMail inMail = msg.getExchange().get(MSHInMail.class);
@@ -60,10 +61,12 @@ public class MSHPluginInInterceptor extends AbstractSoapInterceptor {
 
         if (pmd != null && inMail != null) {
             // todo
-            String str = pmd.getLegs().get(0).getBusinessInfo().getService().getInPlugin();
+            String str =
+                    pmd.getLegs().get(0).getBusinessInfo().getService().getInPlugin();
             if (str != null) {
                 try {
-                    SoapInterceptorInterface example = InitialContext.doLookup(str);
+                    SoapInterceptorInterface example = InitialContext.doLookup(
+                            str);
                     example.handleMessage(msg);
                 } catch (NamingException ex) {
                     mlog.logError(l, ex);
@@ -77,14 +80,16 @@ public class MSHPluginInInterceptor extends AbstractSoapInterceptor {
                 ii.handleMessage(msg);*/
             }
         } else if (pmd != null) {
-            String str = pmd.getLegs().get(0).getBusinessInfo().getService().getInPlugin();
+            String str =
+                    pmd.getLegs().get(0).getBusinessInfo().getService().getInPlugin();
 
             if (str != null) {
                 try {
-                    SoapInterceptorInterface example = InitialContext.doLookup(str);
+                    SoapInterceptorInterface example = InitialContext.doLookup(
+                            str);
                     example.handleMessage(msg);
                 } catch (NamingException ex) {
-                 mlog.logError(l, ex);
+                    mlog.logError(l, ex);
                 }
 
                 /*String[] lst = str.split("!");

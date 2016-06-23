@@ -39,33 +39,42 @@ public class JettyUserTransaction implements UserTransaction {
     }
 
     @Override
-    public void begin() throws NotSupportedException, SystemException {
+    public void begin()
+            throws NotSupportedException, SystemException {
         met.begin();
     }
 
     @Override
-    public void commit() throws RollbackException, HeuristicMixedException, HeuristicRollbackException, SecurityException, IllegalStateException, SystemException {
+    public void commit()
+            throws RollbackException, HeuristicMixedException,
+            HeuristicRollbackException,
+            SecurityException, IllegalStateException, SystemException {
         met.commit();
     }
 
     @Override
-    public void rollback() throws IllegalStateException, SecurityException, SystemException {
+    public void rollback()
+            throws IllegalStateException, SecurityException, SystemException {
         met.rollback();
     }
 
     @Override
-    public void setRollbackOnly() throws IllegalStateException, SystemException {
+    public void setRollbackOnly()
+            throws IllegalStateException, SystemException {
         met.setRollbackOnly();
     }
 
     @Override
-    public int getStatus() throws SystemException {
+    public int getStatus()
+            throws SystemException {
 
-        return met.isActive() ? Status.STATUS_ACTIVE : Status.STATUS_NO_TRANSACTION;
+        return met.isActive() ? Status.STATUS_ACTIVE :
+                Status.STATUS_NO_TRANSACTION;
     }
 
     @Override
-    public void setTransactionTimeout(int seconds) throws SystemException {
+    public void setTransactionTimeout(int seconds)
+            throws SystemException {
         miTimeOutTransaction = seconds * 100;
     }
 

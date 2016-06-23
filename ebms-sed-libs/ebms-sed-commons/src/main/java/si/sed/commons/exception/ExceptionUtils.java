@@ -45,7 +45,8 @@ public class ExceptionUtils {
      * @param msg
      * @return
      */
-    public static SoapFault createSoapFault(SOAPExceptionCode sc, QName soapCode, String... msg) {
+    public static SoapFault createSoapFault(SOAPExceptionCode sc, QName soapCode,
+            String... msg) {
         SoapFault sf = new SoapFault(sc.getDesc(msg), soapCode);
         sf.setSubCode(sc.getCode());
         return sf;

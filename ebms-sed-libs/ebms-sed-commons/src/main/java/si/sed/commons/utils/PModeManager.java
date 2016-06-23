@@ -17,20 +17,26 @@
 package si.sed.commons.utils;
 
 import java.io.File;
+import static java.io.File.separator;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
+import static java.lang.String.format;
+import static java.lang.System.getProperty;
+import static java.nio.file.Files.move;
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import java.util.List;
 import javax.xml.bind.JAXBException;
 import org.msh.svev.pmode.PMode;
 import org.msh.svev.pmode.PModes;
-import si.sed.commons.SEDSystemProperties;
+import static si.sed.commons.SEDSystemProperties.SYS_PROP_HOME_DIR;
+import static si.sed.commons.SEDSystemProperties.SYS_PROP_PMODE;
+import static si.sed.commons.SEDSystemProperties.SYS_PROP_PMODE_DEF;
 import si.sed.commons.exception.PModeException;
-import si.sed.commons.utils.xml.XMLUtils;
+import static si.sed.commons.utils.xml.XMLUtils.deserialize;
+import static si.sed.commons.utils.xml.XMLUtils.serialize;
 
 /**
  *
@@ -58,7 +64,8 @@ public class PModeManager {
      * @return
      * @throws PModeException
      */
-    public PMode getPModeById(String pModeId) throws PModeException {
+    public PMode getPModeById(String pModeId)
+            throws PModeException {
         if (pmodes == null) {
             reloadPModes();
         }
@@ -144,23 +151,24 @@ public class PModeManager {
      *
      * @throws PModeException
      */
-    public void savePMode() throws PModeException {
+    public void savePMode()
+            throws PModeException {
         long l = LOG.logStart();
         try {
 
             File pModeFile = new File(getPModeFilePath());
             int i = 1;
             String fileFormat = getPModeFilePath() + ".%03d";
-            File pModeFileTarget = new File(String.format(fileFormat, i++));
+            File pModeFileTarget = new File(format(fileFormat, i++));
 
             while (pModeFileTarget.exists()) {
-                pModeFileTarget = new File(String.format(fileFormat, i++));
+                pModeFileTarget = new File(format(fileFormat, i++));
             }
 
-            Files.move(pModeFile.toPath(), pModeFileTarget.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            move(pModeFile.toPath(), pModeFileTarget.toPath(), REPLACE_EXISTING);
 
             try (PrintWriter out = new PrintWriter(pModeFile)) {
-                XMLUtils.serialize(pmodes, out);
+                serialize(pmodes, out);
             } catch (JAXBException | FileNotFoundException ex) {
                 String msg = "ERROR serialize PMODE: " + ex.getMessage();
                 throw new PModeException(msg, ex);
@@ -177,13 +185,15 @@ public class PModeManager {
      *
      * @throws PModeException
      */
-    public void reloadPModes() throws PModeException {
+    public void reloadPModes()
+            throws PModeException {
         long l = LOG.logStart();
         File pModeFile = new File(getPModeFilePath());
         try (FileInputStream fis = new FileInputStream(pModeFile)) {
             reloadPModes(fis);
         } catch (IOException ex) {
-            String msg = "Error init PModes from file '" + pModeFile.getAbsolutePath() + "'";
+            String msg = "Error init PModes from file '" +
+                    pModeFile.getAbsolutePath() + "'";
             throw new PModeException(msg, ex);
         }
         LOG.logEnd(l);
@@ -194,11 +204,12 @@ public class PModeManager {
      * @param is
      * @throws PModeException
      */
-    public void reloadPModes(InputStream is) throws PModeException {
+    public void reloadPModes(InputStream is)
+            throws PModeException {
         long l = LOG.logStart();
 
         try {
-            pmodes = (PModes) XMLUtils.deserialize(is, PModes.class);
+            pmodes = (PModes) deserialize(is, PModes.class);
         } catch (JAXBException ex) {
             String msg = "Error init PModes!";
             throw new PModeException(msg, ex);
@@ -211,27 +222,29 @@ public class PModeManager {
      * @return
      */
     public String getPModeFilePath() {
-        return System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR) + File.separator
-                + System.getProperty(SEDSystemProperties.SYS_PROP_PMODE, SEDSystemProperties.SYS_PROP_PMODE_DEF);
+        return getProperty(SYS_PROP_HOME_DIR) + separator +
+                getProperty(SYS_PROP_PMODE, SYS_PROP_PMODE_DEF);
     }
 
     /**
      *
-     * @return
-     * @throws PModeException
+     * @return @throws PModeException
      */
-    public PModes getPModes() throws PModeException {
+    public PModes getPModes()
+            throws PModeException {
         reloadPModes();
         return pmodes;
     }
 
     /**
      *
-     * @return
-     * @throws PModeException
+     * @return @throws PModeException
      */
-    public List<PMode> getPModeList() throws PModeException {
-        reloadPModes();
+    public List<PMode> getPModeList()
+            throws PModeException {
+        if (pmodes == null) {
+            reloadPModes();
+        }
         return pmodes.getPModes();
     }
 

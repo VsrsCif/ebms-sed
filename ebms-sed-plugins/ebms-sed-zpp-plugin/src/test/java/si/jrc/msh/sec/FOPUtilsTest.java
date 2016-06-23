@@ -41,10 +41,13 @@ public class FOPUtilsTest {
 
     /**
      * Test of generateVisualization method, of class FOPUtils.
+     *
      * @throws java.io.IOException
      */
     @Test
-    public void testGenerateVisualizationFromMSHOutMail() throws JAXBException, FileNotFoundException, FOPException, IOException {
+    public void testGenerateVisualizationFromMSHOutMail()
+            throws JAXBException, FileNotFoundException, FOPException,
+            IOException {
         /*   
         String fopConfigFile = "src/test/resources/fop/fop.xconf";
         String xsltFolder = "src/test/resources/fop/xslt/LegalDelivery_ZPP-DeliveryNotification.fo";

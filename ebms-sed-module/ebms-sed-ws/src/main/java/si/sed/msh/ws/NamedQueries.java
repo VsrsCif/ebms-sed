@@ -34,31 +34,37 @@ public class NamedQueries {
     /**
      *
      */
-    public static final String SED_NQ_INMAIL_GET_BY_ID_AND_RECBOX = "org.sed.ebms.inbox.mail.InMail.getByIdAndReceiverBox";
+    public static final String SED_NQ_INMAIL_GET_BY_ID_AND_RECBOX =
+            "org.sed.ebms.inbox.mail.InMail.getByIdAndReceiverBox";
 
     /**
      *
      */
-    public static final String SED_NQ_INMAIL_GET_EVENTS = "org.sed.ebms.inbox.event.InEvent.getList";
+    public static final String SED_NQ_INMAIL_GET_EVENTS =
+            "org.sed.ebms.inbox.event.InEvent.getList";
 
     /**
      *
      */
-    public static final String SED_NQ_INMAIL_GET_LIST = "org.sed.ebms.inbox.mail.InMail.getList";
+    public static final String SED_NQ_INMAIL_GET_LIST =
+            "org.sed.ebms.inbox.mail.InMail.getList";
 
     /**
      *
      */
-    public static final String SED_NQ_OUTMAIL_GET_EVENTS = "org.sed.ebms.outbox.event.OutEvent.getList";
+    public static final String SED_NQ_OUTMAIL_GET_EVENTS =
+            "org.sed.ebms.outbox.event.OutEvent.getList";
 
     /**
      *
      */
-    public static final String SED_NQ_OUTMAIL_GET_LIST = "org.sed.ebms.outbox.mail.OutMail.getList";
+    public static final String SED_NQ_OUTMAIL_GET_LIST =
+            "org.sed.ebms.outbox.mail.OutMail.getList";
 
     /**
      *
      */
-    public static final String SED_NQ_OUTMAIL_getByMessageIdAndSenderBox = "org.sed.ebms.outbox.mail.OutMail.getByMessageIdAndSenderBox";
+    public static final String SED_NQ_OUTMAIL_getByMessageIdAndSenderBox =
+            "org.sed.ebms.outbox.mail.OutMail.getByMessageIdAndSenderBox";
 
 }

@@ -44,7 +44,8 @@ public class SimplePasswordCallback implements CallbackHandler {
     }
 
     @Override
-    public void handle(Callback[] callbacks) throws UnsupportedCallbackException {
+    public void handle(Callback[] callbacks)
+            throws UnsupportedCallbackException {
         if (callbacks[0] instanceof WSPasswordCallback) {
             WSPasswordCallback pc = (WSPasswordCallback) callbacks[0];
             pc.setPassword(password);

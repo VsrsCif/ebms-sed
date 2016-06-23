@@ -57,8 +57,10 @@ public abstract class TaskEmailReport implements TaskExecutionInterface {
     /**
      *
      */
-    protected static final SEDLogger LOG = new SEDLogger(TaskEmailStatusReport.class);
-    static final SimpleDateFormat SDF_DD_MM_YYY_HH_MI = new SimpleDateFormat("dd.MM.yyyy HH:mm");
+    protected static final SEDLogger LOG = new SEDLogger(
+            TaskEmailStatusReport.class);
+    static final SimpleDateFormat SDF_DD_MM_YYY_HH_MI = new SimpleDateFormat(
+            "dd.MM.yyyy HH:mm");
     @EJB(mappedName = SEDJNDI.JNDI_SEDDAO)
     SEDDaoInterface mdao;
     @EJB(mappedName = SEDJNDI.JNDI_SEDREPORTS)
@@ -74,7 +76,9 @@ public abstract class TaskEmailReport implements TaskExecutionInterface {
      * @param valList
      * @return
      */
-    protected SEDTaskTypeProperty createTTProperty(String key, String desc, boolean mandatory, String type, String valFormat, String valList) {
+    protected SEDTaskTypeProperty createTTProperty(String key, String desc,
+            boolean mandatory, String type,
+            String valFormat, String valList) {
         SEDTaskTypeProperty ttp = new SEDTaskTypeProperty();
         ttp.setKey(key);
         ttp.setDescription(desc);
@@ -102,7 +106,8 @@ public abstract class TaskEmailReport implements TaskExecutionInterface {
      * @throws TaskException
      */
     @Override
-    public String executeTask(Properties p) throws TaskException {
+    public String executeTask(Properties p)
+            throws TaskException {
         long l = LOG.logStart();
         EmailUtils memailUtil = new EmailUtils();
         StringWriter sw = new StringWriter();
@@ -127,7 +132,9 @@ public abstract class TaskEmailReport implements TaskExecutionInterface {
                 memailUtil.sendMailMessage(ed, smtpConf);
             } catch (MessagingException | NamingException | IOException ex) {
                 LOG.logError(l, "Error submitting report", ex);
-                throw new TaskException(TaskException.TaskExceptionCode.ProcessException, "Error submitting report: " + ex.getMessage(), ex);
+                throw new TaskException(
+                        TaskException.TaskExceptionCode.ProcessException,
+                        "Error submitting report: " + ex.getMessage(), ex);
             }
         } else {
             sw.append("Mail not submitted - nothing to submit\n");
@@ -135,7 +142,8 @@ public abstract class TaskEmailReport implements TaskExecutionInterface {
         return sw.toString();
     }
 
-    abstract String generateMailReport(Properties p, StringWriter sw) throws TaskException;
+    abstract String generateMailReport(Properties p, StringWriter sw)
+            throws TaskException;
 
     /*
     public Properties getMailProperties() {
@@ -147,22 +155,26 @@ public abstract class TaskEmailReport implements TaskExecutionInterface {
         p.setProperty(KEY_MAIL_CONFIG_JNDI, "Mail config jndi(def: java:jboss/mail/Default)");
         return p;
     }*/
-
     /**
      *
      * @return
      */
-
     public SEDTaskType getMailTaskDefinition() {
         SEDTaskType tt = new SEDTaskType();
         tt.setType("");
         tt.setName("");
         tt.setDescription("");
-        tt.getSEDTaskTypeProperties().add(createTTProperty(KEY_SEDBOX, "SED-BOX"));
-        tt.getSEDTaskTypeProperties().add(createTTProperty(KEY_EMAIL_TO, "Receiver email addresses, separated by comma."));
-        tt.getSEDTaskTypeProperties().add(createTTProperty(KEY_EMAIL_FROM, "Sender email address."));
-        tt.getSEDTaskTypeProperties().add(createTTProperty(KEY_EMAIL_SUBJECT, "EMail subject."));
-        tt.getSEDTaskTypeProperties().add(createTTProperty(KEY_MAIL_CONFIG_JNDI, "Mail config jndi(def: java:jboss/mail/Default)"));
+        tt.getSEDTaskTypeProperties().add(
+                createTTProperty(KEY_SEDBOX, "SED-BOX"));
+        tt.getSEDTaskTypeProperties().add(
+                createTTProperty(KEY_EMAIL_TO,
+                        "Receiver email addresses, separated by comma."));
+        tt.getSEDTaskTypeProperties().add(createTTProperty(KEY_EMAIL_FROM,
+                "Sender email address."));
+        tt.getSEDTaskTypeProperties().add(createTTProperty(KEY_EMAIL_SUBJECT,
+                "EMail subject."));
+        tt.getSEDTaskTypeProperties().add(createTTProperty(KEY_MAIL_CONFIG_JNDI,
+                "Mail config jndi(def: java:jboss/mail/Default)"));
         return tt;
     }
 
@@ -172,24 +184,31 @@ public abstract class TaskEmailReport implements TaskExecutionInterface {
      * @return
      * @throws TaskException
      */
-    public EmailData validateMailParameters(Properties p) throws TaskException {
+    public EmailData validateMailParameters(Properties p)
+            throws TaskException {
 
         String emailTo = null;
         String emailFrom = null;
         String emailSubject = null;
 
         if (!p.containsKey(KEY_EMAIL_TO)) {
-            throw new TaskException(TaskException.TaskExceptionCode.InitException, "Missing parameter:  '" + KEY_EMAIL_TO + "'!");
+            throw new TaskException(
+                    TaskException.TaskExceptionCode.InitException,
+                    "Missing parameter:  '" + KEY_EMAIL_TO + "'!");
         } else {
             emailTo = p.getProperty(KEY_EMAIL_TO);
         }
         if (!p.containsKey(KEY_EMAIL_FROM)) {
-            throw new TaskException(TaskException.TaskExceptionCode.InitException, "Missing parameter:  '" + KEY_EMAIL_FROM + "'!");
+            throw new TaskException(
+                    TaskException.TaskExceptionCode.InitException,
+                    "Missing parameter:  '" + KEY_EMAIL_FROM + "'!");
         } else {
             emailFrom = p.getProperty(KEY_EMAIL_FROM);
         }
         if (!p.containsKey(KEY_EMAIL_SUBJECT)) {
-            throw new TaskException(TaskException.TaskExceptionCode.InitException, "Missing parameter:  '" + KEY_EMAIL_SUBJECT + "'!");
+            throw new TaskException(
+                    TaskException.TaskExceptionCode.InitException,
+                    "Missing parameter:  '" + KEY_EMAIL_SUBJECT + "'!");
         } else {
             emailSubject = p.getProperty(KEY_EMAIL_SUBJECT);
         }

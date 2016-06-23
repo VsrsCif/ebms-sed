@@ -70,7 +70,8 @@ public class ZPPPluginDescription implements PluginDescriptionInterface {
      */
     @Override
     public List<String> getTaskJNDIs() {
-        return Collections.singletonList("java:global/plugin-zpp/ZPPTask!si.sed.commons.interfaces.TaskExecutionInterface");
+        return Collections.singletonList(
+                "java:global/plugin-zpp/ZPPTask!si.sed.commons.interfaces.TaskExecutionInterface");
     }
 
     /**

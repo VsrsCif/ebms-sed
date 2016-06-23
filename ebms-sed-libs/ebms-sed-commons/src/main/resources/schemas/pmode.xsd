@@ -11,8 +11,8 @@
             </xs:sequence>
         </xs:complexType>
     </xs:element>
-    <xs:element name="PMode"> 
-        <xs:complexType >
+    <xs:element name="PMode">
+        <xs:complexType>
             <xs:sequence>
                 <xs:element name="Agreement" type="xs:string">
                     <xs:annotation>
@@ -268,6 +268,7 @@
                 <xs:complexType>
                     <xs:simpleContent>
                         <xs:extension base="xs:string">
+                            <xs:attribute name="type"/>
                             <xs:attribute name="inPlugin"/>
                             <xs:attribute name="outPlugin">
                                 <xs:annotation>
@@ -345,6 +346,11 @@
                                             User message</xs:documentation>
                                     </xs:annotation>
                                 </xs:attribute>
+                                <xs:attribute name="compressType" type="xs:token">
+                                    <xs:annotation>
+                                        <xs:documentation>AS4 : compression for attachments: If noot given def compression is used.</xs:documentation>
+                                    </xs:annotation>
+                                </xs:attribute>
                             </xs:complexType>
                         </xs:element>
                     </xs:sequence>
@@ -355,6 +361,18 @@
                         </xs:annotation>
                     </xs:attribute>
                     <xs:attribute name="action"/>
+                    <xs:attribute name="compressDefType" default="none">
+                        <xs:annotation>
+                            <xs:documentation>AS4 : Def compression for all attachments: To compress the payload(s) of a message payload, the GZIP [RFC1952] compression algorithm MUST
+                                be used. </xs:documentation>
+                        </xs:annotation>
+                        <xs:simpleType>
+                            <xs:restriction base="xs:token">
+                                <xs:enumeration value="application/gzip"/>
+                                <xs:enumeration value="none"/>
+                            </xs:restriction>
+                        </xs:simpleType>
+                    </xs:attribute>
                 </xs:complexType>
             </xs:element>
             <xs:element name="MPC" type="xs:anyURI" default="http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/defaultMPC" minOccurs="0">

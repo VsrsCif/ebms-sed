@@ -49,18 +49,16 @@ import si.sed.commons.utils.xml.XMLUtils;
 @WebServiceProvider(serviceName = "ebms")
 @ServiceMode(value = Service.Mode.MESSAGE)
 @BindingType(SOAPBinding.SOAP12HTTP_BINDING)
-@org.apache.cxf.interceptor.InInterceptors(interceptors
-        = {
-            "si.jrc.msh.interceptor.EBMSLogInInterceptor",
-            "si.jrc.msh.interceptor.EBMSInInterceptor",
-            "si.jrc.msh.interceptor.MSHPluginInInterceptor"
-        })
-@org.apache.cxf.interceptor.OutInterceptors(interceptors
-        = {
-            "si.jrc.msh.interceptor.EBMSLogOutInterceptor",
-            "si.jrc.msh.interceptor.EBMSOutInterceptor",
-            "si.jrc.msh.interceptor.MSHPluginOutInterceptor"
-        })
+@org.apache.cxf.interceptor.InInterceptors(interceptors = {
+    "si.jrc.msh.interceptor.EBMSLogInInterceptor",
+    "si.jrc.msh.interceptor.EBMSInInterceptor",
+    "si.jrc.msh.interceptor.MSHPluginInInterceptor"
+})
+@org.apache.cxf.interceptor.OutInterceptors(interceptors = {
+    "si.jrc.msh.interceptor.EBMSLogOutInterceptor",
+    "si.jrc.msh.interceptor.EBMSOutInterceptor",
+    "si.jrc.msh.interceptor.MSHPluginOutInterceptor"
+})
 public class EBMSEndpoint implements Provider<SOAPMessage> {
 
     private static final SEDLogger LOG = new SEDLogger(EBMSEndpoint.class);
@@ -83,7 +81,8 @@ public class EBMSEndpoint implements Provider<SOAPMessage> {
 
     private String getJNDIPrefix() {
 
-        return System.getProperty(SEDSystemProperties.SYS_PROP_JNDI_PREFIX, "java:/jboss/");
+        return System.getProperty(SEDSystemProperties.SYS_PROP_JNDI_PREFIX,
+                "java:/jboss/");
     }
 
     @Override
@@ -92,11 +91,13 @@ public class EBMSEndpoint implements Provider<SOAPMessage> {
         SOAPMessage response = null;
         try {
             // create empty response
-            MessageFactory mf = MessageFactory.newInstance(SOAPConstants.SOAP_1_2_PROTOCOL);
+            MessageFactory mf = MessageFactory.newInstance(
+                    SOAPConstants.SOAP_1_2_PROTOCOL);
             response = mf.createMessage();
 
             // Using this cxf specific code you can access the CXF Message and Exchange objects
-            WrappedMessageContext wmc = (WrappedMessageContext) wsContext.getMessageContext();
+            WrappedMessageContext wmc =
+                    (WrappedMessageContext) wsContext.getMessageContext();
             Message msg = wmc.getWrappedMessage();
             Exchange ex = msg.getExchange();
 
@@ -109,7 +110,8 @@ public class EBMSEndpoint implements Provider<SOAPMessage> {
 
             if (sb == null) {
                 // return error
-            } else if (inmail.getStatus().equals(SEDInboxMailStatus.RECEIVE.getValue())) {
+            } else if (inmail.getStatus().equals(
+                    SEDInboxMailStatus.RECEIVE.getValue())) {
                 // othervise in ERROR or plugin_locked
                 serializeMail(inmail, msg.getAttachments(), sb);
             }
@@ -121,7 +123,8 @@ public class EBMSEndpoint implements Provider<SOAPMessage> {
         return response;
     }
 
-    private void serializeMail(MSHInMail mail, Collection<Attachment> lstAttch, SEDBox sb) {
+    private void serializeMail(MSHInMail mail, Collection<Attachment> lstAttch,
+            SEDBox sb) {
         long l = LOG.logStart();
         // prepare mail to persist 
         Date dt = new Date();
@@ -136,7 +139,8 @@ public class EBMSEndpoint implements Provider<SOAPMessage> {
 
             mDB.setStatusToInMail(mail, SEDInboxMailStatus.RECEIVED, null);
         } catch (StorageException ex) {
-            LOG.logError(l, "Error setting status ERROR to MSHInMail :'" + mail.getId() + "'!", ex);
+            LOG.logError(l, "Error setting status ERROR to MSHInMail :'" +
+                    mail.getId() + "'!", ex);
         }
 
         // serialize to file
@@ -153,16 +157,22 @@ public class EBMSEndpoint implements Provider<SOAPMessage> {
                 }
                 String filPrefix = fld.getAbsolutePath() + File.separator + val;
                 if (e.getExportMetaData()) {
-                    String fileMetaData = filPrefix + "." + MimeValues.MIME_XML.getSuffix();
+                    String fileMetaData = filPrefix + "." +
+                            MimeValues.MIME_XML.getSuffix();
                     try {
 
-                        XMLUtils.serialize(mail, fld.getAbsolutePath() + File.separator + val + "." + MimeValues.MIME_XML.getSuffix());
+                        XMLUtils.serialize(mail,
+                                fld.getAbsolutePath() + File.separator + val +
+                                "." + MimeValues.MIME_XML.getSuffix());
                     } catch (JAXBException | FileNotFoundException ex) {
-                        LOG.logError(l, "Export metadata ERROR. Export file:" + fileMetaData + ".", ex);
+                        LOG.logError(l, "Export metadata ERROR. Export file:" +
+                                fileMetaData + ".", ex);
                     }
                 }
                 for (MSHInPart mp : mail.getMSHInPayload().getMSHInParts()) {
-                    msuStorageUtils.copyInFile(mp.getFilepath(), new File(filPrefix + "_" + i + "." + MimeValues.getSuffixBYMimeType(mp.getMimeType())));
+                    StorageUtils.copyInFile(mp.getFilepath(), new File(
+                            filPrefix + "_" + i + "." + MimeValues.
+                            getSuffixBYMimeType(mp.getMimeType())));
                 }
             } catch (IOException | StorageException ex) {
                 LOG.logError(l, "Export ERROR", ex);

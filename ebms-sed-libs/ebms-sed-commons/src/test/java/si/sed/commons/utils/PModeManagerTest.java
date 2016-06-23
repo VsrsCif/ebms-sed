@@ -16,19 +16,21 @@
  */
 package si.sed.commons.utils;
 
-import java.io.File;
 import java.io.FileNotFoundException;
+import static java.lang.System.setProperty;
 import javax.xml.bind.JAXBException;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.FileAppender;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import static org.apache.log4j.Level.DEBUG;
+import static org.apache.log4j.Level.FATAL;
+import static org.apache.log4j.Logger.getRootLogger;
 import org.apache.log4j.PatternLayout;
 import org.junit.After;
 import org.msh.svev.pmode.PModes;
-import si.sed.commons.SEDSystemProperties;
+import static si.sed.commons.SEDSystemProperties.SYS_PROP_HOME_DIR;
+import static si.sed.commons.SEDSystemProperties.SYS_PROP_PMODE;
 import si.sed.commons.exception.PModeException;
-import si.sed.commons.utils.xml.XMLUtils;
+import static si.sed.commons.utils.xml.XMLUtils.serialize;
 
 /**
  *
@@ -40,28 +42,28 @@ public class PModeManagerTest {
      *
      */
     public PModeManagerTest() {
-        
-         System.setProperty(SEDSystemProperties.SYS_PROP_HOME_DIR, ".");
-         System.setProperty(SEDSystemProperties.SYS_PROP_PMODE, "test-pmode.xml");
+
+        setProperty(SYS_PROP_HOME_DIR, ".");
+        setProperty(SYS_PROP_PMODE, "test-pmode.xml");
 
         ConsoleAppender console = new ConsoleAppender(); //create appender
         //configure the appender
         String PATTERN = "%d [%p|%c|%C{1}] %m%n";
         console.setLayout(new PatternLayout(PATTERN));
-        console.setThreshold(Level.FATAL);
+        console.setThreshold(FATAL);
         console.activateOptions();
         //add appender to any Logger (here is root)
-        Logger.getRootLogger().addAppender(console);
+        getRootLogger().addAppender(console);
 
         FileAppender fa = new FileAppender();
         fa.setName("FileLogger");
         fa.setFile("test.log");
         fa.setLayout(new PatternLayout("%d %-5p [%c{1}] %m%n"));
-        fa.setThreshold(Level.DEBUG);
+        fa.setThreshold(DEBUG);
         fa.setAppend(true);
         fa.activateOptions();
         //add appender to any Logger (here is root)
-        Logger.getRootLogger().addAppender(fa);
+        getRootLogger().addAppender(fa);
     }
 
     /**
@@ -78,13 +80,15 @@ public class PModeManagerTest {
      * @throws FileNotFoundException
      */
     @org.junit.Test
-    public void testReloadPModes() throws PModeException, JAXBException, FileNotFoundException {
+    public void testReloadPModes()
+            throws PModeException, JAXBException, FileNotFoundException {
 
         PModeManager pmd = new PModeManager();
-        pmd.reloadPModes(PModeManagerTest.class.getResourceAsStream("/pmode/pmodes.xml"));
+        pmd.reloadPModes(PModeManagerTest.class.getResourceAsStream(
+                "/pmode/pmodes.xml"));
         PModes pm = pmd.getPModes();
 
-        XMLUtils.serialize(pm, "test-pmode.xml");
+        serialize(pm, "test-pmode.xml");
 
     }
 

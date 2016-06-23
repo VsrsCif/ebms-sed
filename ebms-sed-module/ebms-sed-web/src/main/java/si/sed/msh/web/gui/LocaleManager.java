@@ -42,7 +42,8 @@ public class LocaleManager {
      */
     @PostConstruct
     public void init() {
-        locale = FacesContext.getCurrentInstance().getExternalContext().getRequestLocale();
+        locale =
+                FacesContext.getCurrentInstance().getExternalContext().getRequestLocale();
     }
 
     /**

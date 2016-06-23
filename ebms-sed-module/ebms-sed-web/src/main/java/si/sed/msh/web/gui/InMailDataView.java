@@ -48,7 +48,8 @@ import si.sed.msh.web.abst.AbstractMailView;
  */
 @SessionScoped
 @ManagedBean(name = "InMailDataView")
-public class InMailDataView extends AbstractMailView<MSHInMail, MSHInEvent> implements Serializable {
+public class InMailDataView extends AbstractMailView<MSHInMail, MSHInEvent>
+        implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -104,7 +105,8 @@ public class InMailDataView extends AbstractMailView<MSHInMail, MSHInEvent> impl
     @Override
     public void updateEventList() {
         if (this.mMail != null) {
-            mlstMailEvents = mDB.getMailEventList(MSHInEvent.class, mMail.getId());
+            mlstMailEvents = mDB.getMailEventList(MSHInEvent.class,
+                    mMail.getId());
         } else {
             mlstMailEvents = null;
         }
@@ -119,7 +121,8 @@ public class InMailDataView extends AbstractMailView<MSHInMail, MSHInEvent> impl
     public StreamedContent getFile(BigInteger bi) {
         MSHInPart inpart = null;
 
-        if (mMail == null || mMail.getMSHInPayload() == null || mMail.getMSHInPayload().getMSHInParts().isEmpty()) {
+        if (mMail == null || mMail.getMSHInPayload() == null ||
+                mMail.getMSHInPayload().getMSHInParts().isEmpty()) {
             return null;
         }
 
@@ -132,9 +135,11 @@ public class InMailDataView extends AbstractMailView<MSHInMail, MSHInEvent> impl
         if (inpart != null) {
             try {
                 File f = StorageUtils.getFile(inpart.getFilepath());
-                return new DefaultStreamedContent(new FileInputStream(f), inpart.getMimeType(), inpart.getFilename());
+                return new DefaultStreamedContent(new FileInputStream(f),
+                        inpart.getMimeType(), inpart.getFilename());
             } catch (StorageException | FileNotFoundException ex) {
-                Logger.getLogger(InMailDataView.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(InMailDataView.class.getName()).log(
+                        Level.SEVERE, null, ex);
             }
         }
         return null;

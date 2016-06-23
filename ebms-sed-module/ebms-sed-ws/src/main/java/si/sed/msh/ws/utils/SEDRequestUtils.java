@@ -34,7 +34,8 @@ import si.sed.commons.utils.Utils;
  */
 public class SEDRequestUtils {
 
-    private static final Pattern EMAIL_PATTEREN = Pattern.compile("^.+@.+(\\\\.[^\\\\.]+)+$");
+    private static final Pattern EMAIL_PATTEREN = Pattern.compile(
+            "^.+@.+(\\\\.[^\\\\.]+)+$");
 
     /**
      * Methods validate OutMail for missing data
@@ -42,12 +43,14 @@ public class SEDRequestUtils {
      * @param mail
      * @throws SEDException_Exception
      */
-    public static void checkOutMailForMissingData(OutMail mail) throws SEDException_Exception {
+    public static void checkOutMailForMissingData(OutMail mail)
+            throws SEDException_Exception {
         List<String> errLst = new ArrayList<>();
         if (Utils.isEmptyString(mail.getSenderMessageId())) {
             errLst.add("SenderMessageId");
         }
-        if (mail.getOutPayload() == null || mail.getOutPayload().getOutParts().isEmpty()) {
+        if (mail.getOutPayload() == null ||
+                mail.getOutPayload().getOutParts().isEmpty()) {
             errLst.add("No content in mail (Attachment is empty)!");
         }
         int iMP = 0;
@@ -57,8 +60,12 @@ public class SEDRequestUtils {
                 errLst.add("Mimetype (index:'" + iMP + "')!");
             }
             // check payload
-            if (mp.getValue() == null && (Utils.isEmptyString(mp.getFilepath()) || !(new File(mp.getFilepath()).exists()))) {
-                errLst.add("No payload content. Add value or existing file (index:'" + iMP + "')!");
+            if (mp.getValue() == null &&
+                    (Utils.isEmptyString(mp.getFilepath()) || !(new File(
+                    mp.getFilepath()).exists()))) {
+                errLst.add(
+                        "No payload content. Add value or existing file (index:'" +
+                        iMP + "')!");
             }
         }
         if (Utils.isEmptyString(mail.getReceiverName())) {
@@ -83,7 +90,9 @@ public class SEDRequestUtils {
             errLst.add("ConversationId!");
         }
         if (!errLst.isEmpty()) {
-            throw createSEDException("Missing data (" + errLst.size() + "):" + String.join(", ", errLst), SEDExceptionCode.MISSING_DATA);
+            throw createSEDException("Missing data (" + errLst.size() + "):" +
+                    String.join(", ", errLst),
+                    SEDExceptionCode.MISSING_DATA);
         }
 
     }
@@ -94,7 +103,8 @@ public class SEDRequestUtils {
      * @param cd
      * @return
      */
-    public static SEDException_Exception createSEDException(String message, SEDExceptionCode cd) {
+    public static SEDException_Exception createSEDException(String message,
+            SEDExceptionCode cd) {
         return createSEDException(message, cd, null);
     }
 
@@ -105,7 +115,8 @@ public class SEDRequestUtils {
      * @param tw
      * @return
      */
-    public static SEDException_Exception createSEDException(String message, SEDExceptionCode cd, Throwable tw) {
+    public static SEDException_Exception createSEDException(String message,
+            SEDExceptionCode cd, Throwable tw) {
         SEDException se = new SEDException();
         se.setErrorCode(cd);
         se.setMessage(message);
@@ -129,16 +140,22 @@ public class SEDRequestUtils {
      * @param c
      * @throws SEDException_Exception
      */
-    public static void validateControl(Control c) throws SEDException_Exception {
+    public static void validateControl(Control c)
+            throws SEDException_Exception {
 
         if (c == null) {
-            throw SEDRequestUtils.createSEDException("SubmitMailRequest/Control", SEDExceptionCode.MISSING_DATA);
+            throw SEDRequestUtils.createSEDException("SubmitMailRequest/Control",
+                    SEDExceptionCode.MISSING_DATA);
         }
         if (c.getApplicationId() == null) {
-            throw SEDRequestUtils.createSEDException("SubmitMailRequest/Control/@userId", SEDExceptionCode.MISSING_DATA);
+            throw SEDRequestUtils.createSEDException(
+                    "SubmitMailRequest/Control/@userId",
+                    SEDExceptionCode.MISSING_DATA);
         }
         if (c.getUserId() == null) {
-            throw SEDRequestUtils.createSEDException("SubmitMailRequest/Control/@getApplicationId", SEDExceptionCode.MISSING_DATA);
+            throw SEDRequestUtils.createSEDException(
+                    "SubmitMailRequest/Control/@getApplicationId",
+                    SEDExceptionCode.MISSING_DATA);
         }
     }
 }

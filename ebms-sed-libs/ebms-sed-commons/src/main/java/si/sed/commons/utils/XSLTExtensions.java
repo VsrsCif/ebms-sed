@@ -16,8 +16,11 @@
  */
 package si.sed.commons.utils;
 
+import static com.jrc.xml.DateAdapter.parseDateTime;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import static java.util.Calendar.DAY_OF_MONTH;
+import static java.util.Calendar.getInstance;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
@@ -27,15 +30,17 @@ import java.util.GregorianCalendar;
  */
 public class XSLTExtensions {
 
-    private static final SimpleDateFormat S_DATE_FORMAT = new SimpleDateFormat("dd.MM.yyyy");
-    private static final SimpleDateFormat S_DATE_TIME_FORMAT = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+    private static final SimpleDateFormat S_DATE_FORMAT = new SimpleDateFormat(
+            "dd.MM.yyyy");
+    private static final SimpleDateFormat S_DATE_TIME_FORMAT =
+            new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
 
     /**
      *
      * @return
      */
     public static Object currentDate() {
-        return S_DATE_FORMAT.format(Calendar.getInstance().getTime());
+        return S_DATE_FORMAT.format(getInstance().getTime());
     }
 
     /**
@@ -43,7 +48,7 @@ public class XSLTExtensions {
      * @return
      */
     public static Object currentDateTime() {
-        return S_DATE_TIME_FORMAT.format(Calendar.getInstance().getTime());
+        return S_DATE_TIME_FORMAT.format(getInstance().getTime());
     }
 
     /**
@@ -56,7 +61,7 @@ public class XSLTExtensions {
             return null;
         }
 
-        Date dt = com.jrc.xml.DateAdapter.parseDateTime(str);
+        Date dt = parseDateTime(str);
         return S_DATE_FORMAT.format(dt);
     }
 
@@ -69,10 +74,10 @@ public class XSLTExtensions {
         if (str == null || str.trim().isEmpty()) {
             return null;
         }
-        Date dt = com.jrc.xml.DateAdapter.parseDateTime(str);
+        Date dt = parseDateTime(str);
         Calendar c = new GregorianCalendar();
         c.setTime(dt);
-        c.add(Calendar.DAY_OF_MONTH, 15);
+        c.add(DAY_OF_MONTH, 15);
         return S_DATE_FORMAT.format(c.getTime());
 
     }

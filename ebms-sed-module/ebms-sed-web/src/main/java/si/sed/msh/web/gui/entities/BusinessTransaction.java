@@ -26,7 +26,8 @@ public class BusinessTransaction {
      * @param initiatorRole
      * @param responderRole
      */
-    public BusinessTransaction(String name, String initiatorRole, String responderRole) {
+    public BusinessTransaction(String name, String initiatorRole,
+            String responderRole) {
         this.name = name;
         this.initiatorRole = initiatorRole;
         this.responderRole = responderRole;

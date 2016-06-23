@@ -36,7 +36,8 @@ public class InMailDataModel extends AbstractMailDataModel<MSHInMail> {
      * @param userSessionData
      * @param db
      */
-    public InMailDataModel(Class<MSHInMail> type, UserSessionData userSessionData, SEDDaoInterface db) {
+    public InMailDataModel(Class<MSHInMail> type,
+            UserSessionData userSessionData, SEDDaoInterface db) {
         super(type);
         setUserSessionData(userSessionData, db);
     }
@@ -81,7 +82,8 @@ public class InMailDataModel extends AbstractMailDataModel<MSHInMail> {
         String strSedBox = getUserSessionData().getCurrentSEDBox();
         imtFilter.getReceiverEBoxList().clear();
         if (strSedBox == null || strSedBox.equalsIgnoreCase("ALL")) {
-            imtFilter.getReceiverEBoxList().addAll(getUserSessionData().getUserEBoxes());
+            imtFilter.getReceiverEBoxList().addAll(
+                    getUserSessionData().getUserEBoxes());
 
         } else {
             imtFilter.getReceiverEBoxList().add(strSedBox);

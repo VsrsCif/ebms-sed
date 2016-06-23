@@ -14,6 +14,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -64,18 +65,22 @@ import si.sed.commons.utils.xml.XMLUtils;
  */
 public class EBMSUtils {
 
-    private static final String ID_PREFIX_ = "SED-";
+    private static final String ID_PREFIX = "SED-";
+    private static final String ATT_CID_PREFIX = "cid:";
 
     /**
      *
      */
     protected final SEDLogger mlog = new SEDLogger(MshClient.class);
 
-    private MessageInfo createMessageInfo(String senderDomain, String refToMessage, Date timestamp) {
-        return createMessageInfo(UUID.randomUUID().toString(), senderDomain, refToMessage, timestamp);
+    private MessageInfo createMessageInfo(String senderDomain,
+            String refToMessage, Date timestamp) {
+        return createMessageInfo(UUID.randomUUID().toString(), senderDomain,
+                refToMessage, timestamp);
     }
 
-    private MessageInfo createMessageInfo(String msgId, String senderDomain, String refToMessage, Date timestamp) {
+    private MessageInfo createMessageInfo(String msgId, String senderDomain,
+            String refToMessage, Date timestamp) {
         if (msgId == null) {
             msgId = UUID.randomUUID().toString();
         }
@@ -95,7 +100,7 @@ public class EBMSUtils {
         Messaging msg = new Messaging();
         //ID must be an NCName. This means that it must start with a letter or underscore, 
         //and can only contain letters, digits, underscores, hyphens, and periods.
-        msg.setId(ID_PREFIX_ + UUID.randomUUID().toString()); // generate unique id
+        msg.setId(ID_PREFIX + UUID.randomUUID().toString()); // generate unique id
         if (version.getVersion() != 1.1) {
             msg.setMustUnderstand(Boolean.TRUE);
         } else {
@@ -113,13 +118,15 @@ public class EBMSUtils {
      * @param timestamp
      * @return
      */
-    public UserMessage createUserMessage(PMode pm, MSHOutMail mo, String senderDomain, Date timestamp) {
+    public UserMessage createUserMessage(PMode pm, MSHOutMail mo,
+            String senderDomain, Date timestamp) {
         UserMessage usgMsg = new UserMessage();
 
         // UserMessage usgMsg = new UserMessage();
         // --------------------------------------
         // generate  MessageInfo 
-        MessageInfo mi = createMessageInfo(mo.getMessageId(), senderDomain, mo.getRefToMessageId(), timestamp);
+        MessageInfo mi = createMessageInfo(mo.getMessageId(), senderDomain,
+                mo.getRefToMessageId(), timestamp);
         usgMsg.setMessageInfo(mi);
 
         // generate from 
@@ -131,7 +138,9 @@ public class EBMSUtils {
         // add sender id
         PartyId piFrom = new PartyId();
         piFrom.setType(EbMSConstants.EBMS_PARTY_TYPE_NAME);
-        piFrom.setValue(mo.getSenderName() == null || mo.getSenderName().isEmpty() ? mo.getSenderEBox() : mo.getSenderName());
+        piFrom.setValue(mo.getSenderName() == null ||
+                mo.getSenderName().isEmpty() ? mo.getSenderEBox() : mo.
+                        getSenderName());
         usgMsg.getPartyInfo().getFrom().getPartyIds().add(piFrom);
         piFrom = new PartyId();
         piFrom.setType(EbMSConstants.EBMS_PARTY_TYPE_EBOX);
@@ -142,7 +151,9 @@ public class EBMSUtils {
         usgMsg.getPartyInfo().getTo().setRole(pm.getResponder().getRole()); // get from p-mode
         PartyId piTo = new PartyId();
         piTo.setType(EbMSConstants.EBMS_PARTY_TYPE_NAME);
-        piTo.setValue(mo.getReceiverName() == null || mo.getReceiverName().isEmpty() ? mo.getReceiverEBox() : mo.getReceiverName());
+        piTo.setValue(mo.getReceiverName() == null ||
+                mo.getReceiverName().isEmpty() ? mo.getReceiverEBox() : mo.
+                        getReceiverName());
         usgMsg.getPartyInfo().getTo().getPartyIds().add(piTo);
         piTo = new PartyId();
         piTo.setType(EbMSConstants.EBMS_PARTY_TYPE_EBOX);
@@ -152,13 +163,15 @@ public class EBMSUtils {
         // set colloboration info
         //BusinessInfo bi = pm.getLegs().get(0).getBusinessInfo();
         usgMsg.setCollaborationInfo(new CollaborationInfo());
-        usgMsg.getCollaborationInfo().setService(new org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.Service());
+        usgMsg.getCollaborationInfo().setService(
+                new org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.Service());
         usgMsg.getCollaborationInfo().getService().setValue(mo.getService());
         usgMsg.getCollaborationInfo().setAction(mo.getAction());
         usgMsg.getCollaborationInfo().setConversationId(mo.getConversationId());
         usgMsg.getCollaborationInfo().setAgreementRef(new AgreementRef());
         usgMsg.getCollaborationInfo().getAgreementRef().setPmode(pm.getId());
-        usgMsg.getCollaborationInfo().getAgreementRef().setValue(pm.getAgreement());
+        usgMsg.getCollaborationInfo().getAgreementRef().setValue(
+                pm.getAgreement());
 
         // add mail description
         List<Property> lstProperties = new ArrayList<>();
@@ -179,8 +192,10 @@ public class EBMSUtils {
             lstProperties.add(p);
         }
         // add aditional properties
-        if (mo.getMSHOutProperties() != null && !mo.getMSHOutProperties().getMSHOutProperties().isEmpty()) {
-            for (MSHOutProperty moutProp : mo.getMSHOutProperties().getMSHOutProperties()) {
+        if (mo.getMSHOutProperties() != null &&
+                !mo.getMSHOutProperties().getMSHOutProperties().isEmpty()) {
+            for (MSHOutProperty moutProp
+                    : mo.getMSHOutProperties().getMSHOutProperties()) {
                 Property p = new Property();
                 p.setName(moutProp.getName());
                 p.setValue(moutProp.getValue());
@@ -195,13 +210,15 @@ public class EBMSUtils {
 
         // add payload info
         usgMsg.setPayloadInfo(new PayloadInfo());
-        if (mo.getMSHOutPayload() != null && mo.getMSHOutPayload().getMSHOutParts() != null) {
+        if (mo.getMSHOutPayload() != null &&
+                mo.getMSHOutPayload().getMSHOutParts() != null) {
             for (MSHOutPart mp : mo.getMSHOutPayload().getMSHOutParts()) {
                 PartInfo pl = new PartInfo();
-                pl.setHref("cid:" + mp.getEbmsId()); // all parts are attachments!
-                if (mp.getDescription() != null && !mp.getDescription().isEmpty()) {
+                pl.setHref(ATT_CID_PREFIX+ mp.getEbmsId()); // all parts are attachments!
+                if (mp.getDescription() != null &&
+                        !mp.getDescription().isEmpty()) {
                     pl.setDescription(new Description());
-                    pl.getDescription().setLang("EN");
+                    pl.getDescription().setLang(Locale.getDefault().getLanguage());
                     pl.getDescription().setValue(mp.getDescription());
                 }
                 List<Property> fileProp = new ArrayList<>();
@@ -263,13 +280,19 @@ public class EBMSUtils {
      * @param timestamp
      * @return
      */
-    public SignalMessage generateAS4ReceiptSignal(UserMessage userMessage, String senderDomain, File inboundMail, Date timestamp) {
+    public SignalMessage generateAS4ReceiptSignal(UserMessage userMessage,
+            String senderDomain, File inboundMail,
+            Date timestamp) {
         SignalMessage sigMsg = new SignalMessage();
         try (FileInputStream fos = new FileInputStream(inboundMail);
-                InputStream isXSLT = getClass().getResourceAsStream("/xslt/soap2AS4Receipt.xsl")) {
+                InputStream isXSLT = getClass().getResourceAsStream(
+                        "/xslt/soap2AS4Receipt.xsl")) {
 
             // add message infof
-            sigMsg.setMessageInfo(createMessageInfo(senderDomain, userMessage.getMessageInfo().getMessageId(), timestamp));
+            sigMsg.setMessageInfo(
+                    createMessageInfo(senderDomain,
+                            userMessage.getMessageInfo().getMessageId(),
+                            timestamp));
             // generate receipt
             Receipt rcp = new Receipt();
             // generate as4 receipt from xslt
@@ -277,8 +300,10 @@ public class EBMSUtils {
             rcp.getAnies().add(doc.getDocumentElement());
             sigMsg.setReceipt(rcp);
 
-        } catch (JAXBException | TransformerException | ParserConfigurationException | SAXException | IOException ex) {
-            Logger.getLogger(EBMSUtils.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (JAXBException | TransformerException |
+                ParserConfigurationException | SAXException | IOException ex) {
+            Logger.getLogger(EBMSUtils.class.getName()).log(Level.SEVERE, null,
+                    ex);
         }
         return sigMsg;
     }
@@ -291,12 +316,16 @@ public class EBMSUtils {
      * @param timestamp
      * @return
      */
-    public SignalMessage generateAS4ReceiptSignal(String refMessageId, String senderDomain, Element inboundMail, Date timestamp) {
+    public SignalMessage generateAS4ReceiptSignal(String refMessageId,
+            String senderDomain, Element inboundMail,
+            Date timestamp) {
         SignalMessage sigMsg = new SignalMessage();
-        try (InputStream isXSLT = getClass().getResourceAsStream("/xslt/soap2AS4Receipt.xsl")) {
+        try (InputStream isXSLT = getClass().getResourceAsStream(
+                "/xslt/soap2AS4Receipt.xsl")) {
 
             // add message infof
-            sigMsg.setMessageInfo(createMessageInfo(senderDomain, refMessageId, timestamp));
+            sigMsg.setMessageInfo(createMessageInfo(senderDomain, refMessageId,
+                    timestamp));
             // generate receipt
             Receipt rcp = new Receipt();
             // generate as4 receipt from xslt
@@ -304,8 +333,10 @@ public class EBMSUtils {
             rcp.getAnies().add(doc.getDocumentElement());
             sigMsg.setReceipt(rcp);
 
-        } catch (JAXBException | TransformerException | ParserConfigurationException | SAXException | IOException ex) {
-            Logger.getLogger(EBMSUtils.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (JAXBException | TransformerException |
+                ParserConfigurationException | SAXException | IOException ex) {
+            Logger.getLogger(EBMSUtils.class.getName()).log(Level.SEVERE, null,
+                    ex);
         }
         return sigMsg;
     }
@@ -317,13 +348,16 @@ public class EBMSUtils {
      * @param timestamp
      * @return
      */
-    public SignalMessage generateErrorSignal(EBMSError ebError, String senderDomain, Date timestamp) {
+    public SignalMessage generateErrorSignal(EBMSError ebError,
+            String senderDomain, Date timestamp) {
         SignalMessage sigMsg = new SignalMessage();
         // generate  MessageInfo
-        sigMsg.setMessageInfo(createMessageInfo(senderDomain, ebError.getRefToMessage(), timestamp));
+        sigMsg.setMessageInfo(createMessageInfo(senderDomain,
+                ebError.getRefToMessage(), timestamp));
 
         // get references
-        org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.Error er = new org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.Error();
+        org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.Error er =
+                new org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.Error();
         er.setCategory(ebError.getEbmsErrorCode().getCategory());
         //er.setDescription(ebError.getEbmsErrorCode().getDescription());
         er.setOrigin(ebError.getEbmsErrorCode().getOrigin());
@@ -342,7 +376,8 @@ public class EBMSUtils {
      * @return
      * @throws EBMSError
      */
-    public MSHInMail userMessage2MSHMail(UserMessage um) throws EBMSError {
+    public MSHInMail userMessage2MSHMail(UserMessage um)
+            throws EBMSError {
         long l = mlog.logStart();
 
         MessageInfo mi = um.getMessageInfo();
@@ -365,7 +400,8 @@ public class EBMSUtils {
         mshmail.setSentDate(mi.getTimestamp());
         mshmail.setMessageId(mi.getMessageId());
 
-        if (um.getMessageProperties() != null && !um.getMessageProperties().getProperties().isEmpty()) {
+        if (um.getMessageProperties() != null &&
+                !um.getMessageProperties().getProperties().isEmpty()) {
             List<MSHInProperty> lstProp = new ArrayList<>();
             for (Property p : um.getMessageProperties().getProperties()) {
                 if (p.getName() != null) {
@@ -374,7 +410,8 @@ public class EBMSUtils {
                             mshmail.setSubject(p.getValue());
                             break;
                         case EbMSConstants.EBMS_PROPERTY_SUBMIT_DATE:
-                            Date dt = DatatypeConverter.parseDateTime(p.getValue()).getTime();
+                            Date dt = DatatypeConverter.parseDateTime(
+                                    p.getValue()).getTime();
                             mshmail.setSubmittedDate(dt);
                             break;
                         default:
@@ -418,12 +455,15 @@ public class EBMSUtils {
                         mshmail.setSenderName(pi.getValue());
                         break;
                     default:
-                        String msgwrn = "Unknown type '" + pi.getType() + "' for From/PartyId: with value:'" + pi.getValue() + "'. Value is ignored!";
+                        String msgwrn = "Unknown type '" + pi.getType() +
+                                "' for From/PartyId: with value:'" + pi.
+                                getValue() + "'. Value is ignored!";
                         mlog.logWarn(l, msgwrn, null);
                         break;
                 }
             } else {
-                String msgwrn = "Missing type for From/PartyId: with value:'" + pi.getValue() + "'. Value is ignored!";
+                String msgwrn = "Missing type for From/PartyId: with value:'" +
+                        pi.getValue() + "'. Value is ignored!";
                 mlog.logWarn(l, msgwrn, null);
             }
         }
@@ -443,23 +483,28 @@ public class EBMSUtils {
                         mshmail.setReceiverName(pi.getValue());
                         break;
                     default:
-                        String msgwrn = "Unknown type '" + pi.getType() + "' for To/PartyId: with value:'" + pi.getValue() + "'. Value is ignored!";
+                        String msgwrn = "Unknown type '" + pi.getType() +
+                                "' for To/PartyId: with value:'" + pi.
+                                getValue() + "'. Value is ignored!";
                         mlog.logWarn(l, msgwrn, null);
                         break;
                 }
             } else {
-                String msgwrn = "Missing type for To/PartyId: with value:'" + pi.getValue() + "'. Value is ignored!";
+                String msgwrn = "Missing type for To/PartyId: with value:'" +
+                        pi.getValue() + "'. Value is ignored!";
                 mlog.logWarn(l, msgwrn, null);
 
             }
         }
 
         if (mshmail.getReceiverEBox() == null) {
-            String errmsg = "Missing receipt type: '" + EbMSConstants.EBMS_PARTY_TYPE_EBOX + "' ";
+            String errmsg = "Missing receipt type: '" +
+                    EbMSConstants.EBMS_PARTY_TYPE_EBOX + "' ";
             throw new EBMSError(EBMSErrorCode.MissingReceipt, null, errmsg);
         }
 
-        if (um.getPayloadInfo() != null && !um.getPayloadInfo().getPartInfos().isEmpty()) {
+        if (um.getPayloadInfo() != null &&
+                !um.getPayloadInfo().getPartInfos().isEmpty()) {
             List<MSHInPart> lstParts = new ArrayList<>();
 
             for (PartInfo pi : um.getPayloadInfo().getPartInfos()) {
@@ -474,8 +519,10 @@ public class EBMSUtils {
                         part.setEbmsId(pi.getHref());
                     }
                 }
-                part.setDescription(pi.getDescription() != null ? pi.getDescription().getValue() : null);
-                if (pi.getPartProperties() != null && !pi.getPartProperties().getProperties().isEmpty()) {
+                part.setDescription(pi.getDescription() != null ?
+                        pi.getDescription().getValue() : null);
+                if (pi.getPartProperties() != null &&
+                        !pi.getPartProperties().getProperties().isEmpty()) {
                     for (Property p : pi.getPartProperties().getProperties()) {
                         if (p.getName() != null) {
                             switch (p.getName()) {
@@ -495,10 +542,15 @@ public class EBMSUtils {
                                     part.setType(p.getValue());
                                     break;
                                 case EbMSConstants.EBMS_FILE_PROPERTY_IS_ENCRYPTED:
-                                    part.setIsEncrypted(p.getValue() != null && p.getValue().equalsIgnoreCase("true"));
+                                    part.setIsEncrypted(p.getValue() != null &&
+                                            p.getValue().equalsIgnoreCase("true"));
                                     break;
                                 default:
-                                    mlog.logWarn(l, "Unknown part property: '" + p.getName() + "' for message: '" + mshmail.getMessageId() + "' ", null);
+                                    mlog.logWarn(l,
+                                            "Unknown part property: '" +
+                                            p.getName() + "' for message: '" +
+                                            mshmail.
+                                            getMessageId() + "' ", null);
                             }
                         }
                     }

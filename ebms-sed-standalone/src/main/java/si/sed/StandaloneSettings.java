@@ -36,7 +36,8 @@ public class StandaloneSettings extends AFileSettings {
     }
 
     public static StandaloneSettings getInstance() {
-        return S_INSTANCE == null ? S_INSTANCE = new StandaloneSettings() : S_INSTANCE;
+        return S_INSTANCE == null ? S_INSTANCE = new StandaloneSettings() :
+                S_INSTANCE;
     }
 
     @Override
@@ -50,9 +51,12 @@ public class StandaloneSettings extends AFileSettings {
 
         // set system properties
         System.setProperty(SEDSystemProperties.SYS_PROP_JNDI_PREFIX, JNDI_PREFIX);
-        System.setProperty(SEDSystemProperties.SYS_PROP_JNDI_JMS_PREFIX, JNDI_PREFIX);
-        if (!System.getProperties().containsKey(SEDSystemProperties.SYS_PROP_HOME_DIR)) {
-            System.setProperty(SEDSystemProperties.SYS_PROP_HOME_DIR, getData(S_PROP_HOME, S_PROP_HOME_DEF));
+        System.setProperty(SEDSystemProperties.SYS_PROP_JNDI_JMS_PREFIX,
+                JNDI_PREFIX);
+        if (!System.getProperties().containsKey(
+                SEDSystemProperties.SYS_PROP_HOME_DIR)) {
+            System.setProperty(SEDSystemProperties.SYS_PROP_HOME_DIR, getData(
+                    S_PROP_HOME, S_PROP_HOME_DEF));
         }
 
     }

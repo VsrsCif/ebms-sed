@@ -34,11 +34,14 @@ public class TaskEmailStatusReport extends TaskEmailReport {
      * @throws TaskException
      */
     @Override
-    public String generateMailReport(Properties p, StringWriter sw) throws TaskException {
+    public String generateMailReport(Properties p, StringWriter sw)
+            throws TaskException {
 
         String sedbox = null;
         if (!p.containsKey(KEY_SEDBOX)) {
-            throw new TaskException(TaskException.TaskExceptionCode.InitException, "Missing parameter:  '" + KEY_SEDBOX + "'!");
+            throw new TaskException(
+                    TaskException.TaskExceptionCode.InitException,
+                    "Missing parameter:  '" + KEY_SEDBOX + "'!");
         } else {
             sedbox = p.getProperty(KEY_SEDBOX);
         }
@@ -47,7 +50,8 @@ public class TaskEmailStatusReport extends TaskEmailReport {
         sw.append("Got status report ");
         MSHInMail mi = new MSHInMail();
         mi.setStatus(SEDInboxMailStatus.RECEIVED.getValue());
-        List<MSHInMail> lstInMail = mdao.getDataList(MSHInMail.class, 0, 500, "Id", "ASC", mi);
+        List<MSHInMail> lstInMail = mdao.getDataList(MSHInMail.class, 0, 500,
+                "Id", "ASC", mi);
         StringWriter swBody = new StringWriter();
         swBody.append("SED-Predal: ");
         swBody.append(sr.getSedbox());
@@ -61,7 +65,8 @@ public class TaskEmailStatusReport extends TaskEmailReport {
             swBody.append("Statusi dohodne pošte:");
             swBody.append(System.lineSeparator());
             for (Status s : sr.getInMail().getStatuses()) {
-                swBody.append(String.format("\t%s: %d", s.getStatus(), s.getCount()));
+                swBody.append(String.format("\t%s: %d", s.getStatus(),
+                        s.getCount()));
                 swBody.append(System.lineSeparator());
             }
         } else {
@@ -77,7 +82,8 @@ public class TaskEmailStatusReport extends TaskEmailReport {
             swBody.append("Statusi izhodne pošte:");
             swBody.append(System.lineSeparator());
             for (Status s : sr.getOutMail().getStatuses()) {
-                swBody.append(String.format("\t%s: %d", s.getStatus(), s.getCount()));
+                swBody.append(String.format("\t%s: %d", s.getStatus(),
+                        s.getCount()));
                 swBody.append(System.lineSeparator());
             }
         } else {
@@ -92,13 +98,15 @@ public class TaskEmailStatusReport extends TaskEmailReport {
         swBody.append("St pošiljk: '" + lstInMail.size() + "'");
         swBody.append(System.lineSeparator());
         sw.append("In mail size: " + lstInMail.size());
-        swBody.append("st., id, dat  prejema, transakcija ID, Storitev, Akcija, Pošiljatelj, Opis");
+        swBody.append(
+                "st., id, dat  prejema, transakcija ID, Storitev, Akcija, Pošiljatelj, Opis");
         swBody.append(System.lineSeparator());
         int iVal = 1;
         for (MSHInMail im : lstInMail) {
             swBody.append((iVal++) + "., ");
             swBody.append(im.getId().toString() + ", ");
-            swBody.append(SDF_DD_MM_YYY_HH_MI.format(im.getReceivedDate()) + ", ");
+            swBody.append(SDF_DD_MM_YYY_HH_MI.format(im.getReceivedDate()) +
+                    ", ");
             swBody.append(im.getConversationId() + ", ");
             swBody.append(im.getService() + ", ");
             swBody.append(im.getAction() + ", ");

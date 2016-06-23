@@ -23,7 +23,8 @@ public class MainWindow {
      * @param detail
      */
     public void addMessage(String summary, String detail) {
-        FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, summary, detail);
+        FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO,
+                summary, detail);
         FacesContext.getCurrentInstance().addMessage(null, message);
     }
 
@@ -41,7 +42,8 @@ public class MainWindow {
      */
     public void onToolbarButtonAction(ActionEvent event) {
         if (event != null) {
-            String res = (String) event.getComponent().getAttributes().get("panel");
+            String res = (String) event.getComponent().getAttributes().get(
+                    "panel");
             mstrWindowShow = res;
         }
     }
@@ -53,7 +55,8 @@ public class MainWindow {
     public void onToolbarTabChange(TabChangeEvent event) {
         if (event != null) {
             mstrWindowShow = event.getTab().getId();
-            FacesMessage msg = new FacesMessage("Tab Changed", "Active Tab: " + event.getTab().getId());
+            FacesMessage msg = new FacesMessage("Tab Changed", "Active Tab: " +
+                    event.getTab().getId());
             FacesContext.getCurrentInstance().addMessage(null, msg);
         }
     }

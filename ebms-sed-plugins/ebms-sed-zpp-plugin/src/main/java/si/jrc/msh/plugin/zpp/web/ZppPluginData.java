@@ -72,7 +72,9 @@ public class ZppPluginData {
         String strBuildVer = "";
         Manifest p;
         File manifestFile = null;
-        String home = FacesContext.getCurrentInstance().getExternalContext().getRealPath("/");
+        String home =
+                FacesContext.getCurrentInstance().getExternalContext().getRealPath(
+                        "/");
         manifestFile = new File(home, "META-INF/MANIFEST.MF");
         try (FileInputStream fis = new FileInputStream(manifestFile)) {
             p = new Manifest();

@@ -70,7 +70,8 @@ public class MEPSPluginDescription implements PluginDescriptionInterface {
      */
     @Override
     public List<String> getTaskJNDIs() {
-        return Collections.singletonList("java:global/plugin-meps/MEPSTask!si.sed.commons.interfaces.TaskExecutionInterface");
+        return Collections.singletonList(
+                "java:global/plugin-meps/MEPSTask!si.sed.commons.interfaces.TaskExecutionInterface");
     }
 
     /**

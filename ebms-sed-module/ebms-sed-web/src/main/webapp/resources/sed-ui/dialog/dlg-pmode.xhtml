@@ -14,10 +14,10 @@
     <composite:implementation >
 
         <p:dialog  header="#{msg['PModeDialog']}" widgetVar="pModeDialog" 
-                   modal="true" hideEffect="fade" resizable="false" appendTo="@(body)" height="650" width="1000">
+                   modal="true" hideEffect="fade" resizable="false" appendTo="@(body)" height="600" width="1000">
 
             <h:form id="pModeDialogForm" >
-                <p:layout id="pMode" style="min-width:950px; height:570px; "  >
+                <p:layout id="pMode" style="min-width:950px; height:590px; "  >
                     <p:layoutUnit position="center"   >
 
                         <pe:codeMirror id="codeMirror" mode="xml"  class="CodeMirrorXML"
@@ -32,7 +32,7 @@
                             <f:facet name="right"  >
                                 <p:commandButton value="#{msg['Ok']}"  styleClass="toolbar-Button" 
                                                  icon="ui-icon-sed-ok" 
-                                                 action="#{adminPModeView.addOrUpdateEditable()}"
+                                                 action="#{pModeView.addOrUpdateEditable()}"
                                                  oncomplete="PF('pModeDialog').hide()" 
                                                  update=":forms:SettingsPModes:TblPMode"
                                                  />
@@ -43,9 +43,7 @@
                             </f:facet>
                         </p:toolbar>
                     </p:layoutUnit>
-
                 </p:layout>
-
             </h:form>
         </p:dialog>
 

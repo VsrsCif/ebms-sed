@@ -28,10 +28,9 @@ import java.util.Map;
  */
 public class ReflectUtils {
 
-    private static Map<Class, List<String>> BEAN_MEMBERS = new HashMap<>();
+    private static final Map<Class, List<String>> BEAN_MEMBERS = new HashMap<>();
 
     // States used in property parsing
-
     /**
      *
      * @param cls
@@ -44,15 +43,17 @@ public class ReflectUtils {
 
         List<String> lst = new ArrayList<>();
         for (Method m : cls.getDeclaredMethods()) {
-            if (m.getName().startsWith("get") && m.getReturnType() != null
-                    && (m.getParameterTypes() == null || m.getParameterTypes().length == 0)) {
+            if (m.getName().startsWith("get") && m.getReturnType() != null &&
+                    (m.getParameterTypes() == null ||
+                    m.getParameterTypes().length == 0)) {
 
                 String name = m.getName().substring(3);
                 if (lst.contains(name)) {
                     continue;
                 }
                 try {
-                    Method m2 = cls.getDeclaredMethod("set" + name, m.getReturnType());
+                    Method m2 = cls.getDeclaredMethod("set" + name,
+                            m.getReturnType());
                     lst.add(name);
                 } catch (NoSuchMethodException | SecurityException ignore) {
 

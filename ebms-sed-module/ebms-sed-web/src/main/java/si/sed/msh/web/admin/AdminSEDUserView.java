@@ -36,7 +36,6 @@ import si.sed.msh.web.abst.AbstractAdminJSFView;
  */
 @SessionScoped
 @ManagedBean(name = "adminSEDUserView")
-
 public class AdminSEDUserView extends AbstractAdminJSFView<SEDUser> {
 
     private static final SEDLogger LOG = new SEDLogger(AdminSEDUserView.class);
@@ -136,7 +135,8 @@ public class AdminSEDUserView extends AbstractAdminJSFView<SEDUser> {
         SEDUser sb = getEditable();
         if (sb != null) {
             sb.getSEDBoxes().clear();
-            if (msbCBDualList.getTarget() != null && !msbCBDualList.getTarget().isEmpty()) {
+            if (msbCBDualList.getTarget() != null &&
+                    !msbCBDualList.getTarget().isEmpty()) {
                 sb.getSEDBoxes().addAll(msbCBDualList.getTarget());
             }
             mdbLookups.addSEDUser(sb);
@@ -152,7 +152,8 @@ public class AdminSEDUserView extends AbstractAdminJSFView<SEDUser> {
         SEDUser sb = getEditable();
         if (sb != null) {
             sb.getSEDBoxes().clear();
-            if (msbCBDualList.getTarget() != null && !msbCBDualList.getTarget().isEmpty()) {
+            if (msbCBDualList.getTarget() != null &&
+                    !msbCBDualList.getTarget().isEmpty()) {
                 sb.getSEDBoxes().addAll(msbCBDualList.getTarget());
             }
             mdbLookups.updateSEDUser(sb);

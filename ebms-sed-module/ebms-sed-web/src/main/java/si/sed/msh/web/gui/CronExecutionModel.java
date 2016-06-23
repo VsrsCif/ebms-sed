@@ -36,7 +36,8 @@ public class CronExecutionModel extends AbstractMailDataModel<SEDTaskExecution> 
      * @param userSessionData
      * @param db
      */
-    public CronExecutionModel(Class<SEDTaskExecution> type, UserSessionData userSessionData, SEDDaoInterface db) {
+    public CronExecutionModel(Class<SEDTaskExecution> type,
+            UserSessionData userSessionData, SEDDaoInterface db) {
         super(type);
         setUserSessionData(userSessionData, db);
     }

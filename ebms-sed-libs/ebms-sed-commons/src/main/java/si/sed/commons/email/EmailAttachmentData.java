@@ -24,7 +24,8 @@ public class EmailAttachmentData {
      * @param mstrMimeType
      * @param mFile
      */
-    public EmailAttachmentData(String mstrFileName, String mstrMimeType, File mFile) {
+    public EmailAttachmentData(String mstrFileName, String mstrMimeType,
+            File mFile) {
         this.mstrFileName = mstrFileName;
         this.mstrMimeType = mstrMimeType;
         this.mFile = mFile;

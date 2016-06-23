@@ -116,19 +116,23 @@ public class MSHScheduler implements SEDSchedulerInterface {
             }
             return;
         }
-        SEDTaskType tt = mdbLookups.getSEDTaskTypeByType(mj.getSEDTask().getTaskType());
+        SEDTaskType tt = mdbLookups.getSEDTaskTypeByType(
+                mj.getSEDTask().getTaskType());
 
         TaskExecutionInterface tproc = null;
         try {
             tproc = InitialContext.doLookup(tt.getJndi());
         } catch (NamingException ex) {
             te.setStatus(SEDTaskStatus.ERROR.getValue());
-            te.setResult(String.format("Error getting taskexecutor: %s. ERROR: %s", tt.getJndi(), ex.getMessage()));
+            te.setResult(String.format(
+                    "Error getting taskexecutor: %s. ERROR: %s", tt.getJndi(),
+                    ex.getMessage()));
             te.setEndTimestamp(Calendar.getInstance().getTime());
             try {
                 mdbDao.updateExecutionTask(te);
             } catch (StorageException ex2) {
-                LOG.logEnd(l, "Error updating task: '" + te.getType() + "' ", ex2);
+                LOG.logEnd(l, "Error updating task: '" + te.getType() + "' ",
+                        ex2);
             }
             return;
         }
@@ -156,19 +160,22 @@ public class MSHScheduler implements SEDSchedulerInterface {
             try {
                 mdbDao.updateExecutionTask(te);
             } catch (StorageException ex2) {
-                LOG.logEnd(l, "Error updating task: '" + te.getType() + "' ", ex2);
+                LOG.logEnd(l, "Error updating task: '" + te.getType() + "' ",
+                        ex2);
                 return;
             }
         } catch (TaskException ex) {
 
             te.setStatus(SEDTaskStatus.ERROR.getValue());
-            te.setResult(String.format("TASK ERROR: %s. Err. desc: %s", tt.getJndi(), ex.getMessage()));
+            te.setResult(String.format("TASK ERROR: %s. Err. desc: %s",
+                    tt.getJndi(), ex.getMessage()));
             te.setEndTimestamp(Calendar.getInstance().getTime());
             LOG.logEnd(l, "Error updating task: '" + te.getType() + "' ", ex);
             try {
                 mdbDao.updateExecutionTask(te);
             } catch (StorageException ex2) {
-                LOG.logEnd(l, "Error updating task: '" + te.getType() + "' ", ex2);
+                LOG.logEnd(l, "Error updating task: '" + te.getType() + "' ",
+                        ex2);
                 return;
             }
         }

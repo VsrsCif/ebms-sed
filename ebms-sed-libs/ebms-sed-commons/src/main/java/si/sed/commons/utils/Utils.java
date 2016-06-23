@@ -16,6 +16,8 @@
  */
 package si.sed.commons.utils;
 
+import static java.lang.System.currentTimeMillis;
+import static java.lang.System.getProperty;
 import java.util.Random;
 import org.msh.ebms.inbox.mail.MSHInMail;
 import org.msh.ebms.outbox.mail.MSHOutMail;
@@ -70,7 +72,8 @@ public class Utils {
         if (mim == null) {
             return null;
         }
-        return mim.getService() + ":" + getDomainFromAddress(mim.getSenderEBox());
+        return mim.getService() + ":" +
+                getDomainFromAddress(mim.getSenderEBox());
     }
 
     /**
@@ -82,7 +85,8 @@ public class Utils {
         if (mom == null) {
             return null;
         }
-        return mom.getService() + ":" + getDomainFromAddress(mom.getReceiverEBox());
+        return mom.getService() + ":" + getDomainFromAddress(
+                mom.getReceiverEBox());
     }
 
     /*
@@ -99,13 +103,11 @@ public class Utils {
     throw new IntrospectionException("Error when adding url "+url.getPath()+" to system ClassLoader ");
     }
     }*/
-
     /**
      *
      * @param strVal
      * @return
      */
-
     public static boolean isEmptyString(String strVal) {
         return strVal == null || strVal.trim().isEmpty();
     }
@@ -150,7 +152,7 @@ public class Utils {
                 {
                     String key = string.substring(start + 2, i);
                     properties = true;
-                    buffer.append(System.getProperty(key, ""));
+                    buffer.append(getProperty(key, ""));
                 }
                 start = i + 1;
                 state = NORMAL;
@@ -182,10 +184,10 @@ public class Utils {
      * @return
      */
     public String getGuidString() {
-        long rand = (random.nextLong() & 0x7FFFFFFFFFFFFFFFL)
-                | 0x4000000000000000L;
-        return Long.toString(rand, 32)
-                + Long.toString(System.currentTimeMillis() & 0xFFFFFFFFFFFFFL, 32);
+        long rand = (random.nextLong() & 0x7FFFFFFFFFFFFFFFL) |
+                0x4000000000000000L;
+        return Long.toString(rand, 32) +
+                Long.toString(currentTimeMillis() & 0xFFFFFFFFFFFFFL, 32);
     }
 
 }

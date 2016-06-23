@@ -5,6 +5,8 @@
  */
 package si.sed.commons.exception;
 
+import static java.lang.String.format;
+
 /**
  *
  * @author sluzba
@@ -42,7 +44,8 @@ public class SEDSecurityException extends Exception {
      * @param cause
      * @param params
      */
-    public SEDSecurityException(SEDSecurityExceptionCode ec, Throwable cause, String... params) {
+    public SEDSecurityException(SEDSecurityExceptionCode ec, Throwable cause,
+            String... params) {
         super(ec.getName(), cause);
         mshErrorCode = ec;
         messageParams = params;
@@ -80,7 +83,8 @@ public class SEDSecurityException extends Exception {
             messageParams = newMP;
 
         }
-        return String.format(mshErrorCode.getDescriptionFormat(), (Object[]) messageParams);
+        return format(mshErrorCode.getDescriptionFormat(),
+                (Object[]) messageParams);
     }
 
     /**
@@ -91,12 +95,14 @@ public class SEDSecurityException extends Exception {
         /**
          *
          */
-        NoSuchAlgorithm("SEC:0001", "NoSuchAlgorithm", "No such algorithm: %s ", 1),
+        NoSuchAlgorithm("SEC:0001", "NoSuchAlgorithm", "No such algorithm: %s ",
+                1),
 
         /**
          *
          */
-        NoSuchPadding("SEC:0002", "NoSuchPadding", "No such padding: %s, msg: %s", 2),
+        NoSuchPadding("SEC:0002", "NoSuchPadding",
+                "No such padding: %s, msg: %s", 2),
 
         /**
          *
@@ -106,57 +112,68 @@ public class SEDSecurityException extends Exception {
         /**
          *
          */
-        EncryptionException("SEC:0004", "EncryptionError", "Encryption error: %s", 1),
+        EncryptionException("SEC:0004", "EncryptionError",
+                "Encryption error: %s", 1),
 
         /**
          *
          */
-        PasswordFileError("SEC:0005", "PasswordFileError", "Security error: %s", 1),
+        PasswordFileError("SEC:0005", "PasswordFileError", "Security error: %s",
+                1),
 
         /**
          *
          */
-        ReadWriteFileException("SEC:0006", "ReadWriteFileException", "Read write file exception: %s", 1),
+        ReadWriteFileException("SEC:0006", "ReadWriteFileException",
+                "Read write file exception: %s", 1),
 
         /**
          *
          */
-        KeyStoreException("SEC:0007", "KeyStoreException", "Key store exception %s", 1),
+        KeyStoreException("SEC:0007", "KeyStoreException",
+                "Key store exception %s", 1),
 
         /**
          *
          */
-        CertificateException("SEC:0008", "CertificateException", "Certificate exception %s", 1),
+        CertificateException("SEC:0008", "CertificateException",
+                "Certificate exception %s", 1),
 
         /**
          *
          */
-        InitializeException("SEC:0009", "InitializeException", "Initialize exception %s", 1),
+        InitializeException("SEC:0009", "InitializeException",
+                "Initialize exception %s", 1),
 
         /**
          *
          */
-        CreateSignatureException("SEC:0010", "CreateSignatureException", "Create Signature exception %s", 1),
+        CreateSignatureException("SEC:0010", "CreateSignatureException",
+                "Create Signature exception %s", 1),
 
         /**
          *
          */
-        CreateTimestampException("SEC:0011", "CreateTimestampException", "Create Timestamp exception %s", 1),
+        CreateTimestampException("SEC:0011", "CreateTimestampException",
+                "Create Timestamp exception %s", 1),
 
         /**
          *
          */
-        XMLParseException("SEC:0012", "XMLParseException", "XMLParse exception %s", 1),
+        XMLParseException("SEC:0012", "XMLParseException",
+                "XMLParse exception %s", 1),
 
         /**
          *
          */
-        SignatureNotFound("SEC:0013", "SignatureNotFound", "Signature Not Found exception %s", 1),
+        SignatureNotFound("SEC:0013", "SignatureNotFound",
+                "Signature Not Found exception %s", 1),
 
         /**
          *
          */
-        KeyForAliasNotExists("SEC:0014", "KeyForAliasNotExists", "Key for alias %s not found!", 1),;
+        KeyForAliasNotExists("SEC:0014", "KeyForAliasNotExists",
+                "Key for alias %s not found!", 1),;
         ;
         
         String code;

@@ -30,13 +30,15 @@ public class SchemaErrorHandler implements ErrorHandler {
     StringWriter sw = new StringWriter();
 
     @Override
-    public void error(SAXParseException ex) throws SAXException {
+    public void error(SAXParseException ex)
+            throws SAXException {
         sw.append(ex.toString());
         sw.append("\n");
     }
 
     @Override
-    public void fatalError(SAXParseException ex) throws SAXException {
+    public void fatalError(SAXParseException ex)
+            throws SAXException {
         sw.append(ex.toString());
         sw.append("\n");
     }
@@ -50,7 +52,8 @@ public class SchemaErrorHandler implements ErrorHandler {
     }
 
     @Override
-    public void warning(SAXParseException ex) throws SAXException {
+    public void warning(SAXParseException ex)
+            throws SAXException {
         // ignore
     }
 }

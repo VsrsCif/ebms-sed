@@ -49,20 +49,25 @@ public class TestUtils {
 
     /**
      *
-     * @return
-     * @throws NamingException
+     * @return @throws NamingException
      * @throws JMSException
      */
-    public static Queue setJMSEnvironment() throws NamingException, JMSException {
-        System.getProperties().put(Context.INITIAL_CONTEXT_FACTORY, "org.apache.activemq.jndi.ActiveMQInitialContextFactory");
-        System.getProperties().put("java.naming.provider.url", "vm://localhost?broker.persistent=false");
+    public static Queue setJMSEnvironment()
+            throws NamingException, JMSException {
+        System.getProperties().put(Context.INITIAL_CONTEXT_FACTORY,
+                "org.apache.activemq.jndi.ActiveMQInitialContextFactory");
+        System.getProperties().put("java.naming.provider.url",
+                "vm://localhost?broker.persistent=false");
         InitialContext context = new InitialContext();
-        ActiveMQConnectionFactory connectionFactory = (ActiveMQConnectionFactory) context.lookup(JNDI_CONNECTION_FACTORY);
+        ActiveMQConnectionFactory connectionFactory =
+                (ActiveMQConnectionFactory) context.
+                lookup(JNDI_CONNECTION_FACTORY);
         // Create a Connection
         Connection connection = connectionFactory.createConnection();
         connection.start();
         // Create a Session
-        Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+        Session session = connection.createSession(false,
+                Session.AUTO_ACKNOWLEDGE);
         // Create the destination Queue
         Queue mshQue = session.createQueue(SEDValues.JNDI_QUEUE_EBMS);
 

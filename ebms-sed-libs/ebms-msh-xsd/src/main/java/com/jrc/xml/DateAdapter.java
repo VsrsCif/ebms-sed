@@ -23,18 +23,18 @@ public class DateAdapter {
         return null;
     }
 
+    public static Date parseDateTime(String s) {
+        if (s != null && !s.trim().isEmpty()) {
+            return DatatypeConverter.parseDateTime(s).getTime();
+        }
+        return null;
+    }
+
     public static String printDate(Date dt) {
         if (dt != null) {
             Calendar cal = new GregorianCalendar();
             cal.setTime(dt);
             return DatatypeConverter.printDate(cal);
-        }
-        return null;
-    }
-
-    public static Date parseDateTime(String s) {
-        if (s != null && !s.trim().isEmpty()) {
-            return DatatypeConverter.parseDateTime(s).getTime();
         }
         return null;
     }

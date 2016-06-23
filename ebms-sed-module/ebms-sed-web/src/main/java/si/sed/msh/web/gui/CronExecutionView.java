@@ -57,7 +57,8 @@ public class CronExecutionView implements Serializable {
 
     @PostConstruct
     private void init() {
-        mMailModel = new CronExecutionModel(SEDTaskExecution.class, userSessionData, mDB);
+        mMailModel = new CronExecutionModel(SEDTaskExecution.class,
+                userSessionData, mDB);
     }
 
     /**

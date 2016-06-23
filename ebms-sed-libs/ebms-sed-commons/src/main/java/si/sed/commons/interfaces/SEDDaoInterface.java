@@ -33,7 +33,9 @@ public interface SEDDaoInterface {
      * @param filters
      * @return
      */
-    <T> List<T> getDataList(Class<T> type, int startingAt, int maxResultCnt, String sortField, String sortOrder, Object filters);
+    <T> List<T> getDataList(Class<T> type, int startingAt, int maxResultCnt,
+            String sortField, String sortOrder,
+            Object filters);
 
     /**
      *
@@ -77,7 +79,9 @@ public interface SEDDaoInterface {
      * @param desc
      * @throws StorageException
      */
-    void setStatusToOutMail(MSHOutMail mail, SEDOutboxMailStatus status, String desc) throws StorageException;
+    void setStatusToOutMail(MSHOutMail mail, SEDOutboxMailStatus status,
+            String desc)
+            throws StorageException;
 
     /**
      *
@@ -88,7 +92,10 @@ public interface SEDDaoInterface {
      * @param applicationId
      * @throws StorageException
      */
-    void setStatusToOutMail(MSHOutMail mail, SEDOutboxMailStatus status, String desc, String userID, String applicationId) throws StorageException;
+    void setStatusToOutMail(MSHOutMail mail, SEDOutboxMailStatus status,
+            String desc, String userID,
+            String applicationId)
+            throws StorageException;
 
     /**
      *
@@ -97,7 +104,9 @@ public interface SEDDaoInterface {
      * @param desc
      * @throws StorageException
      */
-    void setStatusToInMail(MSHInMail mail, SEDInboxMailStatus status, String desc) throws StorageException;
+    void setStatusToInMail(MSHInMail mail, SEDInboxMailStatus status,
+            String desc)
+            throws StorageException;
 
     /**
      *
@@ -108,7 +117,9 @@ public interface SEDDaoInterface {
      * @param applicationId
      * @throws StorageException
      */
-    void setStatusToInMail(MSHInMail mail, SEDInboxMailStatus status, String desc, String userID, String applicationId) throws StorageException;
+    void setStatusToInMail(MSHInMail mail, SEDInboxMailStatus status,
+            String desc, String userID, String applicationId)
+            throws StorageException;
 
     /**
      *
@@ -117,7 +128,8 @@ public interface SEDDaoInterface {
      * @param userID
      * @throws StorageException
      */
-    void updateInMail(MSHInMail mail, String statusDesc, String userID) throws StorageException;
+    void updateInMail(MSHInMail mail, String statusDesc, String userID)
+            throws StorageException;
 
     /**
      *
@@ -127,7 +139,9 @@ public interface SEDDaoInterface {
      * @param pmodeId
      * @throws StorageException
      */
-    void serializeOutMail(MSHOutMail mail, String userID, String applicationId, String pmodeId) throws StorageException;
+    void serializeOutMail(MSHOutMail mail, String userID, String applicationId,
+            String pmodeId)
+            throws StorageException;
 
     /**
      *
@@ -135,21 +149,24 @@ public interface SEDDaoInterface {
      * @param applicationId
      * @throws StorageException
      */
-    void serializeInMail(MSHInMail mail, String applicationId) throws StorageException;
+    void serializeInMail(MSHInMail mail, String applicationId)
+            throws StorageException;
 
     /**
      *
      * @param bi
      * @throws StorageException
      */
-    void removeInMail(BigInteger bi) throws StorageException;
+    void removeInMail(BigInteger bi)
+            throws StorageException;
 
     /**
      *
      * @param bi
      * @throws StorageException
      */
-    void removeOutMail(BigInteger bi) throws StorageException;
+    void removeOutMail(BigInteger bi)
+            throws StorageException;
 
     /**
      *
@@ -157,7 +174,8 @@ public interface SEDDaoInterface {
      * @return
      * @throws StorageException
      */
-    boolean addExecutionTask(SEDTaskExecution ad) throws StorageException;
+    boolean addExecutionTask(SEDTaskExecution ad)
+            throws StorageException;
 
     /**
      *
@@ -165,7 +183,8 @@ public interface SEDDaoInterface {
      * @return
      * @throws StorageException
      */
-    boolean updateExecutionTask(SEDTaskExecution ad) throws StorageException;
+    boolean updateExecutionTask(SEDTaskExecution ad)
+            throws StorageException;
 
     /**
      *
@@ -173,5 +192,6 @@ public interface SEDDaoInterface {
      * @return
      * @throws StorageException
      */
-    SEDTaskExecution getLastSuccesfullTaskExecution(String type) throws StorageException;
+    SEDTaskExecution getLastSuccesfullTaskExecution(String type)
+            throws StorageException;
 }

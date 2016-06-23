@@ -31,10 +31,14 @@ import si.sed.commons.utils.Utils;
  * @author Jože Rihtaršič
  */
 @MessageDriven(activationConfig = {
-    @ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "Auto-acknowledge"),
-    @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),
-    @ActivationConfigProperty(propertyName = "destination", propertyValue = "queue/MSHQueue"),
-    @ActivationConfigProperty(propertyName = "maxSession", propertyValue = "${org.sed.msh.sender.workers.count}")
+    @ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue =
+            "Auto-acknowledge"),
+    @ActivationConfigProperty(propertyName = "destinationType", propertyValue =
+            "javax.jms.Queue"),
+    @ActivationConfigProperty(propertyName = "destination", propertyValue =
+            "queue/MSHQueue"),
+    @ActivationConfigProperty(propertyName = "maxSession", propertyValue =
+            "${org.sed.msh.sender.workers.count}")
 })
 @TransactionManagement(TransactionManagementType.BEAN)
 public class MSHQueueBean implements MessageListener {
@@ -72,7 +76,8 @@ public class MSHQueueBean implements MessageListener {
         try {
             idMsg = msg.getLongProperty(SEDValues.EBMS_QUEUE_PARAM_MAIL_ID);
         } catch (JMSException ex) {
-            LOG.logError(t, "Bad message with no property:'" + SEDValues.EBMS_QUEUE_PARAM_MAIL_ID + "'!", ex);
+            LOG.logError(t, "Bad message with no property:'" +
+                    SEDValues.EBMS_QUEUE_PARAM_MAIL_ID + "'!", ex);
             return;
         }
 
@@ -81,7 +86,8 @@ public class MSHQueueBean implements MessageListener {
             pModeID = msg.getStringProperty(SEDValues.EBMS_QUEUE_PARAM_PMODE_ID);
 
         } catch (JMSException ex) {
-            LOG.logError(t, "Bad message with no property:'" + SEDValues.EBMS_QUEUE_PARAM_PMODE_ID + "'!", ex);
+            LOG.logError(t, "Bad message with no property:'" +
+                    SEDValues.EBMS_QUEUE_PARAM_PMODE_ID + "'!", ex);
             return;
         }
 
@@ -102,47 +108,61 @@ public class MSHQueueBean implements MessageListener {
         try {
             pMode = mpModeManager.getPModeById(pModeID);
         } catch (PModeException pex) {
-            String errDesc = "Error reading pmodes for id: '" + pModeID + "'. Err:"+pex.getMessage()+".  Message with id '" + idMsg + "' is not procesed!";
+            String errDesc = "Error reading pmodes for id: '" + pModeID +
+                    "'. Err:" + pex.getMessage() + ".  Message with id '" +
+                    idMsg + "' is not procesed!";
             LOG.logError(t, errDesc, null);
             try {
                 mDB.setStatusToOutMail(mail, SEDOutboxMailStatus.ERROR, errDesc);
             } catch (StorageException ex) {
-                LOG.logError(t, "Error setting status ERROR to MSHOutMail :'" + mail.getId() + "'!", ex);
+                LOG.logError(t, "Error setting status ERROR to MSHOutMail :'" +
+                        mail.getId() + "'!", ex);
             }
         }
         if (pMode == null) {
-            String errDesc = "PMode with id: '" + pModeID + "' not exists! Message with id '" + idMsg + "' is not procesed!";
+            String errDesc = "PMode with id: '" + pModeID +
+                    "' not exists! Message with id '" + idMsg +
+                    "' is not procesed!";
             LOG.logError(t, errDesc, null);
             try {
                 mDB.setStatusToOutMail(mail, SEDOutboxMailStatus.ERROR, errDesc);
             } catch (StorageException ex) {
-                LOG.logError(t, "Error setting status ERROR to MSHOutMail :'" + mail.getId() + "'!", ex);
+                LOG.logError(t, "Error setting status ERROR to MSHOutMail :'" +
+                        mail.getId() + "'!", ex);
             }
             return;
         }
         // start sending        
 
         try {
-            mDB.setStatusToOutMail(mail, SEDOutboxMailStatus.SENDING, "Start sending to receiver MSH");
+            mDB.setStatusToOutMail(mail, SEDOutboxMailStatus.SENDING,
+                    "Start sending to receiver MSH");
         } catch (StorageException ex) {
-            LOG.logError(t, "Error setting status SENDING to MSHOutMail :'" + mail.getId() + "'!", ex);
+            LOG.logError(t, "Error setting status SENDING to MSHOutMail :'" +
+                    mail.getId() + "'!", ex);
             return;
         }
 
         try {
             mmshClient.sendMessage(mail, pMode);
         } catch (Exception ex) {
-            LOG.logError(t, "Error occurred while submitting mail  to receiver MSH:'" + mail.getId() + "'!", ex);
+            LOG.logError(t,
+                    "Error occurred while submitting mail  to receiver MSH:'" +
+                    mail.getId() + "'!", ex);
 
             try {
-                mDB.setStatusToOutMail(mail, SEDOutboxMailStatus.ERROR, ex.getMessage());
+                mDB.setStatusToOutMail(mail, SEDOutboxMailStatus.ERROR,
+                        ex.getMessage());
             } catch (StorageException ex1) {
-                LOG.logError(t, "Error setting status ERROR to MSHOutMail :'" + mail.getId() + "'!", ex1);
+                LOG.logError(t, "Error setting status ERROR to MSHOutMail :'" +
+                        mail.getId() + "'!", ex1);
                 return;
             }
 
-            if (pMode.getReceptionAwareness() != null && pMode.getReceptionAwareness().getRetry() != null) {
-                ReceptionAwareness.Retry rty = pMode.getReceptionAwareness().getRetry();
+            if (pMode.getReceptionAwareness() != null &&
+                    pMode.getReceptionAwareness().getRetry() != null) {
+                ReceptionAwareness.Retry rty =
+                        pMode.getReceptionAwareness().getRetry();
                 int iRet = 0;
                 long lDelay = -1;
                 try {
@@ -150,7 +170,8 @@ public class MSHQueueBean implements MessageListener {
                 } catch (JMSException ignore) {
                 }
                 try {
-                    lDelay = msg.getLongProperty(SEDValues.EBMS_QUEUE_PARAM_DELAY);
+                    lDelay = msg.getLongProperty(
+                            SEDValues.EBMS_QUEUE_PARAM_DELAY);
                 } catch (JMSException ignore) {
                 }
 
@@ -163,20 +184,32 @@ public class MSHQueueBean implements MessageListener {
                     }
                     try {
                         try {
-                            mDB.setStatusToOutMail(mail, SEDOutboxMailStatus.SCHEDULE, "Resend message in '" + lDelay + "'ms");
+                            mDB.setStatusToOutMail(mail,
+                                    SEDOutboxMailStatus.SCHEDULE,
+                                    "Resend message in '" + lDelay + "'ms");
                         } catch (StorageException ex1) {
-                            LOG.logError(t, "Error occurred while setting status SCHEDULE to MSHOutMail :'" + mail.getId() + "'!", ex1);
+                            LOG.logError(t,
+                                    "Error occurred while setting status SCHEDULE to MSHOutMail :'" +
+                                    mail.
+                                    getId() + "'!", ex1);
                             return;
                         }
                         mJMS.sendMessage(idMsg, pModeID, iRet, lDelay, false);
                     } catch (NamingException | JMSException ex1) {
-                        String errDesc = "Error occured while resending message with id: '" + pModeID + "'!";
+                        String errDesc =
+                                "Error occured while resending message with id: '" +
+                                pModeID + "'!";
                         LOG.logError(t, errDesc, ex1);
 
                         try {
-                            mDB.setStatusToOutMail(mail, SEDOutboxMailStatus.ERROR, errDesc + " " + ex.getMessage());
+                            mDB.setStatusToOutMail(mail,
+                                    SEDOutboxMailStatus.ERROR, errDesc + " " +
+                                    ex.getMessage());
                         } catch (StorageException ex2) {
-                            LOG.logError(t, "Error occurred while setting status ERROR to MSHOutMail :'" + mail.getId() + "'!", ex2);
+                            LOG.logError(t,
+                                    "Error occurred while setting status ERROR to MSHOutMail :'" +
+                                    mail.getId() + "'!",
+                                    ex2);
                             return;
                         }
 

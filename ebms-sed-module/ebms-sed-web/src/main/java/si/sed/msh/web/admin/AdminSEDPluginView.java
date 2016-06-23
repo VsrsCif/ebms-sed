@@ -55,7 +55,8 @@ public class AdminSEDPluginView extends AbstractAdminJSFView<SEDPlugin> {
     public void createEditable() {
         SEDPlugin ecj = new SEDPlugin();
 
-        ecj.setJndi("java:global[/application name]/module name/enterprise bean name[/interface name]");
+        ecj.setJndi(
+                "java:global[/application name]/module name/enterprise bean name[/interface name]");
         ecj.setType("unique-type");
         ecj.setName("name");
         ecj.setDescription("Enter JNDI and refresh data from EJB task!");
@@ -67,11 +68,13 @@ public class AdminSEDPluginView extends AbstractAdminJSFView<SEDPlugin> {
      *
      */
     public void refreshDataFromEJB() {
-        if (getEditable() == null || getEditable().getJndi() == null || getEditable().getJndi().isEmpty()) {
+        if (getEditable() == null || getEditable().getJndi() == null ||
+                getEditable().getJndi().isEmpty()) {
             return;
         }
         try {
-            PluginDescriptionInterface pdi = InitialContext.doLookup(getEditable().getJndi());
+            PluginDescriptionInterface pdi = InitialContext.doLookup(
+                    getEditable().getJndi());
             getEditable().setDescription(pdi.getDesc());
             getEditable().setName(pdi.getName());
             getEditable().setType(pdi.getType());
@@ -82,7 +85,6 @@ public class AdminSEDPluginView extends AbstractAdminJSFView<SEDPlugin> {
 
         } catch (NamingException ex) {
 
-            return;
         }
 
     }
@@ -133,7 +135,8 @@ public class AdminSEDPluginView extends AbstractAdminJSFView<SEDPlugin> {
             td.setType(tproc.getTaskDefinition().getType());
             td.getSEDTaskTypeProperties().clear();
             if (!tproc.getTaskDefinition().getSEDTaskTypeProperties().isEmpty()) {
-                td.getSEDTaskTypeProperties().addAll(tproc.getTaskDefinition().getSEDTaskTypeProperties());
+                td.getSEDTaskTypeProperties().addAll(
+                        tproc.getTaskDefinition().getSEDTaskTypeProperties());
             }
             return td;
         } catch (NamingException ex) {
@@ -150,7 +153,8 @@ public class AdminSEDPluginView extends AbstractAdminJSFView<SEDPlugin> {
      * @param mandatory
      * @return
      */
-    public SEDTaskTypeProperty createTypeProperty(String key, String name, boolean mandatory) {
+    public SEDTaskTypeProperty createTypeProperty(String key, String name,
+            boolean mandatory) {
         SEDTaskTypeProperty sp = new SEDTaskTypeProperty();
         sp.setKey(key);
         sp.setDescription(name);
@@ -186,7 +190,8 @@ public class AdminSEDPluginView extends AbstractAdminJSFView<SEDPlugin> {
      * @return
      */
     public String getSelectedWebContext() {
-        return selectedViewPlugin != null ? selectedViewPlugin.getWebContext() : "";
+        return selectedViewPlugin != null ? selectedViewPlugin.getWebContext() :
+                "";
     }
 
     /**
@@ -198,7 +203,9 @@ public class AdminSEDPluginView extends AbstractAdminJSFView<SEDPlugin> {
         if (event != null) {
 
             LOG.log("set selected plugin");
-            SEDPlugin res = (SEDPlugin) event.getComponent().getAttributes().get("pluginItem");
+            SEDPlugin res =
+                    (SEDPlugin) event.getComponent().getAttributes().get(
+                            "pluginItem");
 
             selectedViewPlugin = res;
             LOG.log("set selected plugin setted: " + selectedViewPlugin);

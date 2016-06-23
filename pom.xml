@@ -39,7 +39,9 @@
         
         <!-- unit testing-->
         <org.apache.derby.version>10.10.2.0</org.apache.derby.version>
-        <junit.version>4.12</junit.version>                
+        <junit.version>4.12</junit.version>        
+        <!-- code inspection -->        
+        <maven.jxr.plugin>2.5</maven.jxr.plugin>
     </properties>
     
     <developers>
@@ -70,6 +72,17 @@
 	          
 
     </modules>
+    
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jxr-plugin</artifactId>
+                <version>${maven.jxr.version}</version>
+            </plugin>
+        </plugins>
+    </reporting>
+
     
     <build>
         <pluginManagement>
@@ -216,7 +229,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-pmd-plugin</artifactId>
-                <version>3.5</version>
+                <version>3.6</version>
                 <executions>
                     <execution>
                         <id>cverify-pmd</id>
@@ -228,6 +241,8 @@
                             <excludes>
                                 <exclude>**/generated/*.java</exclude>
                             </excludes>
+                            <aggregate>true</aggregate>
+                            <format>html</format>
                         </configuration>
                         
                     </execution>
@@ -265,7 +280,6 @@
                             <!-- Checks for whitespace                               -->
                             <!-- See http://checkstyle.sf.net/config_whitespace.html -->
                             <module name="FileTabCharacter"/>
- 
                             <module name="TreeWalker">
                                 <module name="StaticVariableName"/>
                                 <module name="TypeName">
@@ -277,6 +291,28 @@
                 </configuration>
             </plugin>
 
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>findbugs-maven-plugin</artifactId>
+                <version>3.0.3</version>
+                <executions>
+                    <execution>
+                        <id>findbug</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <findbugsXmlOutputDirectory>
+                        ${project.build.directory}/findbugs
+                    </findbugsXmlOutputDirectory>
+                    <failOnError>false</failOnError>
+                </configuration>
+            </plugin>
+
+      
         </plugins>
     </build>
 

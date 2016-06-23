@@ -28,7 +28,8 @@ public class MSHPluginOutInterceptor extends AbstractSoapInterceptor {
     /**
      *
      */
-    protected final SEDLogger mlog = new SEDLogger(MSHPluginOutInterceptor.class);
+    protected final SEDLogger mlog =
+            new SEDLogger(MSHPluginOutInterceptor.class);
 
     /**
      *
@@ -43,17 +44,20 @@ public class MSHPluginOutInterceptor extends AbstractSoapInterceptor {
      * @throws Fault
      */
     @Override
-    public void handleMessage(SoapMessage msg) throws Fault {
+    public void handleMessage(SoapMessage msg)
+            throws Fault {
         long l = mlog.logStart();
         PMode pmd = msg.getExchange().get(PMode.class);
         MSHOutMail outMail = msg.getExchange().get(MSHOutMail.class);
         MSHInMail inMail = msg.getExchange().get(MSHInMail.class);
         if (pmd != null && outMail != null) {
             // todo
-            String str = pmd.getLegs().get(0).getBusinessInfo().getService().getOutPlugin();
+            String str =
+                    pmd.getLegs().get(0).getBusinessInfo().getService().getOutPlugin();
             if (str != null) {
                 try {
-                    SoapInterceptorInterface example = InitialContext.doLookup(str);
+                    SoapInterceptorInterface example = InitialContext.doLookup(
+                            str);
                     example.handleMessage(msg);
                 } catch (NamingException ex) {
                     mlog.logError(l, ex);

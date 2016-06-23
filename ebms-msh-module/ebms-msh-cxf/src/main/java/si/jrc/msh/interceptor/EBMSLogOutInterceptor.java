@@ -31,8 +31,10 @@ import si.sed.commons.utils.SEDLogger;
  */
 public class EBMSLogOutInterceptor extends AbstractLoggingInterceptor {
 
-    private static final Logger LOG = LogUtils.getLogger(EBMSLogOutInterceptor.class);
-    private static final String LOG_SETUP = EBMSLogOutInterceptor.class.getName() + ".log-setup";
+    private static final Logger LOG = LogUtils.getLogger(
+            EBMSLogOutInterceptor.class);
+    private static final String LOG_SETUP =
+            EBMSLogOutInterceptor.class.getName() + ".log-setup";
     SEDLogger mlog = new SEDLogger(EBMSLogOutInterceptor.class);
 
     /**
@@ -94,7 +96,8 @@ public class EBMSLogOutInterceptor extends AbstractLoggingInterceptor {
      * @throws Fault
      */
     @Override
-    public void handleMessage(Message message) throws Fault {
+    public void handleMessage(Message message)
+            throws Fault {
         long l = mlog.logStart();
 
         final OutputStream os = message.getContent(OutputStream.class);
@@ -112,18 +115,26 @@ public class EBMSLogOutInterceptor extends AbstractLoggingInterceptor {
         } else {
             // get base from input log file
 
-            String base = (String) message.getExchange().get(EbMSConstants.EBMS_CP_BASE_LOG_SOAP_MESSAGE_FILE);
+            String base = (String) message.getExchange().get(
+                    EbMSConstants.EBMS_CP_BASE_LOG_SOAP_MESSAGE_FILE);
             fStore = EBMSLogUtils.getOutboundFileName(false, null, base);
 
         }
-        mlog.log("Out " + (isRequestor ? "request" : "response") + " stored to:" + fStore.getName());
-        message.getExchange().put(EbMSConstants.EBMS_CP_BASE_LOG_SOAP_MESSAGE_FILE, EBMSLogUtils.getBaseFileName(fStore));
-        message.getExchange().put(EbMSConstants.EBMS_CP_OUT_LOG_SOAP_MESSAGE_FILE, fStore);
+        mlog.log(
+                "Out " + (isRequestor ? "request" : "response") + " stored to:" +
+                fStore.getName());
+        message.getExchange().
+                put(EbMSConstants.EBMS_CP_BASE_LOG_SOAP_MESSAGE_FILE,
+                        EBMSLogUtils.getBaseFileName(fStore));
+        message.getExchange().put(
+                EbMSConstants.EBMS_CP_OUT_LOG_SOAP_MESSAGE_FILE, fStore);
 
         try {
             writer = new PrintWriter(fStore);
         } catch (FileNotFoundException ex) {
-            String errmsg = "Application error store outbound message to file: '" + fStore.getAbsolutePath() + "'! ";
+            String errmsg =
+                    "Application error store outbound message to file: '" +
+                    fStore.getAbsolutePath() + "'! ";
             mlog.logError(l, errmsg, ex);
         }
 
@@ -132,7 +143,8 @@ public class EBMSLogOutInterceptor extends AbstractLoggingInterceptor {
         if (!hasLogged) {
             message.put(LOG_SETUP, Boolean.TRUE);
             if (os != null) {
-                final CacheAndWriteOutputStream newOut = new CacheAndWriteOutputStream(os);
+                final CacheAndWriteOutputStream newOut =
+                        new CacheAndWriteOutputStream(os);
                 if (threshold > 0) {
                     newOut.setThreshold(threshold);
                 }
@@ -142,7 +154,8 @@ public class EBMSLogOutInterceptor extends AbstractLoggingInterceptor {
                 message.setContent(OutputStream.class, newOut);
                 newOut.registerCallback(new LoggingCallback(logger, message, os));
             } else {
-                message.setContent(Writer.class, new LogWriter(logger, message, iowriter));
+                message.setContent(Writer.class, new LogWriter(logger, message,
+                        iowriter));
             }
         }
         mlog.logEnd(l);
@@ -154,8 +167,9 @@ public class EBMSLogOutInterceptor extends AbstractLoggingInterceptor {
             id = LoggingMessage.nextId();
             message.getExchange().put(LoggingMessage.ID_KEY, id);
         }
-        final LoggingMessage buffer
-                = new LoggingMessage("Outbound Message\n---------------------------",
+        final LoggingMessage buffer =
+                new LoggingMessage(
+                        "Outbound Message\n---------------------------",
                         id);
 
         Integer responseCode = (Integer) message.get(Message.RESPONSE_CODE);
@@ -211,10 +225,12 @@ public class EBMSLogOutInterceptor extends AbstractLoggingInterceptor {
             lim = limit == -1 ? Integer.MAX_VALUE : limit;
         }
 
-        public void close() throws IOException {
+        public void close()
+                throws IOException {
             LoggingMessage buffer = setupBuffer(message);
             if (count >= lim) {
-                buffer.getMessage().append("(message truncated to ").append(lim).append(" bytes)\n");
+                buffer.getMessage().append("(message truncated to ").append(lim).append(
+                        " bytes)\n");
             }
             StringWriter w2 = out2;
             if (w2 == null) {
@@ -231,7 +247,8 @@ public class EBMSLogOutInterceptor extends AbstractLoggingInterceptor {
             super.close();
         }
 
-        public void write(int c) throws IOException {
+        public void write(int c)
+                throws IOException {
             super.write(c);
             if (out2 != null && count < lim) {
                 out2.write(c);
@@ -239,7 +256,8 @@ public class EBMSLogOutInterceptor extends AbstractLoggingInterceptor {
             count++;
         }
 
-        public void write(char[] cbuf, int off, int len) throws IOException {
+        public void write(char[] cbuf, int off, int len)
+                throws IOException {
             super.write(cbuf, off, len);
             if (out2 != null && count < lim) {
                 out2.write(cbuf, off, len);
@@ -247,7 +265,8 @@ public class EBMSLogOutInterceptor extends AbstractLoggingInterceptor {
             count += len;
         }
 
-        public void write(String str, int off, int len) throws IOException {
+        public void write(String str, int off, int len)
+                throws IOException {
             super.write(str, off, len);
             if (out2 != null && count < lim) {
                 out2.write(str, off, len);
@@ -265,7 +284,8 @@ public class EBMSLogOutInterceptor extends AbstractLoggingInterceptor {
         private final Message message;
         private final OutputStream origStream;
 
-        public LoggingCallback(final Logger logger, final Message msg, final OutputStream os) {
+        public LoggingCallback(final Logger logger, final Message msg,
+                final OutputStream os) {
             this.logger = logger;
             this.message = msg;
             this.origStream = os;
@@ -283,13 +303,17 @@ public class EBMSLogOutInterceptor extends AbstractLoggingInterceptor {
             if (cos.getTempFile() == null) {
                 //buffer.append("Outbound Message:\n");
                 if (cos.size() >= lim) {
-                    buffer.getMessage().append("(message truncated to ").append(lim).append(" bytes)\n");
+                    buffer.getMessage().append("(message truncated to ").append(
+                            lim).append(" bytes)\n");
                 }
             } else {
-                buffer.getMessage().append("Outbound Message (saved to tmp file):\n");
-                buffer.getMessage().append("Filename: ").append(cos.getTempFile().getAbsolutePath()).append("\n");
+                buffer.getMessage().append(
+                        "Outbound Message (saved to tmp file):\n");
+                buffer.getMessage().append("Filename: ").append(
+                        cos.getTempFile().getAbsolutePath()).append("\n");
                 if (cos.size() >= lim) {
-                    buffer.getMessage().append("(message truncated to ").append(lim).append(" bytes)\n");
+                    buffer.getMessage().append("(message truncated to ").append(
+                            lim).append(" bytes)\n");
                 }
             }
             try {

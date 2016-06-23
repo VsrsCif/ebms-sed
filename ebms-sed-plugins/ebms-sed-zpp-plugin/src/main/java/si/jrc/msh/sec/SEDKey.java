@@ -33,7 +33,8 @@ public class SEDKey implements Key, Serializable {
      * @param algorithm
      * @param format
      */
-    public SEDKey(BigInteger id, byte[] secretKey, String algorithm, String format) {
+    public SEDKey(BigInteger id, byte[] secretKey, String algorithm,
+            String format) {
         this.id = id;
         this.secretKey = secretKey;
         this.algorithm = algorithm;

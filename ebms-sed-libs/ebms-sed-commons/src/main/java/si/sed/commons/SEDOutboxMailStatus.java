@@ -25,7 +25,8 @@ public enum SEDOutboxMailStatus {
     /**
      *
      */
-    SUBMITTED("SUBMITTED", "Message is sucessfuly added to SED for transmition.", "orange"),
+    SUBMITTED("SUBMITTED", "Message is sucessfuly added to SED for transmition.",
+            "orange"),
 
     /**
      *
@@ -50,7 +51,8 @@ public enum SEDOutboxMailStatus {
     /**
      *
      */
-    EBMSERROR("EBMSERROR", "EBMS Error occured pushing/pulling to receiving MSH", "darkred"),
+    EBMSERROR("EBMSERROR", "EBMS Error occured pushing/pulling to receiving MSH",
+            "darkred"),
 
     /**
      *

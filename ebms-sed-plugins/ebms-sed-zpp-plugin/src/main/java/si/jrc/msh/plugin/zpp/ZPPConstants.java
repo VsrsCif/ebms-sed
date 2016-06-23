@@ -17,7 +17,6 @@ public class ZPPConstants {
     public static final String ELM_SIGNAL_ENCRYPTED_KEY = "EncryptedKey";
 
     //   public static String LOCK_STATUS="ZPPLock";
-
     /**
      *
      */
@@ -26,7 +25,8 @@ public class ZPPConstants {
     /**
      *
      */
-    public static String MSG_DELIVERY_NOTIFICATION_DESC = "Obvestilo o prispeli pošiljki";
+    public static String MSG_DELIVERY_NOTIFICATION_DESC =
+            "Obvestilo o prispeli pošiljki";
 
     /**
      *
@@ -46,17 +46,20 @@ public class ZPPConstants {
     /**
      *
      */
-    public static final String S_ZPP_ACTION_ADVICE_OF_DELIVERY = "AdviceOfDelivery";
+    public static final String S_ZPP_ACTION_ADVICE_OF_DELIVERY =
+            "AdviceOfDelivery";
 
     /**
      *
      */
-    public static final String S_ZPP_ACTION_DELIVERY_NOTIFICATION = "DeliveryNotification";
+    public static final String S_ZPP_ACTION_DELIVERY_NOTIFICATION =
+            "DeliveryNotification";
 
     /**
      *
      */
-    public static final String S_ZPP_ACTION_FICTION_NOTIFICATION = "FictionNotification";
+    public static final String S_ZPP_ACTION_FICTION_NOTIFICATION =
+            "FictionNotification";
 
     /**
      *

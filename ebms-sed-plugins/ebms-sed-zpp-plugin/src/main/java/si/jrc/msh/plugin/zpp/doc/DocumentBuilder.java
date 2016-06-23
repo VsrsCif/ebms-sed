@@ -79,7 +79,8 @@ public abstract class DocumentBuilder {
      *
      */
     public static final String SOD_V1 = "SOD_V1";
-    private static final String XAdESCertificateDigestAlgorithm = "http://www.w3.org/2000/09/xmldsig#sha1";
+    private static final String XAdESCertificateDigestAlgorithm =
+            "http://www.w3.org/2000/09/xmldsig#sha1";
     private static final String XAdESignatureProductionPlace = "Ljubljana";
     private static final String XMLHEADER = "<?";
 
@@ -89,16 +90,11 @@ public abstract class DocumentBuilder {
      * @param strFile
      */
     public static void writeToFile(String strVal, String strFile) {
-        FileOutputStream fos = null;
-        try {
-            fos = new FileOutputStream(strFile);
+
+        try (FileOutputStream fos = new FileOutputStream(strFile)) {
             fos.write(strVal.getBytes(ENC_TYPE_UTF8));
         } catch (IOException ex) {
-        } finally {
-            try {
-                fos.close();
-            } catch (IOException ex) {
-            }
+
         }
     }
     Logger mlgLogger = Logger.getLogger(DocumentBuilder.class.getName());
@@ -114,10 +110,12 @@ public abstract class DocumentBuilder {
      * @return
      * @throws SEDSecurityException
      */
-    protected Document convertEpDoc2W3cDoc(Object jaxBDoc, Class[] cls) throws SEDSecurityException {
+    protected Document convertEpDoc2W3cDoc(Object jaxBDoc, Class[] cls)
+            throws SEDSecurityException {
         Document xDoc = null;
         try {
-            javax.xml.parsers.DocumentBuilderFactory dbf = javax.xml.parsers.DocumentBuilderFactory.newInstance();
+            javax.xml.parsers.DocumentBuilderFactory dbf =
+                    javax.xml.parsers.DocumentBuilderFactory.newInstance();
             javax.xml.parsers.DocumentBuilder db = dbf.newDocumentBuilder();
             xDoc = db.newDocument();
 
@@ -126,13 +124,23 @@ public abstract class DocumentBuilder {
             Marshaller marshaller = jc.createMarshaller();
             marshaller.marshal(jaxBDoc, xDoc);
         } catch (JAXBException ex) {
-            String strMsg = "DocumentBuilder.convertEpDoc2W3cDoc: could marshal Document: JAXBException: '" + ex.getMessage() + "'.";
+            String strMsg =
+                    "DocumentBuilder.convertEpDoc2W3cDoc: could marshal Document: JAXBException: '" +
+                    ex.
+                    getMessage() + "'.";
             mlgLogger.error(strMsg, ex);
-            throw new SEDSecurityException(SEDSecurityException.SEDSecurityExceptionCode.CreateSignatureException, ex);
+            throw new SEDSecurityException(
+                    SEDSecurityException.SEDSecurityExceptionCode.CreateSignatureException,
+                    ex);
         } catch (ParserConfigurationException ex) {
-            String strMsg = "DocumentBuilder.convertEpDoc2W3cDoc: could not create w3c document: ParserConfigurationException: '" + ex.getMessage() + "'.";
+            String strMsg =
+                    "DocumentBuilder.convertEpDoc2W3cDoc: could not create w3c document: ParserConfigurationException: '" +
+                    ex.
+                    getMessage() + "'.";
             mlgLogger.error(strMsg, ex);
-            throw new SEDSecurityException(SEDSecurityException.SEDSecurityExceptionCode.CreateSignatureException, ex);
+            throw new SEDSecurityException(
+                    SEDSecurityException.SEDSecurityExceptionCode.CreateSignatureException,
+                    ex);
         }
 
         return xDoc;
@@ -145,7 +153,10 @@ public abstract class DocumentBuilder {
      * @param key
      * @throws SEDSecurityException
      */
-    public abstract void createMail(MSHOutMail dce, FileOutputStream fos, KeyStore.PrivateKeyEntry key) throws SEDSecurityException;
+    public abstract void createMail(MSHOutMail dce, FileOutputStream fos,
+            KeyStore.PrivateKeyEntry key)
+            throws
+            SEDSecurityException;
 
     /**
      *
@@ -173,12 +184,10 @@ public abstract class DocumentBuilder {
         return medSigJDK;
     }
      */
-
     /**
      *
      * @return
      */
-
     protected long getTime() {
         return Calendar.getInstance().getTimeInMillis();
     }
@@ -191,16 +200,21 @@ public abstract class DocumentBuilder {
      * @param key
      * @throws SEDSecurityException
      */
-    protected synchronized void singDocument(Document xDoc, List<String[]> strIds,
-            FileOutputStream fos, KeyStore.PrivateKeyEntry key) throws SEDSecurityException {
+    protected synchronized void singDocument(Document xDoc,
+            List<String[]> strIds,
+            FileOutputStream fos, KeyStore.PrivateKeyEntry key)
+            throws SEDSecurityException {
         long t = getTime();
         mlgLogger.info("DocumentBuilder.singDocument: begin ");
 
-        NodeList lst = xDoc.getDocumentElement().getElementsByTagName(SIGNATURE_ELEMENT_NAME);
+        NodeList lst = xDoc.getDocumentElement().getElementsByTagName(
+                SIGNATURE_ELEMENT_NAME);
         Element eltSignature = (Element) lst.item(0);
         getSignUtils().singDocument(key, eltSignature, strIds, fos);
 
-        mlgLogger.info("DocumentBuilder.singDocument: - end (" + (getTime() - t) + "ms)");
+        mlgLogger.info(
+                "DocumentBuilder.singDocument: - end (" + (getTime() - t) +
+                "ms)");
     }
 
 }

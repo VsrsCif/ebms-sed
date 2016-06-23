@@ -21,7 +21,8 @@ public interface SoapInterceptorInterface {
      * @param t
      * @throws Fault
      */
-    public void handleMessage(SoapMessage t) throws Fault;
+    public void handleMessage(SoapMessage t)
+            throws Fault;
 
     /**
      *

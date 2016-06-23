@@ -1,7 +1,19 @@
+
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+* Copyright 2015, Supreme Court Republic of Slovenia 
+*
+* Licensed under the EUPL, Version 1.1 or – as soon they will be approved by 
+* the European Commission - subsequent versions of the EUPL (the "Licence");
+* You may not use this work except in compliance with the Licence.
+* You may obtain a copy of the Licence at:
+*
+* https://joinup.ec.europa.eu/software/page/eupl
+*
+* Unless required by applicable law or agreed to in writing, software 
+* distributed under the Licence is distributed on an "AS IS" basis, WITHOUT 
+* WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the Licence for the specific language governing permissions and  
+* limitations under the Licence.
  */
 package si.jrc.msh.interceptor;
 
@@ -68,6 +80,7 @@ import si.sed.commons.exception.HashException;
 import si.sed.commons.exception.PModeException;
 import si.sed.commons.exception.SOAPExceptionCode;
 import si.sed.commons.exception.StorageException;
+import si.sed.commons.utils.GZIPUtil;
 import si.sed.commons.utils.HashUtils;
 import si.sed.commons.utils.PModeManager;
 import si.sed.commons.utils.SEDLogger;
@@ -85,7 +98,8 @@ public class EBMSInInterceptor extends AbstractEBMSInterceptor {
     private static final Set<QName> HEADERS = new HashSet<>();
 
     static {
-        HEADERS.add(new QName(EbMSConstants.EBMS_NS, EbMSConstants.EBMS_ROOT_ELEMENT_NAME));
+        HEADERS.add(new QName(EbMSConstants.EBMS_NS,
+                EbMSConstants.EBMS_ROOT_ELEMENT_NAME));
         WSS4JInInterceptor me = new WSS4JInInterceptor();
         HEADERS.addAll(me.getUnderstoodHeaders());
     }
@@ -93,10 +107,12 @@ public class EBMSInInterceptor extends AbstractEBMSInterceptor {
     /**
      *
      */
-    protected final static SEDLogger LOG = new SEDLogger(EBMSInInterceptor.class);
+    protected final static SEDLogger LOG =
+            new SEDLogger(EBMSInInterceptor.class);
 
     StorageUtils msuStorageUtils = new StorageUtils();
-    HashUtils mpHU = new HashUtils();
+    protected final HashUtils mpHU = new HashUtils();
+    protected final GZIPUtil mGZIPUtils = new GZIPUtil();
 
     PModeManager mPModeManage = new PModeManager();
     EBMSUtils mebmsUtils = new EBMSUtils();
@@ -140,7 +156,8 @@ public class EBMSInInterceptor extends AbstractEBMSInterceptor {
         SoapVersion version = msg.getVersion();
         boolean isRequestor = MessageUtils.isRequestor(msg);
         // check for Messaging header
-        QName sv = (isRequestor ? SoapFault.FAULT_CODE_CLIENT : SoapFault.FAULT_CODE_SERVER);
+        QName sv = (isRequestor ? SoapFault.FAULT_CODE_CLIENT :
+                SoapFault.FAULT_CODE_SERVER);
 
         try {
             //validate in message
@@ -153,11 +170,13 @@ public class EBMSInInterceptor extends AbstractEBMSInterceptor {
             if (pm == null) {
                 String wrnmsg = "PMode for header" + msgHeader.getId();
                 LOG.logWarn(l, wrnmsg, null);
-            } else if (pm.getLegs().size() > 0 && pm.getLegs().get(0).getSecurity() != null) {
+            } else if (pm.getLegs().size() > 0 &&
+                    pm.getLegs().get(0).getSecurity() != null) {
                 // check signed elements
                 checkSecurity(pm.getLegs().get(0).getSecurity(), msg);
             } else {
-                String wrnmsg = "No security is defined for pmode: '" + pm.getId() + "'";
+                String wrnmsg = "No security is defined for pmode: '" +
+                        pm.getId() + "'";
                 LOG.logWarn(l, wrnmsg, null);
             }
 
@@ -166,35 +185,45 @@ public class EBMSInInterceptor extends AbstractEBMSInterceptor {
             // process userMessage
             if (isRequestor) {
                 if (!msgHeader.getUserMessages().isEmpty()) {
-                    String errmsg = "For response only signal response is expected! UserMessage is ignored";
+                    String errmsg =
+                            "For response only signal response is expected! UserMessage is ignored";
                     LOG.logError(l, errmsg, null);
                 }
 
                 if (msgHeader.getSignalMessages().size() > 0) {
                     // receive as4receipt
                     // receive errors
-                    processResponseSignals(msgHeader.getSignalMessages(), pm, msg);
+                    processResponseSignals(msgHeader.getSignalMessages(), pm,
+                            msg);
 
                 } else {
-                    String errmsg = "For SOAP response error signal or receipt is expected!";
+                    String errmsg =
+                            "For SOAP response error signal or receipt is expected!";
                     LOG.logError(l, errmsg, null);
                     throw new SoapFault(errmsg, version.getReceiver());
                 }
             } else if (!msgHeader.getUserMessages().isEmpty()) {
                 // 
-                MSHInMail mMail = mebmsUtils.userMessage2MSHMail(msgHeader.getUserMessages().get(0));
+                MSHInMail mMail = mebmsUtils.userMessage2MSHMail(
+                        msgHeader.getUserMessages().get(0));
                 String receiverBox = mMail.getReceiverEBox();
-                if (receiverBox == null && receiverBox.trim().isEmpty()) {
+                if (receiverBox == null || receiverBox.trim().isEmpty()) {
                     String errmsg = "Missing receiver box!";
                     LOG.logError(l, errmsg, null);
-                    throw new EBMSError(EBMSErrorCode.Other, mMail.getMessageId(), errmsg);
+                    throw new EBMSError(EBMSErrorCode.Other,
+                            mMail.getMessageId(), errmsg);
                 }
 
                 SEDBox inSb = getSedBoxByName(mMail.getReceiverEBox());
-                if (inSb == null || (inSb.getActiveToDate() != null && inSb.getActiveToDate().before(Calendar.getInstance().getTime()))) {
-                    String errmsg = "Receiver box: '" + mMail.getReceiverEBox() + "' not exists or is not active.";
+                if (inSb == null || (inSb.getActiveToDate() != null &&
+                        inSb.getActiveToDate().before(Calendar.
+                                getInstance().getTime()))) {
+                    String errmsg =
+                            "Receiver box: '" + mMail.getReceiverEBox() +
+                            "' not exists or is not active.";
                     LOG.logError(l, errmsg, null);
-                    throw new EBMSError(EBMSErrorCode.Other, mMail.getMessageId(), errmsg);
+                    throw new EBMSError(EBMSErrorCode.Other,
+                            mMail.getMessageId(), errmsg);
                 }
 
                 msg.getExchange().put(SEDBox.class, inSb);
@@ -205,7 +234,8 @@ public class EBMSInInterceptor extends AbstractEBMSInterceptor {
                 for (Attachment a : msg.getAttachments()) {
                     lstSoapAtt.add(a.getId());
                 }
-                if (mMail.getMSHInPayload() != null && !mMail.getMSHInPayload().getMSHInParts().isEmpty()) {
+                if (mMail.getMSHInPayload() != null &&
+                        !mMail.getMSHInPayload().getMSHInParts().isEmpty()) {
                     for (MSHInPart ip : mMail.getMSHInPayload().getMSHInParts()) {
                         if (lstSoapAtt.contains(ip.getEbmsId())) {
                             lstSoapAtt.remove(ip.getEbmsId());
@@ -216,19 +246,24 @@ public class EBMSInInterceptor extends AbstractEBMSInterceptor {
                 }
 
                 if (!lstSoapAtt.isEmpty() || !lstEBMSAtt.isEmpty()) {
-                    String errmsg = "Ebms Payloads does note match soap attachments.";
+                    String errmsg =
+                            "Ebms Payloads does note match soap attachments.";
                     LOG.logError(l, errmsg, null);
-                    throw new EBMSError(EBMSErrorCode.ValueInconsistent, null, errmsg);
+                    throw new EBMSError(EBMSErrorCode.ValueInconsistent, null,
+                            errmsg);
                 }
                 // serialize attachments
-                if (mMail.getMSHInPayload() != null && !mMail.getMSHInPayload().getMSHInParts().isEmpty()) {
+                if (mMail.getMSHInPayload() != null &&
+                        !mMail.getMSHInPayload().getMSHInParts().isEmpty()) {
                     for (MSHInPart p : mMail.getMSHInPayload().getMSHInParts()) {
                         try {
-                            serializeAttachments(p, msg.getAttachments());
+                            serializeAttachments(p, msg.getAttachments(), true);
                         } catch (StorageException | IOException | HashException ex) {
                             String errmsg = "Error reading attachments .";
                             LOG.logError(l, errmsg, null);
-                            throw new EBMSError(EBMSErrorCode.ExternalPayloadError, null, errmsg);
+                            throw new EBMSError(
+                                    EBMSErrorCode.ExternalPayloadError, null,
+                                    errmsg);
                         }
                     }
 
@@ -244,21 +279,29 @@ public class EBMSInInterceptor extends AbstractEBMSInterceptor {
                 try {
                     getDAO().serializeInMail(mMail, "ebms-msh-ws");
                 } catch (StorageException ex) {
-                    String errmsg = "Internal error occured while serializing incomming mail.";
+                    String errmsg =
+                            "Internal error occured while serializing incomming mail.";
                     LOG.logError(l, errmsg, ex);
-                    throw ExceptionUtils.createSoapFault(SOAPExceptionCode.StoreInboundMailFailure, SoapFault.FAULT_CODE_SERVER, errmsg);
+                    throw ExceptionUtils.createSoapFault(
+                            SOAPExceptionCode.StoreInboundMailFailure,
+                            SoapFault.FAULT_CODE_SERVER, errmsg);
                 }
 
                 msg.getExchange().put(MSHInMail.class, mMail);
 
                 SOAPMessage request = msg.getContent(SOAPMessage.class);
 
-                SignalMessage as4Receipt = mebmsUtils.generateAS4ReceiptSignal(mMail.getMessageId(), Utils.getDomainFromAddress(mMail.getReceiverEBox()), request.getSOAPPart().getDocumentElement(), dt);
+                SignalMessage as4Receipt = mebmsUtils.generateAS4ReceiptSignal(
+                        mMail.getMessageId(), Utils.
+                        getDomainFromAddress(mMail.getReceiverEBox()),
+                        request.getSOAPPart().getDocumentElement(), dt);
                 msg.getExchange().put(SignalMessage.class, as4Receipt);
             } else {
-                String errmsg = "Missing userMessage! In a SVEV-MSH  pull-MEP is not exepected!";
+                String errmsg =
+                        "Missing userMessage! In a SVEV-MSH  pull-MEP is not exepected!";
                 LOG.logError(l, errmsg, null);
-                throw new EBMSError(EBMSErrorCode.ProcessingModeMismatch, null, errmsg);
+                throw new EBMSError(EBMSErrorCode.ProcessingModeMismatch, null,
+                        errmsg);
 
             }
         } catch (EBMSError ex) {
@@ -273,15 +316,17 @@ public class EBMSInInterceptor extends AbstractEBMSInterceptor {
                         responseMsg = e.getBinding().createMessage(responseMsg);
                         msg.getExchange().setOutMessage(responseMsg);
 
-                        MessageFactory mf = MessageFactory.newInstance(SOAPConstants.SOAP_1_2_PROTOCOL);
+                        MessageFactory mf = MessageFactory.newInstance(
+                                SOAPConstants.SOAP_1_2_PROTOCOL);
                         SOAPMessage soapMessage = mf.createMessage();
                         soapMessage.saveChanges();
 
                         responseMsg.setContent(SOAPMessage.class, soapMessage);
                         responseMsg.getExchange().put(EBMSError.class, ex);
 
-                        InterceptorChain chain
-                                = OutgoingChainInterceptor.getOutInterceptorChain(msg
+                        InterceptorChain chain =
+                                OutgoingChainInterceptor.getOutInterceptorChain(
+                                        msg
                                         .getExchange());
                         responseMsg.setInterceptorChain(chain);
                         chain.doInterceptStartingAfter(responseMsg,
@@ -307,7 +352,9 @@ public class EBMSInInterceptor extends AbstractEBMSInterceptor {
     }
 
     // receive 
-    private void processResponseSignals(List<SignalMessage> lstSignals, PMode pm, SoapMessage msg) throws EBMSError {
+    private void processResponseSignals(List<SignalMessage> lstSignals, PMode pm,
+            SoapMessage msg)
+            throws EBMSError {
         SoapVersion version = msg.getVersion();
         long l = LOG.logStart();
 
@@ -320,45 +367,58 @@ public class EBMSInInterceptor extends AbstractEBMSInterceptor {
             }
 
             if (sm.getPullRequest() != null) {
-                String errmsg = "Pull MEP is not supported! Pull signal is ignored";
+                String errmsg =
+                        "Pull MEP is not supported! Pull signal is ignored";
                 LOG.logError(l, errmsg, null);
 
             }
 
-            if (mi.getRefToMessageId() == null || mi.getRefToMessageId().trim().isEmpty()) {
+            if (mi.getRefToMessageId() == null ||
+                    mi.getRefToMessageId().trim().isEmpty()) {
                 String errmsg = "Missing missing RefToMessageId";
                 LOG.logError(l, errmsg, null);
                 throw new SoapFault(errmsg, version.getReceiver());
             }
 
             MSHOutMail outmsg = msg.getExchange().get(MSHOutMail.class);
-            String strOutMsg = outmsg.getMessageId() + "@" + getSettings().getDomain();
+            String strOutMsg = outmsg.getMessageId() + "@" +
+                    getSettings().getDomain();
             if (strOutMsg != null && !strOutMsg.equals(mi.getRefToMessageId())) {
-                String errmsg = "Outgoing msg ID '" + strOutMsg + "' not equals to received response signal RefToMessageId: '" + mi.getRefToMessageId() + "' ";
+                String errmsg = "Outgoing msg ID '" + strOutMsg +
+                        "' not equals to received response signal RefToMessageId: '" +
+                        mi.getRefToMessageId() + "' ";
                 LOG.logError(l, errmsg, null);
                 //throw new SoapFault(errmsg, version.getReceiver());
             }
 
             if (sm.getErrors() != null && !sm.getErrors().isEmpty()) {
                 String desc = "";
-                for (org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.Error er : sm.getErrors()) {
-                    desc = er.getOrigin() + "" + er.getSeverity() + " " + er.getErrorCode() + " " + er.getErrorDetail();
+                for (org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.Error er
+                        : sm.getErrors()) {
+                    desc = er.getOrigin() + "" + er.getSeverity() + " " +
+                            er.getErrorCode() + " " + er.getErrorDetail();
                     break;
                 }
 
                 try {
-                    getDAO().setStatusToOutMail(outmsg, SEDOutboxMailStatus.EBMSERROR, desc);
+                    getDAO().setStatusToOutMail(outmsg,
+                            SEDOutboxMailStatus.EBMSERROR, desc);
                 } catch (StorageException ex) {
-                    String msgErr = "Error occured when setting MSHOutMail (id" + outmsg.getId() + ") status to EBMSERROR";
+                    String msgErr =
+                            "Error occured when setting MSHOutMail (id" +
+                            outmsg.getId() + ") status to EBMSERROR";
                     LOG.logError(l, msgErr, ex);
                 }
 
             } else if (sm.getReceipt() != null) {
                 outmsg.setReceivedDate(mi.getTimestamp());
                 try {
-                    getDAO().setStatusToOutMail(outmsg, SEDOutboxMailStatus.SENT, "Mail received to receiver MSH");
+                    getDAO().setStatusToOutMail(outmsg, SEDOutboxMailStatus.SENT,
+                            "Mail received to receiver MSH");
                 } catch (StorageException ex) {
-                    String msgErr = "Error occured when setting MSHOutMail (id" + outmsg.getId() + ") status to SENT";
+                    String msgErr =
+                            "Error occured when setting MSHOutMail (id" +
+                            outmsg.getId() + ") status to SENT";
                     LOG.logError(l, msgErr, ex);
                 }
 
@@ -399,37 +459,49 @@ public class EBMSInInterceptor extends AbstractEBMSInterceptor {
         }
     }
 
-    private Messaging vaildateMessagingData(SoapMessage msg) throws SoapFault, EBMSError {
+    private Messaging vaildateMessagingData(SoapMessage msg)
+            throws SoapFault, EBMSError {
         long l = LOG.logStart();
         SoapVersion version = msg.getVersion();
         boolean isRequestor = MessageUtils.isRequestor(msg);
-        QName sv = (isRequestor ? SoapFault.FAULT_CODE_CLIENT : SoapFault.FAULT_CODE_SERVER);
+        QName sv = (isRequestor ? SoapFault.FAULT_CODE_CLIENT :
+                SoapFault.FAULT_CODE_SERVER);
 
         if (version.getVersion() != 1.2) {
             String errmsg = "ebMS AS4 supports only soap 1.2 protocol!";
             LOG.logError(l, errmsg, null);
-            throw ExceptionUtils.createSoapFault(SOAPExceptionCode.SoapVersionMismatch, sv, errmsg);
+            throw ExceptionUtils.createSoapFault(
+                    SOAPExceptionCode.SoapVersionMismatch, sv, errmsg);
         }
 
         SOAPMessage request = msg.getContent(SOAPMessage.class);
 
         NodeList lstND = null;
         try {
-            lstND = request.getSOAPHeader().getElementsByTagNameNS(EbMSConstants.EBMS_NS, EbMSConstants.EBMS_ROOT_ELEMENT_NAME);
+            lstND = request.getSOAPHeader().getElementsByTagNameNS(
+                    EbMSConstants.EBMS_NS,
+                    EbMSConstants.EBMS_ROOT_ELEMENT_NAME);
         } catch (SOAPException ex) {
-            String errmsg = "Error parsing EMBS header! Error: " + ex.getMessage();
+            String errmsg = "Error parsing EMBS header! Error: " +
+                    ex.getMessage();
             LOG.logError(l, errmsg, null);
-            throw ExceptionUtils.createSoapFault(SOAPExceptionCode.SoapParseFailure, sv);
+            throw ExceptionUtils.createSoapFault(
+                    SOAPExceptionCode.SoapParseFailure, sv);
 
         }
         if (lstND == null || lstND.getLength() == 0) {
-            String errmsg = "Missing EBMS header: " + EbMSConstants.EBMS_NS + ":" + EbMSConstants.EBMS_ROOT_ELEMENT_NAME + "!";
+            String errmsg = "Missing EBMS header: " + EbMSConstants.EBMS_NS +
+                    ":" +
+                    EbMSConstants.EBMS_ROOT_ELEMENT_NAME + "!";
             LOG.logError(l, errmsg, null);
             throw new EBMSError(EBMSErrorCode.InvalidHeader, null, errmsg);
         }
 
         if (lstND.getLength() != 1) {
-            String errmsg = "Onyl one EBMS header (" + EbMSConstants.EBMS_NS + ":" + EbMSConstants.EBMS_ROOT_ELEMENT_NAME + ") found: " + lstND.getLength() + "!";
+            String errmsg = "Onyl one EBMS header (" + EbMSConstants.EBMS_NS +
+                    ":" +
+                    EbMSConstants.EBMS_ROOT_ELEMENT_NAME + ") found: " + lstND.
+                    getLength() + "!";
             LOG.logError(l, errmsg, null);
             throw new EBMSError(EBMSErrorCode.InvalidHeader, null, errmsg);
         }
@@ -439,7 +511,8 @@ public class EBMSInInterceptor extends AbstractEBMSInterceptor {
         try {
             msgHeader = (Messaging) XMLUtils.deserialize(elmn, Messaging.class);
         } catch (JAXBException ex) {
-            String errmsg = "Error reading EMBS header! Error: " + ex.getMessage();
+            String errmsg = "Error reading EMBS header! Error: " +
+                    ex.getMessage();
             LOG.logError(l, errmsg, null);
             throw new EBMSError(EBMSErrorCode.InvalidHeader, null, errmsg);
         }
@@ -447,68 +520,87 @@ public class EBMSInInterceptor extends AbstractEBMSInterceptor {
         if (msgHeader == null) {
             String errmsg = "Missing header";
             LOG.logError(l, errmsg, null);
-            throw new EBMSError(EBMSErrorCode.InvalidHeader, getMessageId(msgHeader), errmsg);
+            throw new EBMSError(EBMSErrorCode.InvalidHeader, getMessageId(
+                    msgHeader), errmsg);
         }
 
-        String lstErrors = XMLUtils.validateBySchema(msgHeader, Messaging.class.getResourceAsStream("/schemas/ebms-header-3_0-200704.xsd"), "/schemas/");
+        String lstErrors = XMLUtils.validateBySchema(msgHeader,
+                Messaging.class.getResourceAsStream(
+                        "/schemas/ebms-header-3_0-200704.xsd"), "/schemas/");
         if (!lstErrors.isEmpty()) {
             String errmsg = "Error validating by schema: " + lstErrors;
             LOG.logError(l, errmsg, null);
-            throw new EBMSError(EBMSErrorCode.InvalidHeader, getMessageId(msgHeader), lstErrors);
+            throw new EBMSError(EBMSErrorCode.InvalidHeader, getMessageId(
+                    msgHeader), lstErrors);
         }
 
         // zero signal or usermessage is expected
-        if (msgHeader.getUserMessages().isEmpty() && msgHeader.getSignalMessages().isEmpty()) {
+        if (msgHeader.getUserMessages().isEmpty() &&
+                msgHeader.getSignalMessages().isEmpty()) {
             String errmsg = "UserMessage or SignalMessage is exptected!";
             LOG.logError(l, errmsg, null);
-            throw new EBMSError(EBMSErrorCode.InvalidHeader, getMessageId(msgHeader), errmsg);
+            throw new EBMSError(EBMSErrorCode.InvalidHeader, getMessageId(
+                    msgHeader), errmsg);
         }
         // only one ser message is expected
         if (msgHeader.getUserMessages().size() > 1) {
             String errmsg = "Zero or  one UserMessage is exptected!";
             LOG.logError(l, errmsg, null);
-            throw new EBMSError(EBMSErrorCode.InvalidHeader, getMessageId(msgHeader), errmsg);
+            throw new EBMSError(EBMSErrorCode.InvalidHeader, getMessageId(
+                    msgHeader), errmsg);
         }
 
         return msgHeader;
 
     }
 
-    private PMode getProcessingMode(SoapMessage msg, Messaging msgHeader) throws EBMSError {
+    private PMode getProcessingMode(SoapMessage msg, Messaging msgHeader)
+            throws EBMSError {
         long l = LOG.logStart();
         boolean requestor = MessageUtils.isRequestor(msg);
-        QName sv = (requestor ? SoapFault.FAULT_CODE_SERVER : SoapFault.FAULT_CODE_CLIENT);
+        QName sv = (requestor ? SoapFault.FAULT_CODE_SERVER :
+                SoapFault.FAULT_CODE_CLIENT);
 
         PMode pmd = msg.getExchange().get(PMode.class); // 
         // if pmd not in exchange - then this should be user message            
         if (pmd == null && requestor) {
-            String errmsg = "Invalid ebms configuration! Set PMode to exchange: as ' client.getRequestContext().put(PMode.class.getName(), pmod)'";
+            String errmsg =
+                    "Invalid ebms configuration! Set PMode to exchange: as " +
+                    "'client.getRequestContext().put(PMode.class.getName(), pmod)'";
             LOG.logError(l, errmsg, null);
-            throw ExceptionUtils.createSoapFault(SOAPExceptionCode.StoreInboundMailFailure, sv, errmsg);
+            throw ExceptionUtils.createSoapFault(
+                    SOAPExceptionCode.StoreInboundMailFailure, sv, errmsg);
         }
         if (pmd == null) {
 
             // simple validating user message
             if (msgHeader.getUserMessages().isEmpty()) {
-                String errmsg = "Missing userMessage! In a SVEV-MSH  pull-MEP is not exepected!";
+                String errmsg =
+                        "Missing userMessage! In a SVEV-MSH  pull-MEP is not exepected!";
                 LOG.logError(l, errmsg, null);
-                throw new EBMSError(EBMSErrorCode.ProcessingModeMismatch, null, errmsg);
+                throw new EBMSError(EBMSErrorCode.ProcessingModeMismatch, null,
+                        errmsg);
             }
 
-            if (msgHeader.getUserMessages().get(0).getCollaborationInfo() == null) {
+            if (msgHeader.getUserMessages().get(0).getCollaborationInfo() ==
+                    null) {
                 String errmsg = "Missing CollaborationInfo in UserMessage!";
                 LOG.logError(l, errmsg, null);
-                throw new EBMSError(EBMSErrorCode.ProcessingModeMismatch, null, errmsg);
+                throw new EBMSError(EBMSErrorCode.ProcessingModeMismatch, null,
+                        errmsg);
             }
 
-            if (msgHeader.getUserMessages().get(0).getCollaborationInfo() == null) {
+            if (msgHeader.getUserMessages().get(0).getCollaborationInfo() ==
+                    null) {
                 String errmsg = "Missing CollaborationInfo!";
                 LOG.logError(l, errmsg, null);
                 throw new EBMSError(EBMSErrorCode.InvalidHeader, null, errmsg);
             }
-            CollaborationInfo ca = msgHeader.getUserMessages().get(0).getCollaborationInfo();
+            CollaborationInfo ca =
+                    msgHeader.getUserMessages().get(0).getCollaborationInfo();
 
-            if (ca.getService() == null || ca.getService().getValue() == null || ca.getService().getValue().isEmpty()) {
+            if (ca.getService() == null || ca.getService().getValue() == null ||
+                    ca.getService().getValue().isEmpty()) {
                 String errmsg = "Missing 'service' value!";
                 LOG.logError(l, errmsg, null);
                 throw new EBMSError(EBMSErrorCode.InvalidHeader, null, errmsg);
@@ -520,23 +612,28 @@ public class EBMSInInterceptor extends AbstractEBMSInterceptor {
                 throw new EBMSError(EBMSErrorCode.InvalidHeader, null, errmsg);
             }
 
-            if (msgHeader.getUserMessages().get(0).getPartyInfo().getFrom() == null
-                    || msgHeader.getUserMessages().get(0).getPartyInfo().getFrom().getPartyIds().isEmpty()) {
+            if (msgHeader.getUserMessages().get(0).getPartyInfo().getFrom() ==
+                    null ||
+                    msgHeader.getUserMessages().get(0).getPartyInfo().getFrom().getPartyIds().isEmpty()) {
 
                 String errmsg = "Missing 'PartyInfo/From/PartyId' value!";
                 LOG.logError(l, errmsg, null);
                 throw new EBMSError(EBMSErrorCode.InvalidHeader, null, errmsg);
             }
-            List<PartyId> plst = msgHeader.getUserMessages().get(0).getPartyInfo().getFrom().getPartyIds();
+            List<PartyId> plst =
+                    msgHeader.getUserMessages().get(0).getPartyInfo().getFrom().getPartyIds();
             String senderBox = null;
             for (PartyId p : plst) {
-                if (p.getType() != null && EbMSConstants.EBMS_PARTY_TYPE_EBOX.equals(p.getType())) {
+                if (p.getType() != null &&
+                        EbMSConstants.EBMS_PARTY_TYPE_EBOX.equals(p.getType())) {
                     senderBox = p.getValue();
                     break;
                 }
             }
             if (senderBox == null) {
-                String errmsg = "Missing senderEBox: 'PartyInfo/From/PartyId' for type: '" + EbMSConstants.EBMS_PARTY_TYPE_EBOX + "' value!";
+                String errmsg =
+                        "Missing senderEBox: 'PartyInfo/From/PartyId' for type: '" +
+                        EbMSConstants.EBMS_PARTY_TYPE_EBOX + "' value!";
                 LOG.logError(l, errmsg, null);
                 throw new EBMSError(EBMSErrorCode.InvalidHeader, null, errmsg);
             }
@@ -547,14 +644,19 @@ public class EBMSInInterceptor extends AbstractEBMSInterceptor {
                 // if user message
                 pmd = mPModeManage.getPModeById(pmodeId);
             } catch (PModeException ex) {
-                String errmsg = "Error reading PModes for id: '" + ca.getAgreementRef().getPmode() + "'! Err:" + ex.getMessage();
+                String errmsg = "Error reading PModes for id: '" +
+                        ca.getAgreementRef().getPmode() + "'! Err:" + ex.
+                        getMessage();
                 LOG.logError(l, errmsg, ex);
-                throw new EBMSError(EBMSErrorCode.ProcessingModeMismatch, null, errmsg, ex);
+                throw new EBMSError(EBMSErrorCode.ProcessingModeMismatch, null,
+                        errmsg, ex);
             }
             if (pmd == null) {
-                String errmsg = "PMode with id: '" + ca.getAgreementRef().getPmode() + "' not exist!";
+                String errmsg = "PMode with id: '" +
+                        ca.getAgreementRef().getPmode() + "' not exist!";
                 LOG.logError(l, errmsg, null);
-                throw new EBMSError(EBMSErrorCode.ProcessingModeMismatch, null, errmsg);
+                throw new EBMSError(EBMSErrorCode.ProcessingModeMismatch, null,
+                        errmsg);
             }
             msg.getExchange().put(PMode.class, pmd);
         }
@@ -583,18 +685,23 @@ public class EBMSInInterceptor extends AbstractEBMSInterceptor {
         wssInterceptor.handleMessage(msg);
 
         // check signed elements // todo for attachments
-        if (sc.getX509() != null && sc.getX509().getSignature() != null
-                && sc.getX509().getSignature().getSign() != null
-                && sc.getX509().getSignature().getSign().getElements() != null
-                && sc.getX509().getSignature().getSign().getElements().getXPaths().size() > 0) {
+        if (sc.getX509() != null && sc.getX509().getSignature() != null &&
+                sc.getX509().getSignature().getSign() != null &&
+                sc.getX509().getSignature().getSign().getElements() != null &&
+                sc.getX509().getSignature().getSign().getElements().getXPaths().size() >
+                0) {
             Map<String, String> prefixes = new HashMap<>();
-            List<CryptoCoverageChecker.XPathExpression> xpaths = new ArrayList<>();
+            List<CryptoCoverageChecker.XPathExpression> xpaths =
+                    new ArrayList<>();
             int i = 0;
-            for (References.Elements.XPath el : sc.getX509().getSignature().getSign().getElements().getXPaths()) {
+            for (References.Elements.XPath el
+                    : sc.getX509().getSignature().getSign().getElements().getXPaths()) {
                 for (References.Elements.XPath.Namespace ns : el.getNamespaces()) {
                     prefixes.put(ns.getPrefix(), ns.getNamespace());
                 }
-                xpaths.add(new CryptoCoverageChecker.XPathExpression(el.getXpath(), CryptoCoverageUtil.CoverageType.SIGNED,
+                xpaths.add(new CryptoCoverageChecker.XPathExpression(
+                        el.getXpath(),
+                        CryptoCoverageUtil.CoverageType.SIGNED,
                         CryptoCoverageUtil.CoverageScope.ELEMENT));
 
                 i++;
@@ -611,7 +718,7 @@ public class EBMSInInterceptor extends AbstractEBMSInterceptor {
      */
     @Override
     public void handleFault(SoapMessage message) {
-        super.handleFault(message);        
+        super.handleFault(message);
     }
 
     /**
@@ -636,7 +743,10 @@ public class EBMSInInterceptor extends AbstractEBMSInterceptor {
 
     }
 
-    private void serializeAttachments(MSHInPart p, Collection<Attachment> lstAttch) throws StorageException, IOException, HashException {
+    private void serializeAttachments(MSHInPart p,
+            Collection<Attachment> lstAttch, boolean compressed)
+            throws
+            StorageException, IOException, HashException {
         DataHandler dh = null;
         for (Attachment a : lstAttch) {
             if (a.getId().equals(p.getEbmsId())) {
@@ -647,7 +757,8 @@ public class EBMSInInterceptor extends AbstractEBMSInterceptor {
 
         File fout = null;
         if (dh != null) {
-            fout = msuStorageUtils.storeInFile(p.getMimeType(), dh.getInputStream());
+            fout = msuStorageUtils.storeInFile(p.getMimeType(),
+                    dh.getInputStream());
         }
         // set MD5 and relative path;
         if (fout != null) {
@@ -660,7 +771,8 @@ public class EBMSInInterceptor extends AbstractEBMSInterceptor {
                 p.setFilename(fout.getName());
             }
             if (Utils.isEmptyString(p.getName())) {
-                p.setName(p.getFilename().substring(p.getFilename().lastIndexOf(".")));
+                p.setName(p.getFilename().substring(p.getFilename().lastIndexOf(
+                        ".")));
             }
         }
 

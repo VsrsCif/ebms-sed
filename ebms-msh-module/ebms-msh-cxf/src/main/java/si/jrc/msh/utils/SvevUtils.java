@@ -34,14 +34,17 @@ public class SvevUtils {
      * @param mail
      * @throws MSHException
      */
-    public void vaildateMail(MSHOutMail mail) throws MSHException {
+    public void vaildateMail(MSHOutMail mail)
+            throws MSHException {
         List<String> merrLst = new ArrayList<>();
 
-        if (mail.getConversationId() == null || mail.getConversationId().isEmpty()) {
+        if (mail.getConversationId() == null ||
+                mail.getConversationId().isEmpty()) {
             merrLst.add("Missing mail id!");
         }
 
-        if (mail.getMSHOutPayload() == null || mail.getMSHOutPayload().getMSHOutParts().isEmpty()) {
+        if (mail.getMSHOutPayload() == null ||
+                mail.getMSHOutPayload().getMSHOutParts().isEmpty()) {
             merrLst.add("No content in mail (Attachment is empty)!");
         }
 
@@ -56,16 +59,20 @@ public class SvevUtils {
 //            }
         }
 
-        if (mail.getReceiverEBox() == null || mail.getReceiverEBox().trim().isEmpty()) {
+        if (mail.getReceiverEBox() == null ||
+                mail.getReceiverEBox().trim().isEmpty()) {
             merrLst.add("Missing ReceiverEBox!");
         } else if (!mail.getReceiverEBox().contains("@")) {
-            merrLst.add("Receiver address: '" + mail.getReceiverEBox() + "' is invalid!");
+            merrLst.add("Receiver address: '" + mail.getReceiverEBox() +
+                    "' is invalid!");
         }
 
-        if (mail.getSenderEBox() == null || mail.getSenderEBox().trim().isEmpty()) {
+        if (mail.getSenderEBox() == null ||
+                mail.getSenderEBox().trim().isEmpty()) {
             merrLst.add("Missing SenderEBox!");
         } else if (!mail.getSenderEBox().contains("@")) {
-            merrLst.add("Receiver address: '" + mail.getSenderEBox() + "' is invalid!");
+            merrLst.add("Receiver address: '" + mail.getSenderEBox() +
+                    "' is invalid!");
         }
 
         if (mail.getService() == null || mail.getService().trim().isEmpty()) {
@@ -75,10 +82,12 @@ public class SvevUtils {
             merrLst.add("Missing action!");
         }
 
-        if (mail.getReceiverEBox() == null || mail.getReceiverEBox().trim().isEmpty()) {
+        if (mail.getReceiverEBox() == null ||
+                mail.getReceiverEBox().trim().isEmpty()) {
             merrLst.add("Missing receiver EBox!");
         }
-        if (mail.getSenderEBox() == null || mail.getSenderEBox().trim().isEmpty()) {
+        if (mail.getSenderEBox() == null ||
+                mail.getSenderEBox().trim().isEmpty()) {
             merrLst.add("Missing sender EBox!");
         }
 
@@ -87,7 +96,8 @@ public class SvevUtils {
                 throw new MSHException(MSHExceptionCode.MissingDataInMail, "DeliveryAdvice must have RefToMessageId!");
          }*/
         if (!merrLst.isEmpty()) {
-            throw new MSHException(MSHExceptionCode.InvalidMail, String.join(", ", merrLst));
+            throw new MSHException(MSHExceptionCode.InvalidMail, String.join(
+                    ", ", merrLst));
         }
     }
 
@@ -97,22 +107,25 @@ public class SvevUtils {
      * @return
      * @throws MSHException
      */
-    public PMode getPModeForMail(MSHOutMail mail) throws MSHException {
+    public PMode getPModeForMail(MSHOutMail mail)
+            throws MSHException {
         String pmode = "";
         try {
             PMode pmd;
-            
+
             pmode = Utils.getPModeIdFromOutMail(mail);
             mpmd.reloadPModes();
             // check if exists targeted MSHOut with legal-delivery service
             pmd = mpmd.getPModeById(pmode);
-            
+
             if (pmd == null) {
                 throw new MSHException(MSHExceptionCode.InvalidPModeId, pmode);
             }
             return pmd;
         } catch (PModeException ex) {
-            String errmsg = "Error reading PModes for id: '" +pmode+ "'! Err:" + ex.getMessage();
+            String errmsg =
+                    "Error reading PModes for id: '" + pmode + "'! Err:" +
+                    ex.getMessage();
             throw new MSHException(MSHExceptionCode.InvalidPMode, ex, errmsg);
         }
     }

@@ -23,7 +23,8 @@ public interface TaskExecutionInterface {
      * @return
      * @throws TaskException
      */
-    String executeTask(Properties p) throws TaskException;
+    String executeTask(Properties p)
+            throws TaskException;
     //String getType();
     //String getName();
     //String getDesc();

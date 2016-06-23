@@ -80,7 +80,6 @@ public class ZPPTask implements TaskExecutionInterface {
     SEDLookupsInterface msedLookup;
 
     // TODO externalize
-
     /**
      *
      * @param p
@@ -88,7 +87,8 @@ public class ZPPTask implements TaskExecutionInterface {
      * @throws TaskException
      */
     @Override
-    public String executeTask(Properties p) throws TaskException {
+    public String executeTask(Properties p)
+            throws TaskException {
 
         long l = LOG.logStart();
         StringWriter sw = new StringWriter();
@@ -96,14 +96,18 @@ public class ZPPTask implements TaskExecutionInterface {
 
         String singDAAlias = "";
         if (!p.containsKey(SIGN_ALIAS)) {
-            throw new TaskException(TaskException.TaskExceptionCode.InitException, "Missing parameter:  '" + SIGN_ALIAS + "'!");
+            throw new TaskException(
+                    TaskException.TaskExceptionCode.InitException,
+                    "Missing parameter:  '" + SIGN_ALIAS + "'!");
         } else {
             singDAAlias = p.getProperty(SIGN_ALIAS);
         }
 
         String sedBox = "";
         if (!p.containsKey(REC_SEDBOX)) {
-            throw new TaskException(TaskException.TaskExceptionCode.InitException, "Missing parameter:  '" + REC_SEDBOX + "'!");
+            throw new TaskException(
+                    TaskException.TaskExceptionCode.InitException,
+                    "Missing parameter:  '" + REC_SEDBOX + "'!");
         } else {
             sedBox = p.getProperty(REC_SEDBOX);
         }
@@ -112,14 +116,16 @@ public class ZPPTask implements TaskExecutionInterface {
         mi.setStatus(SEDInboxMailStatus.PLUGINLOCKED.getValue());
         mi.setReceiverEBox(sedBox);
 
-        List<MSHInMail> lst = mDB.getDataList(MSHInMail.class, -1, -1, "Id", "ASC", mi);
+        List<MSHInMail> lst = mDB.getDataList(MSHInMail.class, -1, -1, "Id",
+                "ASC", mi);
         sw.append("got " + lst.size() + " mails for sedbox: '" + sedBox + "'!");
         for (MSHInMail m : lst) {
             try {
                 processInZPPDelivery(m, singDAAlias);
             } catch (FOPException | HashException ex) {
                 LOG.logError(l, ex);
-                sw.append("Error occurred processing: " + m.getId() + " err: " + ex.getMessage());
+                sw.append("Error occurred processing: " + m.getId() + " err: " +
+                        ex.getMessage());
             }
         }
 
@@ -137,13 +143,17 @@ public class ZPPTask implements TaskExecutionInterface {
         tt.setType("zpp-plugin");
         tt.setName("ZPP plugin");
         tt.setDescription("Sign deliveryadvice for incomming mail");
-        tt.getSEDTaskTypeProperties().add(createTTProperty(REC_SEDBOX, "Receiver sedbox."));
-        tt.getSEDTaskTypeProperties().add(createTTProperty(SIGN_ALIAS, "Signature key alias."));
+        tt.getSEDTaskTypeProperties().add(createTTProperty(REC_SEDBOX,
+                "Receiver sedbox."));
+        tt.getSEDTaskTypeProperties().add(createTTProperty(SIGN_ALIAS,
+                "Signature key alias."));
 
         return tt;
     }
 
-    private SEDTaskTypeProperty createTTProperty(String key, String desc, boolean mandatory, String type, String valFormat, String valList) {
+    private SEDTaskTypeProperty createTTProperty(String key, String desc,
+            boolean mandatory, String type,
+            String valFormat, String valList) {
         SEDTaskTypeProperty ttp = new SEDTaskTypeProperty();
         ttp.setKey(key);
         ttp.setDescription(desc);
@@ -165,7 +175,8 @@ public class ZPPTask implements TaskExecutionInterface {
      * @throws FOPException
      * @throws HashException
      */
-    public void processInZPPDelivery(MSHInMail mInMail, String singDAAlias) throws FOPException, HashException {
+    public void processInZPPDelivery(MSHInMail mInMail, String singDAAlias)
+            throws FOPException, HashException {
         long l = LOG.logStart();
         // create delivery advice 
         File fDNViz = null;
@@ -174,10 +185,13 @@ public class ZPPTask implements TaskExecutionInterface {
             fDNViz = StorageUtils.getNewStorageFile("pdf", "AdviceOfDelivery");
             fDA = new File(fDNViz.getAbsoluteFile() + ".xml"); // create deliveryadvice
         } catch (StorageException ex) {
-            Logger.getLogger(ZPPInInterceptor.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ZPPInInterceptor.class.getName()).log(Level.SEVERE,
+                    null, ex);
         }
 
-        getFOP().generateVisualization(mInMail, fDNViz, FOPUtils.FopTransformations.AdviceOfDelivery, MimeConstants.MIME_PDF);
+        getFOP().generateVisualization(mInMail, fDNViz,
+                FOPUtils.FopTransformations.AdviceOfDelivery,
+                MimeConstants.MIME_PDF);
         MSHOutMail mout = new MSHOutMail();
         mout.setMessageId(Utils.getInstance().getGuidString());
         mout.setService(ZPPConstants.S_ZPP_SERVICE);
@@ -205,23 +219,27 @@ public class ZPPTask implements TaskExecutionInterface {
 
         try (FileOutputStream fos = new FileOutputStream(fDA)) {
 
-            SEDCertStore cs = msedLookup.getSEDCertStoreByCertAlias(singDAAlias, true);
+            SEDCertStore cs = msedLookup.getSEDCertStoreByCertAlias(singDAAlias,
+                    true);
 
             // create signed delivery advice
-            dsbSodBuilder.createMail(mout, fos, mkeyUtils.getPrivateKeyEntryForAlias(singDAAlias, cs));
+            dsbSodBuilder.createMail(mout, fos,
+                    mkeyUtils.getPrivateKeyEntryForAlias(singDAAlias, cs));
             mp.setDescription("DeliveryAdvice");
 
             mp.setFilepath(StorageUtils.getRelativePath(fDA));
             mp.setMd5(mpHU.getMD5Hash(fDA));
             mp.setFilename(fDA.getName());
-            mp.setName(mp.getFilename().substring(mp.getFilename().lastIndexOf(".")));
+            mp.setName(mp.getFilename().substring(mp.getFilename().lastIndexOf(
+                    ".")));
 
             mDB.serializeOutMail(mout, "", "ZPPDeliveryPlugin", "");
 
             mInMail.setStatus(SEDInboxMailStatus.PROCESS.getValue());
             mInMail.setStatusDate(Calendar.getInstance().getTime());
 //           
-            mDB.updateInMail(mInMail, "DeliveryAdviceGenerated and submited to sender", null);
+            mDB.updateInMail(mInMail,
+                    "DeliveryAdviceGenerated and submited to sender", null);
 
         } catch (IOException | SEDSecurityException | StorageException ex) {
             LOG.logError(l, ex);
@@ -236,11 +254,15 @@ public class ZPPTask implements TaskExecutionInterface {
      */
     public FOPUtils getFOP() {
         if (mfpFop == null) {
-            File fconf = new File(System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR) + File.separator
-                    + ZPPConstants.SVEV_FOLDER + File.separator + ZPPConstants.FOP_CONFIG_FILENAME);
+            File fconf = new File(System.getProperty(
+                    SEDSystemProperties.SYS_PROP_HOME_DIR) + File.separator +
+                    ZPPConstants.SVEV_FOLDER + File.separator +
+                    ZPPConstants.FOP_CONFIG_FILENAME);
 
-            mfpFop = new FOPUtils(fconf, System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR) + File.separator
-                    + ZPPConstants.SVEV_FOLDER + File.separator + ZPPConstants.XSLT_FOLDER);
+            mfpFop = new FOPUtils(fconf, System.getProperty(
+                    SEDSystemProperties.SYS_PROP_HOME_DIR) + File.separator +
+                    ZPPConstants.SVEV_FOLDER + File.separator +
+                    ZPPConstants.XSLT_FOLDER);
         }
         return mfpFop;
     }

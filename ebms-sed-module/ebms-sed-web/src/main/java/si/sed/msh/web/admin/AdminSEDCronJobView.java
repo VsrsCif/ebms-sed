@@ -44,7 +44,8 @@ import si.sed.msh.web.abst.AbstractAdminJSFView;
 @ManagedBean(name = "adminSEDCronJobView")
 public class AdminSEDCronJobView extends AbstractAdminJSFView<SEDCronJob> {
 
-    private static final SEDLogger LOG = new SEDLogger(AdminSEDCronJobView.class);
+    private static final SEDLogger LOG =
+            new SEDLogger(AdminSEDCronJobView.class);
 
     @EJB(mappedName = SEDJNDI.JNDI_SEDLOOKUPS)
     private SEDLookupsInterface mdbLookups;
@@ -88,13 +89,11 @@ public class AdminSEDCronJobView extends AbstractAdminJSFView<SEDCronJob> {
         pp.setValue(val);
 
     }*/
-
     /**
      *
      * @param id
      * @return
      */
-
     public SEDCronJob getMSHCronJobByName(BigInteger id) {
         return mdbLookups.getSEDCronJobById(id);
     }
@@ -114,15 +113,14 @@ public class AdminSEDCronJobView extends AbstractAdminJSFView<SEDCronJob> {
         ecj.setDayOfWeek("*");
 
         SEDTask tsk = new SEDTask();
-        List<SEDTaskType> stkst =  mdbLookups.getSEDTaskTypes();
+        List<SEDTaskType> stkst = mdbLookups.getSEDTaskTypes();
         String firstTask = null;
-        if (stkst.size()>0){
+        if (stkst.size() > 0) {
             firstTask = stkst.get(0).getType();
         }
-        
+
         ecj.setSEDTask(tsk);
-        
-        
+
         setNew(ecj);
         setEditableTask(firstTask);
 
@@ -230,9 +228,9 @@ public class AdminSEDCronJobView extends AbstractAdminJSFView<SEDCronJob> {
 
         SEDCronJob scj = getEditable();
         if (scj != null) {
-            if (scj.getSEDTask() == null
-                    || scj.getSEDTask().getTaskType() == null
-                    || !scj.getSEDTask().getTaskType().equals(task)) {
+            if (scj.getSEDTask() == null ||
+                    scj.getSEDTask().getTaskType() == null ||
+                    !scj.getSEDTask().getTaskType().equals(task)) {
                 SEDTaskType sdt = mdbLookups.getSEDTaskTypeByType(task);
                 if (sdt != null) {
                     SEDTask tsk = new SEDTask();
@@ -290,7 +288,8 @@ public class AdminSEDCronJobView extends AbstractAdminJSFView<SEDCronJob> {
             return;
         }
         if (getEditable().getSEDTask() != null) {
-            for (SEDTaskProperty mp : getEditable().getSEDTask().getSEDTaskProperties()) {
+            for (SEDTaskProperty mp
+                    : getEditable().getSEDTask().getSEDTaskProperties()) {
                 if (mp.getKey().equalsIgnoreCase(key)) {
                     mp.setValue(bVal ? "true" : "false");
                     break;
@@ -310,9 +309,11 @@ public class AdminSEDCronJobView extends AbstractAdminJSFView<SEDCronJob> {
             return false;
         }
         if (getEditable().getSEDTask() != null) {
-            for (SEDTaskProperty mp : getEditable().getSEDTask().getSEDTaskProperties()) {
+            for (SEDTaskProperty mp
+                    : getEditable().getSEDTask().getSEDTaskProperties()) {
                 if (mp.getKey().equalsIgnoreCase(key)) {
-                    return mp.getValue() != null && mp.getValue().trim().equalsIgnoreCase("true");
+                    return mp.getValue() != null &&
+                            mp.getValue().trim().equalsIgnoreCase("true");
                 }
             }
         }

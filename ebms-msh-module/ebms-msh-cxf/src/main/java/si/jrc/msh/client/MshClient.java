@@ -68,12 +68,13 @@ import si.sed.commons.utils.sec.KeystoreUtils;
  */
 public class MshClient {
 
-    private static KeyManager[] getKeyManagers(KeyStore keyStore, String keyPassword)
+    private static KeyManager[] getKeyManagers(KeyStore keyStore,
+            String keyPassword)
             throws GeneralSecurityException, IOException {
         String alg = KeyManagerFactory.getDefaultAlgorithm();
-        char[] keyPass = keyPassword != null
-                ? keyPassword.toCharArray()
-                : null;
+        char[] keyPass = keyPassword != null ?
+                keyPassword.toCharArray() :
+                null;
         KeyManagerFactory fac = KeyManagerFactory.getInstance(alg);
         fac.init(keyStore, keyPass);
         return fac.getKeyManagers();
@@ -100,12 +101,15 @@ public class MshClient {
      * @return
      * @throws MSHException
      */
-    public Dispatch<SOAPMessage> getClient(PMode pmode) throws MSHException {
+    public Dispatch<SOAPMessage> getClient(PMode pmode)
+            throws MSHException {
 
-        if (pmode.getLegs().isEmpty() || pmode.getLegs().get(0).getProtocol() == null
-                || pmode.getLegs().get(0).getProtocol().getAddress() == null
-                || pmode.getLegs().get(0).getProtocol().getAddress().getValue().trim().isEmpty()) {
-            throw new MSHException(MSHExceptionCode.InvalidPMode, pmode.getId(), "Missing Protocol/Address value");
+        if (pmode.getLegs().isEmpty() || pmode.getLegs().get(0).getProtocol() ==
+                null ||
+                pmode.getLegs().get(0).getProtocol().getAddress() == null ||
+                pmode.getLegs().get(0).getProtocol().getAddress().getValue().trim().isEmpty()) {
+            throw new MSHException(MSHExceptionCode.InvalidPMode, pmode.getId(),
+                    "Missing Protocol/Address value");
         }
         Protocol prt = pmode.getLegs().get(0).getProtocol();
         // get sending leg!
@@ -119,7 +123,8 @@ public class MshClient {
         // AddressingFeature addrFt = new AddressingFeature(true, true);
         MTOMFeature mtomFt = new MTOMFeature(true);
 
-        Dispatch<SOAPMessage> dispSOAPMsg = s.createDispatch(portName1, SOAPMessage.class, Service.Mode.MESSAGE, mtomFt);
+        Dispatch<SOAPMessage> dispSOAPMsg = s.createDispatch(portName1,
+                SOAPMessage.class, Service.Mode.MESSAGE, mtomFt);
         DispatchImpl dimpl = (org.apache.cxf.jaxws.DispatchImpl) dispSOAPMsg;
         SOAPBinding sb = (SOAPBinding) dispSOAPMsg.getBinding();
         sb.setMTOMEnabled(true);
@@ -142,22 +147,31 @@ public class MshClient {
             cxfClient.getOutInterceptors().add(new EBMSOutInterceptor());
             cxfClient.getOutInterceptors().add(new EBMSLogOutInterceptor());
             if (prt.getTLS() != null) {
-                mlog.log("Dispatching mail using pmode: " + pmode.getId() + " Set TLS");
+                mlog.log("Dispatching mail using pmode: " + pmode.getId() +
+                        " Set TLS");
                 setupTLS(cxfClient, prt.getTLS());
             }
 
             HTTPClientPolicy httpClientPolicy = new HTTPClientPolicy();
-            mlog.log("Create client with params: chuking: '" + prt.getAddress().getChunked()
-                    + "'  conTimeOut: '" + prt.getAddress().getConnectionTimeout() + "'"
-                    + "'  recTimeOut: '" + prt.getAddress().getReceiveTimeout() + "'");
-            httpClientPolicy.setConnectionTimeout(prt.getAddress().getConnectionTimeout());
-            httpClientPolicy.setReceiveTimeout(prt.getAddress().getReceiveTimeout());
+            mlog.log("Create client with params: chuking: '" +
+                    prt.getAddress().getChunked() +
+                    "'  conTimeOut: '" + prt.getAddress().getConnectionTimeout() +
+                    "'" +
+                    "'  recTimeOut: '" + prt.getAddress().getReceiveTimeout() +
+                    "'");
+            httpClientPolicy.setConnectionTimeout(
+                    prt.getAddress().getConnectionTimeout());
+            httpClientPolicy.setReceiveTimeout(
+                    prt.getAddress().getReceiveTimeout());
             httpClientPolicy.setAllowChunking(prt.getAddress().getChunked());
             httpClientPolicy.setChunkingThreshold(4096);
             httpClientPolicy.setChunkLength(-1);
 
             if (prt.getProxy() != null) {
-                mlog.log("Dispatching mail using pmode: " + pmode.getId() + " Set proxy: " + prt.getProxy().getHost() + ":" + prt.getProxy().getPort());
+                mlog.log(
+                        "Dispatching mail using pmode: " + pmode.getId() +
+                        " Set proxy: " + prt.getProxy().getHost() + ":" + prt.
+                        getProxy().getPort());
                 httpClientPolicy.setProxyServer(prt.getProxy().getHost());
                 httpClientPolicy.setProxyServerPort(prt.getProxy().getPort());
                 httpClientPolicy.setProxyServerType(ProxyServerType.HTTP);
@@ -168,9 +182,11 @@ public class MshClient {
 
             //cxfClient.getOutInterceptors().add(new LoggingOutInterceptor());
         } catch (SEDSecurityException ex) {
-            throw new MSHException(MSHExceptionCode.InvalidPMode, pmode.getId(), ex.getMessage());
+            throw new MSHException(MSHExceptionCode.InvalidPMode, pmode.getId(),
+                    ex.getMessage());
         } catch (IOException th) {
-            throw new MSHException(MSHExceptionCode.InvalidPMode, pmode.getId(), th.getMessage());
+            throw new MSHException(MSHExceptionCode.InvalidPMode, pmode.getId(),
+                    th.getMessage());
         }
 
         return dispSOAPMsg;
@@ -200,7 +216,8 @@ public class MshClient {
      * @param pmode
      * @throws MSHException
      */
-    public void sendMessage(MSHOutMail mail, PMode pmode) throws MSHException {
+    public void sendMessage(MSHOutMail mail, PMode pmode)
+            throws MSHException {
 
         long l = mlog.logStart(mail);
 
@@ -243,9 +260,11 @@ public class MshClient {
 
         TLSClientParameters tlsCP = null;
 
-        if (tls.getClientKeyAlias() != null && !tls.getClientKeyAlias().trim().isEmpty()) {
+        if (tls.getClientKeyAlias() != null &&
+                !tls.getClientKeyAlias().trim().isEmpty()) {
             String keyAlias = tls.getClientKeyAlias().trim();
-            SEDCertStore scsKey = getLookups().getSEDCertStoreByCertAlias(keyAlias, true);
+            SEDCertStore scsKey = getLookups().getSEDCertStoreByCertAlias(
+                    keyAlias, true);
             SEDCertificate aliasKey = null;
             if (scsKey != null) {
                 for (SEDCertificate crt : scsKey.getSEDCertificates()) {
@@ -258,7 +277,9 @@ public class MshClient {
             if (scsKey == null || aliasKey == null) {
                 String msg = "Key for alias: '" + keyAlias + "' do not exists!";
                 mlog.logError(l, msg, null);
-                throw new SEDSecurityException(SEDSecurityException.SEDSecurityExceptionCode.KeyForAliasNotExists, keyAlias);
+                throw new SEDSecurityException(
+                        SEDSecurityException.SEDSecurityExceptionCode.KeyForAliasNotExists,
+                        keyAlias);
             }
 
             tlsCP = tlsCP == null ? new TLSClientParameters() : tlsCP;
@@ -267,27 +288,39 @@ public class MshClient {
             try {
                 myKeyManagers = getKeyManagers(keyStore, scsKey.getPassword());
             } catch (GeneralSecurityException ex) {
-                String msg = "Error retrieving client Key for alias: '" + keyAlias + "'! Check alias/password in store!" + scsKey.getFilePath();
+                String msg = "Error retrieving client Key for alias: '" +
+                        keyAlias + "'! Check alias/password in store!" + scsKey.
+                        getFilePath();
                 mlog.logError(l, msg, ex);
-                throw new SEDSecurityException(SEDSecurityException.SEDSecurityExceptionCode.KeyStoreException, ex, msg);
+                throw new SEDSecurityException(
+                        SEDSecurityException.SEDSecurityExceptionCode.KeyStoreException,
+                        ex, msg);
             }
             tlsCP.setKeyManagers(myKeyManagers);
         }
 
-        if (tls.getTrustCertAlias() != null && !tls.getTrustCertAlias().trim().isEmpty()) {
+        if (tls.getTrustCertAlias() != null &&
+                !tls.getTrustCertAlias().trim().isEmpty()) {
             String trustAlias = tls.getTrustCertAlias().trim();
             mlog.log("\t Set truststore:" + trustAlias);
             tlsCP = tlsCP == null ? new TLSClientParameters() : tlsCP;
-            SEDCertStore scs = getLookups().getSEDCertStoreByCertAlias(trustAlias, false);
+            SEDCertStore scs = getLookups().getSEDCertStoreByCertAlias(
+                    trustAlias, false);
 
             KeyStore trustStore = KeystoreUtils.getKeystore(scs);
             TrustManager[] myTrustStoreKeyManagers;
             try {
                 myTrustStoreKeyManagers = getTrustManagers(trustStore);
             } catch (NoSuchAlgorithmException | KeyStoreException ex) {
-                String msg = "Error retrieving trust cert for alias: '" + trustAlias + "'! Check alias or  store password for:!" + scs.getFilePath();
+                String msg = "Error retrieving trust cert for alias: '" +
+                        trustAlias + "'! Check alias or  store password for:!" +
+                        scs.
+                        getFilePath();
                 mlog.logError(l, msg, null);
-                throw new SEDSecurityException(SEDSecurityException.SEDSecurityExceptionCode.CertificateException, ex, msg);
+                throw new SEDSecurityException(
+                        SEDSecurityException.SEDSecurityExceptionCode.CertificateException,
+                        ex,
+                        msg);
             }
             tlsCP.setTrustManagers(myTrustStoreKeyManagers);
 

@@ -6,7 +6,10 @@
 package si.sed.commons.utils.abst;
 
 import java.io.File;
-import java.util.Collections;
+import static java.io.File.separator;
+import static java.lang.System.getProperties;
+import static java.lang.System.getProperty;
+import static java.util.Collections.enumeration;
 import java.util.Enumeration;
 import java.util.Properties;
 import java.util.TreeSet;
@@ -26,7 +29,7 @@ public abstract class ASettings {
         return new Properties() {
             @Override
             public synchronized Enumeration<Object> keys() {
-                return Collections.enumeration(new TreeSet<Object>(super.keySet()));
+                return enumeration(new TreeSet<Object>(super.keySet()));
             }
         };
     }
@@ -75,8 +78,8 @@ public abstract class ASettings {
      */
     public String getData(String strKey, String defVal) {
         // check if system property exists
-        if (System.getProperties().containsKey(strKey)) {
-            return System.getProperty(strKey);
+        if (getProperties().containsKey(strKey)) {
+            return getProperty(strKey);
         }
         init();
         // check if properties
@@ -93,12 +96,15 @@ public abstract class ASettings {
      * @param strFileName
      * @return
      */
-    public File getFile(String strPropName, String strDefProfValue, String strFileName) {
-        File f = new File(System.getProperty(strPropName, getData(strPropName, strDefProfValue)));
+    public File getFile(String strPropName, String strDefProfValue,
+            String strFileName) {
+        File f = new File(getProperty(strPropName, getData(strPropName,
+                strDefProfValue)));
         if (!f.exists()) {
             f.mkdirs();
         }
-        return new File((f.getAbsolutePath().endsWith(File.separator) ? f.getPath() : f.getPath() + File.separator) + strFileName);
+        return new File((f.getAbsolutePath().endsWith(separator) ? f.getPath() :
+                f.getPath() + separator) + strFileName);
     }
 
     /**
@@ -108,7 +114,7 @@ public abstract class ASettings {
      * @return
      */
     public File getFolder(String prop, String defVal) {
-        File f = new File(System.getProperty(prop, getData(prop, defVal)));
+        File f = new File(getProperty(prop, getData(prop, defVal)));
         if (!f.exists()) {
             f.mkdirs();
         }
@@ -148,7 +154,8 @@ public abstract class ASettings {
      * @param value
      * @param group
      */
-    protected abstract void replaceProperty(String key, String value, String group);
+    protected abstract void replaceProperty(String key, String value,
+            String group);
 
     /**
      *
@@ -178,7 +185,8 @@ public abstract class ASettings {
             if (strValue == null) {
                 mprpProperties.remove(strValue);
                 removeProperty(strValue);
-            } else if (mprpProperties.get(strKey) != null || !mprpProperties.get(strKey).equals(strValue)) {
+            } else if (mprpProperties.get(strKey) != null ||
+                    !mprpProperties.get(strKey).equals(strValue)) {
                 mprpProperties.setProperty(strKey, strValue);
                 replaceProperty(strKey, strValue, group);
             }

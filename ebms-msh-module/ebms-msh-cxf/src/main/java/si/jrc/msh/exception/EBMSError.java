@@ -46,7 +46,8 @@ public class EBMSError extends Exception {
      * @param message
      * @param cause
      */
-    public EBMSError(EBMSErrorCode ec, String refToMsg, String message, Throwable cause) {
+    public EBMSError(EBMSErrorCode ec, String refToMsg, String message,
+            Throwable cause) {
         super(ec.getName(), cause);
         ebmsErrorCode = ec;
         refToMessage = refToMsg;

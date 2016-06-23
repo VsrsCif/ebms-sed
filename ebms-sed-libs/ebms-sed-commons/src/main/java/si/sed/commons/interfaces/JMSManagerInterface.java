@@ -27,7 +27,10 @@ public interface JMSManagerInterface {
      * @throws NamingException
      * @throws JMSException
      */
-    boolean sendMessage(long biPosiljkaId, String strPmodeId, int retry, long delay, boolean transacted) throws NamingException, JMSException;
+    boolean sendMessage(long biPosiljkaId, String strPmodeId, int retry,
+            long delay, boolean transacted)
+            throws
+            NamingException, JMSException;
 
     /**
      *
@@ -38,5 +41,8 @@ public interface JMSManagerInterface {
      * @throws NamingException
      * @throws JMSException
      */
-    boolean executeProcessOnInMail(long biInMailId, String command, String parameters) throws NamingException, JMSException;
+    boolean executeProcessOnInMail(long biInMailId, String command,
+            String parameters)
+            throws NamingException,
+            JMSException;
 }

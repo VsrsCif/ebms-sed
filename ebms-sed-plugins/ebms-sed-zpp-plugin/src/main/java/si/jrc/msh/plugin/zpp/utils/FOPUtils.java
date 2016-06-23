@@ -57,7 +57,6 @@ public class FOPUtils {
             ex.printStackTrace();
         }
      */
-
     /**
      *
      * @param outMail
@@ -66,13 +65,15 @@ public class FOPUtils {
      * @param mime
      * @throws FOPException
      */
-
-    public void generateVisualization(Object outMail, File f, FopTransformations xslt, String mime) throws FOPException {
+    public void generateVisualization(Object outMail, File f,
+            FopTransformations xslt, String mime)
+            throws FOPException {
 
         File fxslt = getTransformatinoFile(xslt);
         try (FileOutputStream fos = new FileOutputStream(f)) {
             StreamSource ssXslt = new StreamSource(fxslt);
-            JAXBSource source = new JAXBSource(JAXBContext.newInstance(outMail.getClass()), outMail);
+            JAXBSource source = new JAXBSource(JAXBContext.newInstance(
+                    outMail.getClass()), outMail);
 
             generateVisualization(source, fos, ssXslt, mime);
 
@@ -90,7 +91,9 @@ public class FOPUtils {
      * @param mime
      * @throws FOPException
      */
-    public void generateVisualization(Source src, OutputStream out, Source xslt, String mime) throws FOPException {
+    public void generateVisualization(Source src, OutputStream out, Source xslt,
+            String mime)
+            throws FOPException {
 
         try {
             Fop fop = getFopFactory().newFop(mime, out);
@@ -120,7 +123,9 @@ public class FOPUtils {
      * @param xslt
      * @throws FOPException
      */
-    public void generateVisualizationToHtml(Source src, OutputStream out, Source xslt) throws FOPException {
+    public void generateVisualizationToHtml(Source src, OutputStream out,
+            Source xslt)
+            throws FOPException {
 
         try {
 
@@ -141,7 +146,8 @@ public class FOPUtils {
         }
     }
 
-    private FopFactory getFopFactory() throws SAXException, IOException {
+    private FopFactory getFopFactory()
+            throws SAXException, IOException {
         if (mfopFactorory == null) {
             mfopFactorory = FopFactory.newInstance(msfConfigFile);
         }

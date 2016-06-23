@@ -38,7 +38,8 @@ import si.sed.msh.web.abst.AbstractAdminJSFView;
 @ManagedBean(name = "adminSEDTaskTypeView")
 public class AdminSEDTaskTypeView extends AbstractAdminJSFView<SEDTaskType> {
 
-    private static final SEDLogger LOG = new SEDLogger(AdminSEDTaskTypeView.class);
+    private static final SEDLogger LOG = new SEDLogger(
+            AdminSEDTaskTypeView.class);
 
     @EJB(mappedName = SEDJNDI.JNDI_SEDLOOKUPS)
     private SEDLookupsInterface mdbLookups;
@@ -57,7 +58,8 @@ public class AdminSEDTaskTypeView extends AbstractAdminJSFView<SEDTaskType> {
         while (mdbLookups.getSEDTaskTypeByType(String.format(type, i)) != null) {
             i++;
         }
-        ecj.setJndi("java:global[/application name]/module name/enterprise bean name[/interface name]");
+        ecj.setJndi(
+                "java:global[/application name]/module name/enterprise bean name[/interface name]");
         ecj.setType(String.format(type, i));
         ecj.setName("");
         ecj.setDescription("Enter JNDI and refresh data from EJB task!");
@@ -69,22 +71,25 @@ public class AdminSEDTaskTypeView extends AbstractAdminJSFView<SEDTaskType> {
      *
      */
     public void refreshDataFromEJB() {
-        if (getEditable() == null || getEditable().getJndi() == null || getEditable().getJndi().isEmpty()) {
+        if (getEditable() == null || getEditable().getJndi() == null ||
+                getEditable().getJndi().isEmpty()) {
             return;
         }
 
         try {
-            TaskExecutionInterface tproc = InitialContext.doLookup(getEditable().getJndi());
-            getEditable().setDescription(tproc.getTaskDefinition().getDescription());
+            TaskExecutionInterface tproc = InitialContext.doLookup(
+                    getEditable().getJndi());
+            getEditable().setDescription(
+                    tproc.getTaskDefinition().getDescription());
             getEditable().setName(tproc.getTaskDefinition().getName());
             getEditable().setType(tproc.getTaskDefinition().getType());
             getEditable().getSEDTaskTypeProperties().clear();
             if (!tproc.getTaskDefinition().getSEDTaskTypeProperties().isEmpty()) {
-                getEditable().getSEDTaskTypeProperties().addAll(tproc.getTaskDefinition().getSEDTaskTypeProperties());
+                getEditable().getSEDTaskTypeProperties().addAll(
+                        tproc.getTaskDefinition().getSEDTaskTypeProperties());
             }
         } catch (NamingException ex) {
 
-            return;
         }
 
     }
@@ -142,7 +147,8 @@ public class AdminSEDTaskTypeView extends AbstractAdminJSFView<SEDTaskType> {
      * @param mandatory
      * @return
      */
-    public SEDTaskTypeProperty createTypeProperty(String key, String name, boolean mandatory) {
+    public SEDTaskTypeProperty createTypeProperty(String key, String name,
+            boolean mandatory) {
         SEDTaskTypeProperty sp = new SEDTaskTypeProperty();
         sp.setKey(key);
         sp.setDescription(name);
@@ -169,7 +175,8 @@ public class AdminSEDTaskTypeView extends AbstractAdminJSFView<SEDTaskType> {
      */
     public void removeSelectedTypeProperty() {
         if (getEditable() != null && getSelectedTaskProperty() != null) {
-            getEditable().getSEDTaskTypeProperties().remove(getSelectedTaskProperty());
+            getEditable().getSEDTaskTypeProperties().remove(
+                    getSelectedTaskProperty());
         }
     }
 

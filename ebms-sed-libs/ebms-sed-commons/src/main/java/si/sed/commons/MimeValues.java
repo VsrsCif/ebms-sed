@@ -547,7 +547,8 @@ public enum MimeValues {
     /**
      *
      */
-    MIME_DOCX("docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"),
+    MIME_DOCX("docx",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document"),
 
     /**
      *
@@ -562,7 +563,8 @@ public enum MimeValues {
     /**
      *
      */
-    MIME_DOTX("dotx", "application/vnd.openxmlformats-officedocument.wordprocessingml.template"),
+    MIME_DOTX("dotx",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.template"),
 
     /**
      *
@@ -1702,7 +1704,8 @@ public enum MimeValues {
     /**
      *
      */
-    MIME_POTX("potx", "application/vnd.openxmlformats-officedocument.presentationml.template"),
+    MIME_POTX("potx",
+            "application/vnd.openxmlformats-officedocument.presentationml.template"),
 
     /**
      *
@@ -1727,7 +1730,8 @@ public enum MimeValues {
     /**
      *
      */
-    MIME_PPSX("ppsx", "application/vnd.openxmlformats-officedocument.presentationml.slideshow"),
+    MIME_PPSX("ppsx",
+            "application/vnd.openxmlformats-officedocument.presentationml.slideshow"),
 
     /**
      *
@@ -1737,12 +1741,14 @@ public enum MimeValues {
     /**
      *
      */
-    MIME_PPTM("pptm", "application/vnd.ms-powerpoint.presentation.macroEnabled.12"),
+    MIME_PPTM("pptm",
+            "application/vnd.ms-powerpoint.presentation.macroEnabled.12"),
 
     /**
      *
      */
-    MIME_PPTX("pptx", "application/vnd.openxmlformats-officedocument.presentationml.presentation"),
+    MIME_PPTX("pptx",
+            "application/vnd.openxmlformats-officedocument.presentationml.presentation"),
 
     /**
      *
@@ -2087,7 +2093,8 @@ public enum MimeValues {
     /**
      *
      */
-    MIME_SLDX("sldx", "application/vnd.openxmlformats-officedocument.presentationml.slide"),
+    MIME_SLDX("sldx",
+            "application/vnd.openxmlformats-officedocument.presentationml.slide"),
 
     /**
      *
@@ -2607,7 +2614,8 @@ public enum MimeValues {
     /**
      *
      */
-    MIME_XLSX("xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"),
+    MIME_XLSX("xlsx",
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"),
 
     /**
      *
@@ -2622,7 +2630,8 @@ public enum MimeValues {
     /**
      *
      */
-    MIME_XLTX("xltx", "application/vnd.openxmlformats-officedocument.spreadsheetml.template"),
+    MIME_XLTX("xltx",
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.template"),
 
     /**
      *
@@ -2745,7 +2754,8 @@ public enum MimeValues {
      * @return
      */
     public static String getMimeTypeByFileName(String strFileName) {
-        return getMimeTypeBySuffix(strFileName.substring(strFileName.lastIndexOf('.') + 1));
+        return getMimeTypeBySuffix(strFileName.substring(
+                strFileName.lastIndexOf('.') + 1));
     }
 
     /**

@@ -100,11 +100,13 @@ public class LoginManager {
 
     private String extractRequestedUrlBeforeLogin() {
         ExternalContext externalContext = externalContext();
-        String requestedUrl = (String) externalContext.getRequestMap().get(RequestDispatcher.FORWARD_REQUEST_URI);
+        String requestedUrl = (String) externalContext.getRequestMap().get(
+                RequestDispatcher.FORWARD_REQUEST_URI);
         if (requestedUrl == null) {
             return externalContext.getRequestContextPath() + HOME_PAGE;
         }
-        String queryString = (String) externalContext.getRequestMap().get(RequestDispatcher.FORWARD_QUERY_STRING);
+        String queryString = (String) externalContext.getRequestMap().get(
+                RequestDispatcher.FORWARD_QUERY_STRING);
         return requestedUrl + (queryString == null ? "" : "?" + queryString);
     }
 
@@ -121,10 +123,12 @@ public class LoginManager {
      *
      * @throws IOException from {@link ExternalContext#redirect(String)}
      */
-    public void login() throws IOException {
+    public void login()
+            throws IOException {
         long l = mLog.logStart(getClientIP());
         ExternalContext externalContext = externalContext();
-        HttpServletRequest request = (HttpServletRequest) externalContext.getRequest();
+        HttpServletRequest request =
+                (HttpServletRequest) externalContext.getRequest();
 
         if (getUsername() == null || getUsername().trim().isEmpty()) {
             String msg = "Username must not be null or empty!";
@@ -146,7 +150,8 @@ public class LoginManager {
 
             SEDUser user = mSedLookup.getSEDUserByUserId(userName);
             if (user == null) {
-                String msg = "User '" + userName + "' is not reqistred in ebms-sed";
+                String msg = "User '" + userName +
+                        "' is not reqistred in ebms-sed";
                 mLog.logWarn(l, getClientIP() + " msg: " + msg, null);
                 facesContext().addMessage(null, new FacesMessage(msg));
 
@@ -155,8 +160,9 @@ public class LoginManager {
             }
 
             Date dCd = Calendar.getInstance().getTime();
-            if (user.getActiveFromDate().after(dCd)
-                    || (user.getActiveToDate() != null && user.getActiveToDate().before(dCd))) {
+            if (user.getActiveFromDate().after(dCd) ||
+                    (user.getActiveToDate() != null &&
+                    user.getActiveToDate().before(dCd))) {
                 String msg = "User '" + userName + "' is not active";
                 mLog.logWarn(l, getClientIP() + " msg: " + msg, null);
                 facesContext().addMessage(null, new FacesMessage(msg));
@@ -165,7 +171,8 @@ public class LoginManager {
             }
 
             if (!request.isUserInRole("ADMIN") && !request.isUserInRole("USER")) {
-                String msg = "User '" + userName + "' does not have roles: USER or ADMIN";
+                String msg = "User '" + userName +
+                        "' does not have roles: USER or ADMIN";
                 mLog.logWarn(l, getClientIP() + " msg: " + msg, null);
                 facesContext().addMessage(null, new FacesMessage(msg));
                 externalContext.invalidateSession();
@@ -174,7 +181,8 @@ public class LoginManager {
 
             user.setAdminRole(request.isUserInRole("ADMIN"));
 
-            externalContext.getSessionMap().put(SEDGUIConstants.SESSION_USER_VARIABLE_NAME, user);
+            externalContext.getSessionMap().put(
+                    SEDGUIConstants.SESSION_USER_VARIABLE_NAME, user);
             externalContext.redirect(mstrForwardUrl);
             String msg = "Username: '" + getUsername() + "' logged in!";
             mLog.log(l, getClientIP() + " msg: " + msg, null);
@@ -187,7 +195,8 @@ public class LoginManager {
             String loginErrorMessage = e.getLocalizedMessage();
             facesContext().addMessage(null, new FacesMessage(loginErrorMessage));
 
-            String msg = "Error occured while logging user: '" + getUsername() + "'";
+            String msg = "Error occured while logging user: '" + getUsername() +
+                    "'";
             mLog.log(l, getClientIP() + " msg: " + msg, e);
         }
 
@@ -200,20 +209,23 @@ public class LoginManager {
      *
      * @throws IOException from {@link ExternalContext#redirect(String)}
      */
-    public void logout() throws IOException {
+    public void logout()
+            throws IOException {
         long l = mLog.logStart(getClientIP());
         ExternalContext externalContext = externalContext();
         externalContext.invalidateSession();
 
         try {
             if (externalContext.getRequest() instanceof HttpServletRequest) {
-                HttpServletRequest request = (HttpServletRequest) externalContext.getRequest();
+                HttpServletRequest request =
+                        (HttpServletRequest) externalContext.getRequest();
                 request.logout();
             }
         } catch (ServletException ex) {
             mLog.logError(l, getClientIP(), ex);
         }
-        externalContext.redirect(externalContext.getRequestContextPath() + PAGE_AFTER_LOGOUT);
+        externalContext.redirect(externalContext.getRequestContextPath() +
+                PAGE_AFTER_LOGOUT);
         mLog.logEnd(l, getClientIP(), getUsername());
     }
 
@@ -228,7 +240,8 @@ public class LoginManager {
     public SEDUser getUser() {
         FacesContext context = facesContext();
         ExternalContext externalContext = context.getExternalContext();
-        return (SEDUser) externalContext.getSessionMap().get(SEDGUIConstants.SESSION_USER_VARIABLE_NAME);
+        return (SEDUser) externalContext.getSessionMap().get(
+                SEDGUIConstants.SESSION_USER_VARIABLE_NAME);
     }
 
     /**

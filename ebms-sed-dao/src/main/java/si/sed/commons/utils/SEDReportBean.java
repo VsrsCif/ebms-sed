@@ -53,8 +53,12 @@ public class SEDReportBean implements SEDReportInterface {
         rbs.setOutMail(new SEDReportBoxStatus.OutMail());
         rbs.setInMail(new SEDReportBoxStatus.InMail());
 
-        TypedQuery<Status> tqIn = memEManager.createNamedQuery("org.sed.ebms.report.getInMailStatusesByBox", Status.class);
-        TypedQuery<Status> tqOut = memEManager.createNamedQuery("org.sed.ebms.report.getOutMailStatusesByBox", Status.class);
+        TypedQuery<Status> tqIn = memEManager.createNamedQuery(
+                "org.sed.ebms.report.getInMailStatusesByBox",
+                Status.class);
+        TypedQuery<Status> tqOut = memEManager.createNamedQuery(
+                "org.sed.ebms.report.getOutMailStatusesByBox",
+                Status.class);
         tqIn.setParameter("sedBox", strSedBox);
         tqOut.setParameter("sedBox", strSedBox);
 

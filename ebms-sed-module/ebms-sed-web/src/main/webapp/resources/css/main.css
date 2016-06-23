@@ -220,13 +220,13 @@
 .CodeMirror {
     /* Set height, width, borders, and global font properties here */
     font-family: monospace;
-    height: 550px !important;
+    height: 570px !important;
     color: black;
 }
 
 
 .CodeMirror-scroll {
-    height: 550px !important;
+    height: 570px !important;
     outline: 0 none;
     overflow: auto;
     position: relative;

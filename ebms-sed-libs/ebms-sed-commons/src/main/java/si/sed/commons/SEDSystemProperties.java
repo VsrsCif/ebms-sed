@@ -16,6 +16,9 @@
  */
 package si.sed.commons;
 
+import static java.lang.System.getProperty;
+import static java.lang.System.setProperty;
+
 /**
  *
  * @author Joze Rihtarsic <joze.rihtarsic@sodisce.si>
@@ -39,7 +42,8 @@ public class SEDSystemProperties {
      * Workers handle outbox messages.
      * </p>
      */
-    public static final String SYS_PROP_DB_DIALECT = "org.sed.msh.hibernate.dialect";
+    public static final String SYS_PROP_DB_DIALECT =
+            "org.sed.msh.hibernate.dialect";
     /**
      * System property for database dialect
      *
@@ -48,7 +52,8 @@ public class SEDSystemProperties {
      * Workers handle outbox messages.
      * </p>
      */
-    public static final String SYS_PROP_DB_HBM2DLL = "org.sed.msh.hibernate.hbm2ddl";
+    public static final String SYS_PROP_DB_HBM2DLL =
+            "org.sed.msh.hibernate.hbm2ddl";
     /**
      * System property for out qeue workers.
      *
@@ -57,7 +62,8 @@ public class SEDSystemProperties {
      * Workers handle outbox messages.
      * </p>
      */
-    public static final String SYS_PROP_EXECUTION_WORKERS = "org.sed.msh.execution.workers.count";
+    public static final String SYS_PROP_EXECUTION_WORKERS =
+            "org.sed.msh.execution.workers.count";
     /**
      * Default value for plugin folder name.
      *
@@ -111,7 +117,8 @@ public class SEDSystemProperties {
     /**
      *
      */
-    public static final String SYS_PROP_JNDI_JMS_PREFIX = "org.sed.jndi.jms.prefix";
+    public static final String SYS_PROP_JNDI_JMS_PREFIX =
+            "org.sed.jndi.jms.prefix";
     /**
      * System property for JNID prefix: wildfly: java:/jms/ jetty:
      * java:comp/env/ junit test: ''
@@ -150,14 +157,15 @@ public class SEDSystemProperties {
      * Workers handle outbox messages.
      * </p>
      */
-    public static final String SYS_PROP_QUEUE_SENDER_WORKERS = "org.sed.msh.sender.workers.count";
+    public static final String SYS_PROP_QUEUE_SENDER_WORKERS =
+            "org.sed.msh.sender.workers.count";
 
     static {
-        if (System.getProperty(SYS_PROP_QUEUE_SENDER_WORKERS) == null) {
-            System.setProperty(SYS_PROP_QUEUE_SENDER_WORKERS, "5");
+        if (getProperty(SYS_PROP_QUEUE_SENDER_WORKERS) == null) {
+            setProperty(SYS_PROP_QUEUE_SENDER_WORKERS, "5");
         }
-        if (System.getProperty(SYS_PROP_EXECUTION_WORKERS) == null) {
-            System.setProperty(SYS_PROP_EXECUTION_WORKERS, "5");
+        if (getProperty(SYS_PROP_EXECUTION_WORKERS) == null) {
+            setProperty(SYS_PROP_EXECUTION_WORKERS, "5");
         }
 
     }

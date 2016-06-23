@@ -29,10 +29,12 @@ public class SEDNamedQueries {
     /**
      *
      */
-    public static String UPDATE_INMAIL = "org.msh.ebms.inbox.mail.MSHInMail.updateStatus";
+    public static String UPDATE_INMAIL =
+            "org.msh.ebms.inbox.mail.MSHInMail.updateStatus";
 
     /**
      *
      */
-    public static String UPDATE_OUTMAIL = "org.msh.ebms.outbox.mail.MSHOutMail.updateStatus";
+    public static String UPDATE_OUTMAIL =
+            "org.msh.ebms.outbox.mail.MSHOutMail.updateStatus";
 }

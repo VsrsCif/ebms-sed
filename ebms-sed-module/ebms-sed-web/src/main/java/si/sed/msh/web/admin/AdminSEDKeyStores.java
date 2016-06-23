@@ -69,24 +69,28 @@ public class AdminSEDKeyStores extends AbstractAdminJSFView<SEDCertStore> {
             List<SEDCertificate> src = getEditable().getSEDCertificates();
 
             try {
-                KeyStore ks = mku.openKeyStore(getEditable().getFilePath(), getEditable().getType(), getEditable().getPassword().toCharArray());
+                KeyStore ks = mku.openKeyStore(getEditable().getFilePath(),
+                        getEditable().getType(), getEditable().
+                        getPassword().toCharArray());
                 List<SEDCertificate> lstals = mku.getKeyStoreSEDCertificates(ks);
 
-                for (SEDCertificate ksc : lstals) {
-                    SEDCertificate sc = existsCertInList(src, ksc);
-                    if (sc != null) {
-                        sc.setStatus("OK");
-                    } else {
-                        ksc.setStatus("NEW");
-                        src.add(ksc);
-                    }
-                }
-                for (SEDCertificate sc : src) {
-                    SEDCertificate ksc = existsCertInList(src, sc);
-                    if (ksc == null) {
-                        sc.setStatus("DEL");
-                    }
-                }
+                lstals.stream().
+                        forEach((ksc) -> {
+                            SEDCertificate sc = existsCertInList(src, ksc);
+                            if (sc != null) {
+                                sc.setStatus("OK");
+                            } else {
+                                ksc.setStatus("NEW");
+                                src.add(ksc);
+                            }
+                        });
+                src.stream().
+                        forEach((sc) -> {
+                            SEDCertificate ksc = existsCertInList(src, sc);
+                            if (ksc == null) {
+                                sc.setStatus("DEL");
+                            }
+                        });
                 getEditable().setStatus("SUCCESS");
             } catch (SEDSecurityException ex) {
                 getEditable().setStatus("ERROR");
@@ -102,12 +106,13 @@ public class AdminSEDKeyStores extends AbstractAdminJSFView<SEDCertStore> {
      * @param sc
      * @return
      */
-    public SEDCertificate existsCertInList(List<SEDCertificate> lst, SEDCertificate sc) {
+    public SEDCertificate existsCertInList(List<SEDCertificate> lst,
+            SEDCertificate sc) {
         for (SEDCertificate c : lst) {
-            if (stringEquals(c.getAlias(), c.getAlias())
-                    && stringEquals(c.getIssuerDN(), sc.getIssuerDN())
-                    && stringEquals(c.getSubjectDN(), sc.getSubjectDN())
-                    && c.getSerialNumber().equals(sc.getSerialNumber())) {
+            if (stringEquals(c.getAlias(), c.getAlias()) &&
+                    stringEquals(c.getIssuerDN(), sc.getIssuerDN()) &&
+                    stringEquals(c.getSubjectDN(), sc.getSubjectDN()) &&
+                    c.getSerialNumber().equals(sc.getSerialNumber())) {
                 return c;
             }
         }
@@ -121,7 +126,8 @@ public class AdminSEDKeyStores extends AbstractAdminJSFView<SEDCertStore> {
      * @return
      */
     public boolean stringEquals(String s1, String s2) {
-        return s1 != null && s2 != null && s1.equals(s2) || s2 == null && s2 == null;
+        return s1 != null && s2 != null && s1.equals(s2) || s2 == null && s2 ==
+                null;
     }
 
     /**
@@ -147,7 +153,7 @@ public class AdminSEDKeyStores extends AbstractAdminJSFView<SEDCertStore> {
         lst.stream().forEach((tsk) -> {
             rstLst.add(tsk.getType());
         });
-        LOG.logEnd(l, lst != null ? lst.size() : "null");
+        LOG.logEnd(l, "Task size: " + lst.size());
         return rstLst;
     }
 

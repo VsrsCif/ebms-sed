@@ -54,7 +54,8 @@ abstract public class AFileSettings extends ASettings {
     final protected void init() {
         long l = mlog.logStart();
         File fPropFile = getConfigFile();
-        if (mprpProperties != null && fPropFile.lastModified() == mlLastChagedTime) {
+        if (mprpProperties != null && fPropFile.lastModified() ==
+                mlLastChagedTime) {
             return; // initialization is done..
         }
 
@@ -62,7 +63,8 @@ abstract public class AFileSettings extends ASettings {
             try (final FileInputStream fis = new FileInputStream(fPropFile)) {
                 mprpProperties.load(fis);
             } catch (IOException ex) {
-                mlog.logError(l, "Error init file: '" + fPropFile.getAbsolutePath() + "'", ex);
+                mlog.logError(l, "Error init file: '" +
+                        fPropFile.getAbsolutePath() + "'", ex);
             }
         }
         // initialize def values if key not exists!
@@ -115,7 +117,8 @@ abstract public class AFileSettings extends ASettings {
      * @param strProperties
      * @throws IOException
      */
-    public void setPropertiesFromString(String strProperties) throws IOException {
+    public void setPropertiesFromString(String strProperties)
+            throws IOException {
         mprpProperties.clear();
         mprpProperties.load(new ByteArrayInputStream(strProperties.getBytes()));
         // initialize def values if key not exists!
@@ -129,10 +132,12 @@ abstract public class AFileSettings extends ASettings {
     public void storeProperties() {
         long l = mlog.logStart();
         if (mprpProperties != null) {
-            try (final FileOutputStream fos = new FileOutputStream(getConfigFile())) {
+            try (final FileOutputStream fos = new FileOutputStream(
+                    getConfigFile())) {
                 mprpProperties.store(fos, "standalone properties");
             } catch (IOException ex) {
-                mlog.logError(l, "Error saving priperties to file: '" + getConfigFile().getAbsolutePath() + "'", ex);
+                mlog.logError(l, "Error saving priperties to file: '" +
+                        getConfigFile().getAbsolutePath() + "'", ex);
             }
         }
     }

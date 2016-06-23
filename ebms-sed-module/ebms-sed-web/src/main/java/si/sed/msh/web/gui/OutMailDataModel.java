@@ -36,7 +36,8 @@ public class OutMailDataModel extends AbstractMailDataModel<MSHOutMail> {
      * @param messageBean
      * @param db
      */
-    public OutMailDataModel(Class<MSHOutMail> type, UserSessionData messageBean, SEDDaoInterface db) {
+    public OutMailDataModel(Class<MSHOutMail> type, UserSessionData messageBean,
+            SEDDaoInterface db) {
         super(type);
         setUserSessionData(messageBean, db);
     }
@@ -80,7 +81,8 @@ public class OutMailDataModel extends AbstractMailDataModel<MSHOutMail> {
         String strSedBox = getUserSessionData().getCurrentSEDBox();
         outFilter.getSenderEBoxList().clear();
         if (strSedBox == null || strSedBox.equalsIgnoreCase("ALL")) {
-            outFilter.getSenderEBoxList().addAll(getUserSessionData().getUserEBoxes());
+            outFilter.getSenderEBoxList().addAll(
+                    getUserSessionData().getUserEBoxes());
 
         } else {
             outFilter.getSenderEBoxList().add(strSedBox);

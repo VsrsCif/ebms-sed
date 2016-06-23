@@ -36,7 +36,8 @@ public class MockUserTransaction implements UserTransaction {
      * @throws SystemException
      */
     @Override
-    public void begin() throws NotSupportedException, SystemException {
+    public void begin()
+            throws NotSupportedException, SystemException {
         met.begin();
     }
 
@@ -50,19 +51,23 @@ public class MockUserTransaction implements UserTransaction {
      * @throws SystemException
      */
     @Override
-    public void commit() throws RollbackException, HeuristicMixedException, HeuristicRollbackException, SecurityException, IllegalStateException, SystemException {
+    public void commit()
+            throws RollbackException, HeuristicMixedException,
+            HeuristicRollbackException,
+            SecurityException, IllegalStateException, SystemException {
         met.commit();
     }
 
     /**
      *
-     * @return
-     * @throws SystemException
+     * @return @throws SystemException
      */
     @Override
-    public int getStatus() throws SystemException {
+    public int getStatus()
+            throws SystemException {
 
-        return met.isActive() ? Status.STATUS_ACTIVE : Status.STATUS_NO_TRANSACTION;
+        return met.isActive() ? Status.STATUS_ACTIVE :
+                Status.STATUS_NO_TRANSACTION;
     }
 
     /**
@@ -72,7 +77,8 @@ public class MockUserTransaction implements UserTransaction {
      * @throws SystemException
      */
     @Override
-    public void rollback() throws IllegalStateException, SecurityException, SystemException {
+    public void rollback()
+            throws IllegalStateException, SecurityException, SystemException {
         met.rollback();
     }
 
@@ -82,7 +88,8 @@ public class MockUserTransaction implements UserTransaction {
      * @throws SystemException
      */
     @Override
-    public void setRollbackOnly() throws IllegalStateException, SystemException {
+    public void setRollbackOnly()
+            throws IllegalStateException, SystemException {
         met.setRollbackOnly();
     }
 
@@ -92,7 +99,8 @@ public class MockUserTransaction implements UserTransaction {
      * @throws SystemException
      */
     @Override
-    public void setTransactionTimeout(int seconds) throws SystemException {
+    public void setTransactionTimeout(int seconds)
+            throws SystemException {
         // ingore
     }
 

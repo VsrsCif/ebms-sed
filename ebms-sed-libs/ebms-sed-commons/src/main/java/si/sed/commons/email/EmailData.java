@@ -9,7 +9,7 @@ import java.util.List;
  */
 public class EmailData {
 
-    List<EmailAttachmentData> mlstAttachments = new ArrayList<EmailAttachmentData>();
+    List<EmailAttachmentData> mlstAttachments = new ArrayList<>();
     String mstrBody;
     String mstrEmailAddresses;
     String mstrEmailCCAddresses;
@@ -23,7 +23,8 @@ public class EmailData {
      * @param mstrSubject
      * @param mstrBody
      */
-    public EmailData(String mstrEmailAddresses, String mstrEmailCCAddresses, String mstrSubject, String mstrBody) {
+    public EmailData(String mstrEmailAddresses, String mstrEmailCCAddresses,
+            String mstrSubject, String mstrBody) {
         this.mstrEmailAddresses = mstrEmailAddresses;
         this.mstrEmailCCAddresses = mstrEmailCCAddresses;
         this.mstrSubject = mstrSubject;
@@ -120,7 +121,10 @@ public class EmailData {
 
     @Override
     public String toString() {
-        return "EmailData{" + "to=" + mstrEmailAddresses + ", cc=" + mstrEmailCCAddresses + ", subject=" + mstrSubject + ", Attachments size=" + mlstAttachments.size() + '}';
+        return "EmailData{" + "to=" + mstrEmailAddresses + ", cc=" +
+                mstrEmailCCAddresses + ", subject=" + mstrSubject +
+                ", Attachments size=" + mlstAttachments.
+                size() + '}';
     }
 
 }

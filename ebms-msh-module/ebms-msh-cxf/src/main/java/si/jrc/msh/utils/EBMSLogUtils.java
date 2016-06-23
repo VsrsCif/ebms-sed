@@ -44,13 +44,20 @@ public class EBMSLogUtils {
     /**
      *
      */
-    protected static final SEDLogger mlog = new SEDLogger(EBMSOutInterceptor.class);
+    protected static final SEDLogger mlog = new SEDLogger(
+            EBMSOutInterceptor.class);
 
-    private static synchronized File currentStorageFolder() throws StorageException {
+    private static synchronized File currentStorageFolder()
+            throws StorageException {
 
-        File f = new File(System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR) + File.separator + S_ROOT_FOLDER + File.separator + currentStorageFolderName());
+        File f = new File(
+                System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR) +
+                File.separator + S_ROOT_FOLDER + File.separator +
+                currentStorageFolderName());
         if (!f.exists() && !f.mkdirs()) {
-            throw new StorageException(String.format("Error occurred while creating storage folder: '%s'", f.getAbsolutePath()));
+            throw new StorageException(String.format(
+                    "Error occurred while creating storage folder: '%s'", f.
+                    getAbsolutePath()));
         }
         return f;
     }
@@ -63,7 +70,8 @@ public class EBMSLogUtils {
      * @return
      * @throws StorageException
      */
-    public static File getBaseFile(String prefix, String base, String suffix) throws StorageException {
+    public static File getBaseFile(String prefix, String base, String suffix)
+            throws StorageException {
         File fStore = null;
         if (base != null) {
             fStore = new File(currentStorageFolder(), prefix + base + suffix);
@@ -92,19 +100,22 @@ public class EBMSLogUtils {
      */
     public static File getInboundFileName(boolean isRequestor, String baseName) {
         try {
-            return getBaseFile(S_PREFIX, baseName, S_IN_PREFIX + (isRequestor ? S_RESPONSE_SUFFIX : S_REQUEST_SUFFIX));
+            return getBaseFile(S_PREFIX, baseName, S_IN_PREFIX + (isRequestor ?
+                    S_RESPONSE_SUFFIX : S_REQUEST_SUFFIX));
         } catch (StorageException ex) {
             mlog.logError(0, ex);
         }
         return null;
     }
 
-    private static File getNewFile(String prefix, String suffix) throws StorageException {
+    private static File getNewFile(String prefix, String suffix)
+            throws StorageException {
         File fStore;
         try {
             fStore = File.createTempFile(prefix, suffix, currentStorageFolder());
         } catch (IOException ex) {
-            throw new StorageException("Error occurred while creating storage file", ex);
+            throw new StorageException(
+                    "Error occurred while creating storage file", ex);
         }
         return fStore;
     }
@@ -116,9 +127,14 @@ public class EBMSLogUtils {
      * @param baseName
      * @return
      */
-    public static File getOutboundFileName(boolean isRequestor, BigInteger id, String baseName) {
+    public static File getOutboundFileName(boolean isRequestor, BigInteger id,
+            String baseName) {
         try {
-            return getBaseFile(S_PREFIX, (baseName != null ? baseName : "") + (baseName != null && id != null ? "-" : "") + (id != null ? id.toString() : ""), S_OUT_PREFIX + (isRequestor ? S_REQUEST_SUFFIX : S_RESPONSE_SUFFIX));
+            return getBaseFile(S_PREFIX,
+                    (baseName != null ? baseName : "") + (baseName != null &&
+                    id != null ? "-" : "") + (id != null ? id.
+                            toString() : ""), S_OUT_PREFIX + (isRequestor ?
+                            S_REQUEST_SUFFIX : S_RESPONSE_SUFFIX));
         } catch (StorageException ex) {
             mlog.logError(0, ex);
         }

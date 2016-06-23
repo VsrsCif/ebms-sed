@@ -82,9 +82,11 @@ public abstract class AbstractMailDataModel<T> extends LazyDataModel<T> {
      * @param filters
      * @return
      */
-    public List<T> getData(int startingAt, int maxPerPage, String sortField, SortOrder sortOrder, Object filters) {
+    public List<T> getData(int startingAt, int maxPerPage, String sortField,
+            SortOrder sortOrder, Object filters) {
         String strSortOrder = "DESC";
-        return mDB.getDataList(type, startingAt, maxPerPage, sortField, strSortOrder, filters);
+        return mDB.getDataList(type, startingAt, maxPerPage, sortField,
+                strSortOrder, filters);
     }
 
     /**
@@ -95,7 +97,8 @@ public abstract class AbstractMailDataModel<T> extends LazyDataModel<T> {
      */
     public List<T> getData(int startingAt, int maxPerPage) {
         String strSortOrder = "DESC";
-        return mDB.getDataList(type, startingAt, maxPerPage, "Id", strSortOrder, externalFilters());
+        return mDB.getDataList(type, startingAt, maxPerPage, "Id", strSortOrder,
+                externalFilters());
     }
 
     /**
@@ -124,11 +127,14 @@ public abstract class AbstractMailDataModel<T> extends LazyDataModel<T> {
      * @return
      */
     @Override
-    public List<T> load(int startingAt, int maxPerPage, String sortField, SortOrder sortOrder, Map<String, Object> filters) {
+    public List<T> load(int startingAt, int maxPerPage, String sortField,
+            SortOrder sortOrder,
+            Map<String, Object> filters) {
         String strSortOrder = "DESC";
         // validate data
         Object filterObject = externalFilters();
-        mDataList = getData(startingAt, maxPerPage, sortField, sortOrder, filterObject);
+        mDataList = getData(startingAt, maxPerPage, sortField, sortOrder,
+                filterObject);
         long l = mDB.getDataListCount(type, filterObject);
         setRowCount((int) l);
 
@@ -137,13 +143,13 @@ public abstract class AbstractMailDataModel<T> extends LazyDataModel<T> {
     }
 
     //must povide the setter method
-
     /**
      *
      * @param messageBean
      * @param db
      */
-    public void setUserSessionData(UserSessionData messageBean, SEDDaoInterface db) {
+    public void setUserSessionData(UserSessionData messageBean,
+            SEDDaoInterface db) {
         mDB = db;
         this.messageBean = messageBean;
     }

@@ -52,8 +52,9 @@ public class UserSessionData extends AbstractJSFView {
      * @return
      */
     public String getCurrentSEDBox() {
-        return mstrCurrentSEDBox == null
-                && getUserEBoxes() != null && !getUserEBoxes().isEmpty() ? getUserEBoxes().get(0) : mstrCurrentSEDBox;
+        return mstrCurrentSEDBox == null &&
+                getUserEBoxes() != null && !getUserEBoxes().isEmpty() ?
+                        getUserEBoxes().get(0) : mstrCurrentSEDBox;
     }
 
     /**
@@ -72,7 +73,8 @@ public class UserSessionData extends AbstractJSFView {
         long l = LOG.logStart();
         FacesContext context = facesContext();
         ExternalContext externalContext = context.getExternalContext();
-        SEDUser su = (SEDUser) externalContext.getSessionMap().get(SEDGUIConstants.SESSION_USER_VARIABLE_NAME);
+        SEDUser su = (SEDUser) externalContext.getSessionMap().get(
+                SEDGUIConstants.SESSION_USER_VARIABLE_NAME);
         if (su == null) {
             try {
                 loginManager.logout();
@@ -103,7 +105,8 @@ public class UserSessionData extends AbstractJSFView {
      */
     public void onReorder() {
         FacesContext context = FacesContext.getCurrentInstance();
-        context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "List Reordered", null));
+        context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO,
+                "List Reordered", null));
     }
 
     /**
@@ -112,7 +115,9 @@ public class UserSessionData extends AbstractJSFView {
      */
     public void onSelect(SelectEvent event) {
         FacesContext context = FacesContext.getCurrentInstance();
-        context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Item Selected", event.getObject().toString()));
+        context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO,
+                "Item Selected", event.getObject().
+                toString()));
     }
 
     /**
@@ -139,7 +144,9 @@ public class UserSessionData extends AbstractJSFView {
      */
     public void onUnselect(UnselectEvent event) {
         FacesContext context = FacesContext.getCurrentInstance();
-        context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Item Unselected", event.getObject().toString()));
+        context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO,
+                "Item Unselected", event.getObject().
+                toString()));
     }
 
     /**

@@ -103,12 +103,10 @@ public class InMailTableFilter {
     /* public void setReceiverEBox(String receiverEBox) {
         this.receiverEBox = receiverEBox;
     }*/
-
     /**
      *
      * @return
      */
-
     public String getSenderEBox() {
         return senderEBox;
     }
