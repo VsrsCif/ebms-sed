@@ -4,7 +4,7 @@ jdk:
   
 script:  
   #run all tests 
-  - mvn clean install -P default -DignoreTestFailure=false
+  - mvn -P CI-BuildWithReports -DignoreTestFailure=false
 
 cache:
   directories:
