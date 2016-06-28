@@ -15,50 +15,47 @@ import org.primefaces.event.TabChangeEvent;
 @ManagedBean(name = "MainWindow")
 public class MainWindow {
 
-    String mstrWindowShow = AppConstant.S_PANEL_INBOX;
+  String mstrWindowShow = AppConstant.S_PANEL_INBOX;
 
-    /**
-     *
-     * @param summary
-     * @param detail
-     */
-    public void addMessage(String summary, String detail) {
-        FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO,
-                summary, detail);
-        FacesContext.getCurrentInstance().addMessage(null, message);
-    }
+  /**
+   *
+   * @param summary
+   * @param detail
+   */
+  public void addMessage(String summary, String detail) {
+    FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, summary, detail);
+    FacesContext.getCurrentInstance().addMessage(null, message);
+  }
 
-    /**
-     *
-     * @return
-     */
-    public String currentPanel() {
-        return mstrWindowShow;
-    }
+  /**
+   *
+   * @return
+   */
+  public String currentPanel() {
+    return mstrWindowShow;
+  }
 
-    /**
-     *
-     * @param event
-     */
-    public void onToolbarButtonAction(ActionEvent event) {
-        if (event != null) {
-            String res = (String) event.getComponent().getAttributes().get(
-                    "panel");
-            mstrWindowShow = res;
-        }
+  /**
+   *
+   * @param event
+   */
+  public void onToolbarButtonAction(ActionEvent event) {
+    if (event != null) {
+      String res = (String) event.getComponent().getAttributes().get("panel");
+      mstrWindowShow = res;
     }
+  }
 
-    /**
-     *
-     * @param event
-     */
-    public void onToolbarTabChange(TabChangeEvent event) {
-        if (event != null) {
-            mstrWindowShow = event.getTab().getId();
-            FacesMessage msg = new FacesMessage("Tab Changed", "Active Tab: " +
-                    event.getTab().getId());
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-        }
+  /**
+   *
+   * @param event
+   */
+  public void onToolbarTabChange(TabChangeEvent event) {
+    if (event != null) {
+      mstrWindowShow = event.getTab().getId();
+      FacesMessage msg = new FacesMessage("Tab Changed", "Active Tab: " + event.getTab().getId());
+      FacesContext.getCurrentInstance().addMessage(null, msg);
     }
+  }
 
 }

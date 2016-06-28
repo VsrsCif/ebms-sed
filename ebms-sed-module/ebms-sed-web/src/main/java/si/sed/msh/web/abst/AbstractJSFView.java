@@ -1,7 +1,6 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * To change this license header, choose License Headers in Project Properties. To change this
+ * template file, choose Tools | Templates and open the template in the editor.
  */
 package si.sed.msh.web.abst;
 
@@ -15,28 +14,28 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class AbstractJSFView {
 
-    /**
-     *
-     * @return
-     */
-    protected ExternalContext externalContext() {
-        return facesContext().getExternalContext();
-    }
+  /**
+   *
+   * @return
+   */
+  protected ExternalContext externalContext() {
+    return facesContext().getExternalContext();
+  }
 
-    /**
-     *
-     * @return
-     */
-    protected FacesContext facesContext() {
-        return FacesContext.getCurrentInstance();
-    }
+  /**
+   *
+   * @return
+   */
+  protected FacesContext facesContext() {
+    return FacesContext.getCurrentInstance();
+  }
 
-    /**
-     *
-     * @return
-     */
-    public String getClientIP() {
-        return ((HttpServletRequest) externalContext().getRequest()).getRemoteAddr();
-    }
+  /**
+   *
+   * @return
+   */
+  public String getClientIP() {
+    return ((HttpServletRequest) externalContext().getRequest()).getRemoteAddr();
+  }
 
 }

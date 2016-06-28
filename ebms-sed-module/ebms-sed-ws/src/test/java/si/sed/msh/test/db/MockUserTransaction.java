@@ -1,7 +1,6 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * To change this license header, choose License Headers in Project Properties. To change this
+ * template file, choose Tools | Templates and open the template in the editor.
  */
 package si.sed.msh.test.db;
 
@@ -20,88 +19,76 @@ import javax.transaction.UserTransaction;
  */
 public class MockUserTransaction implements UserTransaction {
 
-    EntityTransaction met;
+  EntityTransaction met;
 
-    /**
-     *
-     * @param et
-     */
-    public MockUserTransaction(EntityTransaction et) {
-        met = et;
-    }
+  /**
+   *
+   * @param et
+   */
+  public MockUserTransaction(EntityTransaction et) {
+    met = et;
+  }
 
-    /**
-     *
-     * @throws NotSupportedException
-     * @throws SystemException
-     */
-    @Override
-    public void begin()
-            throws NotSupportedException, SystemException {
-        met.begin();
-    }
+  /**
+   *
+   * @throws SystemException
+   */
+  @Override
+  public void begin() throws NotSupportedException, SystemException {
+    met.begin();
+  }
 
-    /**
-     *
-     * @throws RollbackException
-     * @throws HeuristicMixedException
-     * @throws HeuristicRollbackException
-     * @throws SecurityException
-     * @throws IllegalStateException
-     * @throws SystemException
-     */
-    @Override
-    public void commit()
-            throws RollbackException, HeuristicMixedException,
-            HeuristicRollbackException,
-            SecurityException, IllegalStateException, SystemException {
-        met.commit();
-    }
+  /**
+   *
+   * @throws HeuristicMixedException
+   * @throws SecurityException
+   * @throws IllegalStateException
+   */
+  @Override
+  public void commit() throws RollbackException, HeuristicMixedException,
+      HeuristicRollbackException, SecurityException, IllegalStateException, SystemException {
+    met.commit();
+  }
 
-    /**
-     *
-     * @return @throws SystemException
-     */
-    @Override
-    public int getStatus()
-            throws SystemException {
+  /**
+   *
+   * @return @throws SystemException
+   */
+  @Override
+  public int getStatus() throws SystemException {
 
-        return met.isActive() ? Status.STATUS_ACTIVE :
-                Status.STATUS_NO_TRANSACTION;
-    }
+    return met.isActive() ? Status.STATUS_ACTIVE : Status.STATUS_NO_TRANSACTION;
+  }
 
-    /**
-     *
-     * @throws IllegalStateException
-     * @throws SecurityException
-     * @throws SystemException
-     */
-    @Override
-    public void rollback()
-            throws IllegalStateException, SecurityException, SystemException {
-        met.rollback();
-    }
+  /**
+   *
+   * @throws IllegalStateException
+   * @throws SecurityException
+   * @throws SystemException
+   */
+  @Override
+  public void rollback() throws IllegalStateException, SecurityException, SystemException {
+    met.rollback();
+  }
 
-    /**
-     *
-     * @throws IllegalStateException
-     * @throws SystemException
-     */
-    @Override
-    public void setRollbackOnly()
-            throws IllegalStateException, SystemException {
-        met.setRollbackOnly();
-    }
+  /**
+   *
+   * @throws IllegalStateException
+   * @throws SystemException
+   */
+  @Override
+  public void setRollbackOnly() throws IllegalStateException, SystemException {
+    met.setRollbackOnly();
+  }
 
-    /**
-     *
-     * @param seconds
-     * @throws SystemException
-     */
-    @Override
-    public void setTransactionTimeout(int seconds)
-            throws SystemException {
-        // ingore
-    }
+  /**
+   *
+   * @param seconds
+   * @throws SystemException
+   */
+  @Override
+  public void setTransactionTimeout(int seconds) throws SystemException {
+    // ingore
+  }
 
 }

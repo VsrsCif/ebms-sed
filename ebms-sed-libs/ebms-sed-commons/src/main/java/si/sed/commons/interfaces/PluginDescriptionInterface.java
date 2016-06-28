@@ -1,7 +1,6 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * To change this license header, choose License Headers in Project Properties. To change this
+ * template file, choose Tools | Templates and open the template in the editor.
  */
 package si.sed.commons.interfaces;
 
@@ -15,45 +14,45 @@ import javax.ejb.Local;
 @Local
 public interface PluginDescriptionInterface {
 
-    /**
-     *
-     * @return
-     */
-    String getSettingUrlContext();
+  /**
+   *
+   * @return
+   */
+  String getSettingUrlContext();
 
-    /**
-     *
-     * @return
-     */
-    List<String> getTaskJNDIs();
+  /**
+   *
+   * @return
+   */
+  List<String> getTaskJNDIs();
 
-    /**
-     *
-     * @return
-     */
-    String getJNDIOutInterceptor();
+  /**
+   *
+   * @return
+   */
+  String getJNDIOutInterceptor();
 
-    /**
-     *
-     * @return
-     */
-    String getJNDIInInterceptor();
+  /**
+   *
+   * @return
+   */
+  String getJNDIInInterceptor();
 
-    /**
-     *
-     * @return
-     */
-    String getType();
+  /**
+   *
+   * @return
+   */
+  String getType();
 
-    /**
-     *
-     * @return
-     */
-    String getName();
+  /**
+   *
+   * @return
+   */
+  String getName();
 
-    /**
-     *
-     * @return
-     */
-    String getDesc();
+  /**
+   *
+   * @return
+   */
+  String getDesc();
 }

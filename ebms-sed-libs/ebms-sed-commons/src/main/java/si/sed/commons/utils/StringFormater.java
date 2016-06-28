@@ -1,6 +1,5 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * To change this template, choose Tools | Templates and open the template in the editor.
  */
 package si.sed.commons.utils;
 
@@ -24,119 +23,113 @@ import org.msh.ebms.inbox.mail.MSHInMail;
  */
 public class StringFormater {
 
-    SimpleDateFormat msdf = new SimpleDateFormat("dd.MM.yyyy HH:mm.ss");
+  SimpleDateFormat msdf = new SimpleDateFormat("dd.MM.yyyy HH:mm.ss");
 
-    /**
-     *
-     * @param methods
-     * @param obj
-     * @param i
-     * @return
-     */
-    public String format(List<String> methods, Object obj, int i) {
+  /**
+   *
+   * @param methods
+   * @param obj
+   * @param i
+   * @return
+   */
+  public String format(List<String> methods, Object obj, int i) {
 
-        Class cls = obj.getClass();
-        StringWriter sw = new StringWriter();
-        sw.write(i + ".");
+    Class cls = obj.getClass();
+    StringWriter sw = new StringWriter();
+    sw.write(i + ".");
 
-        methods.stream().
-                forEach((mth) -> {
-                    try {
-                        Method md = cls.getDeclaredMethod("get" + mth);
-                        Object res = md.invoke(obj, new Object[0]);
+    methods.stream().forEach(
+        (mth) -> {
+          try {
+            Method md = cls.getDeclaredMethod("get" + mth);
+            Object res = md.invoke(obj, new Object[0]);
 
-                        String value = object2String(res);
-                        sw.write(",");
-                        sw.write(value.replace("\\", "\\\\").replace(",", "\\,"));
+            String value = object2String(res);
+            sw.write(",");
+            sw.write(value.replace("\\", "\\\\").replace(",", "\\,"));
 
-                    } catch (NoSuchMethodException | SecurityException |
-                            IllegalAccessException |
-                            IllegalArgumentException | InvocationTargetException ex) {
-                        getLogger(StringFormater.class.getName()).log(SEVERE,
-                                null, ex);
-                    }
-                });
+          } catch (NoSuchMethodException | SecurityException | IllegalAccessException
+              | IllegalArgumentException | InvocationTargetException ex) {
+            getLogger(StringFormater.class.getName()).log(SEVERE, null, ex);
+          }
+        });
 
-        return sw.toString();
-    }
+    return sw.toString();
+  }
 
-    /**
-     *
-     * @param str
-     * @param dce
-     * @return
-     */
-    public String format(String str, MSHInMail dce) {
-        HashMap<String, Object> hm = new HashMap<>();
+  /**
+   *
+   * @param str
+   * @param dce
+   * @return
+   */
+  public String format(String str, MSHInMail dce) {
+    HashMap<String, Object> hm = new HashMap<>();
 
-        Method[] mthLst = dce.getClass().getDeclaredMethods();
-        for (Method mt : mthLst) {
+    Method[] mthLst = dce.getClass().getDeclaredMethods();
+    for (Method mt : mthLst) {
 
-            if (mt.getName().startsWith("get")) {
-                String strName = mt.getName().substring(3);
-                Object put = null;
-                try {
-                    if (mt.getParameterTypes() == null ||
-                            mt.getParameterTypes().length == 0) {
-                        put = mt.invoke(dce, new Object[0]);
-                    }
-                } catch (IllegalAccessException | IllegalArgumentException |
-                        InvocationTargetException ex) {
-                    getLogger(StringFormater.class.getName()).log(SEVERE, null,
-                            ex);
-                }
-                hm.put(strName, put);
-
-            }
+      if (mt.getName().startsWith("get")) {
+        String strName = mt.getName().substring(3);
+        Object put = null;
+        try {
+          if (mt.getParameterTypes() == null || mt.getParameterTypes().length == 0) {
+            put = mt.invoke(dce, new Object[0]);
+          }
+        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+          getLogger(StringFormater.class.getName()).log(SEVERE, null, ex);
         }
-        return format(str, hm);
+        hm.put(strName, put);
+
+      }
     }
+    return format(str, hm);
+  }
 
-    /**
-     *
-     * @param str
-     * @param values
-     * @return
-     */
-    public String format(String str, Map<String, Object> values) {
+  /**
+   *
+   * @param str
+   * @param values
+   * @return
+   */
+  public String format(String str, Map<String, Object> values) {
 
-        StringBuilder builder = new StringBuilder(str);
+    StringBuilder builder = new StringBuilder(str);
 
-        values.entrySet().stream().
-                forEach((entry) -> {
-                    int start;
-                    String pattern = "${" + entry.getKey() + "}";
-                    String value = object2String(entry.getValue());
+    values.entrySet().stream().forEach((entry) -> {
+      int start;
+      String pattern = "${" + entry.getKey() + "}";
+      String value = object2String(entry.getValue());
 
-                    // Replace every occurence of %(key) with value
-                    while ((start = builder.indexOf(pattern)) != -1) {
-                        builder.replace(start, start + pattern.length(), value);
-                    }
-                });
-
-        return builder.toString();
-    }
-
-    private String object2String(Object o) {
-        String res = null;
-        if (o == null) {
-            res = "";
-        } else if (o instanceof String) {
-            res = (String) o;
-        } else if (o instanceof Integer) {
-            res = ((Integer) o).toString();
-        } else if (o instanceof BigInteger) {
-            res = ((BigInteger) o).toString();
-        } else if (o instanceof BigDecimal) {
-            res = ((BigDecimal) o).toString();
-        } else if (o instanceof Double) {
-            res = ((Double) o).toString();
-        } else if (o instanceof Date) {
-            res = msdf.format((Date) o);
-        } else {
-            res = o.toString();
+      // Replace every occurence of %(key) with value
+        while ((start = builder.indexOf(pattern)) != -1) {
+          builder.replace(start, start + pattern.length(), value);
         }
-        return res;
+      });
 
+    return builder.toString();
+  }
+
+  private String object2String(Object o) {
+    String res = null;
+    if (o == null) {
+      res = "";
+    } else if (o instanceof String) {
+      res = (String) o;
+    } else if (o instanceof Integer) {
+      res = ((Integer) o).toString();
+    } else if (o instanceof BigInteger) {
+      res = ((BigInteger) o).toString();
+    } else if (o instanceof BigDecimal) {
+      res = ((BigDecimal) o).toString();
+    } else if (o instanceof Double) {
+      res = ((Double) o).toString();
+    } else if (o instanceof Date) {
+      res = msdf.format((Date) o);
+    } else {
+      res = o.toString();
     }
+    return res;
+
+  }
 }

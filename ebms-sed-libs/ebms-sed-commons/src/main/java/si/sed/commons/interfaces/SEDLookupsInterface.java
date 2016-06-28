@@ -1,7 +1,6 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * To change this license header, choose License Headers in Project Properties. To change this
+ * template file, choose Tools | Templates and open the template in the editor.
  */
 package si.sed.commons.interfaces;
 
@@ -23,215 +22,215 @@ import org.sed.ebms.user.SEDUser;
 @Local
 public interface SEDLookupsInterface {
 
-    /**
-     *
-     * @param sb
-     * @return
-     */
-    boolean addSEDBox(SEDBox sb);
+  /**
+   *
+   * @param sb
+   * @return
+   */
+  boolean addSEDBox(SEDBox sb);
 
-    /**
-     *
-     * @param sb
-     * @return
-     */
-    boolean addSEDCertStore(SEDCertStore sb);
+  /**
+   *
+   * @param sb
+   * @return
+   */
+  boolean addSEDCertStore(SEDCertStore sb);
 
-    /**
-     *
-     * @param sb
-     * @return
-     */
-    boolean addSEDCronJob(SEDCronJob sb);
+  /**
+   *
+   * @param sb
+   * @return
+   */
+  boolean addSEDCronJob(SEDCronJob sb);
 
-    /**
-     *
-     * @param sb
-     * @return
-     */
-    boolean addSEDPlugin(SEDPlugin sb);
+  /**
+   *
+   * @param sb
+   * @return
+   */
+  boolean addSEDPlugin(SEDPlugin sb);
 
-    /**
-     *
-     * @param sb
-     * @return
-     */
-    boolean addSEDTaskType(SEDTaskType sb);
+  /**
+   *
+   * @param sb
+   * @return
+   */
+  boolean addSEDTaskType(SEDTaskType sb);
 
-    /**
-     *
-     * @param sb
-     * @return
-     */
-    boolean addSEDUser(SEDUser sb);
+  /**
+   *
+   * @param sb
+   * @return
+   */
+  boolean addSEDUser(SEDUser sb);
 
-    /**
-     *
-     * @param f
-     * @param saveCertPasswords
-     */
-    void exportLookups(File f, boolean saveCertPasswords);
+  /**
+   *
+   * @param f
+   * @param saveCertPasswords
+   */
+  void exportLookups(File f, boolean saveCertPasswords);
 
-    /**
-     *
-     * @param strname
-     * @return
-     */
-    SEDBox getSEDBoxByName(String strname);
+  /**
+   *
+   * @param strname
+   * @return
+   */
+  SEDBox getSEDBoxByName(String strname);
 
-    /**
-     *
-     * @param alias
-     * @param isKey
-     * @return
-     */
-    SEDCertStore getSEDCertStoreByCertAlias(String alias, boolean isKey);
+  /**
+   *
+   * @param alias
+   * @param isKey
+   * @return
+   */
+  SEDCertStore getSEDCertStoreByCertAlias(String alias, boolean isKey);
 
-    /**
-     *
-     * @param id
-     * @return
-     */
-    SEDCronJob getSEDCronJobById(BigInteger id);
+  /**
+   *
+   * @param id
+   * @return
+   */
+  SEDCronJob getSEDCronJobById(BigInteger id);
 
-    /**
-     *
-     * @param type
-     * @return
-     */
-    SEDTaskType getSEDTaskTypeByType(String type);
+  /**
+   *
+   * @param type
+   * @return
+   */
+  SEDTaskType getSEDTaskTypeByType(String type);
 
-    /**
-     *
-     * @param userId
-     * @return
-     */
-    SEDUser getSEDUserByUserId(String userId);
+  /**
+   *
+   * @param userId
+   * @return
+   */
+  SEDUser getSEDUserByUserId(String userId);
 
-    /**
-     *
-     * @param type
-     * @return
-     */
-    SEDPlugin getSEDPluginByType(String type);
+  /**
+   *
+   * @param type
+   * @return
+   */
+  SEDPlugin getSEDPluginByType(String type);
 
-    /**
-     *
-     * @return
-     */
-    List<SEDBox> getSEDBoxes();
+  /**
+   *
+   * @return
+   */
+  List<SEDBox> getSEDBoxes();
 
-    /**
-     *
-     * @return
-     */
-    List<SEDCertStore> getSEDCertStore();
+  /**
+   *
+   * @return
+   */
+  List<SEDCertStore> getSEDCertStore();
 
-    /**
-     *
-     * @return
-     */
-    List<SEDCronJob> getSEDCronJobs();
+  /**
+   *
+   * @return
+   */
+  List<SEDCronJob> getSEDCronJobs();
 
-    /**
-     *
-     * @return
-     */
-    List<SEDPlugin> getSEDPlugin();
+  /**
+   *
+   * @return
+   */
+  List<SEDPlugin> getSEDPlugin();
 
-    /**
-     *
-     * @return
-     */
-    List<SEDTaskType> getSEDTaskTypes();
+  /**
+   *
+   * @return
+   */
+  List<SEDTaskType> getSEDTaskTypes();
 
-    /**
-     *
-     * @return
-     */
-    List<SEDUser> getSEDUsers();
+  /**
+   *
+   * @return
+   */
+  List<SEDUser> getSEDUsers();
 
-    /**
-     *
-     * @param sb
-     * @return
-     */
-    boolean removeSEDBox(SEDBox sb);
+  /**
+   *
+   * @param sb
+   * @return
+   */
+  boolean removeSEDBox(SEDBox sb);
 
-    /**
-     *
-     * @param sb
-     * @return
-     */
-    boolean removeEDCertStore(SEDCertStore sb);
+  /**
+   *
+   * @param sb
+   * @return
+   */
+  boolean removeEDCertStore(SEDCertStore sb);
 
-    /**
-     *
-     * @param sb
-     * @return
-     */
-    boolean removeSEDCronJob(SEDCronJob sb);
+  /**
+   *
+   * @param sb
+   * @return
+   */
+  boolean removeSEDCronJob(SEDCronJob sb);
 
-    /**
-     *
-     * @param sb
-     * @return
-     */
-    boolean removeSEDPlugin(SEDPlugin sb);
+  /**
+   *
+   * @param sb
+   * @return
+   */
+  boolean removeSEDPlugin(SEDPlugin sb);
 
-    /**
-     *
-     * @param sb
-     * @return
-     */
-    boolean removeSEDTaskType(SEDTaskType sb);
+  /**
+   *
+   * @param sb
+   * @return
+   */
+  boolean removeSEDTaskType(SEDTaskType sb);
 
-    /**
-     *
-     * @param sb
-     * @return
-     */
-    boolean removeSEDUser(SEDUser sb);
+  /**
+   *
+   * @param sb
+   * @return
+   */
+  boolean removeSEDUser(SEDUser sb);
 
-    /**
-     *
-     * @param sb
-     * @return
-     */
-    boolean updateSEDBox(SEDBox sb);
+  /**
+   *
+   * @param sb
+   * @return
+   */
+  boolean updateSEDBox(SEDBox sb);
 
-    /**
-     *
-     * @param sb
-     * @return
-     */
-    boolean updateSEDCertStore(SEDCertStore sb);
+  /**
+   *
+   * @param sb
+   * @return
+   */
+  boolean updateSEDCertStore(SEDCertStore sb);
 
-    /**
-     *
-     * @param sb
-     * @return
-     */
-    boolean updateSEDCronJob(SEDCronJob sb);
+  /**
+   *
+   * @param sb
+   * @return
+   */
+  boolean updateSEDCronJob(SEDCronJob sb);
 
-    /**
-     *
-     * @param sb
-     * @return
-     */
-    boolean updateSEDPlugin(SEDPlugin sb);
+  /**
+   *
+   * @param sb
+   * @return
+   */
+  boolean updateSEDPlugin(SEDPlugin sb);
 
-    /**
-     *
-     * @param sb
-     * @return
-     */
-    boolean updateSEDTaskType(SEDTaskType sb);
+  /**
+   *
+   * @param sb
+   * @return
+   */
+  boolean updateSEDTaskType(SEDTaskType sb);
 
-    /**
-     *
-     * @param sb
-     * @return
-     */
-    boolean updateSEDUser(SEDUser sb);
+  /**
+   *
+   * @param sb
+   * @return
+   */
+  boolean updateSEDUser(SEDUser sb);
 }

@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">  
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>si.vsrs.cif.sed</groupId>
         <artifactId>ebms-sed</artifactId>
@@ -7,12 +9,15 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <modelVersion>4.0.0</modelVersion>
     <artifactId>ebms-sed-module</artifactId>
     <packaging>pom</packaging>
-    <name>ebms-sed-module</name>
-    <url>www.sodisce.si</url>        
 
+    <name>ebms-sed-module</name>
+    <url>www.sodisce.si</url>
+    <organization>
+        <name>Supreme Court Republic of Slovenia</name>
+        <url>http://www.sodisce.si/</url>
+    </organization>
     <licenses>
         <license>
             <name>European Union Public Licence (EUPL)</name>
@@ -21,11 +26,7 @@
             <comments>European Free/Open Source Software (F/OSS) licence</comments>
         </license>
     </licenses>
-    <organization>
-        <name>Supreme Court Republic of Slovenia</name>
-        <url>http://www.sodisce.si/</url>
-    </organization>
-    
+
     <developers>
         <developer>
             <id>jrc</id>
@@ -39,7 +40,6 @@
             </roles>
         </developer>
     </developers>
-
 
     <modules>
         <module>ebms-sed-ws</module>

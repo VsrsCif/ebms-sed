@@ -1,7 +1,6 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * To change this license header, choose License Headers in Project Properties. To change this
+ * template file, choose Tools | Templates and open the template in the editor.
  */
 package si.sed.commons.email;
 
@@ -18,54 +17,52 @@ import javax.mail.internet.MimeMessage;
  */
 public class EVIPMimeMessage extends MimeMessage {
 
-    private String mStrMessageId = null;
+  private String mStrMessageId = null;
 
-    /**
-     *
-     * @param session
-     * @param messageId
-     */
-    public EVIPMimeMessage(Session session, String messageId) {
-        super(session);
-        this.session = session;
-        mStrMessageId = messageId;
+  /**
+   *
+   * @param session
+   * @param messageId
+   */
+  public EVIPMimeMessage(Session session, String messageId) {
+    super(session);
+    this.session = session;
+    mStrMessageId = messageId;
+  }
+
+  /**
+   *
+   * @param ssn
+   * @return
+   */
+  public String getUniqueMessageIDValue(Session ssn) {
+    String suffix = null;
+
+    InternetAddress addr = getLocalAddress(ssn);
+    if (addr != null) {
+      suffix = addr.getAddress();
+    } else {
+      suffix = "evip@sodisce.si"; // worst-case default
     }
 
-    /**
+    StringWriter s = new StringWriter();
+
+    // Unique string is <hashcode>.<id>.<currentTime>.JavaMail.<suffix>
+    // s.append(s.hashCode()+"");
+    // s.append('.');
+    s.append(mStrMessageId).append('.');
+    // s.append(""+System.currentTimeMillis()).append('.');
+    s.append("EVIPMail.");
+    s.append(suffix);
+    return s.toString();
+  }
+
+  /**
      *
-     * @param ssn
-     * @return
      */
-    public String getUniqueMessageIDValue(Session ssn) {
-        String suffix = null;
-
-        InternetAddress addr = getLocalAddress(ssn);
-        if (addr != null) {
-            suffix = addr.getAddress();
-        } else {
-            suffix = "evip@sodisce.si"; // worst-case default
-        }
-
-        StringWriter s = new StringWriter();
-
-        // Unique string is <hashcode>.<id>.<currentTime>.JavaMail.<suffix>
-        //s.append(s.hashCode()+"");
-        //s.append('.');
-        s.append(mStrMessageId).append('.');
-        //s.append(""+System.currentTimeMillis()).append('.');
-        s.append("EVIPMail.");
-        s.append(suffix);
-        return s.toString();
-    }
-
-    /**
-     *
-     * @throws MessagingException
-     */
-    @Override
-    public void updateMessageID()
-            throws MessagingException {
-        setHeader("Message-ID", "<" + getUniqueMessageIDValue(session) + ">");
-    }
+  @Override
+  public void updateMessageID() throws MessagingException {
+    setHeader("Message-ID", "<" + getUniqueMessageIDValue(session) + ">");
+  }
 
 }

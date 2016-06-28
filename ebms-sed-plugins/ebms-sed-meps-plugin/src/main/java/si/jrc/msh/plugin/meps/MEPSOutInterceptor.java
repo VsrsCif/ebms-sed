@@ -1,7 +1,6 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * To change this license header, choose License Headers in Project Properties. To change this
+ * template file, choose Tools | Templates and open the template in the editor.
  */
 package si.jrc.msh.plugin.meps;
 
@@ -21,24 +20,24 @@ import si.sed.commons.interfaces.SoapInterceptorInterface;
 @TransactionManagement(TransactionManagementType.BEAN)
 public class MEPSOutInterceptor implements SoapInterceptorInterface {
 
-    /**
-     *
-     * @param t
-     */
-    @Override
-    public void handleFault(SoapMessage t) {
+  /**
+   *
+   * @param t
+   */
+  @Override
+  public void handleFault(SoapMessage t) {
 
-    }
+  }
 
-    /**
-     *
-     * @param msg
-     */
-    @Override
-    public void handleMessage(SoapMessage msg) {
-        // create one pdf with white pages
-        // file message
+  /**
+   *
+   * @param msg
+   */
+  @Override
+  public void handleMessage(SoapMessage msg) {
+    // create one pdf with white pages
+    // file message
 
-    }
+  }
 
 }

@@ -1,7 +1,6 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * To change this license header, choose License Headers in Project Properties. To change this
+ * template file, choose Tools | Templates and open the template in the editor.
  */
 package si.sed.commons.interfaces;
 
@@ -19,56 +18,56 @@ import org.sed.ebms.property.SEDProperty;
 @Local
 public interface DBSettingsInterface {
 
-    /**
-     *
-     * @return
-     */
-    @Lock(value = LockType.READ)
-    String getDomain();
+  /**
+   *
+   * @return
+   */
+  @Lock(value = LockType.READ)
+  String getDomain();
 
-    /**
-     *
-     * @return
-     */
-    @Lock(value = LockType.READ)
-    String getHomeFolderPath();
+  /**
+   *
+   * @return
+   */
+  @Lock(value = LockType.READ)
+  String getHomeFolderPath();
 
-    /**
-     *
-     * @return
-     */
-    @Lock(value = LockType.READ)
-    String getPModeFileName();
+  /**
+   *
+   * @return
+   */
+  @Lock(value = LockType.READ)
+  String getPModeFileName();
 
-    /**
-     *
-     * @param prps
-     */
-    @Lock(value = LockType.READ)
-    void setSEDProperties(List<SEDProperty> prps);
+  /**
+   *
+   * @param prps
+   */
+  @Lock(value = LockType.READ)
+  void setSEDProperties(List<SEDProperty> prps);
 
-    /**
-     *
-     * @return
-     */
-    List<SEDProperty> getSEDProperties();
+  /**
+   *
+   * @return
+   */
+  List<SEDProperty> getSEDProperties();
 
-    /**
-     *
-     * @return
-     */
-    Properties getProperties();
+  /**
+   *
+   * @return
+   */
+  Properties getProperties();
 
-    /**
-     *
-     * @return
-     */
-    @Lock(value = LockType.READ)
-    String getSecurityFolderPath();
+  /**
+   *
+   * @return
+   */
+  @Lock(value = LockType.READ)
+  String getSecurityFolderPath();
 
-    /**
+  /**
      *
      */
-    void initialize();
+  void initialize();
 
 }

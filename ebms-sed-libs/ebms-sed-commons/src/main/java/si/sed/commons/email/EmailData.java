@@ -9,122 +9,120 @@ import java.util.List;
  */
 public class EmailData {
 
-    List<EmailAttachmentData> mlstAttachments = new ArrayList<>();
-    String mstrBody;
-    String mstrEmailAddresses;
-    String mstrEmailCCAddresses;
-    String mstrEmailSenderAddress;
-    String mstrSubject;
+  List<EmailAttachmentData> mlstAttachments = new ArrayList<>();
+  String mstrBody;
+  String mstrEmailAddresses;
+  String mstrEmailCCAddresses;
+  String mstrEmailSenderAddress;
+  String mstrSubject;
 
-    /**
-     *
-     * @param mstrEmailAddresses
-     * @param mstrEmailCCAddresses
-     * @param mstrSubject
-     * @param mstrBody
-     */
-    public EmailData(String mstrEmailAddresses, String mstrEmailCCAddresses,
-            String mstrSubject, String mstrBody) {
-        this.mstrEmailAddresses = mstrEmailAddresses;
-        this.mstrEmailCCAddresses = mstrEmailCCAddresses;
-        this.mstrSubject = mstrSubject;
-        this.mstrBody = mstrBody;
-    }
+  /**
+   *
+   * @param mstrEmailAddresses
+   * @param mstrEmailCCAddresses
+   * @param mstrSubject
+   * @param mstrBody
+   */
+  public EmailData(String mstrEmailAddresses, String mstrEmailCCAddresses, String mstrSubject,
+      String mstrBody) {
+    this.mstrEmailAddresses = mstrEmailAddresses;
+    this.mstrEmailCCAddresses = mstrEmailCCAddresses;
+    this.mstrSubject = mstrSubject;
+    this.mstrBody = mstrBody;
+  }
 
-    /**
-     *
-     * @return
-     */
-    public List<EmailAttachmentData> getAttachments() {
-        return mlstAttachments;
-    }
+  /**
+   *
+   * @return
+   */
+  public List<EmailAttachmentData> getAttachments() {
+    return mlstAttachments;
+  }
 
-    /**
-     *
-     * @return
-     */
-    public String getBody() {
-        return mstrBody;
-    }
+  /**
+   *
+   * @return
+   */
+  public String getBody() {
+    return mstrBody;
+  }
 
-    /**
-     *
-     * @return
-     */
-    public String getEmailAddresses() {
-        return mstrEmailAddresses;
-    }
+  /**
+   *
+   * @return
+   */
+  public String getEmailAddresses() {
+    return mstrEmailAddresses;
+  }
 
-    /**
-     *
-     * @return
-     */
-    public String getEmailCCAddresses() {
-        return mstrEmailCCAddresses;
-    }
+  /**
+   *
+   * @return
+   */
+  public String getEmailCCAddresses() {
+    return mstrEmailCCAddresses;
+  }
 
-    /**
-     *
-     * @return
-     */
-    public String getEmailSenderAddress() {
-        return mstrEmailSenderAddress;
-    }
+  /**
+   *
+   * @return
+   */
+  public String getEmailSenderAddress() {
+    return mstrEmailSenderAddress;
+  }
 
-    /**
-     *
-     * @return
-     */
-    public String getSubject() {
-        return mstrSubject;
-    }
+  /**
+   *
+   * @return
+   */
+  public String getSubject() {
+    return mstrSubject;
+  }
 
-    /**
-     *
-     * @param mstrBody
-     */
-    public void setBody(String mstrBody) {
-        this.mstrBody = mstrBody;
-    }
+  /**
+   *
+   * @param mstrBody
+   */
+  public void setBody(String mstrBody) {
+    this.mstrBody = mstrBody;
+  }
 
-    /**
-     *
-     * @param mstrEmailAddresses
-     */
-    public void setEmailAddresses(String mstrEmailAddresses) {
-        this.mstrEmailAddresses = mstrEmailAddresses;
-    }
+  /**
+   *
+   * @param mstrEmailAddresses
+   */
+  public void setEmailAddresses(String mstrEmailAddresses) {
+    this.mstrEmailAddresses = mstrEmailAddresses;
+  }
 
-    /**
-     *
-     * @param mstrEmailCCAddresses
-     */
-    public void setEmailCCAddresses(String mstrEmailCCAddresses) {
-        this.mstrEmailCCAddresses = mstrEmailCCAddresses;
-    }
+  /**
+   *
+   * @param mstrEmailCCAddresses
+   */
+  public void setEmailCCAddresses(String mstrEmailCCAddresses) {
+    this.mstrEmailCCAddresses = mstrEmailCCAddresses;
+  }
 
-    /**
-     *
-     * @param mstrEmailSenderAddress
-     */
-    public void setEmailSenderAddress(String mstrEmailSenderAddress) {
-        this.mstrEmailSenderAddress = mstrEmailSenderAddress;
-    }
+  /**
+   *
+   * @param mstrEmailSenderAddress
+   */
+  public void setEmailSenderAddress(String mstrEmailSenderAddress) {
+    this.mstrEmailSenderAddress = mstrEmailSenderAddress;
+  }
 
-    /**
-     *
-     * @param mstrSubject
-     */
-    public void setSubject(String mstrSubject) {
-        this.mstrSubject = mstrSubject;
-    }
+  /**
+   *
+   * @param mstrSubject
+   */
+  public void setSubject(String mstrSubject) {
+    this.mstrSubject = mstrSubject;
+  }
 
-    @Override
-    public String toString() {
-        return "EmailData{" + "to=" + mstrEmailAddresses + ", cc=" +
-                mstrEmailCCAddresses + ", subject=" + mstrSubject +
-                ", Attachments size=" + mlstAttachments.
-                size() + '}';
-    }
+  @Override
+  public String toString() {
+    return "EmailData{" + "to=" + mstrEmailAddresses + ", cc=" + mstrEmailCCAddresses
+        + ", subject=" + mstrSubject + ", Attachments size=" + mlstAttachments.size() + '}';
+  }
 
 }

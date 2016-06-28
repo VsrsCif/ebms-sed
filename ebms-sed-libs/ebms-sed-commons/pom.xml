@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>si.vsrs.cif.sed</groupId>
         <artifactId>ebms-sed</artifactId>
@@ -9,9 +10,13 @@
     </parent>
 
     <artifactId>ebms-sed-commons</artifactId>
+
     <name>ebms-sed-commons</name>
     <description>Project contains common lookups, codes and utils for security, encryption, FOP, PDF etc. </description>
-
+    <organization>
+        <name>Supreme Court Republic of Slovenia</name>
+        <url>http://www.sodisce.si/</url>
+    </organization>
     <licenses>
         <license>
             <name>European Union Public Licence (EUPL)</name>
@@ -20,11 +25,7 @@
             <comments>European Free/Open Source Software (F/OSS) licence</comments>
         </license>
     </licenses>
-    <organization>
-        <name>Supreme Court Republic of Slovenia</name>
-        <url>http://www.sodisce.si/</url>
-    </organization>
-    
+
     <developers>
         <developer>
             <id>jrc</id>
@@ -38,20 +39,6 @@
             </roles>
         </developer>
     </developers>
-
-
-    <build>
-        <plugins>    
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>jaxb2-maven-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-            </plugin>
-            
-        </plugins>
-    </build>
 
     <dependencies>
         <dependency>
@@ -96,4 +83,17 @@
         </dependency>
       
     </dependencies>
+
+    <build>
+        <plugins>    
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>jaxb2-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
+            
+        </plugins>
+    </build>
 </project>

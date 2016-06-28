@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>si.vsrs.cif.sed</groupId>
         <artifactId>ebms-sed</artifactId>
@@ -8,12 +9,12 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    
     <artifactId>ebms-msh-ejb</artifactId>
-    <name>ebms-msh-ejb</name>
     <packaging>ejb</packaging>
+
+    <name>ebms-msh-ejb</name>
     <description>MSH JMS queue </description>
-    
+
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -62,7 +63,9 @@
 
 
     </dependencies>
+
     <build>
+        <finalName>ebms-msh-ejb</finalName>
         <plugins>        
             <plugin>
                 <artifactId>maven-ejb-plugin</artifactId>                  
@@ -71,8 +74,5 @@
                 <artifactId>maven-compiler-plugin</artifactId>
             </plugin>
         </plugins>
-        <finalName>ebms-msh-ejb</finalName>
     </build>
-    
-    
 </project>

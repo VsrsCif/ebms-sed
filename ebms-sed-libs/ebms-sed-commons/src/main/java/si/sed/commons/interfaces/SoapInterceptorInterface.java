@@ -1,7 +1,6 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * To change this license header, choose License Headers in Project Properties. To change this
+ * template file, choose Tools | Templates and open the template in the editor.
  */
 package si.sed.commons.interfaces;
 
@@ -16,17 +15,15 @@ import org.apache.cxf.interceptor.Fault;
 @Local
 public interface SoapInterceptorInterface {
 
-    /**
-     *
-     * @param t
-     * @throws Fault
-     */
-    public void handleMessage(SoapMessage t)
-            throws Fault;
+  /**
+   *
+   * @param t
+   */
+  public void handleMessage(SoapMessage t) throws Fault;
 
-    /**
-     *
-     * @param t
-     */
-    public void handleFault(SoapMessage t);
+  /**
+   *
+   * @param t
+   */
+  public void handleFault(SoapMessage t);
 }

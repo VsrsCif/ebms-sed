@@ -2,6 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>si.vsrs.cif.sed</groupId>
         <artifactId>ebms-sed</artifactId>
@@ -9,10 +10,34 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
-
     <artifactId>ebms-msh-ear</artifactId>
     <packaging>ear</packaging>
+
     <name>ebms-msh-ear</name>
+
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>ebms-msh-ejb</artifactId>
+            <version>${project.version}</version>		
+            <type>ejb</type>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>ebms-msh-ws</artifactId>
+            <version>${project.version}</version>		
+            <type>war</type>
+        </dependency>
+            
+        <dependency>             
+            <groupId>${project.groupId}</groupId>
+            <artifactId>ebms-msh-cxf</artifactId>
+            <version>${project.version}</version>		
+        </dependency>
+        
+    </dependencies>
+
     <build>
         <plugins>
             <plugin>
@@ -45,48 +70,4 @@
             </plugin>
         </plugins>
     </build>
-    <dependencies>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>ebms-msh-ejb</artifactId>
-            <version>${project.version}</version>		
-            <type>ejb</type>
-        </dependency>
-
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>ebms-msh-ws</artifactId>
-            <version>${project.version}</version>		
-            <type>war</type>
-        </dependency>
-        <!-- dependency>             
-            <groupId>${project.groupId}</groupId>
-            <artifactId>ebms-msh-xsd</artifactId>
-            <version>${project.version}</version>	
-           	
-        </dependency>        
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>ebms-sed-commons</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.xmlgraphics</groupId>
-            <artifactId>fop</artifactId>
-            
-            <exclusions>
-                <exclusion>
-                    <artifactId>xalan</artifactId>
-                    <groupId>xalan</groupId>
-                </exclusion>
-            </exclusions>            
-        </dependency -->
-      
-        <dependency>             
-            <groupId>${project.groupId}</groupId>
-            <artifactId>ebms-msh-cxf</artifactId>
-            <version>${project.version}</version>		
-        </dependency>
-        
-    </dependencies>
 </project>

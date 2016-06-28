@@ -1,7 +1,6 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * To change this license header, choose License Headers in Project Properties. To change this
+ * template file, choose Tools | Templates and open the template in the editor.
  */
 package si.jrc.msh.plugin.meps;
 
@@ -19,68 +18,68 @@ import si.sed.commons.interfaces.PluginDescriptionInterface;
 @Local(PluginDescriptionInterface.class)
 public class MEPSPluginDescription implements PluginDescriptionInterface {
 
-    /**
-     *
-     * @return
-     */
-    @Override
-    public String getDesc() {
-        return "";
-    }
+  /**
+   *
+   * @return
+   */
+  @Override
+  public String getDesc() {
+    return "";
+  }
 
-    /**
-     *
-     * @return
-     */
-    @Override
-    public String getJNDIInInterceptor() {
-        return "java:global/plugin-meps/MEPSOutInterceptor!si.sed.commons.interfaces.SoapInterceptorInterface";
-    }
+  /**
+   *
+   * @return
+   */
+  @Override
+  public String getJNDIInInterceptor() {
+    return "java:global/plugin-meps/MEPSOutInterceptor!si.sed.commons.interfaces.SoapInterceptorInterface";
+  }
 
-    /**
-     *
-     * @return
-     */
-    @Override
-    public String getJNDIOutInterceptor() {
-        return "java:global/plugin-meps/MEPSOutInterceptor!si.sed.commons.interfaces.SoapInterceptorInterface";
-    }
+  /**
+   *
+   * @return
+   */
+  @Override
+  public String getJNDIOutInterceptor() {
+    return "java:global/plugin-meps/MEPSOutInterceptor!si.sed.commons.interfaces.SoapInterceptorInterface";
+  }
 
-    /**
-     *
-     * @return
-     */
-    @Override
-    public String getName() {
-        return "MEPS-plugin";
-    }
+  /**
+   *
+   * @return
+   */
+  @Override
+  public String getName() {
+    return "MEPS-plugin";
+  }
 
-    /**
-     *
-     * @return
-     */
-    @Override
-    public String getSettingUrlContext() {
-        return "/meps";
-    }
+  /**
+   *
+   * @return
+   */
+  @Override
+  public String getSettingUrlContext() {
+    return "/meps";
+  }
 
-    /**
-     *
-     * @return
-     */
-    @Override
-    public List<String> getTaskJNDIs() {
-        return Collections.singletonList(
-                "java:global/plugin-meps/MEPSTask!si.sed.commons.interfaces.TaskExecutionInterface");
-    }
+  /**
+   *
+   * @return
+   */
+  @Override
+  public List<String> getTaskJNDIs() {
+    return Collections
+        .singletonList("java:global/plugin-meps/MEPSTask!si.sed.commons.interfaces.TaskExecutionInterface");
+  }
 
-    /**
-     *
-     * @return
-     */
-    @Override
-    public String getType() {
-        return "MEPSPlugin";
-    }
+  /**
+   *
+   * @return
+   */
+  @Override
+  public String getType() {
+    return "MEPSPlugin";
+  }
 
 }

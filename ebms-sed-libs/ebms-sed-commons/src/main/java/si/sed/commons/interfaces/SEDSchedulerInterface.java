@@ -1,7 +1,6 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * To change this license header, choose License Headers in Project Properties. To change this
+ * template file, choose Tools | Templates and open the template in the editor.
  */
 package si.sed.commons.interfaces;
 
@@ -17,23 +16,23 @@ import javax.ejb.TimerService;
 @Local
 public interface SEDSchedulerInterface {
 
-    /**
-     *
-     * @return
-     */
-    int getChecks();
+  /**
+   *
+   * @return
+   */
+  int getChecks();
 
-    /**
-     *
-     * @return
-     */
-    TimerService getServices();
+  /**
+   *
+   * @return
+   */
+  TimerService getServices();
 
-    /**
-     *
-     * @param timer
-     */
-    @Timeout
-    void timeout(Timer timer);
+  /**
+   *
+   * @param timer
+   */
+  @Timeout
+  void timeout(Timer timer);
 
 }

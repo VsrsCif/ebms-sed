@@ -1,7 +1,6 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * To change this license header, choose License Headers in Project Properties. To change this
+ * template file, choose Tools | Templates and open the template in the editor.
  */
 package si.sed.commons.interfaces;
 
@@ -17,23 +16,22 @@ import si.sed.commons.interfaces.exception.TaskException;
 @Local
 public interface TaskExecutionInterface {
 
-    /**
-     *
-     * @param p
-     * @return
-     * @throws TaskException
-     */
-    String executeTask(Properties p)
-            throws TaskException;
-    //String getType();
-    //String getName();
-    //String getDesc();
-    //Properties getProperties();
+  /**
+   *
+   * @param p
+   * @return
+   */
+  String executeTask(Properties p) throws TaskException;
 
-    /**
-     *
-     * @return
-     */
-    SEDTaskType getTaskDefinition();
+  // String getType();
+  // String getName();
+  // String getDesc();
+  // Properties getProperties();
+
+  /**
+   *
+   * @return
+   */
+  SEDTaskType getTaskDefinition();
 
 }
