@@ -375,7 +375,7 @@
                             <excludes>
                                 <exclude>**/generated/*.java</exclude>
                             </excludes>
-                            <aggregate>true</aggregate>
+                            <!-- aggregate>true</aggregate -->
                             <format>html</format>
                         </configuration>      
                     </plugin>
@@ -389,13 +389,13 @@
                             <logViolationsToConsole>false</logViolationsToConsole>     
                             <configLocation>google_checks.xml </configLocation>               
                         </configuration>
-                        <reportSets>
+                        <!-- reportSets>
                             <reportSet>
                                 <reports>
                                     <report>checkstyle-aggregate</report>
                                 </reports>
                             </reportSet>
-                        </reportSets>
+                        </reportSets -->
                     </plugin>
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
