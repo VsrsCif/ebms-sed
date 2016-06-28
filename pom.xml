@@ -343,7 +343,7 @@
 
     <profiles>
         <profile>
-            <id>CI-Reports</id>
+            <id>CI-BuildWithReports</id>
             <build>
                 <defaultGoal>clean install site</defaultGoal>
                 <plugins>
