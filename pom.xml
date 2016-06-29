@@ -66,6 +66,7 @@
         <maven.pmd.plugin.version>3.6</maven.pmd.plugin.version>
         <maven.project-info.plugin.version>2.9</maven.project-info.plugin.version>
         <maven.surefire.plugin.version>2.16</maven.surefire.plugin.version>
+        <sonar.maven.version>3.0.2</sonar.maven.version>
         <!-- DEPENDENCIES -->
         <cxf-rt.version>3.1.4</cxf-rt.version>        
         <javax.javaee-api.version>7.0</javax.javaee-api.version>
@@ -332,14 +333,18 @@
                          
                     </configuration>
                 </plugin>        
+                <plugin>
+                    <groupId>org.sonarsource.scanner.maven</groupId>
+                    <artifactId>sonar-maven-plugin</artifactId>
+                    <version>${sonar.maven.version}</version>                    
+                </plugin>
             </plugins>
+            
+            
+            
+            
         </pluginManagement>
         <plugins>
-          
-            
-            
-            
-                  
         </plugins>
     </build>
 
@@ -381,7 +386,7 @@
                                 <exclude>**/org/w3/_2001/**/*.java</exclude>
                             </excludes>
                             <aggregate>false</aggregate>
-                            <format>html</format>
+                            <!-- format>html</format -->
                         </configuration>      
                     </plugin>
                     <plugin>
@@ -392,7 +397,8 @@
                             <sourceDirectory>${project.build.sourceDirectory}</sourceDirectory>
                             <excludes>**/generated/**/*, **/generated-sources/**/*, **/org/sed/ebms/**/*, **/org/w3/_2001/**/*</excludes>
                             <logViolationsToConsole>false</logViolationsToConsole>     
-                            <configLocation>google_checks.xml </configLocation>               
+                            
+                            <!-- configLocation>google_checks.xml </configLocation -->               
                         </configuration>                        
                     </plugin>
                     <plugin>
