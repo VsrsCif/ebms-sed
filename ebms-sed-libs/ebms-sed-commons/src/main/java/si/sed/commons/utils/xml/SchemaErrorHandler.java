@@ -14,41 +14,52 @@
  */
 package si.sed.commons.utils.xml;
 
-import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.List;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
 /**
+ * Class is used by javax.xml.validation.Validator for handling fatal errors, errors and warnigs
+ * while validating XML. Error are returned by calling getter methods.
  *
  * @author Joze Rihtarsic <joze.rihtarsic@sodisce.si>
  */
 public class SchemaErrorHandler implements ErrorHandler {
 
-  StringWriter sw = new StringWriter();
+  List<SAXParseException> errors = new ArrayList<>();
+  List<SAXParseException> fatalerrors = new ArrayList<>();
+  List<SAXParseException> warnings = new ArrayList<>();
 
   @Override
-  public void error(SAXParseException ex) throws SAXException {
-    sw.append(ex.toString());
-    sw.append("\n");
-  }
-
-  @Override
-  public void fatalError(SAXParseException ex) throws SAXException {
-    sw.append(ex.toString());
-    sw.append("\n");
-  }
-
-  /**
-   *
-   * @return
-   */
-  public String getErrorAsString() {
-    return sw.toString();
+  public void error(SAXParseException ex)
+      throws SAXException {
+    errors.add(ex);
   }
 
   @Override
-  public void warning(SAXParseException ex) throws SAXException {
-    // ignore
+  public void fatalError(SAXParseException ex)
+      throws SAXException {
+    fatalerrors.add(ex);
   }
+
+  @Override
+  public void warning(SAXParseException ex)
+      throws SAXException {
+    warnings.add(ex);
+  }
+
+  public List<SAXParseException> getErrors() {
+    return errors;
+  }
+
+  public List<SAXParseException> getFatalErrors() {
+    return fatalerrors;
+  }
+
+  public List<SAXParseException> getWarnings() {
+    return warnings;
+  }
+
 }

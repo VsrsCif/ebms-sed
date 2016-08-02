@@ -40,6 +40,7 @@ import si.sed.commons.interfaces.TaskExecutionInterface;
 import si.sed.commons.interfaces.exception.TaskException;
 import si.sed.commons.utils.SEDLogger;
 import si.sed.commons.utils.StorageUtils;
+import si.sed.commons.utils.StringFormater;
 import si.sed.commons.utils.Utils;
 import si.sed.commons.utils.xml.XMLUtils;
 
@@ -159,7 +160,7 @@ public class TaskBackup implements TaskExecutionInterface {
 
   private File initFolders(String rootFolder, String bckFolder, boolean clearFirst)
       throws TaskException {
-    File f = new File(Utils.replaceProperties(rootFolder));
+    File f = new File(StringFormater.replaceProperties(rootFolder));
     if (f.exists() && clearFirst) {
       try {
         removeRecursive(f.toPath());
@@ -224,8 +225,8 @@ public class TaskBackup implements TaskExecutionInterface {
             for (MSHOutPart p : m.getMSHOutPayload().getMSHOutParts()) {
               if (p.getFilepath() != null) {
                 try {
-                  StorageUtils.copyFileToFolder(p.getFilepath(), f);
-                } catch (IOException | StorageException ex) {
+                  mSU.copyFileToFolder(p.getFilepath(), f);
+                } catch ( StorageException ex) {
                   throw new TaskException(TaskException.TaskExceptionCode.ProcessException,
                       "Error occured while copying  file : '" + p.getFilepath() + "'!", ex);
                 }
@@ -287,8 +288,8 @@ public class TaskBackup implements TaskExecutionInterface {
             for (MSHInPart p : m.getMSHInPayload().getMSHInParts()) {
               if (p.getFilepath() != null) {
                 try {
-                  StorageUtils.copyFileToFolder(p.getFilepath(), f);
-                } catch (IOException | StorageException ex) {
+                  mSU.copyFileToFolder(p.getFilepath(), f);
+                } catch ( StorageException ex) {
                   throw new TaskException(TaskException.TaskExceptionCode.ProcessException,
                       "Error occured while copying  file : '" + p.getFilepath() + "'!", ex);
                 }

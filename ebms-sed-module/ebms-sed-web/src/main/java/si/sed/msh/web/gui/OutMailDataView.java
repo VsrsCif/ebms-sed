@@ -171,7 +171,7 @@ public class OutMailDataView extends AbstractMailView<MSHOutMail, MSHOutEvent> i
         File f = StorageUtils.getFile(part.getFilepath());
         return new DefaultStreamedContent(new FileInputStream(f), part.getMimeType(),
             part.getFilename());
-      } catch (StorageException | FileNotFoundException ex) {
+      } catch ( FileNotFoundException ex) {
         Logger.getLogger(InMailDataView.class.getName()).log(Level.SEVERE, null, ex);
       }
     }

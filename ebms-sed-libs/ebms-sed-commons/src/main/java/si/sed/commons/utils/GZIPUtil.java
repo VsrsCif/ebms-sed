@@ -25,15 +25,15 @@ import java.util.zip.GZIPOutputStream;
 
 /**
  *
- * @author sluzba
+ * @author Joze Rihtarsic <joze.rihtarsic@sodisce.si>
  */
 public class GZIPUtil {
 
   /**
-   *
-   * @param srcFn
-   * @param trgFn
-   * @throws IOException
+   * Compress source file to target file with GZIP
+   * @param srcFn - source file 
+   * @param trgFn - target zipped file
+   * @throws IOException - error reading source file or writing target file
    */
   public void compressGZIP(final File srcFn, final File trgFn) throws IOException {
 
@@ -44,29 +44,27 @@ public class GZIPUtil {
 
   }
 
-  /**
-   *
-   * @param src
-   * @param trg
-   * @throws IOException
+   /**
+   * Compress input source to target gzip stream. Streams are not closed!
+   * @param src - source file 
+   * @param trg - target gzip stream
+   * @throws IOException - error reading source file or writing target file
    */
   public void compressGZIP(final InputStream src, final GZIPOutputStream trg) throws IOException {
+    
     final byte[] buffer = new byte[1024];
-
     int i;
     while ((i = src.read(buffer)) > 0) {
       trg.write(buffer, 0, i);
     }
-    src.close();
-    trg.finish();
-    trg.close();
+    trg.finish();    
   }
 
   /**
-   *
-   * @param srcFn
-   * @param trgFn
-   * @throws IOException
+   * Decompress source gzip file to target file. Streams are not closed.
+   * @param srcFn - zipped file 
+   * @param trgFn - target unziped  file
+   * @throws IOException - error reading source file or writing target file
    */
   public void decompressGZIP(final File srcFn, final File trgFn) throws IOException {
 
@@ -84,8 +82,7 @@ public class GZIPUtil {
     while ((i = gis.read(buffer)) > 0) {
       os.write(buffer, 0, i);
     }
-    gis.close();
-    os.close();
+    os.flush();
   }
 
 }

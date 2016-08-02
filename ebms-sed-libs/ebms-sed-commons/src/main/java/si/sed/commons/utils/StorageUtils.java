@@ -18,129 +18,158 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import static java.io.File.createTempFile;
 import static java.io.File.separator;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import static java.lang.String.format;
 import static java.lang.System.getProperty;
-import java.nio.channels.FileChannel;
-import java.text.SimpleDateFormat;
-import static java.util.Calendar.getInstance;
+import java.nio.file.DirectoryStream;
+import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.time.LocalDate;
 import static si.sed.commons.MimeValues.getSuffixBYMimeType;
 import static si.sed.commons.SEDSystemProperties.SYS_PROP_FOLDER_STORAGE_DEF;
 import static si.sed.commons.SEDSystemProperties.SYS_PROP_HOME_DIR;
 import si.sed.commons.exception.StorageException;
 
 /**
+ * Class handles local storage for binaries attached to mail. Local storage is in
+ * ${sed.home}/storage folder. Binaries are stored under creation date-named [yyyy/MM/dd_000001]
+ * folders. If in folder is more than MAX_FILES_IN_FOLDER files new subfolder is created 001,
+ * subfolder has 3 digits with leading '0' for number lower than 1000. 001, 012, 898, 2215, 3656,
+ * etc
+ *
  *
  * @author Joze Rihtarsic <joze.rihtarsic@sodisce.si>
  */
 public class StorageUtils {
 
-  /**
-     *
-     */
-  public static final String S_IN_PREFIX = "in_";
+
+  
+  private static Path CURRENT_PATH;
+  public static final int MAX_FILES_IN_FOLDER = 1024;
+  private static final SEDLogger LOG = new SEDLogger(StorageUtils.class);
+  private static final String S_IN_PREFIX = "in_";
+  private static final String S_OUT_PREFIX = "out_";
+
 
   /**
-     *
-     */
-  public static final String S_OUT_PREFIX = "out_";
-  private static final SimpleDateFormat msdfFolderDateFormat = new SimpleDateFormat("yyyyMMdd");
-
-  /**
+   * Current storage folder.
    *
-   * @param sourceFile
-   * @param destFile
-   * @throws IOException
+   * @return root folder as defined in system property: ${sed.home}/storage/[CURRENT FOLDER - date]/
+   * @throws StorageException - if current folder not exists and could not be created
    */
-  public static synchronized void copyFile(File sourceFile, File destFile) throws IOException {
-    if (!destFile.exists()) {
-      destFile.createNewFile();
+  public static synchronized File currentStorageFolder()
+      throws StorageException {
+    LocalDate cld = LocalDate.now();
+    // current date
+    Path pcDir = dateStorageFolder(cld);
+    // check if current path is 'todays' path 
+    if (CURRENT_PATH != null && !CURRENT_PATH.startsWith(pcDir)) {
+      CURRENT_PATH = null;
     }
-    try (FileChannel source = new FileInputStream(sourceFile).getChannel();
-        FileChannel destination = new FileOutputStream(destFile).getChannel()) {
-      destination.transferFrom(source, 0, source.size());
-    }
-  }
-
-  /**
-   *
-   * @param storageFilePath
-   * @param folder
-   * @throws IOException
-   * @throws StorageException
-   */
-  public static synchronized void copyFileToFolder(String storageFilePath, File folder)
-      throws IOException, StorageException {
-    if (!folder.exists() && !folder.mkdirs()) {
-      throw new IOException("Could not create export folder: " + folder.getAbsolutePath());
-    }
-    File destFile = new File(folder, storageFilePath);
-    File pf = destFile.getParentFile();
-    if (!pf.exists() && !pf.mkdirs()) {
-      throw new IOException("Could not create folder: " + pf.getAbsolutePath());
+    // create new path
+    if (CURRENT_PATH == null) {
+      int i = getMaxSubFolderNumber(pcDir);
+      CURRENT_PATH = pcDir.resolve(format("%03d", i)).toAbsolutePath();
     }
 
-    copyFile(getFile(storageFilePath), destFile);
-  }
+    try {
+      // check max number
+      if (Files.exists(CURRENT_PATH, LinkOption.NOFOLLOW_LINKS) &&
+          Files.list(CURRENT_PATH).count() > MAX_FILES_IN_FOLDER) {
 
-  /**
-   *
-   * @param strInFileName
-   * @param destFile
-   * @throws IOException
-   * @throws StorageException
-   */
-  public static synchronized void copyInFile(String strInFileName, File destFile)
-      throws IOException, StorageException {
-    copyFile(getFile(strInFileName), destFile);
-  }
+        int i = getMaxSubFolderNumber(pcDir) + 1;
+        CURRENT_PATH = pcDir.resolve(format("%03d", i)).normalize().toAbsolutePath();
 
-  /**
-   *
-   * @return @throws StorageException
-   */
-  public static synchronized File currentStorageFolder() throws StorageException {
-
-    File f =
-        new File(getProperty(SYS_PROP_HOME_DIR) + separator + SYS_PROP_FOLDER_STORAGE_DEF
-            + separator + currentStorageFolderName());
+      }
+    } catch (IOException ex) {
+      throw new StorageException(
+          format("Error occurred while creating current storage folder: '%s'",
+              CURRENT_PATH.toFile()),ex);
+    }
+    File f = CURRENT_PATH.toFile();
     if (!f.exists() && !f.mkdirs()) {
-      throw new StorageException(format("Error occurred while creating storage folder: '%s'",
-          f.getAbsolutePath()));
+      throw new StorageException(
+          format("Error occurred while creating current storage folder: '%s'",
+              f.getAbsolutePath()));
     }
     return f;
   }
-
   /**
+   * Method returs path for LocalDate ${sed.home}/storage/[year]/[month]/[day]
    *
-   * @return
+   * @param ld - Local date
+   * @return returs path
    */
-  public static synchronized String currentStorageFolderName() {
-    return msdfFolderDateFormat.format(getInstance().getTime());
+  protected static synchronized Path dateStorageFolder(LocalDate ld) {
+    return Paths.get(getProperty(SYS_PROP_HOME_DIR),
+        SYS_PROP_FOLDER_STORAGE_DEF,
+        ld.getYear() + "",
+        format("%02d", ld.getMonthValue()),
+        format("%02d", ld.getDayOfMonth()));
   }
 
+
+
   /**
+   * File to relative storage path ${sed.home}/[storagePath]
    *
    * @param storagePath
-   * @return
-   * @throws StorageException
+   * @return File to to relative storage path
    */
-  public static synchronized File getFile(String storagePath) throws StorageException {
-    File f = new File(getProperty(SYS_PROP_HOME_DIR) + separator + storagePath);
-    return f;
+  public static synchronized File getFile(String storagePath) {
+    return new File(getProperty(SYS_PROP_HOME_DIR) + separator + storagePath);
   }
 
   /**
+   * Method returs max subfolder number. If storage folder has more than MAX_FILES_IN_FOLDER new
+   * subfolder is created. Method resturms maxnumber if subfolder number in current date folder
+   * ${sed.home}/storage/[year]/[month]/[day]/[number]
    *
-   * @param suffix
-   * @param prefix
-   * @return
+   * @param dateDir - Current date dir ${sed.home}/storage/[year]/[month]/[day]
+   * @return returs max subfolder number. If there is no subfolder method returs 1
+   */
+  protected static synchronized int getMaxSubFolderNumber(Path dateDir) {
+    long l = LOG.getTime();
+    int iMaxFolder = 1;
+
+    if (dateDir != null && Files.exists(dateDir, LinkOption.NOFOLLOW_LINKS) && Files.isDirectory(
+        dateDir, LinkOption.NOFOLLOW_LINKS)) {
+      try (DirectoryStream<Path> stream = Files.newDirectoryStream(dateDir, (Path file) ->
+          (Files.isDirectory(file)))) {
+        for (Path path : stream) {
+          String name = path.getFileName().toString();
+          try {
+            int i = Integer.parseInt(name);
+            iMaxFolder = i > iMaxFolder ? i : iMaxFolder;
+          } catch (NumberFormatException ne) {
+            LOG.logWarn(l, format("Subfolder '%s' is not a number! Path: %s", name,
+                dateDir.toFile().getAbsolutePath()), ne);
+          }
+        }
+      } catch (IOException e) {
+        LOG.logWarn(l, format("Error reading subfolders for path '%s'",
+            dateDir.toFile().getAbsolutePath()), e);
+      }
+    }
+    return iMaxFolder;
+  }
+
+  /**
+   * create new empty file in current storage folder
+   *
+   * @param suffix - file suffix (usually mime suffix as .pdf, .xml, etc. )
+   * @param prefix - file prefix (in_/out_)
+   * @return new storage file
    * @throws StorageException
    */
-  public static File getNewStorageFile(String suffix, String prefix) throws StorageException {
+  public static File getNewStorageFile(String suffix, String prefix)
+      throws StorageException {
     File fStore;
     try {
       fStore = createTempFile(prefix, "." + suffix, currentStorageFolder());
@@ -151,97 +180,160 @@ public class StorageUtils {
   }
 
   /**
+   * Returns relative string path for file
    *
-   * @param path
-   * @return
+   * @param path - input file in storage
+   * @return String - relative path
+   * @throws si.sed.commons.exception.StorageException
    */
-  public static String getRelativePath(File path) {
+  public static String getRelativePath(File path) throws StorageException {
+    
     File hdir = new File(getProperty(SYS_PROP_HOME_DIR));
+
     if (path.getAbsolutePath().startsWith(hdir.getAbsolutePath())) {
       String rp = path.getAbsolutePath().substring(hdir.getAbsolutePath().length());
       rp = rp.startsWith(separator) ? rp.substring(1) : rp;
       return rp;
+    } else {
+      throw  new StorageException(format("File: '%s' is not in storage '%s'", 
+          path.getAbsolutePath(), hdir.getAbsolutePath()) );
     }
-
-    String base = getProperty(SYS_PROP_HOME_DIR);
-
-    String[] basePaths = base.split(separator);
-    String[] otherPaths = path.getParent().split(separator);
-    int n = 0;
-    for (; n < basePaths.length && n < otherPaths.length; n++) {
-      if (basePaths[n].equals(otherPaths[n]) == false) {
-        break;
-      }
-    }
-    StringBuilder tmp = new StringBuilder();
-    for (int m = n; m < basePaths.length - 1; m++) {
-      tmp.append("..");
-      tmp.append(separator);
-    }
-
-    for (int m = n; m < otherPaths.length; m++) {
-      tmp.append(otherPaths[m]);
-      tmp.append(separator);
-    }
-    // add filename
-    tmp.append(path.getName());
-    return tmp.toString();
+  }
+  /**
+   * Mehotd return ${sed.home} folder as File object. Folder is given as system property
+   *
+   * @return return sed-home folder as File object
+   */
+  public static File getSEDHomeFolder() {
+    return new File(getProperty(SYS_PROP_HOME_DIR, System.getProperty("user.dir")));
+  }
+  /**
+   * Mehotd return ${sed.home}/storage folder as File object.
+   *
+   * @return return storage folder
+   */
+  public static File getStorageFolder() {
+    return new File(getSEDHomeFolder(), SYS_PROP_FOLDER_STORAGE_DEF);
   }
 
   /**
+   * delete file in storage.
    *
-   * @param strInFileName
-   * @throws IOException
+   * @param strInFileName - relative file path
    * @throws StorageException
    */
-  public static synchronized void removeFile(String strInFileName) throws IOException,
-      StorageException {
+  public static synchronized void removeFile(String strInFileName)
+      throws StorageException {
     File f = getFile(strInFileName);
-    f.delete();
+    if (!f.isFile()) {
+      throw new StorageException(format("Path %s is not a file", f.getAbsoluteFile()));
+    }
+    if (!f.delete()) {
+      throw new StorageException(format("File %s was not deleted", f.getAbsoluteFile()));
+    }
   }
 
   /**
+   * Copy file to target file
    *
-   * @param storagePath
-   * @return
-   * @throws StorageException
+   * @param sourceFile - source - the file to copy
+   * @param destFile - target file (may be associated with a different provider to the source path)
+   * @param replaceExisting - replace if target file exists
+   * @throws si.sed.commons.exception.StorageException, file already exists, error reading file
    */
-  public byte[] getByteArray(String storagePath) throws StorageException {
-    byte[] bin = null;
-    File f = getFile(storagePath);
+  public void copyFile(File sourceFile, File destFile, boolean replaceExisting)
+      throws StorageException {
 
-    if (f.exists()) {
-      try (FileInputStream fis = new FileInputStream(f)) {
-        bin = new byte[fis.available()];
-        fis.read(bin);
-      } catch (IOException ex) {
-        throw new StorageException("Error occurred while creating storage file", ex);
+    try {
+      if (replaceExisting) {
+      Files.copy(sourceFile.toPath(), destFile.toPath(), StandardCopyOption.COPY_ATTRIBUTES,
+          StandardCopyOption.REPLACE_EXISTING);
+      } else {
+        Files.copy(sourceFile.toPath(), destFile.toPath(), StandardCopyOption.COPY_ATTRIBUTES);
       }
+    } catch (FileAlreadyExistsException fe) {
+      throw new StorageException(format("Could not copy! Dest file already exists: '%s'",
+          destFile.getAbsolutePath()), fe);
+    } catch (IOException ex) {
+      throw new StorageException(format("Error copying file!: '%s' to file: %s",
+          sourceFile.getAbsolutePath(), destFile.getAbsolutePath()), ex);
+    }
+
+  }
+
+  /**
+   * Copy relative storage file to dest folder.
+   *
+   * @param storageFilePath - relative storage file path
+   * @param folder - deset folder
+   * @return dest file
+   * @throws StorageException - if dest folder could not be created of file could not be copied to
+   * dest folder
+   */
+  public File copyFileToFolder(String storageFilePath, File folder)
+      throws StorageException {
+
+    if (!folder.exists() && !folder.mkdirs()) {
+      throw new StorageException(format("Could not create dest folder: '%s' to copy file: '%s'.",
+          folder.getAbsolutePath(), storageFilePath));
+    }
+    File srcFile =getFile(storageFilePath);
+    File destFile = new File(folder, srcFile.getName());
+    File pf = destFile.getParentFile();
+    if (!pf.exists() && !pf.mkdirs()) {
+      throw new StorageException(format("Could not create folder '%s'", pf.getAbsolutePath()));
+    }
+
+    copyFile(srcFile, destFile, false);
+    return destFile;
+  }
+
+  /**
+   * Reads file content to byteArray. Avoid this method if possible especially for large files!
+   * Handle files as streams instead
+   *
+   * @param storagePath - relative storage paths
+   * @return file content
+   * @throws StorageException error reading file
+   */
+  public byte[] getByteArray(String storagePath)
+      throws StorageException {
+
+    File f = getFile(storagePath);
+    byte[] bin;
+    try {
+      bin = Files.readAllBytes(f.toPath());
+    } catch (IOException ex) {
+      throw new StorageException("Error occurred while creating storage file", ex);
     }
     return bin;
   }
 
   /**
+   * Store byteArray to storage. Avoid using this method. Handle file contetn as streams!
    *
-   * @param prefix
-   * @param suffix
+   * @param suffix - file suffix (usually mime suffix as .pdf, .xml, etc. )
+   * @param prefix - file prefix (in_/out_)
    * @param buffer
-   * @return
-   * @throws StorageException
+   * @return Storage File
+   * @throws StorageException error storage files
    */
-  public File storeFile(String prefix, String suffix, byte[] buffer) throws StorageException {
+  public File storeFile(String prefix, String suffix, byte[] buffer)
+      throws StorageException {
     return storeFile(prefix, suffix, new ByteArrayInputStream(buffer));
   }
 
   /**
+   * Store stream to storage.
    *
-   * @param prefix
-   * @param suffix
-   * @param inStream
-   * @return
-   * @throws StorageException
+   * @param suffix - file suffix (usually mime suffix as .pdf, .xml, etc. )
+   * @param prefix - file prefix (in_/out_)
+   * @param inStream content stream
+   * @return Storage File
+   * @throws StorageException error storage files
    */
-  public File storeFile(String prefix, String suffix, InputStream inStream) throws StorageException {
+  public File storeFile(String prefix, String suffix, InputStream inStream)
+      throws StorageException {
     File fStore = getNewStorageFile(suffix, prefix);
 
     try (FileOutputStream fos = new FileOutputStream(fStore)) {
@@ -261,82 +353,80 @@ public class StorageUtils {
   }
 
   /**
+   * Copy file as input file to storage!
    *
-   * @param mimeType
-   * @param buffer
-   * @return
-   * @throws StorageException
+   * @param mimeType - mimetype of input file
+   * @param fIn - input file
+   * @return storage file
+   * @throws StorageException error occured copying file!
    */
-  public File storeInFile(String mimeType, byte[] buffer) throws StorageException {
-    return storeFile(S_IN_PREFIX, getSuffixBYMimeType(mimeType), buffer);
-  }
-
-  /**
-   *
-   * @param mimeType
-   * @param fIn
-   * @return
-   * @throws StorageException
-   */
-  public File storeInFile(String mimeType, File fIn) throws StorageException {
-    if (fIn.exists()) {
-      throw new StorageException(format("File in message: '%s' not exists ", fIn.getAbsolutePath()));
+  public File storeInFile(String mimeType, File fIn)
+      throws StorageException {
+    if (!fIn.exists()) {
+      throw new StorageException(format("Source 'IN' file: '%s' not exists ", fIn.getAbsolutePath()));
     }
-    File fStore = getNewStorageFile(S_IN_PREFIX, getSuffixBYMimeType(mimeType));
-
-    try {
-      copyFile(fIn, fStore);
-    } catch (IOException ex) {
-      throw new StorageException(format("Error occurred while copying file: '%s' to file: %s",
-          fIn.getAbsolutePath(), fStore.getAbsolutePath()));
-    }
+    File fStore = getNewStorageFile(getSuffixBYMimeType(mimeType), S_IN_PREFIX);
+    copyFile(fIn, fStore, true);
 
     return fStore;
   }
 
   /**
+   * Store input stream as input file to storage.
    *
-   * @param mimeType
-   * @param is
-   * @return
-   * @throws StorageException
+   * @param mimeType - input mimetype
+   * @param is - input stream
+   * @return stored file
+   * @throws StorageException error storing data from input stream to storage
    */
-  public File storeInFile(String mimeType, InputStream is) throws StorageException {
+  public File storeInFile(String mimeType, InputStream is)
+      throws StorageException {
     return storeFile(S_IN_PREFIX, getSuffixBYMimeType(mimeType), is);
+  }
+  
+    /**
+   * Store bytearray  to storage.
+   *
+   * @param mimeType - input mimetype
+   * @param buff - bytes
+   * @return stored file
+   * @throws StorageException error storing data from input stream to storage
+   */
+  public File storeInFile(String mimeType, byte[] buff)
+      throws StorageException {
+    return storeFile(S_IN_PREFIX, getSuffixBYMimeType(mimeType), new ByteArrayInputStream(buff));
   }
 
   /**
+   * Store output bytearray to storage.
    *
-   * @param mimeType
-   * @param buffer
-   * @return
-   * @throws StorageException
+   * @param mimeType - file mimetype
+   * @param buffer - file content
+   * @return storage file
+   * @throws StorageException -error occured storing content to storage
    */
-  public File storeOutFile(String mimeType, byte[] buffer) throws StorageException {
+  public File storeOutFile(String mimeType, byte[] buffer)
+      throws StorageException {
     return storeFile(S_OUT_PREFIX, getSuffixBYMimeType(mimeType), buffer);
   }
 
   /**
+   * Store/copy output file to storage.
    *
-   * @param mimeType
-   * @param fIn
-   * @return
-   * @throws StorageException
+   * @param mimeType - output file mimetype
+   * @param fOut - file to copy
+   * @return - storage file
+   * @throws StorageException - error occured while copying file to storage
    */
-  public File storeOutFile(String mimeType, File fIn) throws StorageException {
-    if (!fIn.exists()) {
-      throw new StorageException(format("File in message: '%s' not exists ", fIn.getAbsolutePath()));
+  public File storeOutFile(String mimeType, File fOut)
+      throws StorageException {
+    if (!fOut.exists()) {
+      throw new StorageException(format("File in message: '%s' not exists ", fOut.getAbsolutePath()));
     }
     File fStore = getNewStorageFile(S_OUT_PREFIX, getSuffixBYMimeType(mimeType));
-
-    try {
-      copyFile(fIn, fStore);
-    } catch (IOException ex) {
-      throw new StorageException(format("Error occurred while copying file: '%s' to file: %s",
-          fIn.getAbsolutePath(), fStore.getAbsolutePath()));
-    }
-
+    copyFile(fOut, fStore, true);
     return fStore;
   }
+
 
 }

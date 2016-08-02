@@ -86,7 +86,8 @@ public class ZPPTask implements TaskExecutionInterface {
    * @throws TaskException
    */
   @Override
-  public String executeTask(Properties p) throws TaskException {
+  public String executeTask(Properties p)
+      throws TaskException {
 
     long l = LOG.logStart();
     StringWriter sw = new StringWriter();
@@ -166,7 +167,8 @@ public class ZPPTask implements TaskExecutionInterface {
    * @throws FOPException
    * @throws HashException
    */
-  public void processInZPPDelivery(MSHInMail mInMail, String singDAAlias) throws FOPException,
+  public void processInZPPDelivery(MSHInMail mInMail, String singDAAlias)
+      throws FOPException,
       HashException {
     long l = LOG.logStart();
     // create delivery advice
@@ -200,13 +202,13 @@ public class ZPPTask implements TaskExecutionInterface {
     mout.setStatusDate(dt);
 
     mout.setMSHOutPayload(new MSHOutPayload());
-    MSHOutPart mp = new MSHOutPart();
-    mp.setDescription("DeliveryAdvice");
-    mp.setFilepath(StorageUtils.getRelativePath(fDNViz));
-    mp.setMimeType(MimeValues.MIME_XML.getMimeType());
-    mout.getMSHOutPayload().getMSHOutParts().add(mp);
 
     try (FileOutputStream fos = new FileOutputStream(fDA)) {
+      MSHOutPart mp = new MSHOutPart();
+      mp.setDescription("DeliveryAdvice");
+      mp.setFilepath(StorageUtils.getRelativePath(fDNViz));
+      mp.setMimeType(MimeValues.MIME_XML.getMimeType());
+      mout.getMSHOutPayload().getMSHOutParts().add(mp);
 
       SEDCertStore cs = msedLookup.getSEDCertStoreByCertAlias(singDAAlias, true);
 
@@ -240,13 +242,13 @@ public class ZPPTask implements TaskExecutionInterface {
   public FOPUtils getFOP() {
     if (mfpFop == null) {
       File fconf =
-          new File(System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR) + File.separator
-              + ZPPConstants.SVEV_FOLDER + File.separator + ZPPConstants.FOP_CONFIG_FILENAME);
+          new File(System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR) + File.separator +
+               ZPPConstants.SVEV_FOLDER + File.separator + ZPPConstants.FOP_CONFIG_FILENAME);
 
       mfpFop =
-          new FOPUtils(fconf, System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR)
-              + File.separator + ZPPConstants.SVEV_FOLDER + File.separator
-              + ZPPConstants.XSLT_FOLDER);
+          new FOPUtils(fconf, System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR) +
+               File.separator + ZPPConstants.SVEV_FOLDER + File.separator +
+               ZPPConstants.XSLT_FOLDER);
     }
     return mfpFop;
   }

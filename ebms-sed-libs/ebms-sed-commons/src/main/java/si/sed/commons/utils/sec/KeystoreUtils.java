@@ -45,7 +45,8 @@ import static si.sed.commons.exception.SEDSecurityException.SEDSecurityException
 import static si.sed.commons.exception.SEDSecurityException.SEDSecurityExceptionCode.NoSuchAlgorithm;
 import static si.sed.commons.exception.SEDSecurityException.SEDSecurityExceptionCode.ReadWriteFileException;
 import si.sed.commons.utils.SEDLogger;
-import static si.sed.commons.utils.Utils.replaceProperties;
+import si.sed.commons.utils.StringFormater;
+
 
 /**
  *
@@ -124,7 +125,7 @@ public class KeystoreUtils {
    */
   public KeyStore getKeystore(SEDCertStore sc) throws SEDSecurityException {
     KeyStore keyStore = null;
-    try (FileInputStream fis = new FileInputStream(replaceProperties(sc.getFilePath()))) {
+    try (FileInputStream fis = new FileInputStream(StringFormater.replaceProperties(sc.getFilePath()))) {
       keyStore = getKeystore(fis, sc.getType(), sc.getPassword().toCharArray());
     } catch (IOException ex) {
       throw new SEDSecurityException(ReadWriteFileException, ex, "Read keystore from stream!"
@@ -401,7 +402,7 @@ public class KeystoreUtils {
    */
   public KeyStore openKeyStore(String filepath, String type, char[] password)
       throws SEDSecurityException {
-    try (FileInputStream fis = new FileInputStream(replaceProperties(filepath))) {
+    try (FileInputStream fis = new FileInputStream(StringFormater.replaceProperties(filepath))) {
       return getKeystore(fis, type, password);
     } catch (IOException ex) {
       throw new SEDSecurityException(ReadWriteFileException, ex, "Read keystore: '" + filepath
@@ -477,7 +478,7 @@ public class KeystoreUtils {
     signProperties.put(SEC_PROVIDER, SEC_PROIDER_MERLIN);
     signProperties.put(SEC_MERLIN_KEYSTORE_ALIAS, alias);
     signProperties.put(SEC_MERLIN_KEYSTORE_PASS, cs.getPassword());
-    signProperties.put(SEC_MERLIN_KEYSTORE_FILE, replaceProperties(cs.getFilePath()));
+    signProperties.put(SEC_MERLIN_KEYSTORE_FILE, StringFormater.replaceProperties(cs.getFilePath()));
     signProperties.put(SEC_MERLIN_KEYSTORE_TYPE, cs.getType());
     return signProperties;
   }
@@ -493,7 +494,7 @@ public class KeystoreUtils {
     signVerProperties.put(SEC_PROVIDER, SEC_PROIDER_MERLIN);
     signVerProperties.put(SEC_MERLIN_KEYSTORE_ALIAS, alias);
     signVerProperties.put(SEC_MERLIN_KEYSTORE_PASS, cs.getPassword());
-    signVerProperties.put(SEC_MERLIN_KEYSTORE_FILE, replaceProperties(cs.getFilePath()));
+    signVerProperties.put(SEC_MERLIN_KEYSTORE_FILE, StringFormater.replaceProperties(cs.getFilePath()));
     signVerProperties.put(SEC_MERLIN_KEYSTORE_TYPE, cs.getType());
     return signVerProperties;
   }

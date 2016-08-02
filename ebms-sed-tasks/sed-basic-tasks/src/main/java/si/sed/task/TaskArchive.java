@@ -57,6 +57,7 @@ import si.sed.commons.interfaces.TaskExecutionInterface;
 import si.sed.commons.interfaces.exception.TaskException;
 import si.sed.commons.utils.SEDLogger;
 import si.sed.commons.utils.StorageUtils;
+import si.sed.commons.utils.StringFormater;
 import si.sed.commons.utils.Utils;
 import si.sed.commons.utils.xml.XMLUtils;
 
@@ -257,7 +258,7 @@ public class TaskArchive implements TaskExecutionInterface {
   }
 
   private File initFolders(String rootFolder, String archFolder) throws TaskException {
-    File f = new File(Utils.replaceProperties(rootFolder));
+    File f = new File(StringFormater.replaceProperties(rootFolder));
 
     if (!f.exists() && !f.mkdirs()) {
       throw new TaskException(TaskException.TaskExceptionCode.InitException,
@@ -322,7 +323,7 @@ public class TaskArchive implements TaskExecutionInterface {
             for (MSHOutPart p : m.getMSHOutPayload().getMSHOutParts()) {
               if (p.getFilepath() != null) {
                 try {
-                  StorageUtils.copyFileToFolder(p.getFilepath(), f);
+                  mSU.copyFileToFolder(p.getFilepath(), f);
                   fw.append(p.getFilepath());
                   fw.append(";");
                 } catch (IOException | StorageException ex) {
@@ -395,7 +396,7 @@ public class TaskArchive implements TaskExecutionInterface {
             for (MSHInPart p : m.getMSHInPayload().getMSHInParts()) {
               if (p.getFilepath() != null) {
                 try {
-                  StorageUtils.copyFileToFolder(p.getFilepath(), f);
+                  mSU.copyFileToFolder(p.getFilepath(), f);
                   fw.append(p.getFilepath());
                   fw.append(";");
                 } catch (IOException | StorageException ex) {

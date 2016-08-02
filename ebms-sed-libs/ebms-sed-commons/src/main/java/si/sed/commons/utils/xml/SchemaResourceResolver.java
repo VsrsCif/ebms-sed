@@ -17,10 +17,11 @@ package si.sed.commons.utils.xml;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
-import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import static org.apache.log4j.Logger.getLogger;
 import org.w3c.dom.ls.LSInput;
@@ -41,8 +42,8 @@ public class SchemaResourceResolver implements LSResourceResolver {
     try {
       targetURI = (new URI(baseURI)).resolve(relativePath);
     } catch (URISyntaxException ex) {
-      throw new RuntimeException("Could not resolve target URI  (baseURI:'" + baseURI
-          + "' + path: '" + relativePath + "' )- " + ex.getMessage());
+      throw new RuntimeException("Could not resolve target URI  (baseURI:'" + baseURI +
+           "' + path: '" + relativePath + "' )- " + ex.getMessage());
     }
 
     return targetURI;
@@ -62,8 +63,8 @@ public class SchemaResourceResolver implements LSResourceResolver {
   public LSInput resolveResource(String type, String namespaceURI, String publicId,
       String systemId, String baseURI) {
     if (!XSD_NAMESPACE.equals(type) && !XML_NAMESPACE.equals(type)) {
-      throw new IllegalArgumentException("Unexpected resource type [" + type + "], expected is ["
-          + XSD_NAMESPACE + " or " + XML_NAMESPACE + " ].");
+      throw new IllegalArgumentException("Unexpected resource type [" + type + "], expected is [" +
+           XSD_NAMESPACE + " or " + XML_NAMESPACE + " ].");
     }
     if (systemId == null) {
       throw new IllegalArgumentException("Unexpected resource system-id [" + systemId + "].");
@@ -76,15 +77,14 @@ public class SchemaResourceResolver implements LSResourceResolver {
           new SchemaInput(baseURI, publicId, systemId, getClass().getResourceAsStream(
               targetFullName));
     } catch (Exception ex) {
-      throw new RuntimeException("Could not open resource stream -" + targetFullName + ", Error: "
-          + ex.getMessage());
+      throw new RuntimeException("Could not open resource stream -" + targetFullName + ", Error: " +
+           ex.getMessage());
     }
 
     return input;
   }
 
 }
-
 
 class SchemaInput implements LSInput {
 
@@ -138,14 +138,21 @@ class SchemaInput implements LSInput {
 
   @Override
   public String getStringData() {
+    StringWriter sw = new StringWriter();
     synchronized (inputStream) {
-      try {
-        return IOUtils.toString(inputStream);
+      try {        
+        InputStreamReader in = new InputStreamReader(inputStream);
+        char[] bf = new char[1024];        
+        int n = 0;
+        while (-1 != (n = in.read(bf))) {
+          sw.write(bf, 0, n);
+        }
       } catch (IOException e) {
         mlog.error("Error reading resource: '" + baseURI + "'. Error: " + e.getMessage(), e);
         return null;
       }
     }
+    return sw.toString();
   }
 
   @Override
@@ -154,19 +161,24 @@ class SchemaInput implements LSInput {
   }
 
   @Override
-  public void setBaseURI(String baseURI) {}
+  public void setBaseURI(String baseURI) {
+  }
 
   @Override
-  public void setByteStream(InputStream byteStream) {}
+  public void setByteStream(InputStream byteStream) {
+  }
 
   @Override
-  public void setCertifiedText(boolean certifiedText) {}
+  public void setCertifiedText(boolean certifiedText) {
+  }
 
   @Override
-  public void setCharacterStream(Reader characterStream) {}
+  public void setCharacterStream(Reader characterStream) {
+  }
 
   @Override
-  public void setEncoding(String encoding) {}
+  public void setEncoding(String encoding) {
+  }
 
   @Override
   public void setPublicId(String publicId) {
@@ -174,7 +186,8 @@ class SchemaInput implements LSInput {
   }
 
   @Override
-  public void setStringData(String stringData) {}
+  public void setStringData(String stringData) {
+  }
 
   @Override
   public void setSystemId(String systemId) {

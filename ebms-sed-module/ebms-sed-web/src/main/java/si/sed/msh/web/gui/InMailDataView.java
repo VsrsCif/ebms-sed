@@ -133,7 +133,7 @@ public class InMailDataView extends AbstractMailView<MSHInMail, MSHInEvent> impl
         File f = StorageUtils.getFile(inpart.getFilepath());
         return new DefaultStreamedContent(new FileInputStream(f), inpart.getMimeType(),
             inpart.getFilename());
-      } catch (StorageException | FileNotFoundException ex) {
+      } catch ( FileNotFoundException ex) {
         Logger.getLogger(InMailDataView.class.getName()).log(Level.SEVERE, null, ex);
       }
     }

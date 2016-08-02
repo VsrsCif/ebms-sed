@@ -164,16 +164,7 @@ public abstract class DocumentBuilder {
     return mssuSignUtils;
   }
 
-  /*
-   * protected static synchronized ESignDocImpl getSigJDK() throws SEDSecurityException { if
-   * (medSigJDK == null) { medSigJDK = new ESignDocImpl(); try { System.out.println("INIT: KEY" +
-   * Settings.getInstance().getKeystorePath());
-   * ESignDocImpl.initProfile(Settings.getInstance().getKeystorePath(),HLSSDK_JKSPATH); } catch
-   * (GeneralSecurityException ex) { throw new
-   * SEDSecurityException(SEDSecurityException.SEDSecurityExceptionCode.ApplicationError,
-   * "APPLICATION EXCEPTION occurred while validating signature! Msg: '" + ex.getMessage() + "'",
-   * ex); } } return medSigJDK; }
-   */
+
   /**
    *
    * @return
@@ -197,6 +188,7 @@ public abstract class DocumentBuilder {
 
     NodeList lst = xDoc.getDocumentElement().getElementsByTagName(SIGNATURE_ELEMENT_NAME);
     Element eltSignature = (Element) lst.item(0);
+  
     getSignUtils().singDocument(key, eltSignature, strIds, fos);
 
     mlgLogger.info("DocumentBuilder.singDocument: - end (" + (getTime() - t) + "ms)");

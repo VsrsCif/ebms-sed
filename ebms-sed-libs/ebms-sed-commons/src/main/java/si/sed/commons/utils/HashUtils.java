@@ -30,18 +30,19 @@ import si.sed.commons.exception.HashException;
  */
 public class HashUtils {
 
-  /**
-     *
-     */
-  public static String MessageDigest_MD5 = "MD5";
+  
+  public static final String MD_ALGORITHM_MD5 = "MD5";
+  public static final String MD_ALGORITHM_SHA_1 = " SHA-1";
+  public static final String MD_ALGORITHM_SHA_256 = " SHA-256";
+  
 
   MessageDigest mdMD5 = null;
 
   /**
-   *
-   * @param file
-   * @return
-   * @throws HashException
+   * Method returs MD5 value of file
+   * @param file   
+   * @return MD5 value in Hexadecimal String
+   * @throws HashException is thrown if file can not be readed.
    */
   public String getMD5Hash(File file) throws HashException {
     try (FileInputStream fis = new FileInputStream(file)) {
@@ -51,11 +52,11 @@ public class HashUtils {
     }
   }
 
-  /**
-   *
-   * @param filePath
-   * @return
-   * @throws HashException
+/**
+   * Method returs MD5 value of file
+   * @param filePath   
+   * @return MD5 value in Hexadecimal String
+   * @throws HashException is thrown if file can not be readed.
    */
   public String getMD5Hash(String filePath) throws HashException {
     try (FileInputStream fis = new FileInputStream(filePath)) {
@@ -66,9 +67,9 @@ public class HashUtils {
   }
 
   /**
-   *
+   * Method returs MD5 hash alogorith
    * @param is
-   * @return
+   * @return MD5 value in Hexadecimal String
    * @throws HashException
    */
   public String getMD5Hash(InputStream is) throws HashException {
@@ -91,8 +92,7 @@ public class HashUtils {
       }
       strHash = sb.toString();
     } catch (NoSuchAlgorithmException ex) {
-      throw new HashException(
-          "System error. Check deployment, missing MD5 (MessageDigest) algoritem.", ex);
+      throw new HashException("System error. Check deployment, missing MD5 (MessageDigest) algoritem.", ex);
     } catch (IOException ex) {
       throw new HashException("Error reading inputstream", ex);
     }
@@ -100,7 +100,7 @@ public class HashUtils {
   }
 
   private MessageDigest getMD5MessageDigest() throws NoSuchAlgorithmException {
-    return mdMD5 == null ? (mdMD5 = getInstance(MessageDigest_MD5)) : mdMD5;
+    return mdMD5 == null ? (mdMD5 = getInstance(MD_ALGORITHM_MD5)) : mdMD5;
   }
 
 }

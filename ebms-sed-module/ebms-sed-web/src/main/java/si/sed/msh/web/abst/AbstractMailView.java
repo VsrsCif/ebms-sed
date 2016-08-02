@@ -91,7 +91,7 @@ public abstract class AbstractMailView<T, S> {
       fw.write("\n");
       int i = 1;
       for (T o : lst) {
-        fw.write(mStringFomrater.format(mehtods, o, i++));
+        fw.write(mStringFomrater.formatCVS(mehtods, o, i++));
         fw.write("\n");
 
       }

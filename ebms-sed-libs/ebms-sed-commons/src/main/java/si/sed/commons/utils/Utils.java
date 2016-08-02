@@ -14,28 +14,21 @@
  */
 package si.sed.commons.utils;
 
-import static java.lang.System.currentTimeMillis;
-import static java.lang.System.getProperty;
-import java.util.Random;
+import java.util.UUID;
 import org.msh.ebms.inbox.mail.MSHInMail;
 import org.msh.ebms.outbox.mail.MSHOutMail;
 
 /**
+ * MISC Utils
  *
  * @author Joze Rihtarsic <joze.rihtarsic@sodisce.si>
  */
 public class Utils {
 
-  private static final int IN_BRACKET = 2;
-  // States used in property parsing
-
-  private static final int NORMAL = 0;
-  private static final int SEEN_DOLLAR = 1;
-
   /**
-     *
-     */
-  public static Utils mInstance = null;
+   *
+   */
+  private static Utils mInstance = null;
 
   /**
    *
@@ -85,17 +78,6 @@ public class Utils {
     return mom.getService() + ":" + getDomainFromAddress(mom.getReceiverEBox());
   }
 
-  /*
-   * 
-   * public static void addURLToSystemClassLoader(URL url) throws IntrospectionException {
-   * URLClassLoader systemClassLoader = (URLClassLoader) ClassLoader.getSystemClassLoader();
-   * Class<URLClassLoader> classLoaderClass = URLClassLoader.class;
-   * 
-   * try { Method method = classLoaderClass.getDeclaredMethod("addURL", new Class[]{URL.class});
-   * method.setAccessible(true); method.invoke(systemClassLoader, new Object[]{url}); } catch
-   * (Throwable t) { throw new
-   * IntrospectionException("Error when adding url "+url.getPath()+" to system ClassLoader "); } }
-   */
   /**
    *
    * @param strVal
@@ -105,80 +87,21 @@ public class Utils {
     return strVal == null || strVal.trim().isEmpty();
   }
 
-  /**
-   * Method is "borrowed" from org.jboss.util.StringPropertyReplacer; Go through the input string
-   * and replace any occurance of ${p} with the System.getProperty(p) value. If there is no such
-   * property p defined, then the ${p} is replaced with "".
-   *
-   *
-   * @param string - the string with possible ${} references
-   * @return the input string with all property references replaced if any. If there are no valid
-   *         references the input string will be returned.
-   */
-  public static String replaceProperties(final String string) {
-    final char[] chars = string.toCharArray();
-    StringBuilder buffer = new StringBuilder();
-    boolean properties = false;
-    int state = NORMAL;
-    int start = 0;
-    for (int i = 0; i < chars.length; ++i) {
-      char c = chars[i];
-
-      // Dollar sign outside brackets
-      if (c == '$' && state != IN_BRACKET) {
-        state = SEEN_DOLLAR;
-      } // Open bracket immediatley after dollar
-      else if (c == '{' && state == SEEN_DOLLAR) {
-        buffer.append(string.substring(start, i - 1));
-        state = IN_BRACKET;
-        start = i - 1;
-      } // No open bracket after dollar
-      else if (state == SEEN_DOLLAR) {
-        state = NORMAL;
-      } // Closed bracket after open bracket
-      else if (c == '}' && state == IN_BRACKET) {
-        // No content
-        if (start + 2 == i) {
-          buffer.append("${}"); // REVIEW: Correct?
-        } else // Collect the system property
-        {
-          String key = string.substring(start + 2, i);
-          properties = true;
-          buffer.append(getProperty(key, ""));
-        }
-        start = i + 1;
-        state = NORMAL;
-      }
-    }
-
-    // No properties
-    if (properties == false) {
-      return string;
-    }
-
-    // Collect the trailing characters
-    if (start != chars.length) {
-      buffer.append(string.substring(start, chars.length));
-    }
-    // Done
-    return buffer.toString();
-  }
-
-  Random random = new Random();
-
   private Utils() {
 
   }
 
   /**
-   * Return a GUID as a string. This is completely arbitrary, and returns the hexification of a
-   * random value followed by a timestamp.
+   * Returns java.util.UUID.randomUUID() as string.
    *
-   * @return
+   * @return uuid string representation.
    */
   public String getGuidString() {
-    long rand = (random.nextLong() & 0x7FFFFFFFFFFFFFFFL) | 0x4000000000000000L;
-    return Long.toString(rand, 32) + Long.toString(currentTimeMillis() & 0xFFFFFFFFFFFFFL, 32);
+    return UUID.randomUUID().toString();
+  }
+  
+  public static String getUUID(String prefix) {
+    return prefix + "-"+ UUID.randomUUID().toString();
   }
 
 }

@@ -1,28 +1,40 @@
 /*
- * To change this license header, choose License Headers in Project Properties. To change this
- * template file, choose Tools | Templates and open the template in the editor.
+ * Copyright 2015, Supreme Court Republic of Slovenia
+ * 
+ * Licensed under the EUPL, Version 1.1 or – as soon they will be approved by the European
+ * Commission - subsequent versions of the EUPL (the "Licence"); You may not use this work except in
+ * compliance with the Licence. You may obtain a copy of the Licence at:
+ * 
+ * https://joinup.ec.europa.eu/software/page/eupl
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence
+ * is distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the Licence for the specific language governing permissions and limitations under
+ * the Licence.
  */
 package si.sed.commons.utils.abst;
 
 import java.io.File;
 import static java.io.File.separator;
 import static java.lang.System.getProperties;
-import static java.lang.System.getProperty;
 import static java.util.Collections.enumeration;
 import java.util.Enumeration;
 import java.util.Properties;
 import java.util.TreeSet;
 import si.sed.commons.utils.SEDLogger;
+import static java.lang.System.getProperty;
 
 /**
+ * Abstract settings class
  *
- * @author sluzba
+ * @author Joze Rihtarsic <joze.rihtarsic@sodisce.si>
  */
 public abstract class ASettings {
 
   /**
+   * Retruns Creates sorted properties by keys.
    *
-   * @return
+   * @return - Sorted properties by key.
    */
   public static Properties newProperties() {
     return new Properties() {
@@ -34,46 +46,47 @@ public abstract class ASettings {
   }
 
   /**
-     *
-     */
+   * Last changed properties
+   */
   protected long mlLastChagedTime = 0;
 
   /**
-     *
-     */
-  protected SEDLogger mlog = new SEDLogger(AFileSettings.class);
+   * Logger
+   */
+  protected static final SEDLogger LOG = new SEDLogger(ASettings.class);
 
   /**
-     *
-     */
+   * SED Properties
+   */
   final protected Properties mprpProperties = newProperties();
 
   /**
-     *
-     */
+   *
+   */
   public ASettings() {
 
   }
 
   /**
+   * Method returs data for key. Searches for the property value in system properties and this
+   * property list. If the key is not found in system property list, the this property list is
+   * checked. The method returns null if the property is not found.
    *
-   * @param strKey
-   * @return
+   * @param strKey - propert key
+   * @return data -value for property
    */
   public String getData(String strKey) {
-    String strVal = null;
-    init();
-    if (mprpProperties != null) {
-      strVal = mprpProperties.getProperty(strKey);
-    }
-    return strVal;
+    return getData(strKey, null);
   }
 
   /**
+   * Method returs data for key. Searches for the property value in system properties and this
+   * property list. If the key is not found in system property list, the this property list is
+   * checked. The method returns def value if the property is not found.
    *
-   * @param strKey
-   * @param defVal
-   * @return
+   * @param strKey - propert key
+   * @param defVal - if no property found this value is returned.
+   * @return data -value for property
    */
   public String getData(String strKey, String defVal) {
     // check if system property exists
@@ -81,14 +94,12 @@ public abstract class ASettings {
       return getProperty(strKey);
     }
     init();
-    // check if properties
-    if (mprpProperties != null) {
-      return mprpProperties.getProperty(strKey, defVal);
-    }
-    return defVal;
+    return mprpProperties.getProperty(strKey, defVal);
   }
 
   /**
+   * Returns File object in folder give in valus for key strPropName. File is [folder:
+   * ${strPropName}]/strFileName. If folder not exists, folder is created
    *
    * @param strPropName
    * @param strDefProfValue
@@ -96,13 +107,12 @@ public abstract class ASettings {
    * @return
    */
   public File getFile(String strPropName, String strDefProfValue, String strFileName) {
-    File f = new File(getProperty(strPropName, getData(strPropName, strDefProfValue)));
-    if (!f.exists()) {
-      f.mkdirs();
+    long l = LOG.getTime();
+    File f = getFolder(strPropName, strDefProfValue);
+    if (f.exists()){
+      LOG.logError(l, "Error creating folders: '" + f.getAbsolutePath() + "' for file: '"+strFileName+"'", null);
     }
-    return new File((f.getAbsolutePath().endsWith(separator) ? f.getPath() : f.getPath()
-        + separator)
-        + strFileName);
+    return new File(f.getAbsolutePath() + separator + strFileName);
   }
 
   /**
@@ -112,22 +122,23 @@ public abstract class ASettings {
    * @return
    */
   public File getFolder(String prop, String defVal) {
+    long l = LOG.getTime();
     File f = new File(getProperty(prop, getData(prop, defVal)));
-    if (!f.exists()) {
-      f.mkdirs();
+     if (!f.exists() && !f.mkdirs()) {
+      LOG.logError(l, "Error creating folders: '" + f.getAbsolutePath() + "'", null);
     }
     return f;
   }
 
   /**
-     *
-     */
+   * Abstract method for initialization and refresh property data. 
+   */
   protected abstract void init();
 
   /**
-   *
-   * @param key
-   * @param value
+   * Sets init data for key
+   * @param key - property key 
+   * @param value - property ataa
    */
   public void initData(String key, String value) {
     if (!mprpProperties.containsKey(key)) {
@@ -136,18 +147,18 @@ public abstract class ASettings {
   }
 
   /**
-     *
-     */
+   * initialize folders and lookups
+   */
   public abstract void initialize();
 
   /**
-   *
-   * @param key
+   * Remove property in serialized form (DB or file)
+   * @param key property key
    */
   protected abstract void removeProperty(String key);
 
   /**
-   *
+   * Replace property in serialized form (DB or file)
    * @param key
    * @param value
    * @param group
@@ -155,8 +166,8 @@ public abstract class ASettings {
   protected abstract void replaceProperty(String key, String value, String group);
 
   /**
-   *
-   * @param key
+   * Set data 
+   * @param key 
    * @param value
    */
   public void setData(String key, String value) {
@@ -164,7 +175,7 @@ public abstract class ASettings {
   }
 
   /**
-   *
+   * Set data for group
    * @param key
    * @param value
    * @param group
@@ -178,11 +189,11 @@ public abstract class ASettings {
 
     init();
 
-    if (mprpProperties.containsKey(key)) {
+    if (mprpProperties.containsKey(strKey)) {
       if (strValue == null) {
-        mprpProperties.remove(strValue);
-        removeProperty(strValue);
-      } else if (mprpProperties.get(strKey) != null || !mprpProperties.get(strKey).equals(strValue)) {
+        mprpProperties.remove(strKey);
+        removeProperty(strKey);
+      } else if (mprpProperties.get(strKey) != null && !mprpProperties.get(strKey).equals(strValue)) {
         mprpProperties.setProperty(strKey, strValue);
         replaceProperty(strKey, strValue, group);
       }
@@ -193,21 +204,12 @@ public abstract class ASettings {
   }
 
   /**
-   *
+   * Strore new property to DB, file etc.
    * @param key
    * @param value
    * @param group
    */
   protected abstract void storeProperty(String key, String value, String group);
 
-  /**
-   *
-   * @param f
-   */
-  public void testFolder(File f) {
-    if (!f.exists()) {
-      f.mkdirs();
-    }
-  }
 
 }

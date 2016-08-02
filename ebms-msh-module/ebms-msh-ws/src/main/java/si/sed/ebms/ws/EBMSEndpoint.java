@@ -140,7 +140,7 @@ public class EBMSEndpoint implements Provider<SOAPMessage> {
       String val = msfFormat.format(e.getFileMask(), mail);
       int i = 1;
       try {
-        String folder = Utils.replaceProperties(e.getFolder());
+        String folder = StringFormater.replaceProperties(e.getFolder());
         File fld = new File(folder);
         if (!fld.exists()) {
           fld.mkdirs();
@@ -157,13 +157,13 @@ public class EBMSEndpoint implements Provider<SOAPMessage> {
           }
         }
         for (MSHInPart mp : mail.getMSHInPayload().getMSHInParts()) {
-          StorageUtils
-              .copyInFile(
+          msuStorageUtils
+              .copyFileToFolder(
                   mp.getFilepath(),
                   new File(filPrefix + "_" + i + "."
                       + MimeValues.getSuffixBYMimeType(mp.getMimeType())));
         }
-      } catch (IOException | StorageException ex) {
+      } catch ( StorageException ex) {
         LOG.logError(l, "Export ERROR", ex);
       }
     }

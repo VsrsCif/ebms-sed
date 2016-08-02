@@ -22,43 +22,43 @@ package si.sed.commons;
 public enum SEDInboxMailStatus {
 
   /**
-     *
-     */
+   *
+   */
   RECEIVE("RECEIVE", "Receive message in process.", "orange"),
 
   /**
-     *
-     */
+   *
+   */
   RECEIVED("RECEIVED", "Message is sucessfuly received to MSH.", "green"),
 
   /**
-     *
-     */
+   *
+   */
   PROCESS("PROCESS", "Message is locked by plugin", "gray"),
 
   /**
-     *
-     */
+   *
+   */
   LOCKED("LOCKED", "Message is locked by consumer", "lightgray"),
 
   /**
-     *
-     */
+   *
+   */
   PLUGINLOCKED("PLGLOCKED", "Message is locked by plugin", "lightgray"),
 
   /**
-     *
-     */
+   *
+   */
   DELIVERED("DELIVERED", "Message is consumed", "Blue"),
 
   /**
-     *
-     */
+   *
+   */
   ERROR("ERROR", "Error occured receiving, processing MSH", "red"),
 
   /**
-     *
-     */
+   *
+   */
   DELETED("DELETED", "Pošiljka je izbrisana", "black");
 
   String mstrVal;
@@ -72,45 +72,44 @@ public enum SEDInboxMailStatus {
   }
 
   /**
-   *
-   * @return
+   * Status code
+   * @return status
    */
   public String getValue() {
     return mstrVal;
   }
 
   /**
-   *
-   * @return
+   ** returns status  string
+   * @return status descr
    */
   public String getDesc() {
     return mstrDesc;
   }
 
   /**
-   *
-   * @return
+   * returns status color string
+   * @return color string
    */
   public String getColor() {
     return mstrColor;
   }
 
   /**
+   * Method returs color for status code
    *
    * @param strName
-   * @return
+   * @return color string
    */
   public static String getColor(String strName) {
 
-    for (SEDInboxMailStatus st : values()) {
-      if (st.getValue().equals(strName)) {
-        return st.getColor();
+    if (strName != null) {
+      for (SEDInboxMailStatus st : values()) {
+        if (st.getValue().equals(strName)) {
+          return st.getColor();
+        }
       }
     }
-    /*
-     * SEDOutboxMailStatus st = SEDOutboxMailStatus.valueOf(strName); if (st!=null){ return
-     * st.getColor(); }
-     */
     return strName;
   }
 

@@ -42,7 +42,7 @@ public class EVIPMimeMessage extends MimeMessage {
     if (addr != null) {
       suffix = addr.getAddress();
     } else {
-      suffix = "evip@sodisce.si"; // worst-case default
+      suffix = "no-suffix"; // worst-case default
     }
 
     StringWriter s = new StringWriter();

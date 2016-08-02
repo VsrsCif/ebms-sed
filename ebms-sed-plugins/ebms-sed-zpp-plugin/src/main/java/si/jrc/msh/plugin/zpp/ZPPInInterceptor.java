@@ -74,7 +74,6 @@ import si.sed.commons.utils.HashUtils;
 import si.sed.commons.utils.SEDLogger;
 import si.sed.commons.utils.StorageUtils;
 import si.sed.commons.utils.StringFormater;
-import si.sed.commons.utils.Utils;
 import si.sed.commons.utils.sec.KeystoreUtils;
 import si.sed.commons.utils.xml.XMLUtils;
 
@@ -95,6 +94,7 @@ public class ZPPInInterceptor implements SoapInterceptorInterface {
   HashUtils mpHU = new HashUtils();
   DocumentSodBuilder dsbSodBuilder = new DocumentSodBuilder();
   KeystoreUtils mkeyUtils = new KeystoreUtils();
+  StorageUtils msuStorage = new StorageUtils();
 
   FOPUtils mfpFop = null;
   StringFormater msfFormat = new StringFormater();
@@ -267,7 +267,7 @@ public class ZPPInInterceptor implements SoapInterceptorInterface {
 
       }
 
-    } catch (StorageException | JAXBException | TransformerException | IOException
+    } catch ( JAXBException | TransformerException | IOException
         | SEDSecurityException ex) {
       LOG.logError(l, ex);
     }
@@ -363,7 +363,7 @@ public class ZPPInInterceptor implements SoapInterceptorInterface {
             && sb.getExport().getFileMask() != null) {
           Export e = sb.getExport();
           exporFileName = msfFormat.format(e.getFileMask(), mi);
-          String folder = Utils.replaceProperties(e.getFolder());
+          String folder = StringFormater.replaceProperties(e.getFolder());
           exportFolder = new File(folder);
           if (!exportFolder.exists()) {
             exportFolder.mkdirs();
@@ -420,7 +420,7 @@ public class ZPPInInterceptor implements SoapInterceptorInterface {
                 String fn =
                     filPrefix + "_" + i + "." + MimeValues.getSuffixBYMimeType(miDec.getMimeType());
                 listFiles.add(fn);
-                StorageUtils.copyFile(fNew, new File(fn));
+                msuStorage.copyFile(fNew, new File(fn), true);
               }
 
             } catch (IOException | StorageException | SEDSecurityException | HashException ex) {

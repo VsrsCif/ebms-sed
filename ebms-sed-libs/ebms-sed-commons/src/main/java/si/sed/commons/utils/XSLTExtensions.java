@@ -15,6 +15,7 @@
 package si.sed.commons.utils;
 
 import static com.jrc.xml.DateAdapter.parseDateTime;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import static java.util.Calendar.DAY_OF_MONTH;
@@ -23,34 +24,44 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 /**
- *
+ * XSLT extension for FOP transformations. 
  * @author Joze Rihtarsic <joze.rihtarsic@sodisce.si>
  */
 public class XSLTExtensions {
 
-  private static final SimpleDateFormat S_DATE_FORMAT = new SimpleDateFormat("dd.MM.yyyy");
-  private static final SimpleDateFormat S_DATE_TIME_FORMAT = new SimpleDateFormat(
-      "dd.MM.yyyy HH:mm:ss");
+  private static final ThreadLocal<DateFormat> S_DATE_FORMAT = new ThreadLocal<DateFormat>() {
+    @Override
+    protected DateFormat initialValue() {
+      return new SimpleDateFormat("yyyyMMdd");
+    }
+  };
+
+  private static final ThreadLocal<DateFormat> S_DATE_TIME_FORMAT = new ThreadLocal<DateFormat>() {
+    @Override
+    protected DateFormat initialValue() {
+      return new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+    }
+  };
 
   /**
-   *
-   * @return
+   * Method returs current date string representation 
+   * @return  current date
    */
   public static Object currentDate() {
-    return S_DATE_FORMAT.format(getInstance().getTime());
+    return S_DATE_FORMAT.get().format(getInstance().getTime());
   }
 
   /**
-   *
-   * @return
+   * Method returs current dateTime string representation 
+   * @return  current dateTime
    */
   public static Object currentDateTime() {
-    return S_DATE_TIME_FORMAT.format(getInstance().getTime());
+    return S_DATE_TIME_FORMAT.get().format(getInstance().getTime());
   }
 
   /**
-   *
-   * @param str
+   * Parse date from string
+   * @param str - date string representation
    * @return
    */
   public static Object formatDate(String str) {
@@ -59,11 +70,11 @@ public class XSLTExtensions {
     }
 
     Date dt = parseDateTime(str);
-    return S_DATE_FORMAT.format(dt);
+    return S_DATE_FORMAT.get().format(dt);
   }
 
   /**
-   *
+   * Return fiction date for start date
    * @param str
    * @return
    */
@@ -75,7 +86,7 @@ public class XSLTExtensions {
     Calendar c = new GregorianCalendar();
     c.setTime(dt);
     c.add(DAY_OF_MONTH, 15);
-    return S_DATE_FORMAT.format(c.getTime());
+    return S_DATE_FORMAT.get().format(c.getTime());
 
   }
 

@@ -2,12 +2,17 @@ package si.jrc.msh.utils;
 
 import java.io.File;
 import java.io.IOException;
+import static java.lang.String.format;
+import static java.lang.System.getProperty;
 import java.math.BigInteger;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDate;
 import si.jrc.msh.interceptor.EBMSOutInterceptor;
-import si.sed.commons.SEDSystemProperties;
+import static si.sed.commons.SEDSystemProperties.SYS_PROP_HOME_DIR;
 import si.sed.commons.exception.StorageException;
 import si.sed.commons.utils.SEDLogger;
-import static si.sed.commons.utils.StorageUtils.currentStorageFolderName;
+
 
 /**
  *
@@ -46,11 +51,24 @@ public class EBMSLogUtils {
      */
   protected static final SEDLogger mlog = new SEDLogger(EBMSOutInterceptor.class);
 
+  
+  
+    /**
+   * Method returs path for LocalDate ${sed.home}/storage/[year]/[month]/[day]
+   *
+   * @param ld - Local date
+   * @return returs path
+   */
+  protected static synchronized Path dateStorageFolder(LocalDate ld) {
+    return Paths.get(getProperty(SYS_PROP_HOME_DIR),
+        S_ROOT_FOLDER,
+        ld.getYear() + "",
+        format("%02d", ld.getMonthValue()),
+        format("%02d", ld.getDayOfMonth()));
+  }
   private static synchronized File currentStorageFolder() throws StorageException {
 
-    File f =
-        new File(System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR) + File.separator
-            + S_ROOT_FOLDER + File.separator + currentStorageFolderName());
+    File f =dateStorageFolder(LocalDate.now()).toFile();        
     if (!f.exists() && !f.mkdirs()) {
       throw new StorageException(String.format(
           "Error occurred while creating storage folder: '%s'", f.getAbsolutePath()));

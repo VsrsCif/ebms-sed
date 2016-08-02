@@ -45,7 +45,7 @@ public class PModeManager {
   /**
      *
      */
-  public static SEDLogger LOG = new SEDLogger(PModeManager.class);
+  public static final SEDLogger LOG = new SEDLogger(PModeManager.class);
 
   PModes pmodes = null;
 
@@ -133,6 +133,7 @@ public class PModeManager {
    */
   public boolean add(PMode pmrNew) {
     return pmodes.getPModes().add(pmrNew);
+    
   }
 
   /**
@@ -157,7 +158,8 @@ public class PModeManager {
       String fileFormat = getPModeFilePath() + ".%03d";
       File pModeFileTarget = new File(format(fileFormat, i++));
 
-      while (pModeFileTarget.exists()) {
+      while (pModeFileTarget.exists()) 
+      {
         pModeFileTarget = new File(format(fileFormat, i++));
       }
 

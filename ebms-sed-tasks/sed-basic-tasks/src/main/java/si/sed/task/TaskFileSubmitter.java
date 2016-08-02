@@ -26,6 +26,8 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import javax.ejb.EJB;
 import javax.ejb.Local;
@@ -48,6 +50,7 @@ import si.sed.commons.interfaces.exception.TaskException;
 import si.sed.commons.utils.PModeManager;
 import si.sed.commons.utils.SEDLogger;
 import si.sed.commons.utils.StorageUtils;
+import si.sed.commons.utils.StringFormater;
 import si.sed.commons.utils.Utils;
 import si.sed.task.exception.FSException;
 
@@ -77,8 +80,8 @@ public class TaskFileSubmitter implements TaskExecutionInterface {
   private static final String PROP_PAYLOAD = "payload";
 
   /**
-     *
-     */
+   *
+   */
   public static String KEY_EXPORT_FOLDER = "file.submit.folder";
 
   StorageUtils mSU = new StorageUtils();
@@ -100,7 +103,8 @@ public class TaskFileSubmitter implements TaskExecutionInterface {
    * @return
    */
   @Override
-  public String executeTask(Properties p) throws TaskException {
+  public String executeTask(Properties p)
+      throws TaskException {
     long l = LOG.logStart();
     StringWriter sw = new StringWriter();
     int iVal = 0;
@@ -111,7 +115,7 @@ public class TaskFileSubmitter implements TaskExecutionInterface {
     } else {
       sfolder = p.getProperty(KEY_EXPORT_FOLDER);
     }
-    sfolder = Utils.replaceProperties(sfolder);
+    sfolder = StringFormater.replaceProperties(sfolder);
     sw.append("Submit from folder: " + sfolder);
 
     File fRoot = new File(sfolder);
@@ -121,8 +125,8 @@ public class TaskFileSubmitter implements TaskExecutionInterface {
       sw.append("Submit folder: " + sfolder + " is not a folder!");
     } else {
       File[] flst =
-          fRoot.listFiles((File dir, String name) -> name.startsWith(OUTMAIL_FILENAME)
-              && name.endsWith(OUTMAIL_SUFFIX));
+          fRoot.listFiles((File dir, String name) -> name.startsWith(OUTMAIL_FILENAME) &&
+               name.endsWith(OUTMAIL_SUFFIX));
       for (File file : flst) {
         LOG.log("check file data: " + file.getName());
 
@@ -198,15 +202,16 @@ public class TaskFileSubmitter implements TaskExecutionInterface {
     return sw.toString();
   }
 
-  private boolean isFileLocked(File f) throws IOException {
+  private boolean isFileLocked(File f)
+      throws IOException {
 
     boolean bVal = false;
     for (File smbl : f.getParentFile().listFiles()) {
-      if (smbl.isFile()
-          && !smbl.equals(f)
-          && (smbl.getName().equals(f.getName() + OUTMAIL_SUFFIX_ERROR)
-              || smbl.getName().equals(f.getName() + OUTMAIL_SUFFIX_PROCESS) || smbl.getName()
-              .equals(f.getName() + OUTMAIL_SUFFIX_SUBMITTED))) {
+      if (smbl.isFile() &&
+           !smbl.equals(f) &&
+           (smbl.getName().equals(f.getName() + OUTMAIL_SUFFIX_ERROR) ||
+           smbl.getName().equals(f.getName() + OUTMAIL_SUFFIX_PROCESS) || smbl.getName()
+          .equals(f.getName() + OUTMAIL_SUFFIX_SUBMITTED))) {
         bVal = true;
         break;
       }
@@ -215,7 +220,8 @@ public class TaskFileSubmitter implements TaskExecutionInterface {
     return bVal;
   }
 
-  private BigInteger processOutMail(Properties p, File fMetaData) throws FSException {
+  private BigInteger processOutMail(Properties p, File fMetaData)
+      throws FSException {
     long l = LOG.logStart();
     // validate data
     BigInteger res = null;
@@ -276,7 +282,16 @@ public class TaskFileSubmitter implements TaskExecutionInterface {
 
       MSHOutPart mp = new MSHOutPart();
       mp.setDescription(f.getName());
-      mp.setFilepath(StorageUtils.getRelativePath(fNew));
+      try {
+        mp.setFilepath(StorageUtils.getRelativePath(fNew));
+      } catch (StorageException ex) {
+        String errDesc =
+            "Error getting relative path for file : '" + fNew.getAbsolutePath() + "'. Err:" +
+            ex.getMessage() +
+             ".  Message with id '" + mout.getMessageId() + "' is not procesed!";
+
+        throw new FSException(errDesc, ex);
+      }
       mp.setMimeType(mimeType);
       mout.getMSHOutPayload().getMSHOutParts().add(mp);
     }
@@ -287,8 +302,8 @@ public class TaskFileSubmitter implements TaskExecutionInterface {
       pm = mpModeManager.getPModeById(pmodeId);
     } catch (PModeException ex) {
       String errDesc =
-          "Error reading pmodes for id: '" + pmodeId + "'. Err:" + ex.getMessage()
-              + ".  Message with id '" + mout.getMessageId() + "' is not procesed!";
+          "Error reading pmodes for id: '" + pmodeId + "'. Err:" + ex.getMessage() +
+           ".  Message with id '" + mout.getMessageId() + "' is not procesed!";
 
       throw new FSException(errDesc, ex);
     }
@@ -306,7 +321,8 @@ public class TaskFileSubmitter implements TaskExecutionInterface {
     return res;
   }
 
-  private String readProperty(Properties p, String prpKEy, boolean required) throws FSException {
+  private String readProperty(Properties p, String prpKEy, boolean required)
+      throws FSException {
     if (!p.containsKey(prpKEy)) {
       if (required) {
         throw new FSException("Missing property: " + prpKEy);
@@ -327,7 +343,8 @@ public class TaskFileSubmitter implements TaskExecutionInterface {
     SEDTaskType tt = new SEDTaskType();
     tt.setType("filesubmitter");
     tt.setName("File subbmiter");
-    tt.setDescription("Tasks submits mail in given folder. Mail must be in form: 'receiver-box_service_action'");
+    tt.setDescription(
+        "Tasks submits mail in given folder. Mail must be in form: 'receiver-box_service_action'");
     tt.getSEDTaskTypeProperties().add(createTTProperty(KEY_EXPORT_FOLDER, "Submit folder"));
 
     return tt;
