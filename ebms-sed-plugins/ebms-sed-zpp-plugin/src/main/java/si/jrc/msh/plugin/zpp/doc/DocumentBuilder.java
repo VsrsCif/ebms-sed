@@ -189,7 +189,9 @@ public abstract class DocumentBuilder {
     NodeList lst = xDoc.getDocumentElement().getElementsByTagName(SIGNATURE_ELEMENT_NAME);
     Element eltSignature = (Element) lst.item(0);
   
-    getSignUtils().singDocument(key, eltSignature, strIds, fos);
+    // todo change signature - dev stoped because of e-sens testing
+    // method is necessery for SVEV integrations
+    //getSignUtils().singDocument(key, eltSignature, strIds, fos);
 
     mlgLogger.info("DocumentBuilder.singDocument: - end (" + (getTime() - t) + "ms)");
   }

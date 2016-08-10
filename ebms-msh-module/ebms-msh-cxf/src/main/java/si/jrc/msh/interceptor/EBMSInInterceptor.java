@@ -57,17 +57,21 @@ import org.msh.svev.pmode.Certificate;
 import org.msh.svev.pmode.PMode;
 import org.msh.svev.pmode.References;
 import org.msh.svev.pmode.Security;
+import org.msh.svev.pmode.X509;
 import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.CollaborationInfo;
 import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.MessageInfo;
 import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.Messaging;
 import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.PartyId;
 import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.SignalMessage;
 import org.sed.ebms.cert.SEDCertStore;
+import org.sed.ebms.cert.SEDCertificate;
 import org.sed.ebms.ebox.SEDBox;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import si.jrc.msh.client.sec.SimplePasswordCallback;
 import si.jrc.msh.exception.EBMSError;
 import si.jrc.msh.exception.EBMSErrorCode;
+import static si.jrc.msh.interceptor.EBMSOutInterceptor.LOG;
 import si.jrc.msh.utils.EBMSUtils;
 import si.jrc.msh.utils.EbMSConstants;
 import si.sed.commons.SEDInboxMailStatus;
@@ -92,318 +96,318 @@ import si.sed.commons.utils.xml.XMLUtils;
  */
 public class EBMSInInterceptor extends AbstractEBMSInterceptor {
 
-  private static final Set<QName> HEADERS = new HashSet<>();
+    private static final Set<QName> HEADERS = new HashSet<>();
 
-  static {
-    HEADERS.add(new QName(EbMSConstants.EBMS_NS, EbMSConstants.EBMS_ROOT_ELEMENT_NAME));
-    WSS4JInInterceptor me = new WSS4JInInterceptor();
-    HEADERS.addAll(me.getUnderstoodHeaders());
-  }
+    static {
+        HEADERS.add(new QName(EbMSConstants.EBMS_NS, EbMSConstants.EBMS_ROOT_ELEMENT_NAME));
+        WSS4JInInterceptor me = new WSS4JInInterceptor();
+        HEADERS.addAll(me.getUnderstoodHeaders());
+    }
 
-  /**
+    /**
      *
      */
-  protected final static SEDLogger LOG = new SEDLogger(EBMSInInterceptor.class);
+    protected final static SEDLogger LOG = new SEDLogger(EBMSInInterceptor.class);
 
-  StorageUtils msuStorageUtils = new StorageUtils();
+    StorageUtils msuStorageUtils = new StorageUtils();
 
-  /**
+    /**
      *
      */
-  protected final HashUtils mpHU = new HashUtils();
+    protected final HashUtils mpHU = new HashUtils();
 
-  /**
+    /**
      *
      */
-  protected final GZIPUtil mGZIPUtils = new GZIPUtil();
+    protected final GZIPUtil mGZIPUtils = new GZIPUtil();
 
-  PModeManager mPModeManage = new PModeManager();
-  EBMSUtils mebmsUtils = new EBMSUtils();
-  CryptoCoverageChecker checker = new CryptoCoverageChecker();
-  WSS4JInInterceptor wssInterceptor = new WSS4JInInterceptor();
+    PModeManager mPModeManage = new PModeManager();
+    EBMSUtils mebmsUtils = new EBMSUtils();
+    CryptoCoverageChecker checker = new CryptoCoverageChecker();
+    WSS4JInInterceptor wssInterceptor = new WSS4JInInterceptor();
 
-  /**
+    /**
      *
      */
-  public EBMSInInterceptor() {
-    // super(Phase.USER_PROTOCOL);
-    super(Phase.PRE_PROTOCOL); // user preprotocol for generating receipt
-    // in user_protocol wss in removed!
-    getAfter().add(WSS4JInInterceptor.class.getName());
-  }
+    public EBMSInInterceptor() {
+        // super(Phase.USER_PROTOCOL);
+        super(Phase.PRE_PROTOCOL); // user preprotocol for generating receipt
+        // in user_protocol wss in removed!
+        getAfter().add(WSS4JInInterceptor.class.getName());
+    }
 
-  /**
-   *
-   * @param phase
-   */
-  public EBMSInInterceptor(String phase) {
-    super(phase);
-  }
+    /**
+     *
+     * @param phase
+     */
+    public EBMSInInterceptor(String phase) {
+        super(phase);
+    }
 
-  /**
-   *
-   * @return
-   */
-  @Override
-  public Set<QName> getUnderstoodHeaders() {
-    return HEADERS;
-  }
+    /**
+     *
+     * @return
+     */
+    @Override
+    public Set<QName> getUnderstoodHeaders() {
+        return HEADERS;
+    }
 
-  /**
-   *
-   * @param msg
-   */
-  @Override
-  public void handleMessage(SoapMessage msg) {
-    long l = LOG.logStart();
-    SoapVersion version = msg.getVersion();
-    boolean isRequestor = MessageUtils.isRequestor(msg);
-    // check for Messaging header
-    QName sv = (isRequestor ? SoapFault.FAULT_CODE_CLIENT : SoapFault.FAULT_CODE_SERVER);
+    /**
+     *
+     * @param msg
+     */
+    @Override
+    public void handleMessage(SoapMessage msg) {
+        long l = LOG.logStart();
+        SoapVersion version = msg.getVersion();
+        boolean isRequestor = MessageUtils.isRequestor(msg);
+        // check for Messaging header
+        QName sv = (isRequestor ? SoapFault.FAULT_CODE_CLIENT : SoapFault.FAULT_CODE_SERVER);
 
-    try {
-      // validate in message
-      Messaging msgHeader = vaildateMessagingData(msg);
-      msg.getExchange().put(Messaging.class, msgHeader);
-      // get processing mode for message!
-      PMode pm = getProcessingMode(msg, msgHeader);
+        try {
+            // validate in message
+            Messaging msgHeader = vaildateMessagingData(msg);
+            msg.getExchange().put(Messaging.class, msgHeader);
+            // get processing mode for message!
+            PMode pm = getProcessingMode(msg, msgHeader);
 
-      msg.getExchange().put(PMode.class, pm);
-      if (pm == null) {
-        String wrnmsg = "PMode for header" + msgHeader.getId();
-        LOG.logWarn(l, wrnmsg, null);
-      } else if (pm.getLegs().size() > 0 && pm.getLegs().get(0).getSecurity() != null) {
-        // check signed elements
-        checkSecurity(pm.getLegs().get(0).getSecurity(), msg);
-      } else {
-        String wrnmsg = "No security is defined for pmode: '" + pm.getId() + "'";
-        LOG.logWarn(l, wrnmsg, null);
-      }
-
-      // create receive message entitity
-      // process signals
-      // process userMessage
-      if (isRequestor) {
-        if (!msgHeader.getUserMessages().isEmpty()) {
-          String errmsg = "For response only signal response is expected! UserMessage is ignored";
-          LOG.logError(l, errmsg, null);
-        }
-
-        if (msgHeader.getSignalMessages().size() > 0) {
-          // receive as4receipt
-          // receive errors
-          processResponseSignals(msgHeader.getSignalMessages(), pm, msg);
-
-        } else {
-          String errmsg = "For SOAP response error signal or receipt is expected!";
-          LOG.logError(l, errmsg, null);
-          throw new SoapFault(errmsg, version.getReceiver());
-        }
-      } else if (!msgHeader.getUserMessages().isEmpty()) {
-        //
-        MSHInMail mMail = mebmsUtils.userMessage2MSHMail(msgHeader.getUserMessages().get(0));
-        String receiverBox = mMail.getReceiverEBox();
-        if (receiverBox == null || receiverBox.trim().isEmpty()) {
-          String errmsg = "Missing receiver box!";
-          LOG.logError(l, errmsg, null);
-          throw new EBMSError(EBMSErrorCode.Other, mMail.getMessageId(), errmsg);
-        }
-
-        SEDBox inSb = getSedBoxByName(mMail.getReceiverEBox());
-        if (inSb == null
-            || (inSb.getActiveToDate() != null && inSb.getActiveToDate().before(
-                Calendar.getInstance().getTime()))) {
-          String errmsg =
-              "Receiver box: '" + mMail.getReceiverEBox() + "' not exists or is not active.";
-          LOG.logError(l, errmsg, null);
-          throw new EBMSError(EBMSErrorCode.Other, mMail.getMessageId(), errmsg);
-        }
-
-        msg.getExchange().put(SEDBox.class, inSb);
-
-        // validate attachments
-        List<String> lstSoapAtt = new ArrayList<>();
-        List<String> lstEBMSAtt = new ArrayList<>();
-        for (Attachment a : msg.getAttachments()) {
-          lstSoapAtt.add(a.getId());
-        }
-        if (mMail.getMSHInPayload() != null && !mMail.getMSHInPayload().getMSHInParts().isEmpty()) {
-          for (MSHInPart ip : mMail.getMSHInPayload().getMSHInParts()) {
-            if (lstSoapAtt.contains(ip.getEbmsId())) {
-              lstSoapAtt.remove(ip.getEbmsId());
+            msg.getExchange().put(PMode.class, pm);
+            if (pm == null) {
+                String wrnmsg = "PMode for header" + msgHeader.getId();
+                LOG.logWarn(l, wrnmsg, null);
+            } else if (pm.getLegs().size() > 0 && pm.getLegs().get(0).getSecurity() != null) {
+                // check signed elements
+                checkSecurity(pm.getLegs().get(0).getSecurity(), msg);
             } else {
-              lstEBMSAtt.add(ip.getEbmsId());
+                String wrnmsg = "No security is defined for pmode: '" + pm.getId() + "'";
+                LOG.logWarn(l, wrnmsg, null);
             }
-          }
-        }
 
-        if (!lstSoapAtt.isEmpty() || !lstEBMSAtt.isEmpty()) {
-          String errmsg = "Ebms Payloads does note match soap attachments.";
-          LOG.logError(l, errmsg, null);
-          throw new EBMSError(EBMSErrorCode.ValueInconsistent, null, errmsg);
-        }
-        // serialize attachments
-        if (mMail.getMSHInPayload() != null && !mMail.getMSHInPayload().getMSHInParts().isEmpty()) {
-          for (MSHInPart p : mMail.getMSHInPayload().getMSHInParts()) {
-            try {
-              serializeAttachments(p, msg.getAttachments(), true);
-            } catch (StorageException | IOException | HashException ex) {
-              String errmsg = "Error reading attachments .";
-              LOG.logError(l, errmsg, null);
-              throw new EBMSError(EBMSErrorCode.ExternalPayloadError, null, errmsg);
+            // create receive message entitity
+            // process signals
+            // process userMessage
+            if (isRequestor) {
+                if (!msgHeader.getUserMessages().isEmpty()) {
+                    String errmsg = "For response only signal response is expected! UserMessage is ignored";
+                    LOG.logError(l, errmsg, null);
+                }
+
+                if (msgHeader.getSignalMessages().size() > 0) {
+                    // receive as4receipt
+                    // receive errors
+                    processResponseSignals(msgHeader.getSignalMessages(), pm, msg);
+
+                } else {
+                    String errmsg = "For SOAP response error signal or receipt is expected!";
+                    LOG.logError(l, errmsg, null);
+                    throw new SoapFault(errmsg, version.getReceiver());
+                }
+            } else if (!msgHeader.getUserMessages().isEmpty()) {
+                //
+                MSHInMail mMail = mebmsUtils.userMessage2MSHMail(msgHeader.getUserMessages().get(0));
+                String receiverBox = mMail.getReceiverEBox();
+                if (receiverBox == null || receiverBox.trim().isEmpty()) {
+                    String errmsg = "Missing receiver box!";
+                    LOG.logError(l, errmsg, null);
+                    throw new EBMSError(EBMSErrorCode.Other, mMail.getMessageId(), errmsg);
+                }
+
+                SEDBox inSb = getSedBoxByName(mMail.getReceiverEBox());
+                if (inSb == null
+                        || (inSb.getActiveToDate() != null && inSb.getActiveToDate().before(
+                                Calendar.getInstance().getTime()))) {
+                    String errmsg
+                            = "Receiver box: '" + mMail.getReceiverEBox() + "' not exists or is not active.";
+                    LOG.logError(l, errmsg, null);
+                    throw new EBMSError(EBMSErrorCode.Other, mMail.getMessageId(), errmsg);
+                }
+
+                msg.getExchange().put(SEDBox.class, inSb);
+
+                // validate attachments
+                List<String> lstSoapAtt = new ArrayList<>();
+                List<String> lstEBMSAtt = new ArrayList<>();
+                for (Attachment a : msg.getAttachments()) {
+                    lstSoapAtt.add(a.getId());
+                }
+                if (mMail.getMSHInPayload() != null && !mMail.getMSHInPayload().getMSHInParts().isEmpty()) {
+                    for (MSHInPart ip : mMail.getMSHInPayload().getMSHInParts()) {
+                        if (lstSoapAtt.contains(ip.getEbmsId())) {
+                            lstSoapAtt.remove(ip.getEbmsId());
+                        } else {
+                            lstEBMSAtt.add(ip.getEbmsId());
+                        }
+                    }
+                }
+
+                if (!lstSoapAtt.isEmpty() || !lstEBMSAtt.isEmpty()) {
+                    String errmsg = "Ebms Payloads does note match soap attachments.";
+                    LOG.logError(l, errmsg, null);
+                    throw new EBMSError(EBMSErrorCode.ValueInconsistent, null, errmsg);
+                }
+                // serialize attachments
+                if (mMail.getMSHInPayload() != null && !mMail.getMSHInPayload().getMSHInParts().isEmpty()) {
+                    for (MSHInPart p : mMail.getMSHInPayload().getMSHInParts()) {
+                        try {
+                            serializeAttachments(p, msg.getAttachments(), true);
+                        } catch (StorageException | IOException | HashException ex) {
+                            String errmsg = "Error reading attachments .";
+                            LOG.logError(l, errmsg, null);
+                            throw new EBMSError(EBMSErrorCode.ExternalPayloadError, null, errmsg);
+                        }
+                    }
+
+                }
+
+                // serializa data DB
+                // prepare mail to persist
+                Date dt = Calendar.getInstance().getTime();
+                // set current status
+                mMail.setStatus(SEDInboxMailStatus.RECEIVE.getValue());
+                mMail.setStatusDate(dt);
+                mMail.setReceivedDate(dt);
+                try {
+                    getDAO().serializeInMail(mMail, "ebms-msh-ws");
+                } catch (StorageException ex) {
+                    String errmsg = "Internal error occured while serializing incomming mail.";
+                    LOG.logError(l, errmsg, ex);
+                    throw ExceptionUtils.createSoapFault(SOAPExceptionCode.StoreInboundMailFailure,
+                            SoapFault.FAULT_CODE_SERVER, errmsg);
+                }
+
+                msg.getExchange().put(MSHInMail.class, mMail);
+
+                SOAPMessage request = msg.getContent(SOAPMessage.class);
+
+                SignalMessage as4Receipt
+                        = mebmsUtils.generateAS4ReceiptSignal(mMail.getMessageId(), Utils
+                                .getDomainFromAddress(mMail.getReceiverEBox()), request.getSOAPPart()
+                                .getDocumentElement(), dt);
+                msg.getExchange().put(SignalMessage.class, as4Receipt);
+            } else {
+                String errmsg = "Missing userMessage! In a SVEV-MSH  pull-MEP is not exepected!";
+                LOG.logError(l, errmsg, null);
+                throw new EBMSError(EBMSErrorCode.ProcessingModeMismatch, null, errmsg);
+
             }
-          }
+        } catch (EBMSError ex) {
+            LOG.logError(l, ex);
+            if (!isRequestor) {
+                try {
+
+                    Endpoint e = msg.getExchange().get(Endpoint.class);
+                    if (!msg.getExchange().isOneWay()) {
+                        Message responseMsg = new MessageImpl();
+                        responseMsg.setExchange(msg.getExchange());
+                        responseMsg = e.getBinding().createMessage(responseMsg);
+                        msg.getExchange().setOutMessage(responseMsg);
+
+                        MessageFactory mf = MessageFactory.newInstance(SOAPConstants.SOAP_1_2_PROTOCOL);
+                        SOAPMessage soapMessage = mf.createMessage();
+                        soapMessage.saveChanges();
+
+                        responseMsg.setContent(SOAPMessage.class, soapMessage);
+                        responseMsg.getExchange().put(EBMSError.class, ex);
+
+                        InterceptorChain chain
+                                = OutgoingChainInterceptor.getOutInterceptorChain(msg.getExchange());
+                        responseMsg.setInterceptorChain(chain);
+                        chain.doInterceptStartingAfter(responseMsg,
+                                SoapPreProtocolOutInterceptor.class.getName());
+                    }
+
+                    // abort message
+                    InterceptorChain chain = msg.getInterceptorChain();
+                    chain.abort();
+                } catch (SOAPException ex1) {
+                    LOG.logError(l, ex1);
+                }
+
+            }
 
         }
+        LOG.logEnd(l);
+    }
 
-        // serializa data DB
-        // prepare mail to persist
-        Date dt = Calendar.getInstance().getTime();
-        // set current status
-        mMail.setStatus(SEDInboxMailStatus.RECEIVE.getValue());
-        mMail.setStatusDate(dt);
-        mMail.setReceivedDate(dt);
-        try {
-          getDAO().serializeInMail(mMail, "ebms-msh-ws");
-        } catch (StorageException ex) {
-          String errmsg = "Internal error occured while serializing incomming mail.";
-          LOG.logError(l, errmsg, ex);
-          throw ExceptionUtils.createSoapFault(SOAPExceptionCode.StoreInboundMailFailure,
-              SoapFault.FAULT_CODE_SERVER, errmsg);
-        }
-
-        msg.getExchange().put(MSHInMail.class, mMail);
-
-        SOAPMessage request = msg.getContent(SOAPMessage.class);
-
-        SignalMessage as4Receipt =
-            mebmsUtils.generateAS4ReceiptSignal(mMail.getMessageId(), Utils
-                .getDomainFromAddress(mMail.getReceiverEBox()), request.getSOAPPart()
-                .getDocumentElement(), dt);
-        msg.getExchange().put(SignalMessage.class, as4Receipt);
-      } else {
-        String errmsg = "Missing userMessage! In a SVEV-MSH  pull-MEP is not exepected!";
-        LOG.logError(l, errmsg, null);
-        throw new EBMSError(EBMSErrorCode.ProcessingModeMismatch, null, errmsg);
-
-      }
-    } catch (EBMSError ex) {
-      LOG.logError(l, ex);
-      if (!isRequestor) {
-        try {
-
-          Endpoint e = msg.getExchange().get(Endpoint.class);
-          if (!msg.getExchange().isOneWay()) {
-            Message responseMsg = new MessageImpl();
-            responseMsg.setExchange(msg.getExchange());
-            responseMsg = e.getBinding().createMessage(responseMsg);
-            msg.getExchange().setOutMessage(responseMsg);
-
-            MessageFactory mf = MessageFactory.newInstance(SOAPConstants.SOAP_1_2_PROTOCOL);
-            SOAPMessage soapMessage = mf.createMessage();
-            soapMessage.saveChanges();
-
-            responseMsg.setContent(SOAPMessage.class, soapMessage);
-            responseMsg.getExchange().put(EBMSError.class, ex);
-
-            InterceptorChain chain =
-                OutgoingChainInterceptor.getOutInterceptorChain(msg.getExchange());
-            responseMsg.setInterceptorChain(chain);
-            chain.doInterceptStartingAfter(responseMsg,
-                SoapPreProtocolOutInterceptor.class.getName());
-          }
-
-          // abort message
-          InterceptorChain chain = msg.getInterceptorChain();
-          chain.abort();
-        } catch (SOAPException ex1) {
-          LOG.logError(l, ex1);
-        }
-
-      }
+    private SEDBox getSedBoxByName(String sbox) {
+        return getLookups().getSEDBoxByName(sbox);
 
     }
-    LOG.logEnd(l);
-  }
 
-  private SEDBox getSedBoxByName(String sbox) {
-    return getLookups().getSEDBoxByName(sbox);
+    // receive
+    private void processResponseSignals(List<SignalMessage> lstSignals, PMode pm, SoapMessage msg)
+            throws EBMSError {
+        SoapVersion version = msg.getVersion();
+        long l = LOG.logStart();
 
-  }
+        for (SignalMessage sm : lstSignals) {
+            MessageInfo mi = sm.getMessageInfo();
+            if (mi == null) {
+                String errmsg = "Missing MessageInfo in SignalMessage";
+                LOG.logError(l, errmsg, null);
+                throw new SoapFault(errmsg, version.getReceiver());
+            }
 
-  // receive
-  private void processResponseSignals(List<SignalMessage> lstSignals, PMode pm, SoapMessage msg)
-      throws EBMSError {
-    SoapVersion version = msg.getVersion();
-    long l = LOG.logStart();
+            if (sm.getPullRequest() != null) {
+                String errmsg = "Pull MEP is not supported! Pull signal is ignored";
+                LOG.logError(l, errmsg, null);
 
-    for (SignalMessage sm : lstSignals) {
-      MessageInfo mi = sm.getMessageInfo();
-      if (mi == null) {
-        String errmsg = "Missing MessageInfo in SignalMessage";
-        LOG.logError(l, errmsg, null);
-        throw new SoapFault(errmsg, version.getReceiver());
-      }
+            }
 
-      if (sm.getPullRequest() != null) {
-        String errmsg = "Pull MEP is not supported! Pull signal is ignored";
-        LOG.logError(l, errmsg, null);
+            if (mi.getRefToMessageId() == null || mi.getRefToMessageId().trim().isEmpty()) {
+                String errmsg = "Missing missing RefToMessageId";
+                LOG.logError(l, errmsg, null);
+                throw new SoapFault(errmsg, version.getReceiver());
+            }
 
-      }
+            MSHOutMail outmsg = msg.getExchange().get(MSHOutMail.class);
+            String strOutMsg = outmsg.getMessageId() + "@" + getSettings().getDomain();
+            if (strOutMsg != null && !strOutMsg.equals(mi.getRefToMessageId())) {
+                String errmsg
+                        = "Outgoing msg ID '" + strOutMsg
+                        + "' not equals to received response signal RefToMessageId: '"
+                        + mi.getRefToMessageId() + "' ";
+                LOG.logError(l, errmsg, null);
+                // throw new SoapFault(errmsg, version.getReceiver());
+            }
 
-      if (mi.getRefToMessageId() == null || mi.getRefToMessageId().trim().isEmpty()) {
-        String errmsg = "Missing missing RefToMessageId";
-        LOG.logError(l, errmsg, null);
-        throw new SoapFault(errmsg, version.getReceiver());
-      }
+            if (sm.getErrors() != null && !sm.getErrors().isEmpty()) {
+                String desc = "";
+                for (org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.Error er : sm.getErrors()) {
+                    desc
+                            = er.getOrigin() + "" + er.getSeverity() + " " + er.getErrorCode() + " "
+                            + er.getErrorDetail();
+                    break;
+                }
 
-      MSHOutMail outmsg = msg.getExchange().get(MSHOutMail.class);
-      String strOutMsg = outmsg.getMessageId() + "@" + getSettings().getDomain();
-      if (strOutMsg != null && !strOutMsg.equals(mi.getRefToMessageId())) {
-        String errmsg =
-            "Outgoing msg ID '" + strOutMsg
-                + "' not equals to received response signal RefToMessageId: '"
-                + mi.getRefToMessageId() + "' ";
-        LOG.logError(l, errmsg, null);
-        // throw new SoapFault(errmsg, version.getReceiver());
-      }
+                try {
+                    getDAO().setStatusToOutMail(outmsg, SEDOutboxMailStatus.EBMSERROR, desc);
+                } catch (StorageException ex) {
+                    String msgErr
+                            = "Error occured when setting MSHOutMail (id" + outmsg.getId()
+                            + ") status to EBMSERROR";
+                    LOG.logError(l, msgErr, ex);
+                }
 
-      if (sm.getErrors() != null && !sm.getErrors().isEmpty()) {
-        String desc = "";
-        for (org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.Error er : sm.getErrors()) {
-          desc =
-              er.getOrigin() + "" + er.getSeverity() + " " + er.getErrorCode() + " "
-                  + er.getErrorDetail();
-          break;
-        }
+            } else if (sm.getReceipt() != null) {
+                outmsg.setReceivedDate(mi.getTimestamp());
+                try {
+                    getDAO().setStatusToOutMail(outmsg, SEDOutboxMailStatus.SENT,
+                            "Mail received to receiver MSH");
+                } catch (StorageException ex) {
+                    String msgErr
+                            = "Error occured when setting MSHOutMail (id" + outmsg.getId() + ") status to SENT";
+                    LOG.logError(l, msgErr, ex);
+                }
 
-        try {
-          getDAO().setStatusToOutMail(outmsg, SEDOutboxMailStatus.EBMSERROR, desc);
-        } catch (StorageException ex) {
-          String msgErr =
-              "Error occured when setting MSHOutMail (id" + outmsg.getId()
-                  + ") status to EBMSERROR";
-          LOG.logError(l, msgErr, ex);
-        }
+            }
 
-      } else if (sm.getReceipt() != null) {
-        outmsg.setReceivedDate(mi.getTimestamp());
-        try {
-          getDAO().setStatusToOutMail(outmsg, SEDOutboxMailStatus.SENT,
-              "Mail received to receiver MSH");
-        } catch (StorageException ex) {
-          String msgErr =
-              "Error occured when setting MSHOutMail (id" + outmsg.getId() + ") status to SENT";
-          LOG.logError(l, msgErr, ex);
-        }
+            msg.getExchange().put("SIGNAL_ELEMENTS", sm.getAnies());
 
-      }
-
-      msg.getExchange().put("SIGNAL_ELEMENTS", sm.getAnies());
-
-      for (Element e : sm.getAnies()) {
-        mlog.log("Got elements in signal: " + e.getLocalName());
-        /*
+            for (Element e : sm.getAnies()) {
+                mlog.log("Got elements in signal: " + e.getLocalName());
+                /*
          * if (e.getLocalName().equals("SVEVEncryptionKey")) {
          * System.out.println("********************** got encryptionKey"); try { SVEVEncryptionKey
          * se = (SVEVEncryptionKey) XMLUtils.deserialize(e, SVEVEncryptionKey.class);
@@ -420,297 +424,375 @@ public class EBMSInInterceptor extends AbstractEBMSInterceptor {
          * else { String errmsg = "Error parsing  '" + e.getNamespaceURI() + "', tagname: '" +
          * e.getLocalName() + "'!"; LOG.logError(l, errmsg); throw new
          * EBMSError(EBMSErrorCode.ProcessingModeMismatch, null, errmsg); }
-         */
-      }
+                 */
+            }
 
-    }
-  }
-
-  private Messaging vaildateMessagingData(SoapMessage msg) throws SoapFault, EBMSError {
-    long l = LOG.logStart();
-    SoapVersion version = msg.getVersion();
-    boolean isRequestor = MessageUtils.isRequestor(msg);
-    QName sv = (isRequestor ? SoapFault.FAULT_CODE_CLIENT : SoapFault.FAULT_CODE_SERVER);
-
-    if (version.getVersion() != 1.2) {
-      String errmsg = "ebMS AS4 supports only soap 1.2 protocol!";
-      LOG.logError(l, errmsg, null);
-      throw ExceptionUtils.createSoapFault(SOAPExceptionCode.SoapVersionMismatch, sv, errmsg);
-    }
-
-    SOAPMessage request = msg.getContent(SOAPMessage.class);
-
-    NodeList lstND = null;
-    try {
-      lstND =
-          request.getSOAPHeader().getElementsByTagNameNS(EbMSConstants.EBMS_NS,
-              EbMSConstants.EBMS_ROOT_ELEMENT_NAME);
-    } catch (SOAPException ex) {
-      String errmsg = "Error parsing EMBS header! Error: " + ex.getMessage();
-      LOG.logError(l, errmsg, null);
-      throw ExceptionUtils.createSoapFault(SOAPExceptionCode.SoapParseFailure, sv);
-
-    }
-    if (lstND == null || lstND.getLength() == 0) {
-      String errmsg =
-          "Missing EBMS header: " + EbMSConstants.EBMS_NS + ":"
-              + EbMSConstants.EBMS_ROOT_ELEMENT_NAME + "!";
-      LOG.logError(l, errmsg, null);
-      throw new EBMSError(EBMSErrorCode.InvalidHeader, null, errmsg);
-    }
-
-    if (lstND.getLength() != 1) {
-      String errmsg =
-          "Onyl one EBMS header (" + EbMSConstants.EBMS_NS + ":"
-              + EbMSConstants.EBMS_ROOT_ELEMENT_NAME + ") found: " + lstND.getLength() + "!";
-      LOG.logError(l, errmsg, null);
-      throw new EBMSError(EBMSErrorCode.InvalidHeader, null, errmsg);
-    }
-
-    Element elmn = (Element) lstND.item(0); // expected only one
-    Messaging msgHeader = null;
-    try {
-      msgHeader = (Messaging) XMLUtils.deserialize(elmn, Messaging.class);
-    } catch (JAXBException ex) {
-      String errmsg = "Error reading EMBS header! Error: " + ex.getMessage();
-      LOG.logError(l, errmsg, null);
-      throw new EBMSError(EBMSErrorCode.InvalidHeader, null, errmsg);
-    }
-
-    if (msgHeader == null) {
-      String errmsg = "Missing header";
-      LOG.logError(l, errmsg, null);
-      throw new EBMSError(EBMSErrorCode.InvalidHeader, getMessageId(msgHeader), errmsg);
-    }
-
-    String lstErrors =
-        XMLUtils
-            .validateBySchema(msgHeader,
-                Messaging.class.getResourceAsStream("/schemas/ebms-header-3_0-200704.xsd"),
-                "/schemas/");
-    if (!lstErrors.isEmpty()) {
-      String errmsg = "Error validating by schema: " + lstErrors;
-      LOG.logError(l, errmsg, null);
-      throw new EBMSError(EBMSErrorCode.InvalidHeader, getMessageId(msgHeader), lstErrors);
-    }
-
-    // zero signal or usermessage is expected
-    if (msgHeader.getUserMessages().isEmpty() && msgHeader.getSignalMessages().isEmpty()) {
-      String errmsg = "UserMessage or SignalMessage is exptected!";
-      LOG.logError(l, errmsg, null);
-      throw new EBMSError(EBMSErrorCode.InvalidHeader, getMessageId(msgHeader), errmsg);
-    }
-    // only one ser message is expected
-    if (msgHeader.getUserMessages().size() > 1) {
-      String errmsg = "Zero or  one UserMessage is exptected!";
-      LOG.logError(l, errmsg, null);
-      throw new EBMSError(EBMSErrorCode.InvalidHeader, getMessageId(msgHeader), errmsg);
-    }
-
-    return msgHeader;
-
-  }
-
-  private PMode getProcessingMode(SoapMessage msg, Messaging msgHeader) throws EBMSError {
-    long l = LOG.logStart();
-    boolean requestor = MessageUtils.isRequestor(msg);
-    QName sv = (requestor ? SoapFault.FAULT_CODE_SERVER : SoapFault.FAULT_CODE_CLIENT);
-
-    PMode pmd = msg.getExchange().get(PMode.class); //
-    // if pmd not in exchange - then this should be user message
-    if (pmd == null && requestor) {
-      String errmsg =
-          "Invalid ebms configuration! Set PMode to exchange: as "
-              + "'client.getRequestContext().put(PMode.class.getName(), pmod)'";
-      LOG.logError(l, errmsg, null);
-      throw ExceptionUtils.createSoapFault(SOAPExceptionCode.StoreInboundMailFailure, sv, errmsg);
-    }
-    if (pmd == null) {
-
-      // simple validating user message
-      if (msgHeader.getUserMessages().isEmpty()) {
-        String errmsg = "Missing userMessage! In a SVEV-MSH  pull-MEP is not exepected!";
-        LOG.logError(l, errmsg, null);
-        throw new EBMSError(EBMSErrorCode.ProcessingModeMismatch, null, errmsg);
-      }
-
-      if (msgHeader.getUserMessages().get(0).getCollaborationInfo() == null) {
-        String errmsg = "Missing CollaborationInfo in UserMessage!";
-        LOG.logError(l, errmsg, null);
-        throw new EBMSError(EBMSErrorCode.ProcessingModeMismatch, null, errmsg);
-      }
-
-      if (msgHeader.getUserMessages().get(0).getCollaborationInfo() == null) {
-        String errmsg = "Missing CollaborationInfo!";
-        LOG.logError(l, errmsg, null);
-        throw new EBMSError(EBMSErrorCode.InvalidHeader, null, errmsg);
-      }
-      CollaborationInfo ca = msgHeader.getUserMessages().get(0).getCollaborationInfo();
-
-      if (ca.getService() == null || ca.getService().getValue() == null
-          || ca.getService().getValue().isEmpty()) {
-        String errmsg = "Missing 'service' value!";
-        LOG.logError(l, errmsg, null);
-        throw new EBMSError(EBMSErrorCode.InvalidHeader, null, errmsg);
-      }
-
-      if (msgHeader.getUserMessages().get(0).getPartyInfo() == null) {
-        String errmsg = "Missing 'PartyInfo' value!";
-        LOG.logError(l, errmsg, null);
-        throw new EBMSError(EBMSErrorCode.InvalidHeader, null, errmsg);
-      }
-
-      if (msgHeader.getUserMessages().get(0).getPartyInfo().getFrom() == null
-          || msgHeader.getUserMessages().get(0).getPartyInfo().getFrom().getPartyIds().isEmpty()) {
-
-        String errmsg = "Missing 'PartyInfo/From/PartyId' value!";
-        LOG.logError(l, errmsg, null);
-        throw new EBMSError(EBMSErrorCode.InvalidHeader, null, errmsg);
-      }
-      List<PartyId> plst =
-          msgHeader.getUserMessages().get(0).getPartyInfo().getFrom().getPartyIds();
-      String senderBox = null;
-      for (PartyId p : plst) {
-        if (p.getType() != null && EbMSConstants.EBMS_PARTY_TYPE_EBOX.equals(p.getType())) {
-          senderBox = p.getValue();
-          break;
         }
-      }
-      if (senderBox == null) {
-        String errmsg =
-            "Missing senderEBox: 'PartyInfo/From/PartyId' for type: '"
-                + EbMSConstants.EBMS_PARTY_TYPE_EBOX + "' value!";
-        LOG.logError(l, errmsg, null);
-        throw new EBMSError(EBMSErrorCode.InvalidHeader, null, errmsg);
-      }
-
-      String srv = ca.getService().getValue();
-      String pmodeId = srv + ":" + Utils.getDomainFromAddress(senderBox);
-      try {
-        // if user message
-        pmd = mPModeManage.getPModeById(pmodeId);
-      } catch (PModeException ex) {
-        String errmsg =
-            "Error reading PModes for id: '" + ca.getAgreementRef().getPmode() + "'! Err:"
-                + ex.getMessage();
-        LOG.logError(l, errmsg, ex);
-        throw new EBMSError(EBMSErrorCode.ProcessingModeMismatch, null, errmsg, ex);
-      }
-      if (pmd == null) {
-        String errmsg = "PMode with id: '" + ca.getAgreementRef().getPmode() + "' not exist!";
-        LOG.logError(l, errmsg, null);
-        throw new EBMSError(EBMSErrorCode.ProcessingModeMismatch, null, errmsg);
-      }
-      msg.getExchange().put(PMode.class, pmd);
     }
-    return pmd;
 
-  }
+    private Messaging vaildateMessagingData(SoapMessage msg) throws SoapFault, EBMSError {
+        long l = LOG.logStart();
+        SoapVersion version = msg.getVersion();
+        boolean isRequestor = MessageUtils.isRequestor(msg);
+        QName sv = (isRequestor ? SoapFault.FAULT_CODE_CLIENT : SoapFault.FAULT_CODE_SERVER);
 
-  private void checkSecurity(Security sc, SoapMessage msg) {
-
-    // check signatures
-    Certificate c = sc.getX509().getSignature().getCertificate();
-    Map<String, Object> inProps = new HashMap<>();
-    inProps.put(WSHandlerConstants.ACTION, WSHandlerConstants.SIGNATURE);
-
-    String cpropname = "CP." + UUID.randomUUID().toString();
-    String alias = sc.getX509().getSignature().getCertificate().getAlias();
-    SEDCertStore cs = getLookups().getSEDCertStoreByCertAlias(alias, false);
-    // Properties cp = CertificateUtils.getInstance().getVerifySignProperties();
-    Properties cp = KeystoreUtils.getVerifySignProperties(alias, cs);
-    inProps.put(cpropname, cp);
-
-    inProps.put(WSHandlerConstants.SIG_VER_PROP_REF_ID, cpropname);
-    // inProps.put(WSHandlerConstants.SIG_PROP_REF_ID, cpropname);
-
-    wssInterceptor.setProperties(inProps);
-    wssInterceptor.handleMessage(msg);
-
-    // check signed elements // todo for attachments
-    if (sc.getX509() != null && sc.getX509().getSignature() != null
-        && sc.getX509().getSignature().getSign() != null
-        && sc.getX509().getSignature().getSign().getElements() != null
-        && sc.getX509().getSignature().getSign().getElements().getXPaths().size() > 0) {
-      Map<String, String> prefixes = new HashMap<>();
-      List<CryptoCoverageChecker.XPathExpression> xpaths = new ArrayList<>();
-      int i = 0;
-      for (References.Elements.XPath el : sc.getX509().getSignature().getSign().getElements()
-          .getXPaths()) {
-        for (References.Elements.XPath.Namespace ns : el.getNamespaces()) {
-          prefixes.put(ns.getPrefix(), ns.getNamespace());
+        if (version.getVersion() != 1.2) {
+            String errmsg = "ebMS AS4 supports only soap 1.2 protocol!";
+            LOG.logError(l, errmsg, null);
+            throw ExceptionUtils.createSoapFault(SOAPExceptionCode.SoapVersionMismatch, sv, errmsg);
         }
-        xpaths.add(new CryptoCoverageChecker.XPathExpression(el.getXpath(),
-            CryptoCoverageUtil.CoverageType.SIGNED, CryptoCoverageUtil.CoverageScope.ELEMENT));
 
-        i++;
-      }
-      checker = new CryptoCoverageChecker(prefixes, xpaths);
+        SOAPMessage request = msg.getContent(SOAPMessage.class);
 
-      checker.handleMessage(msg);
+        NodeList lstND = null;
+        try {
+            lstND
+                    = request.getSOAPHeader().getElementsByTagNameNS(EbMSConstants.EBMS_NS,
+                            EbMSConstants.EBMS_ROOT_ELEMENT_NAME);
+        } catch (SOAPException ex) {
+            String errmsg = "Error parsing EMBS header! Error: " + ex.getMessage();
+            LOG.logError(l, errmsg, null);
+            throw ExceptionUtils.createSoapFault(SOAPExceptionCode.SoapParseFailure, sv);
+
+        }
+        if (lstND == null || lstND.getLength() == 0) {
+            String errmsg
+                    = "Missing EBMS header: " + EbMSConstants.EBMS_NS + ":"
+                    + EbMSConstants.EBMS_ROOT_ELEMENT_NAME + "!";
+            LOG.logError(l, errmsg, null);
+            throw new EBMSError(EBMSErrorCode.InvalidHeader, null, errmsg);
+        }
+
+        if (lstND.getLength() != 1) {
+            String errmsg
+                    = "Onyl one EBMS header (" + EbMSConstants.EBMS_NS + ":"
+                    + EbMSConstants.EBMS_ROOT_ELEMENT_NAME + ") found: " + lstND.getLength() + "!";
+            LOG.logError(l, errmsg, null);
+            throw new EBMSError(EBMSErrorCode.InvalidHeader, null, errmsg);
+        }
+
+        Element elmn = (Element) lstND.item(0); // expected only one
+        Messaging msgHeader = null;
+        try {
+            msgHeader = (Messaging) XMLUtils.deserialize(elmn, Messaging.class);
+        } catch (JAXBException ex) {
+            String errmsg = "Error reading EMBS header! Error: " + ex.getMessage();
+            LOG.logError(l, errmsg, null);
+            throw new EBMSError(EBMSErrorCode.InvalidHeader, null, errmsg);
+        }
+
+        if (msgHeader == null) {
+            String errmsg = "Missing header";
+            LOG.logError(l, errmsg, null);
+            throw new EBMSError(EBMSErrorCode.InvalidHeader, getMessageId(msgHeader), errmsg);
+        }
+
+        String lstErrors
+                = XMLUtils
+                .validateBySchema(msgHeader,
+                        Messaging.class.getResourceAsStream("/schemas/ebms-header-3_0-200704.xsd"),
+                        "/schemas/");
+        if (!lstErrors.isEmpty()) {
+            String errmsg = "Error validating by schema: " + lstErrors;
+            LOG.logError(l, errmsg, null);
+            throw new EBMSError(EBMSErrorCode.InvalidHeader, getMessageId(msgHeader), lstErrors);
+        }
+
+        // zero signal or usermessage is expected
+        if (msgHeader.getUserMessages().isEmpty() && msgHeader.getSignalMessages().isEmpty()) {
+            String errmsg = "UserMessage or SignalMessage is exptected!";
+            LOG.logError(l, errmsg, null);
+            throw new EBMSError(EBMSErrorCode.InvalidHeader, getMessageId(msgHeader), errmsg);
+        }
+        // only one ser message is expected
+        if (msgHeader.getUserMessages().size() > 1) {
+            String errmsg = "Zero or  one UserMessage is exptected!";
+            LOG.logError(l, errmsg, null);
+            throw new EBMSError(EBMSErrorCode.InvalidHeader, getMessageId(msgHeader), errmsg);
+        }
+
+        return msgHeader;
+
     }
-  }
 
-  /**
-   *
-   * @param message
-   */
-  @Override
-  public void handleFault(SoapMessage message) {
-    super.handleFault(message);
-  }
+    private PMode getProcessingMode(SoapMessage msg, Messaging msgHeader) throws EBMSError {
+        long l = LOG.logStart();
+        boolean requestor = MessageUtils.isRequestor(msg);
+        QName sv = (requestor ? SoapFault.FAULT_CODE_SERVER : SoapFault.FAULT_CODE_CLIENT);
 
-  /**
-   *
-   * @param msgHeader
-   * @return
-   */
-  public String getMessageId(Messaging msgHeader) {
-    String msgId = null;
-    if (msgHeader != null) {
-      MessageInfo mi = null;
-      if (!msgHeader.getUserMessages().isEmpty()) {
-        mi = msgHeader.getUserMessages().get(0).getMessageInfo();
-      } else if (!msgHeader.getSignalMessages().isEmpty()) {
-        mi = msgHeader.getSignalMessages().get(0).getMessageInfo();
-      }
-      if (mi != null) {
-        msgId = mi.getMessageId();
-      }
+        PMode pmd = msg.getExchange().get(PMode.class); //
+        // if pmd not in exchange - then this should be user message
+        if (pmd == null && requestor) {
+            String errmsg
+                    = "Invalid ebms configuration! Set PMode to exchange: as "
+                    + "'client.getRequestContext().put(PMode.class.getName(), pmod)'";
+            LOG.logError(l, errmsg, null);
+            throw ExceptionUtils.createSoapFault(SOAPExceptionCode.StoreInboundMailFailure, sv, errmsg);
+        }
+        if (pmd == null) {
+
+            // simple validating user message
+            if (msgHeader.getUserMessages().isEmpty()) {
+                String errmsg = "Missing userMessage! In a SVEV-MSH  pull-MEP is not exepected!";
+                LOG.logError(l, errmsg, null);
+                throw new EBMSError(EBMSErrorCode.ProcessingModeMismatch, null, errmsg);
+            }
+
+            if (msgHeader.getUserMessages().get(0).getCollaborationInfo() == null) {
+                String errmsg = "Missing CollaborationInfo in UserMessage!";
+                LOG.logError(l, errmsg, null);
+                throw new EBMSError(EBMSErrorCode.ProcessingModeMismatch, null, errmsg);
+            }
+
+            if (msgHeader.getUserMessages().get(0).getCollaborationInfo() == null) {
+                String errmsg = "Missing CollaborationInfo!";
+                LOG.logError(l, errmsg, null);
+                throw new EBMSError(EBMSErrorCode.InvalidHeader, null, errmsg);
+            }
+            CollaborationInfo ca = msgHeader.getUserMessages().get(0).getCollaborationInfo();
+
+            if (ca.getService() == null || ca.getService().getValue() == null
+                    || ca.getService().getValue().isEmpty()) {
+                String errmsg = "Missing 'service' value!";
+                LOG.logError(l, errmsg, null);
+                throw new EBMSError(EBMSErrorCode.InvalidHeader, null, errmsg);
+            }
+
+            if (msgHeader.getUserMessages().get(0).getPartyInfo() == null) {
+                String errmsg = "Missing 'PartyInfo' value!";
+                LOG.logError(l, errmsg, null);
+                throw new EBMSError(EBMSErrorCode.InvalidHeader, null, errmsg);
+            }
+
+            if (msgHeader.getUserMessages().get(0).getPartyInfo().getFrom() == null
+                    || msgHeader.getUserMessages().get(0).getPartyInfo().getFrom().getPartyIds().isEmpty()) {
+
+                String errmsg = "Missing 'PartyInfo/From/PartyId' value!";
+                LOG.logError(l, errmsg, null);
+                throw new EBMSError(EBMSErrorCode.InvalidHeader, null, errmsg);
+            }
+            List<PartyId> plst
+                    = msgHeader.getUserMessages().get(0).getPartyInfo().getFrom().getPartyIds();
+            String senderBox = null;
+            for (PartyId p : plst) {
+                if (p.getType() != null && EbMSConstants.EBMS_PARTY_TYPE_EBOX.equals(p.getType())) {
+                    senderBox = p.getValue();
+                    break;
+                }
+            }
+            if (senderBox == null) {
+                String errmsg
+                        = "Missing senderEBox: 'PartyInfo/From/PartyId' for type: '"
+                        + EbMSConstants.EBMS_PARTY_TYPE_EBOX + "' value!";
+                LOG.logError(l, errmsg, null);
+                throw new EBMSError(EBMSErrorCode.InvalidHeader, null, errmsg);
+            }
+
+            String srv = ca.getService().getValue();
+            String pmodeId = srv + ":" + Utils.getDomainFromAddress(senderBox);
+            try {
+                // if user message
+                pmd = mPModeManage.getPModeById(pmodeId);
+            } catch (PModeException ex) {
+                String errmsg
+                        = "Error reading PModes for id: '" + ca.getAgreementRef().getPmode() + "'! Err:"
+                        + ex.getMessage();
+                LOG.logError(l, errmsg, ex);
+                throw new EBMSError(EBMSErrorCode.ProcessingModeMismatch, null, errmsg, ex);
+            }
+            if (pmd == null) {
+                String errmsg = "PMode with id: '" + ca.getAgreementRef().getPmode() + "' not exist!";
+                LOG.logError(l, errmsg, null);
+                throw new EBMSError(EBMSErrorCode.ProcessingModeMismatch, null, errmsg);
+            }
+            msg.getExchange().put(PMode.class, pmd);
+        }
+        return pmd;
+
     }
-    return msgId;
 
-  }
+    private void checkSecurity(Security sc, SoapMessage msg) throws EBMSError {
 
-  private void serializeAttachments(MSHInPart p, Collection<Attachment> lstAttch, boolean compressed)
-      throws StorageException, IOException, HashException {
-    DataHandler dh = null;
-    for (Attachment a : lstAttch) {
-      if (a.getId().equals(p.getEbmsId())) {
-        dh = a.getDataHandler();
-        break;
-      }
+        if (sc == null || sc.getX509() != null) {
+            return;
+        }
+        X509 x509 = sc.getX509();
+        // check signed elements // todo for attachments
+        if (x509.getSignature() != null
+                && x509.getSignature().getSign() != null
+                && x509.getSignature().getSign().getElements() != null
+                && x509.getSignature().getSign().getElements().getXPaths().size() > 0) {
+            Map<String, String> prefixes = new HashMap<>();
+            List<CryptoCoverageChecker.XPathExpression> xpaths = new ArrayList<>();
+            int i = 0;
+            for (References.Elements.XPath el : x509.getSignature().getSign().getElements()
+                    .getXPaths()) {
+                for (References.Elements.XPath.Namespace ns : el.getNamespaces()) {
+                    prefixes.put(ns.getPrefix(), ns.getNamespace());
+                }
+                xpaths.add(new CryptoCoverageChecker.XPathExpression(el.getXpath(),
+                        CryptoCoverageUtil.CoverageType.SIGNED, CryptoCoverageUtil.CoverageScope.ELEMENT));
+
+                i++;
+            }
+
+            checker = new CryptoCoverageChecker(prefixes, xpaths);
+            checker.handleMessage(msg);
+        }
+
+        // process message
+        // check signatures
+        Map<String, Object> inProps = null;
+        if (x509.getSignature() != null && x509.getSignature().getCertificate() != null) {
+            inProps = getVerifySignatureProperties(x509.getSignature().getCertificate(), msg.getId());
+        }
+
+        if (x509.getEncryption() != null && x509.getEncryption().getCertificate() != null) {
+            Map<String, Object> prp = getDecryptProperties(x509.getEncryption().getCertificate(), msg.getId());
+            if (inProps == null) {
+                inProps = prp;
+            } else {
+                String action = (String) inProps.get(WSHandlerConstants.ACTION);
+                action += " " + (String) prp.get(WSHandlerConstants.ACTION);
+                inProps.putAll(prp);
+                inProps.put(WSHandlerConstants.ACTION, action);
+            }
+
+        }
+
+        /*
+        c = x509.getSignature().getCertificate();
+        Map<String, Object> inProps = new HashMap<>();
+        inProps.put(WSHandlerConstants.ACTION, WSHandlerConstants.SIGNATURE);
+        String cpropname = "CP." + UUID.randomUUID().toString();
+        String alias = x509.getSignature().getCertificate().getAlias();
+        SEDCertStore cs = getLookups().getSEDCertStoreByCertAlias(alias, false);
+        Properties cp = KeystoreUtils.getVerifySignProperties(alias, cs);
+        inProps.put(cpropname, cp);
+        inProps.put(WSHandlerConstants.SIG_VER_PROP_REF_ID, cpropname);
+        // inProps.put(WSHandlerConstants.SIG_PROP_REF_ID, cpropname);
+*/
+        wssInterceptor.setProperties(inProps);
+        wssInterceptor.handleMessage(msg);
+
     }
 
-    File fout = null;
-    if (dh != null) {
-      fout = msuStorageUtils.storeInFile(p.getMimeType(), dh.getInputStream());
-    }
-    // set MD5 and relative path;
-    if (fout != null) {
-      String strMD5 = mpHU.getMD5Hash(fout);
-      String relPath = StorageUtils.getRelativePath(fout);
-      p.setFilepath(relPath);
-      p.setMd5(strMD5);
+    private Map<String, Object> getVerifySignatureProperties(Certificate sigCert, String msgID) {
+        Map<String, Object> props = null;
+        if (sigCert == null || sigCert.getAlias() == null || sigCert.getAlias().isEmpty()) {
+            return props;
+        }
 
-      if (Utils.isEmptyString(p.getFilename())) {
-        p.setFilename(fout.getName());
-      }
-      if (Utils.isEmptyString(p.getName())) {
-        p.setName(p.getFilename().substring(p.getFilename().lastIndexOf(".")));
-      }
+        props = new HashMap<>();
+        props.put(WSHandlerConstants.ACTION, WSHandlerConstants.SIGNATURE);
+
+        String cpropname = "SIG.VER." + UUID.randomUUID().toString();
+        String alias = sigCert.getAlias();
+        SEDCertStore cs = getLookups().getSEDCertStoreByCertAlias(alias, false);
+        Properties cp = KeystoreUtils.getVerifySignProperties(alias, cs);
+        props.put(cpropname, cp);
+        props.put(WSHandlerConstants.SIG_VER_PROP_REF_ID, cpropname);
+
+        return props;
     }
 
-  }
+    private Map<String, Object> getDecryptProperties(Certificate decKey, String messageId) throws EBMSError {
+        long l = LOG.logStart();
+        Map<String, Object> props = null;
+        if (decKey == null || decKey.getAlias() == null || decKey.getAlias().isEmpty()) {
+            return props;
+        }
+        String alias = decKey.getAlias();
+        SEDCertStore cs = getLookups().getSEDCertStoreByCertAlias(alias, true);
+
+        SEDCertificate aliasCrt = null;
+        if (cs != null) {
+            for (SEDCertificate crt : cs.getSEDCertificates()) {
+                if (crt.isKeyEntry() && alias.equals(crt.getAlias())) {
+                    aliasCrt = crt;
+                    break;
+                }
+            }
+        }
+
+        if (cs == null || aliasCrt == null) {
+            String msg = "Error decypting message. Key for alias '" + alias + "' do not exists!";
+            LOG.logError(l, msg, null);
+            throw new EBMSError(EBMSErrorCode.BadPModeConfiguration, messageId, msg);
+        }
+
+        props = new HashMap<>();
+        props.put(WSHandlerConstants.ACTION, WSHandlerConstants.ENCRYPT);
+        String cpropname = "DEC." + UUID.randomUUID().toString();
+        Properties cp = KeystoreUtils.getVerifySignProperties(alias, cs);
+        props.put(cpropname, cp);
+        props.put(WSHandlerConstants.PW_CALLBACK_REF,
+                new SimplePasswordCallback(aliasCrt.getKeyPassword()));
+        props.put(WSHandlerConstants.DEC_PROP_REF_ID, cpropname);
+
+        return props;
+    }
+
+    /**
+     *
+     * @param message
+     */
+    @Override
+    public void handleFault(SoapMessage message) {
+        super.handleFault(message);
+    }
+
+    /**
+     *
+     * @param msgHeader
+     * @return
+     */
+    public String getMessageId(Messaging msgHeader) {
+        String msgId = null;
+        if (msgHeader != null) {
+            MessageInfo mi = null;
+            if (!msgHeader.getUserMessages().isEmpty()) {
+                mi = msgHeader.getUserMessages().get(0).getMessageInfo();
+            } else if (!msgHeader.getSignalMessages().isEmpty()) {
+                mi = msgHeader.getSignalMessages().get(0).getMessageInfo();
+            }
+            if (mi != null) {
+                msgId = mi.getMessageId();
+            }
+        }
+        return msgId;
+
+    }
+
+    private void serializeAttachments(MSHInPart p, Collection<Attachment> lstAttch, boolean compressed)
+            throws StorageException, IOException, HashException {
+        DataHandler dh = null;
+        for (Attachment a : lstAttch) {
+            if (a.getId().equals(p.getEbmsId())) {
+                dh = a.getDataHandler();
+                break;
+            }
+        }
+
+        File fout = null;
+        if (dh != null) {
+            fout = msuStorageUtils.storeInFile(p.getMimeType(), dh.getInputStream());
+        }
+        // set MD5 and relative path;
+        if (fout != null) {
+            String strMD5 = mpHU.getMD5Hash(fout);
+            String relPath = StorageUtils.getRelativePath(fout);
+            p.setFilepath(relPath);
+            p.setMd5(strMD5);
+
+            if (Utils.isEmptyString(p.getFilename())) {
+                p.setFilename(fout.getName());
+            }
+            if (Utils.isEmptyString(p.getName())) {
+                p.setName(p.getFilename().substring(p.getFilename().lastIndexOf(".")));
+            }
+        }
+
+    }
 
 }

@@ -15,58 +15,25 @@
 package si.sed.commons.utils.sec;
 
 import java.io.*;
-import static java.lang.Boolean.TRUE;
 import java.security.*;
 import java.security.cert.X509Certificate;
 import java.util.*;
-import static java.util.Base64.getEncoder;
 import static java.util.Collections.singletonList;
 import javax.xml.crypto.*;
 import javax.xml.crypto.dsig.*;
-import static javax.xml.crypto.dsig.CanonicalizationMethod.INCLUSIVE;
-import static javax.xml.crypto.dsig.DigestMethod.SHA1;
-import static javax.xml.crypto.dsig.SignatureMethod.RSA_SHA1;
-import static javax.xml.crypto.dsig.XMLSignature.XMLNS;
 import javax.xml.crypto.dsig.dom.DOMSignContext;
-import javax.xml.crypto.dsig.dom.DOMValidateContext;
 import javax.xml.crypto.dsig.keyinfo.*;
-import javax.xml.crypto.dsig.spec.*;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.*;
-import static javax.xml.transform.OutputKeys.OMIT_XML_DECLARATION;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import org.apache.log4j.Logger;
-import org.apache.xml.security.c14n.CanonicalizationException;
-import org.apache.xml.security.c14n.Canonicalizer;
-import org.apache.xml.security.c14n.InvalidCanonicalizerException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import static org.w3c.dom.Node.ELEMENT_NODE;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 import si.sed.commons.exception.SEDSecurityException;
 import static si.sed.commons.exception.SEDSecurityException.SEDSecurityExceptionCode.InitializeException;
-import static si.sed.commons.exception.SEDSecurityException.SEDSecurityExceptionCode.SignatureNotFound;
-import static si.sed.commons.exception.SEDSecurityException.SEDSecurityExceptionCode.XMLParseException;
 import si.sed.commons.utils.Utils;
-import static java.io.File.createTempFile;
-import static java.lang.Class.forName;
-import static java.lang.System.getProperty;
-import java.util.logging.Level;
-import static javax.xml.crypto.dsig.XMLSignatureFactory.getInstance;
-import static javax.xml.transform.TransformerFactory.newInstance;
-import static org.apache.log4j.Logger.getLogger;
 import org.etsi.uri._01903.v1_1.QualifyingProperties;
 import si.sed.commons.utils.SEDLogger;
 import static java.io.File.createTempFile;
 import static java.lang.Class.forName;
 import static java.lang.System.getProperty;
 import static javax.xml.crypto.dsig.XMLSignatureFactory.getInstance;
-import static javax.xml.transform.TransformerFactory.newInstance;
-import static org.apache.log4j.Logger.getLogger;
 
 /**
  * XML signature utils for XAdES-T signature
@@ -223,7 +190,7 @@ public class XMLSignatureUtils {
           SEDSecurityException.SEDSecurityExceptionCode.CreateSignatureException, ex,
           "Error signing document:" + ex.getMessage());
     }
-
+/*TODO ! 
     // Add timestamp
     if (mTimeStampServer != null) {
       mXAdESBuilder.setIdnessToElemetns(doc.getDocumentElement());
@@ -237,7 +204,7 @@ public class XMLSignatureUtils {
       Element dSigTS = mTimeStampServer.getTimeStamp(strVal);
       Node adTSig = doc.importNode(dSigTS, true);
       nTS.appendChild(adTSig);
-    }
+    }*/
     LOG.logEnd(t, strIds);
   }
 
@@ -390,14 +357,14 @@ public class XMLSignatureUtils {
     }
     return strDigest;
   }
-   */
+   
 
   private boolean isSignatureTimestamp(Node sigNode) {
     return sigNode != null && sigNode.getParentNode() != null &&
         XADES_XMLTimeStamp.equals(sigNode.getParentNode().getNodeName()) &&
         XADES_NS.equals(sigNode.getParentNode().getNamespaceURI());
 
-  }
+  }*/
 
   /**
    *

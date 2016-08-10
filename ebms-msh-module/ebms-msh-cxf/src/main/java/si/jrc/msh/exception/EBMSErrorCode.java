@@ -207,7 +207,15 @@ public enum EBMSErrorCode {
      *
      */
   DecompressionFailure("EBMS:0303", "DecompressionFailure", "failure", "Communication",
-      "An error occurred during the decompression.", "reliability");
+      "An error occurred during the decompression.", "reliability"),
+  
+  
+  /**
+     *
+     */
+  BadPModeConfiguration("EBMS:0500", "BadPModeConfiguration", "failure", "Processing",
+      "An error occurred during initializing pmode.", "initializing");
+
 
   String code;
   String name;

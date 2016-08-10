@@ -224,13 +224,7 @@
                 <xs:complexType>
                     <xs:attribute name="trustCertAlias" use="required"/>
                     <xs:attribute name="clientKeyAlias" use="optional"/>
-                    <!--xs:attribute name="keyStorePath" use="optional"/>
-                    <xs:attribute name="keyStoreType" use="optional" default="JKS"/>
-                    <xs:attribute name="keyStorePassword" use="optional"/>
-                    <xs:attribute name="keyPassword" use="optional"/>
-                    <xs:attribute name="trustStorePath" use="required"/>
-                    <xs:attribute name="trustStoreType" use="optional" default="JKS"/>
-                    <xs:attribute name="trustStorePassword" use="required"/ -->
+
                 </xs:complexType>
             </xs:element>
             <xs:element name="Proxy" minOccurs="0">
@@ -533,7 +527,7 @@
                     </xs:attribute>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="Encrypt" minOccurs="0">
+            <xs:element name="Encryption" minOccurs="0">
                 <xs:annotation>
                     <xs:documentation>The value of this parameter lists the names of
                         XML elements(inside the SOAP envelope) that should be encrypted, as well as whether or not
@@ -549,7 +543,7 @@
                                     public certificate to use when encrypting data.</xs:documentation>
                             </xs:annotation>
                         </xs:element>
-                        <xs:element name="Encrypt" type="tns:References" minOccurs="0">
+                        <xs:element name="Encrypt"  minOccurs="0">
                             <xs:annotation>
                                 <xs:documentation>The value of this parameter is a list of the names of XML
                                     elements (inside the SOAP envelope) that should be signed, as well as whether or not
@@ -558,6 +552,13 @@
                                     be specified either by its XML name or by its qualified name (its XML name and the namespace
                                     to which it belongs). An element within the Attachment[] list is identified by the Content-Id.</xs:documentation>
                             </xs:annotation>
+                            <xs:complexType>
+                                <xs:complexContent>
+                                    <xs:extension base="tns:References">
+                                        <xs:attribute name="encCertAlias"/>
+                                    </xs:extension>
+                                </xs:complexContent>
+                            </xs:complexType>
                         </xs:element>
                     </xs:sequence>
                     <xs:attribute name="algorithm" use="required">
@@ -582,8 +583,8 @@
                                 <xs:documentation>Relative reference from Envelope:
                                     env:Header/eb3:Messaging
                                     namespaces:
-                                    env  -> http://www.w3.org/2003/05/soap-envelope
-                                    eb3->  http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/
+                                    env -> http://www.w3.org/2003/05/soap-envelope
+                                    eb3 -> http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/
 									
                                 </xs:documentation>
                             </xs:annotation>
@@ -602,9 +603,28 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-        </xs:sequence>
-        <xs:attribute name="signElements" type="xs:boolean" default="true"/>
-        <xs:attribute name="signAttachments" type="xs:boolean" default="true"/>
+        </xs:sequence>        
+        <xs:attribute name="allAttachments" type="xs:boolean" default="true"/>
+        <xs:attribute name="keyIdentifierType" default="IssuerSerial">
+            <xs:annotation>
+                <xs:documentation>Key identifier type defines how (encryption
+                    or signature) key is referenced. 
+                    Values from: https://ws.apache.org/wss4j/config.html  </xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+                <xs:restriction base="xs:token">                                
+                    <xs:enumeration value="DirectReference"/>
+                    <xs:enumeration value="IssuerSerial"/>
+                    <xs:enumeration value="X509KeyIdentifier"/>
+                    <xs:enumeration value="SKIKeyIdentifier"/>
+                    <xs:enumeration value="EmbeddedKeyName"/>
+                    <xs:enumeration value="Thumbprint"/>
+                    <xs:enumeration value="EncryptedKeySHA1"/>
+                    <xs:enumeration value="KeyValue"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+        
     </xs:complexType>
     <xs:complexType name="ReceptionAwareness">
         <xs:sequence>
