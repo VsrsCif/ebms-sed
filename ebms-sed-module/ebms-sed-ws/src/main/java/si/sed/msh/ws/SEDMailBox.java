@@ -1184,7 +1184,7 @@ public class SEDMailBox implements SEDMailBoxWS {
     // check for missing data
     SEDRequestUtils.checkOutMailForMissingData(mail);
     if (mdbLookups != null) { // TODO fix: unit tests
-      SEDBox sb = mdbLookups.getSEDBoxByName(mail.getSenderEBox());
+      SEDBox sb = mdbLookups.getSEDBoxByName(mail.getSenderEBox(), false);
       if (sb == null) {
         String msg =
             "Sender box [SubmitMailRequest/Data/OutMail/@senderEBox]:  " + mail.getSenderEBox()
@@ -1239,7 +1239,7 @@ public class SEDMailBox implements SEDMailBoxWS {
   private PMode validateOutMailData(OutMail mail) throws SEDException_Exception {
     PMode pm = null;
 
-    if (SEDRequestUtils.isValidMailAddress(mail.getReceiverEBox())) {
+   /* if (SEDRequestUtils.isValidMailAddress(mail.getReceiverEBox())) {
       throw SEDRequestUtils.createSEDException("Invalid format: ReceiverEBox",
           SEDExceptionCode.INVALID_DATA);
     }
@@ -1247,25 +1247,26 @@ public class SEDMailBox implements SEDMailBoxWS {
     if (SEDRequestUtils.isValidMailAddress(mail.getSenderEBox())) {
       throw SEDRequestUtils.createSEDException("Invalid format: SenderEBox",
           SEDExceptionCode.INVALID_DATA);
-    }
+    }*/
 
     // get pmode
-    String pmodeId = mail.getService() + ":" + getDomainFromAddress(mail.getReceiverEBox());
+    String receiverDomain =  getDomainFromAddress(mail.getReceiverEBox());
+    //String pmodeId = mail.getService() + ":" + getDomainFromAddress(mail.getReceiverEBox());
 
     try {
-      pm = mpModeManager.getPModeById(pmodeId);
+      pm = mpModeManager.getPModeByDomainAndService(receiverDomain, mail.getService());
     } catch (PModeException ex) {
       throw SEDRequestUtils
           .createSEDException(
               String
                   .format(
-                      "Error occured while retrieving PMode  '%s'! Check PMode configuration. (pmodeId=[service:receiverDomain])",
-                      pmodeId), SEDExceptionCode.INVALID_DATA);
+                      "Error occured while retrieving PMode  for domain: '%s', amd service: '%s'! Check PMode configuration.",
+                      receiverDomain ,  mail.getService()), SEDExceptionCode.INVALID_DATA);
     }
     if (pm == null) {
       throw SEDRequestUtils.createSEDException(String.format(
-          "PMode '%s' not exist! Check PMode configuration. (pmodeId=[service:receiverDomain])",
-          pmodeId), SEDExceptionCode.INVALID_DATA);
+          "PMode for domain: '%s' and service: '%s' not exists! Check PMode configuration.",
+          receiverDomain ,  mail.getService()), SEDExceptionCode.INVALID_DATA);
     }
     return pm;
   }

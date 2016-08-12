@@ -39,6 +39,7 @@ import org.apache.cxf.binding.soap.SoapMessage;
 import org.apache.cxf.binding.soap.SoapVersion;
 import org.apache.cxf.binding.soap.interceptor.SoapPreProtocolOutInterceptor;
 import org.apache.cxf.endpoint.Endpoint;
+import org.apache.cxf.interceptor.Fault;
 import org.apache.cxf.interceptor.InterceptorChain;
 import org.apache.cxf.interceptor.OutgoingChainInterceptor;
 import org.apache.cxf.message.Attachment;
@@ -68,7 +69,7 @@ import org.sed.ebms.cert.SEDCertificate;
 import org.sed.ebms.ebox.SEDBox;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-import si.jrc.msh.client.sec.SimplePasswordCallback;
+import si.jrc.msh.client.sec.MSHKeyPasswordCallback;
 import si.jrc.msh.exception.EBMSError;
 import si.jrc.msh.exception.EBMSErrorCode;
 import static si.jrc.msh.interceptor.EBMSOutInterceptor.LOG;
@@ -160,6 +161,7 @@ public class EBMSInInterceptor extends AbstractEBMSInterceptor {
     @Override
     public void handleMessage(SoapMessage msg) {
         long l = LOG.logStart();
+        LOG.log("handleMessage ");
         SoapVersion version = msg.getVersion();
         boolean isRequestor = MessageUtils.isRequestor(msg);
         // check for Messaging header
@@ -279,7 +281,7 @@ public class EBMSInInterceptor extends AbstractEBMSInterceptor {
                 msg.getExchange().put(MSHInMail.class, mMail);
 
                 SOAPMessage request = msg.getContent(SOAPMessage.class);
-
+                LOG.log("Generate AS4Receipt");
                 SignalMessage as4Receipt
                         = mebmsUtils.generateAS4ReceiptSignal(mMail.getMessageId(), Utils
                                 .getDomainFromAddress(mMail.getReceiverEBox()), request.getSOAPPart()
@@ -292,7 +294,12 @@ public class EBMSInInterceptor extends AbstractEBMSInterceptor {
 
             }
         } catch (EBMSError ex) {
-            LOG.logError(l, ex);
+            LOG.logError(l,"catch EBMSError", ex);
+            
+            
+            
+            /*
+            
             if (!isRequestor) {
                 try {
 
@@ -323,15 +330,20 @@ public class EBMSInInterceptor extends AbstractEBMSInterceptor {
                 } catch (SOAPException ex1) {
                     LOG.logError(l, ex1);
                 }
-
-            }
+                
+            }else {*/
+              LOG.log("submit error");
+              msg.getExchange().put(EBMSError.class, ex);
+              throw ExceptionUtils.createSoapFault(SOAPExceptionCode.SoapVersionMismatch, sv, ex.getSubMessage());
+              
+            //}
 
         }
         LOG.logEnd(l);
     }
 
     private SEDBox getSedBoxByName(String sbox) {
-        return getLookups().getSEDBoxByName(sbox);
+        return getLookups().getSEDBoxByName(sbox, true);
 
     }
 
@@ -575,7 +587,7 @@ public class EBMSInInterceptor extends AbstractEBMSInterceptor {
                     = msgHeader.getUserMessages().get(0).getPartyInfo().getFrom().getPartyIds();
             String senderBox = null;
             for (PartyId p : plst) {
-                if (p.getType() != null && EbMSConstants.EBMS_PARTY_TYPE_EBOX.equals(p.getType())) {
+                if (p.getType() != null /*&& EbMSConstants.EBMS_PARTY_TYPE_EBOX.equals(p.getType())*/) {
                     senderBox = p.getValue();
                     break;
                 }
@@ -589,10 +601,10 @@ public class EBMSInInterceptor extends AbstractEBMSInterceptor {
             }
 
             String srv = ca.getService().getValue();
-            String pmodeId = srv + ":" + Utils.getDomainFromAddress(senderBox);
+            String domain =  Utils.getDomainFromAddress(senderBox);
             try {
                 // if user message
-                pmd = mPModeManage.getPModeById(pmodeId);
+                pmd = mPModeManage.getPModeByDomainAndService(domain, srv);
             } catch (PModeException ex) {
                 String errmsg
                         = "Error reading PModes for id: '" + ca.getAgreementRef().getPmode() + "'! Err:"
@@ -704,18 +716,8 @@ public class EBMSInInterceptor extends AbstractEBMSInterceptor {
         }
         String alias = decKey.getAlias();
         SEDCertStore cs = getLookups().getSEDCertStoreByCertAlias(alias, true);
-
-        SEDCertificate aliasCrt = null;
-        if (cs != null) {
-            for (SEDCertificate crt : cs.getSEDCertificates()) {
-                if (crt.isKeyEntry() && alias.equals(crt.getAlias())) {
-                    aliasCrt = crt;
-                    break;
-                }
-            }
-        }
-
-        if (cs == null || aliasCrt == null) {
+        SEDCertificate aliasCrt =getLookups().getSEDCertificatForAlias(alias, cs, true);
+        if ( aliasCrt == null) {
             String msg = "Error decypting message. Key for alias '" + alias + "' do not exists!";
             LOG.logError(l, msg, null);
             throw new EBMSError(EBMSErrorCode.BadPModeConfiguration, messageId, msg);
@@ -727,7 +729,7 @@ public class EBMSInInterceptor extends AbstractEBMSInterceptor {
         Properties cp = KeystoreUtils.getVerifySignProperties(alias, cs);
         props.put(cpropname, cp);
         props.put(WSHandlerConstants.PW_CALLBACK_REF,
-                new SimplePasswordCallback(aliasCrt.getKeyPassword()));
+                new MSHKeyPasswordCallback(aliasCrt));
         props.put(WSHandlerConstants.DEC_PROP_REF_ID, cpropname);
 
         return props;
@@ -740,6 +742,7 @@ public class EBMSInInterceptor extends AbstractEBMSInterceptor {
     @Override
     public void handleFault(SoapMessage message) {
         super.handleFault(message);
+        LOG.log("handle fault interceptor");
     }
 
     /**

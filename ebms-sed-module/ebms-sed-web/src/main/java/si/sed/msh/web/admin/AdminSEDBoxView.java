@@ -50,7 +50,7 @@ public class AdminSEDBoxView extends AbstractAdminJSFView<SEDBox> {
    * @return
    */
   public SEDBox getSEDBoxByName(String sedBox) {
-    return mdbLookups.getSEDBoxByName(sedBox);
+    return mdbLookups.getSEDBoxByName(sedBox, false);
   }
 
   /**

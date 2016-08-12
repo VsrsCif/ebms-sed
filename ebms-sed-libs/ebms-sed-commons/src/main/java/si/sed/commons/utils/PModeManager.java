@@ -73,6 +73,27 @@ public class PModeManager {
     }
     return null;
   }
+  
+   /**
+   * Method returs domain by domain and service
+   * @param domain
+   * @param service
+   * @return
+   * @throws PModeException
+   */
+  public PMode getPModeByDomainAndService(String domain, String service) throws PModeException {
+    if (pmodes == null) {
+      reloadPModes();
+    }
+    for (PMode pm : pmodes.getPModes()) {
+      if (pm.getDomain() != null && pm.getDomain().equals(domain)) {
+        if (pm.getLegs().get(0).getBusinessInfo().getService().getValue().equals(service)) {        
+          return pm;
+        }
+      }
+    }
+    return null;
+  }
 
   /**
    *

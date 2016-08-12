@@ -41,9 +41,11 @@ import org.sed.ebms.cert.SEDCertStore;
 import org.sed.ebms.cert.SEDCertificate;
 import si.jrc.msh.exception.MSHException;
 import si.jrc.msh.exception.MSHExceptionCode;
+import si.jrc.msh.interceptor.EBMSInFaultInterceptor;
 import si.jrc.msh.interceptor.EBMSInInterceptor;
 import si.jrc.msh.interceptor.EBMSLogInInterceptor;
 import si.jrc.msh.interceptor.EBMSLogOutInterceptor;
+import si.jrc.msh.interceptor.EBMSOutFaultInterceptor;
 import si.jrc.msh.interceptor.EBMSOutInterceptor;
 import si.jrc.msh.interceptor.MSHPluginInInterceptor;
 import si.jrc.msh.interceptor.MSHPluginOutInterceptor;
@@ -112,10 +114,13 @@ public class MshClient extends EJBContainer {
     cxfClient.getInInterceptors().add(new EBMSLogInInterceptor());
     cxfClient.getInInterceptors().add(new EBMSInInterceptor());
     cxfClient.getInInterceptors().add(new MSHPluginInInterceptor());
+    
+    cxfClient.getInFaultInterceptors().add(new EBMSInFaultInterceptor());
 
     cxfClient.getOutInterceptors().add(new MSHPluginOutInterceptor());
     cxfClient.getOutInterceptors().add(new EBMSOutInterceptor());
     cxfClient.getOutInterceptors().add(new EBMSLogOutInterceptor());
+    cxfClient.getOutFaultInterceptors().add(new EBMSOutFaultInterceptor());
 
     HTTPConduit http = (HTTPConduit) cxfClient.getConduit();
     // --------------------------------------------------------------------

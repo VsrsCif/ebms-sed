@@ -11,7 +11,7 @@
     </parent>
 
     <artifactId>ebms-msh-cxf</artifactId>
-
+    <packaging>ejb</packaging>
     <name>ebms-msh-cxf</name>
     <description>MSH ebMS 3.0 cxf interceptors implementation</description>
     <organization>
@@ -105,6 +105,9 @@
 
     <build>
         <plugins>
+            <plugin>
+                <artifactId>maven-ejb-plugin</artifactId>                  
+            </plugin>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
             </plugin>           

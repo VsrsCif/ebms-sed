@@ -52,9 +52,13 @@ import si.sed.commons.utils.xml.XMLUtils;
 @org.apache.cxf.interceptor.InInterceptors(interceptors = {
     "si.jrc.msh.interceptor.EBMSLogInInterceptor", "si.jrc.msh.interceptor.EBMSInInterceptor",
     "si.jrc.msh.interceptor.MSHPluginInInterceptor"})
+@org.apache.cxf.interceptor.InFaultInterceptors(interceptors = {
+    "si.jrc.msh.interceptor.EBMSInFaultInterceptor"})
 @org.apache.cxf.interceptor.OutInterceptors(interceptors = {
     "si.jrc.msh.interceptor.EBMSLogOutInterceptor", "si.jrc.msh.interceptor.EBMSOutInterceptor",
     "si.jrc.msh.interceptor.MSHPluginOutInterceptor"})
+@org.apache.cxf.interceptor.OutFaultInterceptors(interceptors = {
+    "si.jrc.msh.interceptor.EBMSOutFaultInterceptor"})
 public class EBMSEndpoint implements Provider<SOAPMessage> {
 
   private static final SEDLogger LOG = new SEDLogger(EBMSEndpoint.class);

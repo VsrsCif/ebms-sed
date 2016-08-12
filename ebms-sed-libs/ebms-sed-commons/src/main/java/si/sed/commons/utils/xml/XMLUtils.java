@@ -136,6 +136,35 @@ public class XMLUtils {
     final Unmarshaller um = JAXBContext.newInstance(cls).createUnmarshaller();
     return um.unmarshal(elmnt);
   }
+   /**
+   *
+   * @param elmnt
+   * @param xsltSource
+   * @param cls
+   * @return
+   * @throws TransformerConfigurationException
+   * @throws JAXBException
+   * @throws TransformerException
+   */
+  public static synchronized Object deserialize(Element elmnt, InputStream xsltSource,
+      Class cls)
+      throws TransformerConfigurationException, JAXBException, TransformerException {
+    Object obj = null;
+    JAXBContext jc = JAXBContext.newInstance(cls);
+
+    if (xsltSource != null) {
+      TransformerFactory factory = TransformerFactory.newInstance();
+      Transformer transformer;
+      transformer = factory.newTransformer(new StreamSource(xsltSource));
+
+      JAXBResult result = new JAXBResult(jc);
+      transformer.transform(new DOMSource(elmnt), result);
+      obj = result.getResult();
+    } else {
+      obj = jc.createUnmarshaller().unmarshal(elmnt);
+    }
+    return obj;
+  }
 
   /**
    *

@@ -47,7 +47,6 @@ import static si.sed.commons.exception.SEDSecurityException.SEDSecurityException
 import si.sed.commons.utils.SEDLogger;
 import si.sed.commons.utils.StringFormater;
 
-
 /**
  *
  * @author Joze Rihtarsic <joze.rihtarsic@sodisce.si>
@@ -55,66 +54,66 @@ import si.sed.commons.utils.StringFormater;
 public class KeystoreUtils {
 
   /**
-     *
-     */
+   *
+   */
   public static final String SEC_PROVIDER = "org.apache.ws.security.crypto.provider";
 
   /**
-     *
-     */
+   *
+   */
   public static final String SEC_PROIDER_MERLIN = "org.apache.wss4j.common.crypto.Merlin";
 
   /**
-     *
-     */
+   *
+   */
   public static final String SEC_MERLIN_KEYSTORE_FILE =
       "org.apache.ws.security.crypto.merlin.keystore.file";
 
   /**
-     *
-     */
+   *
+   */
   public static final String SEC_MERLIN_KEYSTORE_TYPE =
       "org.apache.ws.security.crypto.merlin.keystore.type";
 
   /**
-     *
-     */
+   *
+   */
   public static final String SEC_MERLIN_KEYSTORE_PASS =
       "org.apache.ws.security.crypto.merlin.keystore.password";
 
   /**
-     *
-     */
+   *
+   */
   public static final String SEC_MERLIN_KEYSTORE_ALIAS =
       "org.apache.ws.security.crypto.merlin.keystore.alias";
 
   /**
-     *
-     */
+   *
+   */
   public static final String SEC_MERLIN_TRUSTSTORE_FILE =
       "org.apache.ws.security.crypto.merlin.truststore.file";
 
   /**
-     *
-     */
+   *
+   */
   public static final String SEC_MERLIN_TRUSTSTORE_TYPE =
       "org.apache.ws.security.crypto.merlin.truststore.type";
 
   /**
-     *
-     */
+   *
+   */
   public static final String SEC_MERLIN_TRUSTSTORE_PASS =
       "org.apache.ws.security.crypto.merlin.truststore.password";
 
   /**
-     *
-     */
+   *
+   */
   public static final String SEC_MERLIN_TRUSTSTORE_ALIAS =
       "org.apache.ws.security.crypto.merlin.truststore.alias";
 
   /**
-     *
-     */
+   *
+   */
   protected final SEDLogger mlog = new SEDLogger(KeystoreUtils.class);
 
   /**
@@ -123,13 +122,15 @@ public class KeystoreUtils {
    * @return
    * @throws SEDSecurityException
    */
-  public KeyStore getKeystore(SEDCertStore sc) throws SEDSecurityException {
+  public KeyStore getKeystore(SEDCertStore sc)
+      throws SEDSecurityException {
     KeyStore keyStore = null;
-    try (FileInputStream fis = new FileInputStream(StringFormater.replaceProperties(sc.getFilePath()))) {
+    try (FileInputStream fis = new FileInputStream(
+        StringFormater.replaceProperties(sc.getFilePath()))) {
       keyStore = getKeystore(fis, sc.getType(), sc.getPassword().toCharArray());
     } catch (IOException ex) {
-      throw new SEDSecurityException(ReadWriteFileException, ex, "Read keystore from stream!"
-          + ex.getMessage());
+      throw new SEDSecurityException(ReadWriteFileException, ex, "Read keystore from stream!" +
+          ex.getMessage());
     }
     return keyStore;
   }
@@ -140,7 +141,8 @@ public class KeystoreUtils {
    * @return
    * @throws SEDSecurityException
    */
-  public TrustManager[] getTrustManagers(SEDCertStore sc) throws SEDSecurityException {
+  public TrustManager[] getTrustManagers(SEDCertStore sc)
+      throws SEDSecurityException {
 
     KeyStore keyStore = getKeystore(sc);
 
@@ -155,8 +157,8 @@ public class KeystoreUtils {
       fac.init(keyStore);
     } catch (KeyStoreException ex) {
       throw new SEDSecurityException(KeyStoreException, ex,
-          "Error init TrustManagerFactory for keystore: " + sc.getFilePath() + " Error: "
-              + ex.getMessage());
+          "Error init TrustManagerFactory for keystore: " + sc.getFilePath() + " Error: " +
+          ex.getMessage());
     }
 
     return fac.getTrustManagers();
@@ -170,7 +172,8 @@ public class KeystoreUtils {
    * @return
    * @throws SEDSecurityException
    */
-  public KeyManager[] getKeyManagers(SEDCertStore sc) throws SEDSecurityException {
+  public KeyManager[] getKeyManagers(SEDCertStore sc)
+      throws SEDSecurityException {
 
     KeyStore keyStore = getKeystore(sc);
     String keyStorePassword = sc.getPassword();
@@ -188,8 +191,8 @@ public class KeystoreUtils {
       fac.init(keyStore, keyPass);
     } catch (KeyStoreException | NoSuchAlgorithmException | UnrecoverableKeyException ex) {
       throw new SEDSecurityException(KeyStoreException, ex,
-          "Error init KeyManagerFactory for keystore: " + sc.getFilePath() + " Error: "
-              + ex.getMessage());
+          "Error init KeyManagerFactory for keystore: " + sc.getFilePath() + " Error: " +
+          ex.getMessage());
     }
     return fac.getKeyManagers();
   }
@@ -216,8 +219,8 @@ public class KeystoreUtils {
     } catch (CertificateException ex) {
       throw new SEDSecurityException(CertificateException, ex, ex.getMessage());
     } catch (IOException ex) {
-      throw new SEDSecurityException(ReadWriteFileException, ex, "Read keystore from stream!"
-          + ex.getMessage());
+      throw new SEDSecurityException(ReadWriteFileException, ex, "Read keystore from stream!" +
+          ex.getMessage());
     }
     return keyStore;
   }
@@ -231,7 +234,8 @@ public class KeystoreUtils {
    * @throws SEDSecurityException
    */
   public KeyStore.PrivateKeyEntry getPrivateKeyEntryForAlias(KeyStore ks, String alias,
-      String passwd) throws SEDSecurityException {
+      String passwd)
+      throws SEDSecurityException {
 
     if (alias == null) {
       throw new SEDSecurityException(CertificateException, "x.509 cert not found in keystore");
@@ -405,8 +409,8 @@ public class KeystoreUtils {
     try (FileInputStream fis = new FileInputStream(StringFormater.replaceProperties(filepath))) {
       return getKeystore(fis, type, password);
     } catch (IOException ex) {
-      throw new SEDSecurityException(ReadWriteFileException, ex, "Read keystore: '" + filepath
-          + "!");
+      throw new SEDSecurityException(ReadWriteFileException, ex, "Read keystore: '" + filepath +
+          "!");
     }
   }
 
@@ -416,7 +420,8 @@ public class KeystoreUtils {
    * @return
    * @throws SEDSecurityException
    */
-  public List<String> getKeyStoreAliases(KeyStore ks) throws SEDSecurityException {
+  public List<String> getKeyStoreAliases(KeyStore ks)
+      throws SEDSecurityException {
     List<String> lst = new ArrayList<>();
     try {
       Enumeration<String> e = ks.aliases();
@@ -436,7 +441,8 @@ public class KeystoreUtils {
    * @return
    * @throws SEDSecurityException
    */
-  public List<SEDCertificate> getKeyStoreSEDCertificates(KeyStore ks) throws SEDSecurityException {
+  public List<SEDCertificate> getKeyStoreSEDCertificates(KeyStore ks)
+      throws SEDSecurityException {
     List<SEDCertificate> lst = new ArrayList<>();
     try {
       Enumeration<String> e = ks.aliases();
@@ -494,10 +500,12 @@ public class KeystoreUtils {
     signVerProperties.put(SEC_PROVIDER, SEC_PROIDER_MERLIN);
     signVerProperties.put(SEC_MERLIN_KEYSTORE_ALIAS, alias);
     signVerProperties.put(SEC_MERLIN_KEYSTORE_PASS, cs.getPassword());
-    signVerProperties.put(SEC_MERLIN_KEYSTORE_FILE, StringFormater.replaceProperties(cs.getFilePath()));
+    signVerProperties.put(SEC_MERLIN_KEYSTORE_FILE, StringFormater.replaceProperties(
+        cs.getFilePath()));
     signVerProperties.put(SEC_MERLIN_KEYSTORE_TYPE, cs.getType());
     return signVerProperties;
   }
+
 
   /**
    *
@@ -519,7 +527,7 @@ public class KeystoreUtils {
         if (c.isKeyEntry() && c.getAlias().equalsIgnoreCase(alias)) {
           rsaKey =
               (KeyStore.PrivateKeyEntry) getKeystore(cs).getEntry(alias,
-                  new KeyStore.PasswordProtection(c.getKeyPassword().toCharArray()));
+              new KeyStore.PasswordProtection(c.getKeyPassword().toCharArray()));
           break;
         }
       }

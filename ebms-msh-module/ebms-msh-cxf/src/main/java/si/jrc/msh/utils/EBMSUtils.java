@@ -31,6 +31,7 @@ import org.msh.ebms.outbox.mail.MSHOutMail;
 import org.msh.ebms.outbox.payload.MSHOutPart;
 import org.msh.ebms.outbox.property.MSHOutProperty;
 import org.msh.svev.pmode.PMode;
+import org.msh.svev.pmode.Party;
 import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.AgreementRef;
 import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.CollaborationInfo;
 import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.Description;
@@ -54,6 +55,7 @@ import org.xml.sax.SAXException;
 import si.jrc.msh.client.MshClient;
 import si.jrc.msh.exception.EBMSError;
 import si.jrc.msh.exception.EBMSErrorCode;
+import si.sed.commons.MimeValues;
 import si.sed.commons.utils.SEDLogger;
 import si.sed.commons.utils.Utils;
 import si.sed.commons.utils.xml.XMLUtils;
@@ -68,8 +70,8 @@ public class EBMSUtils {
   private static final String ATT_CID_PREFIX = "cid:";
 
   /**
-     *
-     */
+   *
+   */
   protected final SEDLogger mlog = new SEDLogger(MshClient.class);
 
   private MessageInfo createMessageInfo(String senderDomain, String refToMessage, Date timestamp) {
@@ -115,7 +117,8 @@ public class EBMSUtils {
    * @param timestamp
    * @return
    */
-  public UserMessage createUserMessage(PMode pm, MSHOutMail mo, String senderDomain, Date timestamp) {
+  public UserMessage createUserMessage(PMode pm, MSHOutMail mo, String senderDomain, Date timestamp)
+      throws EBMSError {
     UserMessage usgMsg = new UserMessage();
 
     // UserMessage usgMsg = new UserMessage();
@@ -132,7 +135,65 @@ public class EBMSUtils {
     usgMsg.getPartyInfo().getFrom().setRole(pm.getInitiator().getRole()); // get from p-mode
 
     // add sender id
-    PartyId piFrom = new PartyId();
+    for (Party.PartyId pid : pm.getInitiator().getPartyIds()) {
+      PartyId pi = new PartyId();
+      pi.setType(pid.getType());
+      switch (pid.getValueSource()) {
+        case "name":
+          pi.setValue(mo.getSenderName());
+          break;
+        case "address":
+          String address = mo.getSenderEBox();
+          if (address != null && address.contains("@") && pid.getRemoveDomain()) {
+            address = address.substring(0, address.lastIndexOf("@"));
+          }
+          pi.setValue(address);
+          break;
+        case "fixedValue":
+          pi.setValue(pid.getValue());
+          break;
+        default:
+          String msg = "Bad pMode configuration! PartyId source: '" + pid.getValueSource() +
+              "' not exists!";          
+          throw new EBMSError(EBMSErrorCode.BadPModeConfiguration, mo.getMessageId(), msg);
+
+      }
+      usgMsg.getPartyInfo().getFrom().getPartyIds().add(pi);
+
+    }
+    
+    // generate to
+    usgMsg.getPartyInfo().setTo(new To());
+    usgMsg.getPartyInfo().getTo().setRole(pm.getResponder().getRole()); // get from p-mode
+     for (Party.PartyId pid : pm.getResponder().getPartyIds()) {
+      PartyId pi = new PartyId();
+      pi.setType(pid.getType());
+      switch (pid.getValueSource()) {
+        case "name":
+          pi.setValue(mo.getReceiverName());
+          break;
+        case "address":
+          String address = mo.getReceiverEBox();
+          if (address != null && address.contains("@") && pid.getRemoveDomain()) {
+            address = address.substring(0, address.lastIndexOf("@"));
+          }
+          pi.setValue(address);
+          break;
+        case "fixedValue":
+          pi.setValue(pid.getValue());
+          break;
+        default:
+          String msg = "Bad pMode configuration! PartyId source: '" + pid.getValueSource() +
+              "' not exists!";          
+          throw new EBMSError(EBMSErrorCode.BadPModeConfiguration, mo.getMessageId(), msg);
+
+      }
+      usgMsg.getPartyInfo().getTo().getPartyIds().add(pi);
+
+    }
+
+    /*
+    
     piFrom.setType(EbMSConstants.EBMS_PARTY_TYPE_NAME);
     piFrom.setValue(mo.getSenderName() == null || mo.getSenderName().isEmpty() ? mo.getSenderEBox()
         : mo.getSenderName());
@@ -141,9 +202,10 @@ public class EBMSUtils {
     piFrom.setType(EbMSConstants.EBMS_PARTY_TYPE_EBOX);
     piFrom.setValue(mo.getSenderEBox());
     usgMsg.getPartyInfo().getFrom().getPartyIds().add(piFrom);
-    // generate to
-    usgMsg.getPartyInfo().setTo(new To());
-    usgMsg.getPartyInfo().getTo().setRole(pm.getResponder().getRole()); // get from p-mode
+    
+    
+    
+    
     PartyId piTo = new PartyId();
     piTo.setType(EbMSConstants.EBMS_PARTY_TYPE_NAME);
     piTo.setValue(mo.getReceiverName() == null || mo.getReceiverName().isEmpty() ? mo
@@ -152,22 +214,24 @@ public class EBMSUtils {
     piTo = new PartyId();
     piTo.setType(EbMSConstants.EBMS_PARTY_TYPE_EBOX);
     piTo.setValue(mo.getReceiverEBox());
-    usgMsg.getPartyInfo().getTo().getPartyIds().add(piTo);
-
+    usgMsg.getPartyInfo().getTo().getPartyIds().add(piTo);*/
     // set colloboration info
     // BusinessInfo bi = pm.getLegs().get(0).getBusinessInfo();
     usgMsg.setCollaborationInfo(new CollaborationInfo());
     usgMsg.getCollaborationInfo().setService(
         new org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.Service());
     usgMsg.getCollaborationInfo().getService().setValue(mo.getService());
+    usgMsg.getCollaborationInfo().getService().setType(pm.getLegs().get(0).getBusinessInfo().getService().getType());
     usgMsg.getCollaborationInfo().setAction(mo.getAction());
     usgMsg.getCollaborationInfo().setConversationId(mo.getConversationId());
+    /*
     usgMsg.getCollaborationInfo().setAgreementRef(new AgreementRef());
     usgMsg.getCollaborationInfo().getAgreementRef().setPmode(pm.getId());
-    usgMsg.getCollaborationInfo().getAgreementRef().setValue(pm.getAgreement());
+    usgMsg.getCollaborationInfo().getAgreementRef().setValue(pm.getAgreement());*/
 
-    // add mail description
     List<Property> lstProperties = new ArrayList<>();
+    /* add mail description
+    
     if (mo.getSubject() != null) {
       Property p = new Property();
       p.setName(EbMSConstants.EBMS_PROPERTY_DESC);
@@ -184,9 +248,10 @@ public class EBMSUtils {
       p.setValue(DatatypeConverter.printDateTime(cal));
       lstProperties.add(p);
     }
+    */
     // add aditional properties
-    if (mo.getMSHOutProperties() != null
-        && !mo.getMSHOutProperties().getMSHOutProperties().isEmpty()) {
+    if (mo.getMSHOutProperties() != null &&
+         !mo.getMSHOutProperties().getMSHOutProperties().isEmpty()) {
       for (MSHOutProperty moutProp : mo.getMSHOutProperties().getMSHOutProperties()) {
         Property p = new Property();
         p.setName(moutProp.getName());
@@ -204,6 +269,7 @@ public class EBMSUtils {
     usgMsg.setPayloadInfo(new PayloadInfo());
     if (mo.getMSHOutPayload() != null && mo.getMSHOutPayload().getMSHOutParts() != null) {
       for (MSHOutPart mp : mo.getMSHOutPayload().getMSHOutParts()) {
+        
         PartInfo pl = new PartInfo();
         pl.setHref(ATT_CID_PREFIX + mp.getEbmsId()); // all parts are attachments!
         if (mp.getDescription() != null && !mp.getDescription().isEmpty()) {
@@ -212,9 +278,19 @@ public class EBMSUtils {
           pl.getDescription().setValue(mp.getDescription());
         }
         List<Property> fileProp = new ArrayList<>();
+        
+        boolean compression = true;
+         if (compression) {
+          Property fp = new Property();
+          fp.setName(EbMSConstants.EBMS_PAYLOAD_COMPRESSION_TYPE);
+          fp.setValue(MimeValues.MIME_GZIP.getMimeType());
+          fileProp.add(fp);
+           
+        }
+        /*
         if (!Utils.isEmptyString(mp.getName())) {
           Property fp = new Property();
-          fp.setName(EbMSConstants.EBMS_FILE_PROPERTY_NAME);
+          fp.setName(EbMSConstants.EBMS_PAYLOAD_PROPERTY_NAME);
           fp.setValue(mp.getName());
           fileProp.add(fp);
         }
@@ -224,21 +300,21 @@ public class EBMSUtils {
           fp.setName(EbMSConstants.EBMS_FILE_PROPERTY_FILENAME);
           fp.setValue(mp.getFilename());
           fileProp.add(fp);
-        }
+        }*/
         if (!Utils.isEmptyString(mp.getEncoding())) {
           Property fp = new Property();
-          fp.setName(EbMSConstants.EBMS_FILE_PROPERTY_ENCODING);
+          fp.setName(EbMSConstants.EBMS_PAYLOAD_PROPERTY_ENCODING);
           fp.setValue(mp.getEncoding());
           fileProp.add(fp);
         }
 
         if (!Utils.isEmptyString(mp.getMimeType())) {
           Property fp = new Property();
-          fp.setName(EbMSConstants.EBMS_FILE_PROPERTY_MIME);
+          fp.setName(EbMSConstants.EBMS_PAYLOAD_PROPERTY_MIME);
           fp.setValue(mp.getMimeType());
           fileProp.add(fp);
         }
-
+/*
         if (!Utils.isEmptyString(mp.getType())) {
           Property fp = new Property();
           fp.setName(EbMSConstants.EBMS_FILE_PROPERTY_TYPE);
@@ -248,7 +324,7 @@ public class EBMSUtils {
         Property fp = new Property();
         fp.setName(EbMSConstants.EBMS_FILE_PROPERTY_IS_ENCRYPTED);
         fp.setValue(mp.getIsEncrypted() ? "true" : "false");
-        fileProp.add(fp);
+        fileProp.add(fp);*/
 
         if (!fileProp.isEmpty()) {
           pl.setPartProperties(new PartProperties());
@@ -286,8 +362,8 @@ public class EBMSUtils {
       rcp.getAnies().add(doc.getDocumentElement());
       sigMsg.setReceipt(rcp);
 
-    } catch (JAXBException | TransformerException | ParserConfigurationException | SAXException
-        | IOException ex) {
+    } catch (JAXBException | TransformerException | ParserConfigurationException | SAXException |
+        IOException ex) {
       Logger.getLogger(EBMSUtils.class.getName()).log(Level.SEVERE, null, ex);
     }
     return sigMsg;
@@ -303,20 +379,24 @@ public class EBMSUtils {
    */
   public SignalMessage generateAS4ReceiptSignal(String refMessageId, String senderDomain,
       Element inboundMail, Date timestamp) {
-    SignalMessage sigMsg = new SignalMessage();
-    try (InputStream isXSLT = getClass().getResourceAsStream("/xslt/soap2AS4Receipt.xsl")) {
+    SignalMessage sigMsg = null;
+    try (InputStream isXSLT = getClass().getResourceAsStream("/xslt/as4receipt-jmsh.xsl")) {
 
       // add message infof
-      sigMsg.setMessageInfo(createMessageInfo(senderDomain, refMessageId, timestamp));
+      //sigMsg.setMessageInfo(createMessageInfo(senderDomain, refMessageId, timestamp));
       // generate receipt
-      Receipt rcp = new Receipt();
+      //Receipt rcp = new Receipt();
       // generate as4 receipt from xslt
-      Document doc = XMLUtils.transform(inboundMail, isXSLT);
-      rcp.getAnies().add(doc.getDocumentElement());
-      sigMsg.setReceipt(rcp);
+      Messaging m = (Messaging) XMLUtils.deserialize(inboundMail,isXSLT,  Messaging.class);
+      if (m!=null && m.getSignalMessages().size()==1 ){
+        sigMsg = m.getSignalMessages().get(0);
+        sigMsg.getMessageInfo().setMessageId(UUID.randomUUID().toString() + "@" + senderDomain);
+      }
+      
+      
 
-    } catch (JAXBException | TransformerException | ParserConfigurationException | SAXException
-        | IOException ex) {
+    } catch (JAXBException | TransformerException |
+        IOException ex) {
       Logger.getLogger(EBMSUtils.class.getName()).log(Level.SEVERE, null, ex);
     }
     return sigMsg;
@@ -355,7 +435,8 @@ public class EBMSUtils {
    * @return
    * @throws EBMSError
    */
-  public MSHInMail userMessage2MSHMail(UserMessage um) throws EBMSError {
+  public MSHInMail userMessage2MSHMail(UserMessage um)
+      throws EBMSError {
     long l = mlog.logStart();
 
     MessageInfo mi = um.getMessageInfo();
@@ -431,10 +512,12 @@ public class EBMSUtils {
             mshmail.setSenderName(pi.getValue());
             break;
           default:
+            mshmail.setSenderEBox(pi.getValue());
             String msgwrn =
-                "Unknown type '" + pi.getType() + "' for From/PartyId: with value:'"
-                    + pi.getValue() + "'. Value is ignored!";
+                "Unknown type '" + pi.getType() + "' for From/PartyId: with value:'" +
+                 pi.getValue() + "'. Value is setted as sender address!";
             mlog.logWarn(l, msgwrn, null);
+            
             break;
         }
       } else {
@@ -459,9 +542,10 @@ public class EBMSUtils {
             mshmail.setReceiverName(pi.getValue());
             break;
           default:
+            mshmail.setReceiverEBox(pi.getValue());
             String msgwrn =
-                "Unknown type '" + pi.getType() + "' for To/PartyId: with value:'" + pi.getValue()
-                    + "'. Value is ignored!";
+                "Unknown type '" + pi.getType() + "' for To/PartyId: with value:'" + pi.getValue() +
+                 "'. Value is setted as receiverId!";
             mlog.logWarn(l, msgwrn, null);
             break;
         }
@@ -498,27 +582,27 @@ public class EBMSUtils {
           for (Property p : pi.getPartProperties().getProperties()) {
             if (p.getName() != null) {
               switch (p.getName()) {
-                case EbMSConstants.EBMS_FILE_PROPERTY_NAME:
+                case EbMSConstants.EBMS_PAYLOAD_PROPERTY_NAME:
                   part.setName(p.getValue());
                   break;
-                case EbMSConstants.EBMS_FILE_PROPERTY_FILENAME:
+                case EbMSConstants.EBMS_PAYLOAD_PROPERTY_FILENAME:
                   part.setFilename(p.getValue());
                   break;
-                case EbMSConstants.EBMS_FILE_PROPERTY_MIME:
+                case EbMSConstants.EBMS_PAYLOAD_PROPERTY_MIME:
                   part.setMimeType(p.getValue());
                   break;
-                case EbMSConstants.EBMS_FILE_PROPERTY_ENCODING:
+                case EbMSConstants.EBMS_PAYLOAD_PROPERTY_ENCODING:
                   part.setEncoding(p.getValue());
                   break;
-                case EbMSConstants.EBMS_FILE_PROPERTY_TYPE:
+                case EbMSConstants.EBMS_PAYLOAD_COMPRESSION_TYPE:
                   part.setType(p.getValue());
                   break;
-                case EbMSConstants.EBMS_FILE_PROPERTY_IS_ENCRYPTED:
+                case EbMSConstants.EBMS_PAYLOAD_PROPERTY_IS_ENCRYPTED:
                   part.setIsEncrypted(p.getValue() != null && p.getValue().equalsIgnoreCase("true"));
                   break;
                 default:
-                  mlog.logWarn(l, "Unknown part property: '" + p.getName() + "' for message: '"
-                      + mshmail.getMessageId() + "' ", null);
+                  mlog.logWarn(l, "Unknown part property: '" + p.getName() + "' for message: '" +
+                       mshmail.getMessageId() + "' ", null);
               }
             }
           }

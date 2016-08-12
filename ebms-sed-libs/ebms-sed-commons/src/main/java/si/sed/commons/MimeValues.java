@@ -2686,6 +2686,11 @@ public enum MimeValues {
    *
    */
   MIME_ZIP("zip", "application/zip"),
+  
+  /**
+   *
+   */
+  MIME_GZIP("gzip", "application/gzip"),
 
   /**
    *

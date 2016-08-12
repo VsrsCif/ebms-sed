@@ -9,6 +9,7 @@ import java.math.BigInteger;
 import java.util.List;
 import javax.ejb.Local;
 import org.sed.ebms.cert.SEDCertStore;
+import org.sed.ebms.cert.SEDCertificate;
 import org.sed.ebms.cron.SEDCronJob;
 import org.sed.ebms.cron.SEDTaskType;
 import org.sed.ebms.ebox.SEDBox;
@@ -74,9 +75,10 @@ public interface SEDLookupsInterface {
   /**
    *
    * @param strname
+   * @param ignoreDomain
    * @return
    */
-  SEDBox getSEDBoxByName(String strname);
+  SEDBox getSEDBoxByName(String strname, boolean ignoreDomain);
 
   /**
    *
@@ -86,6 +88,16 @@ public interface SEDLookupsInterface {
    */
   SEDCertStore getSEDCertStoreByCertAlias(String alias, boolean isKey);
 
+  /**
+   * MEthod resturs SEDCertificat object for alias
+   *
+   * @param alias - alias of certificate
+   * @param cs - key/trustostre
+   * @param isKey - returned SEDCertificate must be a key
+   * @return SEDCertificate or null in SEDCertificate is found givem store.
+   */
+   SEDCertificate getSEDCertificatForAlias(String alias,
+      SEDCertStore cs, boolean isKey);
   /**
    *
    * @param id
