@@ -461,7 +461,7 @@ public class KeystoreUtils {
           ec.setValidTo(xc.getNotAfter());
           ec.setIssuerDN(xc.getIssuerDN().getName());
           ec.setSubjectDN(xc.getSubjectDN().getName());
-          ec.setSerialNumber(xc.getSerialNumber());
+          ec.setSerialNumber(xc.getSerialNumber()+"");
 
         }
 

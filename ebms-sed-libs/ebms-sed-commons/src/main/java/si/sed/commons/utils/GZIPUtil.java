@@ -74,6 +74,20 @@ public class GZIPUtil {
     }
 
   }
+  /**
+   * Decompress source gzip file to target file. Streams are not closed. 
+   * @param is - compresset inputstream 
+   * @param trgFn - target unziped  file
+   * @throws IOException - error reading source file or writing target file
+   */
+  public void decompressGZIP(final InputStream is, final File trgFn) throws IOException {
+
+    try (GZIPInputStream gis = new GZIPInputStream(is);
+        FileOutputStream fos = new FileOutputStream(trgFn)) {
+      decompressGZIP(gis, fos);
+    }
+
+  }
 
   private void decompressGZIP(final GZIPInputStream gis, final OutputStream os) throws IOException {
 

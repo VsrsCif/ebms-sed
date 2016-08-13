@@ -384,6 +384,10 @@ public class StorageUtils {
     return storeFile(S_IN_PREFIX, getSuffixBYMimeType(mimeType), is);
   }
   
+  public File getCreateEmptyInFile(String mimeType) throws StorageException{
+    return getNewStorageFile(S_IN_PREFIX, getSuffixBYMimeType(mimeType));
+  }
+  
     /**
    * Store bytearray  to storage.
    *

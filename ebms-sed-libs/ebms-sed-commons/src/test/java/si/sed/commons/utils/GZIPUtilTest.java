@@ -15,6 +15,9 @@
 package si.sed.commons.utils;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -27,6 +30,7 @@ public class GZIPUtilTest {
   TestUtils tuUtils = new TestUtils();
   
 
+ 
   /**
    * Test of compressGZIP method compress of class GZIPUtil.
    * @throws java.lang.Exception

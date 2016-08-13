@@ -33,7 +33,7 @@
         <property column="TYPE" name="Type" type="java.lang.String"  length="128"  />
         <property column="VALID_FROM" name="ValidFrom" type="java.util.Date" />
         <property column="VALID_TO" name="ValidTo" type="java.util.Date" />
-        <property column="SERIAL_NUMBER" name="serialNumber" type="java.math.BigInteger" />
+        <property column="SERIAL_NUMBER" name="serialNumber" type="java.lang.String" />
         <property column="IS_KEY_ENTRY" name="KeyEntry" type="java.lang.Boolean" />
         
         <property column="KEY_PASSWORD" name="KeyPassword" type="java.lang.String" length="64" />         
