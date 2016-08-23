@@ -53,27 +53,32 @@
         </ul>
         Parametri skripte:
         <code>.\deploy-sed.(bat|sh) --init -b [SED_BUNDLE] -w [WILDFLY_HOME] -s [SED_HOME]</code>
-        <ul><li>--init  initialize sed-home and wildfly properties.</li>
-   <li>-w   WILDFLY_HOME -  path jboss home: ex.: c:\temp\wildfly-10.0.0.Final\.</li>
-   <li>-b   SED_BUNDLE   - path to unziped ebms-sed bundle if not given parent script folder is setted.</li>
-   <li>-s   SED_HOME     - path tom application home folder  (sed.home) if is not given and --init is setted than '[WILDFLY_HOME]\standalone\data\' is setted.</li>
-   </ul>
+        <ul><li>--init: parameter "inicializira" mapo sed-home in nastavitve wildfly strežnika.</li>
+            <li>-w   WILDFLY_HOME -  pot do wildfly aplikacijskega strežnika. Npr.: c:\temp\wildfly-10.0.0.Final\.</li>
+            <li>-b   SED_BUNDLE   - pot do "razširjenega" ebms-sed paketa. če parameter ni podan je privzeta mapa: "..\".</li>
+            <li>-s   SED_HOME     - pot do [SED_HOME] mape. Če ni podana je privzeta mapa '[WILDFLY_HOME]\standalone\data\sed-home'.</li>
+        </ul>
 
         za prvi zagon poženite skripto
         <br />
         Windows OS:<br /><code>c:\Server\wildfly-10.0.0.Final\bin\start-sed.bat --init</code> <br />
         Linux:<br /> <code>/opt/Server/wildfly-10.0.0.Final/bin/start-sed.sh --init</code> <br /><br />
         <b>Ob zagonu skripte "start-sed.(bat|sh) --init" se generirajo bazni objekti ter se napolnijo z demo podatki.</b><br /><br />
+        Dodatni parametra sta še:
+        <ul>
+            <li>-w   WILDFLY_HOME -  pot do wildfly aplikacijskega strežnika. V primeru da parametere ni podan je privzeta mapa "..\" .</li>   
+            <li>-s   SED_HOME     - pot do [SED_HOME] mape. Če parameter ni podan je privzeta mapa '[WILDFLY_HOME]\standalone\data\sed-home'.</li>
+        </ul>
 
         Dostop do spletnih storitev za izdelavo integracije z zalednimi sistemi je:<br />
         <a href="http://localhost:8080/ebms-sed-ws/sed-mailbox?wsdl">http://localhost:8080/ebms-sed-ws/sed-mailbox?wsdl</a><br />
-        
+
         Dostop do spletnih storitev za povezovanje s drugimi ebMS 3.0 MSH sistemi je na naslovu :<br />
         <a href="http://localhost:8080/ebms-sed/ebms">http://localhost:8080/ebms-sed/ebms</a><br />
 
         Dostop do spletnega klienta za nadzor in nastavitve  ebms-sed aplikacije je na naslovu:
         <a href="http://localhost:8080/ebms-sed-webgui/">http://localhost:8080/ebms-sed-webgui/</a><br /><br />
-        
+
         V demo aplikaciji sta nastavljena dva uporabnika:
         <br /><br />
         <table class="styled-table">
@@ -81,8 +86,8 @@
             <tr><td>sed</td><td>sed1234</td><td>USER</td></tr>
             <tr><td>admin</td><td>admin1234</td><td>USER,ADMIN</td></tr>
         </table>
-        
-        
+
+
         <h1 id="install:build">Izgradnja</h1>
 
         Projekt ebms-sed je sestavljen s pomočjo <a href="https://maven.apache.org/">maven 3.x</a> tehnologije. 
@@ -201,7 +206,7 @@ BUILD SUCCESS
 
             <h1 id="install:wildfly">Namestitev na aplikacijski strežnik wildfly-10.0.0.Final</h1>
             Navodila opisujejo posamezne korake, ki jih jih potrebno narediti pri namestitvi aplikacije <b>ebms-sed</b>
-            
+
             Na povezavi <a href="http://wildfly.org/downloads/">wildfly downloads</a>  prenesi aplikacijski 
             strežnik <b>Java EE7 Full & Web Distribution</b> 10.x.x.Final. Arhiv odpakiraj v namestitveno mapo(npr.:
             c:\temp\wildfly-10.0.0.Final):
@@ -275,7 +280,7 @@ BUILD SUCCESS
     &lt;resource-adapter-ref resource-adapter-name="${ejb.resource-adapter-name:activemq-ra.rar}"/>
     &lt;bean-instance-pool-ref pool-name="mdb-strict-max-pool"/>
 &lt;/mdb></code></pre>
-            
+
             <h3 id="install:wf-users">Določanje uporabnikov</h3>
             V razdelek <code>&lt;subsystem xmlns="urn:jboss:domain:security:1.2"></code> dodaj
             <b>sed-realm</b> varnostno domeno. 
@@ -291,7 +296,7 @@ BUILD SUCCESS
             </code></pre>
             ter v mapo <code> wildfly-10.0.0.Final/standalone/configuration</code>
             naredi tekstovni datoteki:<br /> 
-            
+
             sed-users.properties
             <pre><code>
 #uporabnisko ime=geslo
@@ -302,16 +307,16 @@ admin=admin1234</code></pre>
 #uporabnisko ime=role1,rola1
 sed=USER
 admin=ADMIN,USER</code></pre>
-            
-            
-            
+
+
+
             <h3>Dodajanje jdbc knjižnice  in bazne povezave za postgres</h3>
             Na spletni strani „https://jdbc.postgresql.org/download.html“ pridobi primereno jdbc knjižnico za nameščeno postgresql bazo. <br />
             Posgresql driver se bo namestil s pomočjo jboss-cli ukazov, zato v mapi: <br />
             <code>wildfly-10.0.0.Final/bin</code>določi widlfly admin uporabnika tako da poženem skripto (in izbereš  userType: a) Management User):<br />
             <code>./add-user.(sh|bat)</code><br /><br />
-            
-            
+
+
 
             Nato poženi aplikacijski strežnik:<br />
             <code>./standalone.(sh|bat) -c standalone-ebms.xml</code>
