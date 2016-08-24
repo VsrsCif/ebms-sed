@@ -71,12 +71,23 @@
                     <td>Zaradi napake pri pošiljanju (TCP/HTTP),se pošiljka ponovno poskuša oddati skladno z urnikom ReceptionAwareness/Retry)</td>
                 </tr>
                 <tr>
-                    <td>SENDING</td>
+                    <td>PUSHING</td>
                     <td style="background-color: gray;">gray</td>
                     <td>V pošiljanju</td>
                     <td>Pošiljka se pripravi za odpremo (kriptiranje, podpisovanje itd.) ter se poskuša oddati v naslovnikov MSH. 
+                        V tem statusu so lahko samo sporočila, ki imajo MEP (mesage exchange pattern ) določeno pošiljanje PUSH.
                         V primeru TCP/HTTP, SOAP napake se skladno s PMODE konfiguracijo (ReceptionAwareness/Retry) ponovno poskuša oddati. Pri tem pošiljka preide v status RESEND.
-                        V primeru napake pripripravi na pošiljanje in po preteku števila poskusov oddaje, se pošiljka prestavi v status "ERROR".</td>
+                        V primeru napake pri pripravi na pošiljanje in po preteku števila poskusov oddaje, se pošiljka prestavi v status "ERROR".</td>
+                </tr>
+                <tr>
+                    <td>PULLREADY</td>
+                    <td style="background-color: gray;">gray</td>
+                    <td>V pošiljanju</td>
+                    <td>Pošiljka je pripraljena na prevzem in čaka na signal za PULL. V tem statusu so lahko samo sporočila,
+                    ki imajo MEP (mesage exchange pattern ) določeno pošiljanje PULL 
+                    
+                    
+                    </td>
                 </tr>
 
                 <tr>
