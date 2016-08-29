@@ -16,6 +16,8 @@
         <property column="DESCRIPTION" name="Description"  length="512" type="java.lang.String"   />        
         <property column="USER_ID" name="UserId"  length="64" type="java.lang.String" />
         <property column="APPLICATION_ID" name="ApplicationId"  length="128" type="java.lang.String" />
+        <property column="FILEPATH" name="EvidenceFilepath"  length="1028" type="java.lang.String" />
+        <property column="MIME_TYPE" name="EvidenceMimeType"  length="128" type="java.lang.String" />
     </class>    
     
     <sql-query name="org.msh.ebms.inbox.event.MSHInEvent.getList">

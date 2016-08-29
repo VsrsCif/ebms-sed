@@ -22,6 +22,8 @@ public enum EBMSErrorCode {
 
   /**
      *
+     *//**
+     *
      */
   ValueNotRecognized(
       "EBMS:0001",
@@ -206,15 +208,43 @@ public enum EBMSErrorCode {
   /**
      *
      */
-  DecompressionFailure("EBMS:0303", "DecompressionFailure", "failure", "Communication",
-      "An error occurred during the decompression.", "reliability"),
+  DecompressionFailure("EBMS:0303", 
+      "DecompressionFailure", 
+      "failure", 
+      "Communication",
+      "An error occurred during the decompression.",
+      "reliability"),
   
+  
+  InvalidSoapRequest("EBMS:1500", "InvalidSoapRequest", 
+      "failure", 
+      "Communication",
+      "Error parsing soap message.", 
+      "init"),
   
   /**
      *
      */
-  BadPModeConfiguration("EBMS:0500", "BadPModeConfiguration", "failure", "Processing",
-      "An error occurred during initializing pmode.", "initializing");
+  PModeConfigurationError("EBMS:1501", 
+      "BadPModeConfiguration", 
+      "failure", 
+      "Processing",
+      "An error occurred during initializing pmode.", 
+      "configuration"),
+
+  
+    /**
+     *
+     */
+  ApplicationError("EBMS:1503", 
+      "ApplicationError", 
+      "failure", 
+      "Processing",
+      "Unexpected program error", 
+      "application");
+  
+  
+  
 
 
   String code;

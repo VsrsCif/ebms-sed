@@ -1,3 +1,17 @@
+/*
+ * Copyright 2016, Supreme Court Republic of Slovenia
+ * 
+ * Licensed under the EUPL, Version 1.1 or – as soon they will be approved by the European
+ * Commission - subsequent versions of the EUPL (the "Licence"); You may not use this work except in
+ * compliance with the Licence. You may obtain a copy of the Licence at:
+ * 
+ * https://joinup.ec.europa.eu/software/page/eupl
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence
+ * is distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the Licence for the specific language governing permissions and limitations under
+ * the Licence.
+ */
 package si.sed.commons.utils;
 
 import java.lang.reflect.InvocationTargetException;
@@ -47,7 +61,7 @@ import si.sed.commons.interfaces.SEDDaoInterface;
 
 /**
  *
- * @author sluzba
+ * @author Jože Rihtaršič
  */
 @Stateless
 @Local(SEDDaoInterface.class)
@@ -55,27 +69,27 @@ import si.sed.commons.interfaces.SEDDaoInterface;
 public class SEDDaoBean implements SEDDaoInterface {
 
   /**
-     *
-     */
+   *
+   */
   protected static SEDLogger LOG = new SEDLogger(SEDDaoBean.class);
 
   @EJB(mappedName = SEDJNDI.JNDI_JMSMANAGER)
   JMSManagerInterface mJMS;
 
   /**
-     *
-     */
+   *
+   */
   @PersistenceContext(unitName = "ebMS_SED_PU", name = "ebMS_SED_PU")
   public EntityManager memEManager;
 
   /**
-     *
-     */
+   *
+   */
   protected Queue mqMSHQueue = null;
 
   /**
-     *
-     */
+   *
+   */
   @Resource
   public UserTransaction mutUTransaction;
 
@@ -93,8 +107,8 @@ public class SEDDaoBean implements SEDDaoInterface {
       memEManager.persist(o);
       mutUTransaction.commit();
       suc = true;
-    } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException
-        | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
+    } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException |
+        HeuristicRollbackException | SecurityException | IllegalStateException ex) {
       try {
         LOG.logError(l, ex.getMessage(), ex);
         mutUTransaction.rollback();
@@ -150,14 +164,14 @@ public class SEDDaoBean implements SEDDaoInterface {
       for (Method m : methodList) {
         // only getters (public, starts with get, no arguments)
         String mName = m.getName();
-        if (Modifier.isPublic(m.getModifiers()) && m.getParameterCount() == 0
-            && !m.getReturnType().equals(Void.TYPE)
-            && (mName.startsWith("get") || mName.startsWith("is"))) {
+        if (Modifier.isPublic(m.getModifiers()) && m.getParameterCount() == 0 &&
+             !m.getReturnType().equals(Void.TYPE) &&
+             (mName.startsWith("get") || mName.startsWith("is"))) {
           String fieldName = mName.substring(mName.startsWith("get") ? 3 : 2);
           // get returm parameter
           Object searchValue;
           try {
-            searchValue = m.invoke(searchParams, new Object[] {});
+            searchValue = m.invoke(searchParams, new Object[]{});
           } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
             LOG.logError(l, ex);
             continue;
@@ -167,13 +181,13 @@ public class SEDDaoBean implements SEDDaoInterface {
             continue;
           }
 
-          if (fieldName.endsWith("List") && searchValue instanceof List
-              && !((List) searchValue).isEmpty()) {
+          if (fieldName.endsWith("List") && searchValue instanceof List &&
+               !((List) searchValue).isEmpty()) {
             lstPredicate.add(om.get(fieldName.substring(0, fieldName.lastIndexOf("List"))).in(
                 ((List) searchValue).toArray()));
           } else {
             try {
-              cls.getMethod("set" + fieldName, new Class[] {m.getReturnType()});
+              cls.getMethod("set" + fieldName, new Class[]{m.getReturnType()});
             } catch (NoSuchMethodException | SecurityException ex) {
               // method does not have setter // ignore other methods
               continue;
@@ -347,8 +361,8 @@ public class SEDDaoBean implements SEDDaoInterface {
       memEManager.remove(memEManager.contains(o) ? o : memEManager.merge(o));
       mutUTransaction.commit();
       suc = true;
-    } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException
-        | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
+    } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException |
+        HeuristicRollbackException | SecurityException | IllegalStateException ex) {
       try {
         LOG.logError(l, ex.getMessage(), ex);
         mutUTransaction.rollback();
@@ -365,7 +379,8 @@ public class SEDDaoBean implements SEDDaoInterface {
    * @throws StorageException
    */
   @Override
-  public void removeInMail(BigInteger bi) throws StorageException {
+  public void removeInMail(BigInteger bi)
+      throws StorageException {
     removeMail(MSHInMail.class, MSHInEvent.class, bi);
   }
 
@@ -393,8 +408,8 @@ public class SEDDaoBean implements SEDDaoInterface {
       // remove mail
       memEManager.remove(memEManager.contains(mail) ? mail : memEManager.merge(mail));
       mutUTransaction.commit();
-    } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException
-        | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
+    } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException |
+        HeuristicRollbackException | SecurityException | IllegalStateException ex) {
       {
         try {
           mutUTransaction.rollback();
@@ -402,8 +417,8 @@ public class SEDDaoBean implements SEDDaoInterface {
           LOG.logWarn(l, "", ex);
         }
         String msg =
-            "Error occurred where removing mail type: '" + type + "', id: '" + bi + "'! Err:"
-                + ex.getMessage();
+            "Error occurred where removing mail type: '" + type + "', id: '" + bi + "'! Err:" +
+             ex.getMessage();
         LOG.logError(l, msg, ex);
         throw new StorageException(msg, ex);
       }
@@ -418,7 +433,8 @@ public class SEDDaoBean implements SEDDaoInterface {
    * @throws StorageException
    */
   @Override
-  public void removeOutMail(BigInteger bi) throws StorageException {
+  public void removeOutMail(BigInteger bi)
+      throws StorageException {
     removeMail(MSHOutMail.class, MSHOutEvent.class, bi);
   }
 
@@ -429,7 +445,8 @@ public class SEDDaoBean implements SEDDaoInterface {
    * @throws StorageException
    */
   @Override
-  public void serializeInMail(MSHInMail mail, String applicationId) throws StorageException {
+  public void serializeInMail(MSHInMail mail, String applicationId)
+      throws StorageException {
     long l = LOG.logStart();
     try {
 
@@ -445,8 +462,8 @@ public class SEDDaoBean implements SEDDaoInterface {
       me.setDate(mail.getStatusDate());
       memEManager.persist(me);
       mutUTransaction.commit();
-    } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException
-        | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
+    } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException |
+        HeuristicRollbackException | SecurityException | IllegalStateException ex) {
       {
         try {
           mutUTransaction.rollback();
@@ -497,10 +514,10 @@ public class SEDDaoBean implements SEDDaoInterface {
 
       mutUTransaction.commit();
 
-      mJMS.sendMessage(mail.getId().longValue(), pmodeId, 0, 0, false);
+      mJMS.sendMessage(mail.getId().longValue(), 0, 0, false);
 
-    } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException
-        | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
+    } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException |
+        HeuristicRollbackException | SecurityException | IllegalStateException ex) {
       {
         try {
           mutUTransaction.rollback();
@@ -531,7 +548,7 @@ public class SEDDaoBean implements SEDDaoInterface {
   @Override
   public void setStatusToInMail(MSHInMail mail, SEDInboxMailStatus status, String desc)
       throws StorageException {
-    setStatusToInMail(mail, status, desc, null, null);
+    setStatusToInMail(mail, status, desc, null, null,  null, null);
   }
 
   /**
@@ -542,10 +559,32 @@ public class SEDDaoBean implements SEDDaoInterface {
    * @param userID
    * @param applicationId
    * @throws StorageException
-   */
+   */  
   @Override
   public void setStatusToInMail(MSHInMail mail, SEDInboxMailStatus status, String desc,
-      String userID, String applicationId) throws StorageException {
+      String userID,
+      String applicationId)
+      throws StorageException {
+    setStatusToInMail(mail, status, desc, userID, applicationId, null, null);
+
+  }
+
+
+  /**
+   *
+   * @param mail
+   * @param status
+   * @param desc
+   * @param userID
+   * @param applicationId
+   * @param filePath
+   * @param mime
+   * @throws StorageException
+   */
+  public void setStatusToInMail(MSHInMail mail, SEDInboxMailStatus status, String desc,
+      String userID,
+      String applicationId, String filePath, String mime)
+      throws StorageException {
     long l = LOG.logStart();
     try {
       mutUTransaction.begin();
@@ -565,6 +604,8 @@ public class SEDDaoBean implements SEDDaoInterface {
       me.setDate(mail.getStatusDate());
       me.setUserId(userID);
       me.setApplicationId(applicationId);
+      me.setEvidenceFilepath(filePath);
+      me.setEvidenceMimeType(mime);
 
       int iVal = updq.executeUpdate();
       if (iVal != 1) {
@@ -574,15 +615,15 @@ public class SEDDaoBean implements SEDDaoInterface {
           LOG.logWarn(l, ex1.getMessage(), ex1);
         }
         String msg =
-            "Status not setted to MSHInMail:" + mail.getId() + " result: '" + iVal
-                + "'. Mail not exists or id duplicates?";
+            "Status not setted to MSHInMail:" + mail.getId() + " result: '" + iVal +
+             "'. Mail not exists or id duplicates?";
         LOG.logError(l, msg, null);
         throw new StorageException(msg, null);
       }
       memEManager.persist(me);
       mutUTransaction.commit();
-    } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException
-        | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
+    } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException |
+        HeuristicRollbackException | SecurityException | IllegalStateException ex) {
       {
         try {
           mutUTransaction.rollback();
@@ -590,8 +631,8 @@ public class SEDDaoBean implements SEDDaoInterface {
           LOG.logWarn(l, ex1.getMessage(), ex1);
         }
         String msg =
-            "Error commiting status to incommingxmail: '" + mail.getId() + "'! Err:"
-                + ex.getMessage();
+            "Error commiting status to incommingxmail: '" + mail.getId() + "'! Err:" +
+             ex.getMessage();
         LOG.logError(l, msg, ex);
         throw new StorageException(msg, ex);
       }
@@ -624,7 +665,28 @@ public class SEDDaoBean implements SEDDaoInterface {
    */
   @Override
   public void setStatusToOutMail(MSHOutMail mail, SEDOutboxMailStatus status, String desc,
-      String userID, String applicationId) throws StorageException {
+      String userID, String applicationId)
+      throws StorageException {
+    setStatusToOutMail(mail, status, desc, userID, applicationId, null, null);
+
+  }
+
+  /**
+   *
+   * @param mail
+   * @param status
+   * @param desc
+   * @param userID
+   * @param applicationId
+   * @param filePath
+   * @param mime
+   * @throws StorageException
+   */
+  @Override
+  public void setStatusToOutMail(MSHOutMail mail, SEDOutboxMailStatus status, String desc,
+      String userID,
+      String applicationId, String filePath, String mime)
+      throws StorageException {
     long l = LOG.logStart();
 
     try {
@@ -647,6 +709,8 @@ public class SEDDaoBean implements SEDDaoInterface {
       me.setSenderMessageId(mail.getSenderMessageId());
       me.setUserId(userID);
       me.setApplicationId(applicationId);
+      me.setEvidenceFilepath(filePath);
+      me.setEvidenceMimeType(mime);
 
       mutUTransaction.begin();
 
@@ -658,15 +722,15 @@ public class SEDDaoBean implements SEDDaoInterface {
           LOG.logWarn(l, ex1.getMessage(), ex1);
         }
         String msg =
-            "Status not setted to MSHOutMail:" + mail.getId() + " result: '" + iVal
-                + "'. Mail not exists or id duplicates?";
+            "Status not setted to MSHOutMail:" + mail.getId() + " result: '" + iVal +
+             "'. Mail not exists or id duplicates?";
         LOG.logError(l, msg, null);
         throw new StorageException(msg, null);
       }
       memEManager.persist(me);
       mutUTransaction.commit();
-    } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException
-        | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
+    } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException |
+        HeuristicRollbackException | SecurityException | IllegalStateException ex) {
       {
         try {
           mutUTransaction.rollback();
@@ -680,6 +744,7 @@ public class SEDDaoBean implements SEDDaoInterface {
       }
     }
     LOG.logEnd(l);
+
   }
 
   /**
@@ -696,8 +761,8 @@ public class SEDDaoBean implements SEDDaoInterface {
       memEManager.merge(o);
       mutUTransaction.commit();
       suc = true;
-    } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException
-        | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
+    } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException |
+        HeuristicRollbackException | SecurityException | IllegalStateException ex) {
       try {
         LOG.logError(l, ex.getMessage(), ex);
         mutUTransaction.rollback();
@@ -728,7 +793,8 @@ public class SEDDaoBean implements SEDDaoInterface {
    * @throws StorageException
    */
   @Override
-  public void updateInMail(MSHInMail mail, String statusDesc, String user) throws StorageException {
+  public void updateInMail(MSHInMail mail, String statusDesc, String user)
+      throws StorageException {
     long l = LOG.logStart();
     // --------------------
     // serialize data to db
@@ -747,8 +813,8 @@ public class SEDDaoBean implements SEDDaoInterface {
       me.setDate(mail.getStatusDate());
       memEManager.persist(me);
       mutUTransaction.commit();
-    } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException
-        | HeuristicRollbackException | SecurityException | IllegalStateException ex) {
+    } catch (NotSupportedException | SystemException | RollbackException | HeuristicMixedException |
+        HeuristicRollbackException | SecurityException | IllegalStateException ex) {
       {
         try {
           mutUTransaction.rollback();

@@ -37,7 +37,6 @@ import javax.xml.crypto.dsig.keyinfo.KeyInfoFactory;
 import javax.xml.crypto.dsig.keyinfo.X509Data;
 import javax.xml.crypto.dsig.keyinfo.X509IssuerSerial;
 import javax.xml.crypto.dsig.spec.C14NMethodParameterSpec;
-import javax.xml.parsers.DocumentBuilderFactory;
 import org.etsi.uri._01903.v1_1.Any;
 import org.etsi.uri._01903.v1_1.CertIDType;
 import org.etsi.uri._01903.v1_1.DigestAlgAndValueType;

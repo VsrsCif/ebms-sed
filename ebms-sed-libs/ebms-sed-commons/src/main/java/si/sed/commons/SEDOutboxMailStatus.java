@@ -23,13 +23,21 @@ public enum SEDOutboxMailStatus {
 
   /**
      *
+     *//**
+     *
      */
   SUBMITTED("SUBMITTED", "Message is sucessfuly added to SED for transmition.", "orange"),
 
   /**
      *
      */
-  SENDING("SENDING", "Message is pushing/pulling to receiving MSH", "gray"),
+  PUSHING("PUSHING", "Message is pushing to receiver MSH", "gray"),
+  
+  
+  /**
+     *
+     */
+  PULLREADY("PULLREADY", "Message is waiting for pull signal ", "gray"),
 
   /**
      *

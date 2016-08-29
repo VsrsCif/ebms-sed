@@ -1,6 +1,16 @@
 /*
- * To change this license header, choose License Headers in Project Properties. To change this
- * template file, choose Tools | Templates and open the template in the editor.
+ * Copyright 2016, Supreme Court Republic of Slovenia
+ * 
+ * Licensed under the EUPL, Version 1.1 or – as soon they will be approved by the European
+ * Commission - subsequent versions of the EUPL (the "Licence"); You may not use this work except in
+ * compliance with the Licence. You may obtain a copy of the Licence at:
+ * 
+ * https://joinup.ec.europa.eu/software/page/eupl
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence
+ * is distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the Licence for the specific language governing permissions and limitations under
+ * the Licence.
  */
 package si.sed.commons.utils;
 
@@ -45,8 +55,7 @@ import si.sed.commons.interfaces.SEDLookupsInterface;
 import si.sed.commons.utils.xml.XMLUtils;
 
 /**
- *
- * @author sluzba
+ * @author Jože Rihtaršič
  */
 @Startup
 @Singleton
@@ -260,7 +269,8 @@ public class SEDLookups implements SEDLookupsInterface {
       String sedBox = strname.trim();
       List<SEDBox> lst = getSEDBoxes();
       for (SEDBox sb : lst) {
-        if (ignoreDomain &&  sb.getBoxName().startsWith(sedBox+ "@") || sb.getBoxName().equalsIgnoreCase(sedBox)) {
+        if (ignoreDomain && sb.getBoxName().startsWith(sedBox + "@") ||
+            sb.getBoxName().equalsIgnoreCase(sedBox)) {
           return sb;
         }
       }
@@ -286,27 +296,59 @@ public class SEDLookups implements SEDLookupsInterface {
     return getLookup(SEDCertStore.class);
   }
 
+  /**
+   *
+   * @param id Certificate storeID ID
+   * @throw IllegalArgumentException if storname is null or empty
+   * @@return SEDCertStore if not found return null
+   */
   @Override
-  public SEDCertStore getSEDCertStoreByCertAlias(String alias, boolean isKey) {
-
+  public SEDCertStore getSEDCertStoreById(BigInteger id) {
+    if (id == null) {
+      throw new IllegalArgumentException(String.format("KeyStore id is null"));
+    }
     List<SEDCertStore> lst = getSEDCertStore();
     for (SEDCertStore cs : lst) {
-      SEDCertificate c = getSEDCertificatForAlias(alias, cs, isKey);
-      if (c != null) {
+      if (id.equals(cs.getId())) {
         return cs;
-
       }
     }
     return null;
-
   }
+
+  /**
+   *
+   * @param storeName Certificate store name
+   * @throw IllegalArgumentException if storname is null or empty
+   * @return SEDCertStore if not found return null
+   */
+  @Override
+  public SEDCertStore getSEDCertStoreByName(String storeName) {
+    if (Utils.isEmptyString(storeName)) {
+      throw new IllegalArgumentException(String.format("KeyStore name is null"));
+    }
+
+    List<SEDCertStore> lst = getSEDCertStore();
+    for (SEDCertStore cs : lst) {
+      if (storeName.equals(cs.getName())) {
+        return cs;
+      }
+    }
+
+    return null;
+  }
+
 
   @Override
   public SEDCertificate getSEDCertificatForAlias(String alias,
       SEDCertStore cs, boolean isKey) {
+
+    if (cs == null){
+      throw new IllegalArgumentException(String.format("Null 'SEDCertStore'!"));
+    }
     
     if (alias == null) {
-      return null;
+      throw new IllegalArgumentException(String.format("Null 'alias'!"));
     }
 
     for (SEDCertificate c : cs.getSEDCertificates()) {
@@ -319,14 +361,23 @@ public class SEDLookups implements SEDLookupsInterface {
     return null;
   }
 
+  @Override
+  public SEDCertificate getSEDCertificatForAlias(String alias,
+      String storeName, boolean isKey) {
+
+    if (Utils.isEmptyString(alias) || Utils.isEmptyString(storeName)) {
+      return null;
+    }
+    return getSEDCertificatForAlias(alias, getSEDCertStoreByName(storeName), isKey);
+  }
+
   /**
    *
    * @param id
    * @return
    */
   @Override
-  public SEDCronJob getSEDCronJobById(BigInteger id
-  ) {
+  public SEDCronJob getSEDCronJobById(BigInteger id) {
     if (id != null) {
 
       List<SEDCronJob> lst = getSEDCronJobs();

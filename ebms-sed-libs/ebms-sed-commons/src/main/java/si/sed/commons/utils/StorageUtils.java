@@ -18,9 +18,12 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import static java.io.File.createTempFile;
 import static java.io.File.separator;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import static java.lang.String.format;
 import static java.lang.System.getProperty;
 import java.nio.file.DirectoryStream;
@@ -31,6 +34,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import si.sed.commons.MimeValues;
 import static si.sed.commons.MimeValues.getSuffixBYMimeType;
 import static si.sed.commons.SEDSystemProperties.SYS_PROP_FOLDER_STORAGE_DEF;
 import static si.sed.commons.SEDSystemProperties.SYS_PROP_HOME_DIR;
@@ -48,14 +54,12 @@ import si.sed.commons.exception.StorageException;
  */
 public class StorageUtils {
 
-
-  
   private static Path CURRENT_PATH;
   public static final int MAX_FILES_IN_FOLDER = 1024;
   private static final SEDLogger LOG = new SEDLogger(StorageUtils.class);
-  private static final String S_IN_PREFIX = "in_";
-  private static final String S_OUT_PREFIX = "out_";
-
+  private static final String S_IN_PREFIX = "IN_";
+  private static final String S_OUT_PREFIX = "OUT_";
+  private static final String S_ERR_PREFIX = "ERR_";
 
   /**
    * Current storage folder.
@@ -90,7 +94,7 @@ public class StorageUtils {
     } catch (IOException ex) {
       throw new StorageException(
           format("Error occurred while creating current storage folder: '%s'",
-              CURRENT_PATH.toFile()),ex);
+              CURRENT_PATH.toFile()), ex);
     }
     File f = CURRENT_PATH.toFile();
     if (!f.exists() && !f.mkdirs()) {
@@ -100,6 +104,7 @@ public class StorageUtils {
     }
     return f;
   }
+
   /**
    * Method returs path for LocalDate ${sed.home}/storage/[year]/[month]/[day]
    *
@@ -113,8 +118,6 @@ public class StorageUtils {
         format("%02d", ld.getMonthValue()),
         format("%02d", ld.getDayOfMonth()));
   }
-
-
 
   /**
    * File to relative storage path ${sed.home}/[storagePath]
@@ -186,8 +189,9 @@ public class StorageUtils {
    * @return String - relative path
    * @throws si.sed.commons.exception.StorageException
    */
-  public static String getRelativePath(File path) throws StorageException {
-    
+  public static String getRelativePath(File path)
+      throws StorageException {
+
     File hdir = new File(getProperty(SYS_PROP_HOME_DIR));
 
     if (path.getAbsolutePath().startsWith(hdir.getAbsolutePath())) {
@@ -195,10 +199,11 @@ public class StorageUtils {
       rp = rp.startsWith(separator) ? rp.substring(1) : rp;
       return rp;
     } else {
-      throw  new StorageException(format("File: '%s' is not in storage '%s'", 
-          path.getAbsolutePath(), hdir.getAbsolutePath()) );
+      throw new StorageException(format("File: '%s' is not in storage '%s'",
+          path.getAbsolutePath(), hdir.getAbsolutePath()));
     }
   }
+
   /**
    * Mehotd return ${sed.home} folder as File object. Folder is given as system property
    *
@@ -207,6 +212,7 @@ public class StorageUtils {
   public static File getSEDHomeFolder() {
     return new File(getProperty(SYS_PROP_HOME_DIR, System.getProperty("user.dir")));
   }
+
   /**
    * Mehotd return ${sed.home}/storage folder as File object.
    *
@@ -246,8 +252,8 @@ public class StorageUtils {
 
     try {
       if (replaceExisting) {
-      Files.copy(sourceFile.toPath(), destFile.toPath(), StandardCopyOption.COPY_ATTRIBUTES,
-          StandardCopyOption.REPLACE_EXISTING);
+        Files.copy(sourceFile.toPath(), destFile.toPath(), StandardCopyOption.COPY_ATTRIBUTES,
+            StandardCopyOption.REPLACE_EXISTING);
       } else {
         Files.copy(sourceFile.toPath(), destFile.toPath(), StandardCopyOption.COPY_ATTRIBUTES);
       }
@@ -277,7 +283,7 @@ public class StorageUtils {
       throw new StorageException(format("Could not create dest folder: '%s' to copy file: '%s'.",
           folder.getAbsolutePath(), storageFilePath));
     }
-    File srcFile =getFile(storageFilePath);
+    File srcFile = getFile(storageFilePath);
     File destFile = new File(folder, srcFile.getName());
     File pf = destFile.getParentFile();
     if (!pf.exists() && !pf.mkdirs()) {
@@ -383,13 +389,54 @@ public class StorageUtils {
       throws StorageException {
     return storeFile(S_IN_PREFIX, getSuffixBYMimeType(mimeType), is);
   }
-  
-  public File getCreateEmptyInFile(String mimeType) throws StorageException{
-    return getNewStorageFile(S_IN_PREFIX, getSuffixBYMimeType(mimeType));
+
+  /**
+   * Store input stream as input file to storage.
+   *
+   * @param th
+   * @return stored file
+   * @throws StorageException error storing data from input stream to storage
+   */
+  public String storeThrowableAndGetRelativePath(Throwable th)
+      throws StorageException {
+    if (th == null) {
+      return null;
+    }
+
+    File f = getNewStorageFile(MimeValues.MIME_TXT.getSuffix(), S_ERR_PREFIX);
+
+    try (PrintWriter fw = new PrintWriter(f)) {
+      Throwable cs = th;
+      String ident = " ";
+      do {
+        fw.append(ident);
+        fw.append("Caused by:");
+        fw.append(cs.getMessage());
+        fw.append("\n");
+        ident += "  ";
+        StackTraceElement[] lst = cs.getStackTrace();
+        for (int i = 0; i < lst.length && i < 50; i++) {
+          fw.append(ident);
+          fw.append(lst[i].toString());
+          fw.append("\n");
+        }
+        
+      } while ((cs = cs.getCause()) != null);
+
+    } catch (FileNotFoundException ex) {
+      throw new StorageException(format("Error opening file:  '%s'!", f.getAbsolutePath()));
+    }
+    return getRelativePath(f);
+
   }
-  
-    /**
-   * Store bytearray  to storage.
+
+  public File getCreateEmptyInFile(String mimeType)
+      throws StorageException {
+    return getNewStorageFile(getSuffixBYMimeType(mimeType), S_IN_PREFIX);
+  }
+
+  /**
+   * Store bytearray to storage.
    *
    * @param mimeType - input mimetype
    * @param buff - bytes
@@ -431,6 +478,5 @@ public class StorageUtils {
     copyFile(fOut, fStore, true);
     return fStore;
   }
-
 
 }

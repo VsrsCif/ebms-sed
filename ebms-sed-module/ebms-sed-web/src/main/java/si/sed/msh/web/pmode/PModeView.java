@@ -21,10 +21,8 @@ import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.xml.bind.JAXBException;
-import org.msh.svev.pmode.Leg;
-import org.msh.svev.pmode.PMode;
+import org.msh.sed.pmode.PMode;
 import si.sed.commons.exception.PModeException;
-import si.sed.commons.utils.PModeManager;
 import si.sed.commons.utils.SEDLogger;
 import si.sed.commons.utils.xml.XMLUtils;
 import si.sed.msh.web.abst.AbstractAdminJSFView;
@@ -42,7 +40,7 @@ public class PModeView extends AbstractAdminJSFView<PMode> {
      */
   public static SEDLogger LOG = new SEDLogger(PModeView.class);
 
-  PModeManager pm = new PModeManager();
+//  PModeManager pm = new PModeManager();
   String curre = null;
 
   private Map<String, String> mLookupMep;
@@ -88,6 +86,7 @@ public class PModeView extends AbstractAdminJSFView<PMode> {
      */
   @Override
   public void removeSelected() {
+   /*
     long l = LOG.logStart();
     try {
       System.out.println("remove selected");
@@ -99,7 +98,7 @@ public class PModeView extends AbstractAdminJSFView<PMode> {
       pm.savePMode();
     } catch (PModeException ex) {
       LOG.logError(l, null, ex);
-    }
+    }*/
   }
 
   /**
@@ -108,7 +107,7 @@ public class PModeView extends AbstractAdminJSFView<PMode> {
   @Override
   public void persistEditable() {
     long l = LOG.logStart();
-    PMode pmode = getEditable();
+    /*PMode pmode = getEditable();
     System.out.println("persistEditable");
     if (pmode != null) {
       System.out.println("persistEditable 2");
@@ -120,7 +119,7 @@ public class PModeView extends AbstractAdminJSFView<PMode> {
       } catch (PModeException ex) {
         LOG.logError(l, null, ex);
       }
-    }
+    }*/
   }
 
   /**
@@ -130,13 +129,13 @@ public class PModeView extends AbstractAdminJSFView<PMode> {
   public void updateEditable() {
     long l = LOG.logStart();
     PMode pmode = getEditable();
-    if (pmode != null) {
+  /*  if (pmode != null) {
       try {
         pm.savePMode();
       } catch (PModeException ex) {
         LOG.logError(l, null, ex);
       }
-    }
+    }*/
   }
 
   /**
@@ -146,12 +145,12 @@ public class PModeView extends AbstractAdminJSFView<PMode> {
   @Override
   public List<PMode> getList() {
     long l = LOG.logStart();
-
+/*
     try {
       return pm.getPModeList();
     } catch (PModeException ex) {
       LOG.logError(l, null, ex);
-    }
+    }*/
     return null;
   }
 
@@ -189,7 +188,7 @@ public class PModeView extends AbstractAdminJSFView<PMode> {
           setNew(pmdNew);
         } else {
           setEditable(pmdNew);
-          pm.replace(pmdNew, pmed.getId());
+//          pm.replace(pmdNew, pmed.getId());
         }
 
       } catch (JAXBException ex) {
@@ -197,15 +196,6 @@ public class PModeView extends AbstractAdminJSFView<PMode> {
       }
     }
 
-  }
-
-  /**
-   *
-   * @return
-   */
-  public Leg getCurrentPModeForeChannel() {
-
-    return null;
   }
 
   /**

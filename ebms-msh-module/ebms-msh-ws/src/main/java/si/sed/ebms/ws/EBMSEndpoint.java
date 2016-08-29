@@ -2,7 +2,6 @@ package si.sed.ebms.ws;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Date;
 import javax.annotation.Resource;
@@ -25,10 +24,8 @@ import org.apache.cxf.message.Exchange;
 import org.apache.cxf.message.Message;
 import org.msh.ebms.inbox.mail.MSHInMail;
 import org.msh.ebms.inbox.payload.MSHInPart;
-import org.msh.svev.pmode.PMode;
 import org.sed.ebms.ebox.Export;
 import org.sed.ebms.ebox.SEDBox;
-import si.jrc.msh.utils.EBMSUtils;
 import si.sed.commons.MimeValues;
 import si.sed.commons.SEDInboxMailStatus;
 import si.sed.commons.SEDJNDI;
@@ -39,7 +36,6 @@ import si.sed.commons.utils.HashUtils;
 import si.sed.commons.utils.SEDLogger;
 import si.sed.commons.utils.StorageUtils;
 import si.sed.commons.utils.StringFormater;
-import si.sed.commons.utils.Utils;
 import si.sed.commons.utils.xml.XMLUtils;
 
 /**
@@ -52,20 +48,16 @@ import si.sed.commons.utils.xml.XMLUtils;
 @org.apache.cxf.interceptor.InInterceptors(interceptors = {
     "si.jrc.msh.interceptor.EBMSLogInInterceptor", "si.jrc.msh.interceptor.EBMSInInterceptor",
     "si.jrc.msh.interceptor.MSHPluginInInterceptor"})
-@org.apache.cxf.interceptor.InFaultInterceptors(interceptors = {
-    "si.jrc.msh.interceptor.EBMSInFaultInterceptor"})
 @org.apache.cxf.interceptor.OutInterceptors(interceptors = {
     "si.jrc.msh.interceptor.EBMSLogOutInterceptor", "si.jrc.msh.interceptor.EBMSOutInterceptor",
     "si.jrc.msh.interceptor.MSHPluginOutInterceptor"})
-@org.apache.cxf.interceptor.OutFaultInterceptors(interceptors = {
-    "si.jrc.msh.interceptor.EBMSOutFaultInterceptor"})
+
 public class EBMSEndpoint implements Provider<SOAPMessage> {
 
   private static final SEDLogger LOG = new SEDLogger(EBMSEndpoint.class);
 
   @EJB(mappedName = SEDJNDI.JNDI_SEDDAO)
   SEDDaoInterface mDB;
-  EBMSUtils mebmsUtils = new EBMSUtils();
   HashUtils mpHU = new HashUtils();
   StringFormater msfFormat = new StringFormater();
   StorageUtils msuStorageUtils = new StorageUtils();
@@ -97,18 +89,12 @@ public class EBMSEndpoint implements Provider<SOAPMessage> {
       WrappedMessageContext wmc = (WrappedMessageContext) wsContext.getMessageContext();
       Message msg = wmc.getWrappedMessage();
       Exchange ex = msg.getExchange();
-
-      PMode pmd = (PMode) ex.get(PMode.class);
       MSHInMail inmail = (MSHInMail) ex.get(MSHInMail.class);
-
-      String rName = inmail.getReceiverEBox();
-
       SEDBox sb = (SEDBox) ex.get(SEDBox.class);
 
       if (sb == null) {
         // return error
       } else if (inmail.getStatus().equals(SEDInboxMailStatus.RECEIVE.getValue())) {
-        // othervise in ERROR or plugin_locked
         serializeMail(inmail, msg.getAttachments(), sb);
       }
 
@@ -136,6 +122,7 @@ public class EBMSEndpoint implements Provider<SOAPMessage> {
     } catch (StorageException ex) {
       LOG.logError(l, "Error setting status ERROR to MSHInMail :'" + mail.getId() + "'!", ex);
     }
+
 
     // serialize to file
     Export e = sb.getExport();

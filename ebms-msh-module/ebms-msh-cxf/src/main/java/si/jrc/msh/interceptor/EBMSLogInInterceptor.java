@@ -14,80 +14,37 @@
  */
 package si.jrc.msh.interceptor;
 
-/**
- * Licensed to the Apache Software Foundation (ASF) under one or more contributor license
- * agreements. See the NOTICE file distributed with this work for additional information regarding
- * copyright ownership. The ASF licenses this file to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance with the License. You may obtain a
- * copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software distributed under the License
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
- * or implied. See the License for the specific language governing permissions and limitations under
- * the License.
- */
+
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintWriter;
-import java.io.Reader;
-import java.io.SequenceInputStream;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.apache.cxf.common.logging.LogUtils;
+import org.apache.cxf.binding.soap.SoapMessage;
+import org.apache.cxf.binding.soap.interceptor.AbstractSoapInterceptor;
 import org.apache.cxf.helpers.IOUtils;
-import org.apache.cxf.interceptor.AbstractLoggingInterceptor;
 import org.apache.cxf.interceptor.Fault;
-import org.apache.cxf.interceptor.LoggingMessage;
-import org.apache.cxf.io.CachedOutputStream;
-import org.apache.cxf.io.CachedWriter;
 import org.apache.cxf.io.DelegatingInputStream;
 import org.apache.cxf.message.Message;
 import org.apache.cxf.message.MessageUtils;
 import org.apache.cxf.phase.Phase;
 import si.jrc.msh.utils.EBMSLogUtils;
-import si.jrc.msh.utils.EbMSConstants;
+import si.jrc.msh.utils.EBMSConstants;
 import si.sed.commons.utils.SEDLogger;
 
 /**
  *
  * @author sluzba
  */
-public class EBMSLogInInterceptor extends AbstractLoggingInterceptor {
+public class EBMSLogInInterceptor extends AbstractSoapInterceptor {
 
-  private static final Logger LOG = LogUtils.getLogger(EBMSLogInInterceptor.class);
-
-  /**
-     *
-     */
-  protected final SEDLogger mlog = new SEDLogger(EBMSLogInInterceptor.class);
+  private static final SEDLogger LOG = new SEDLogger(EBMSLogInInterceptor.class);
 
   /**
-     *
-     */
+   *
+   */
   public EBMSLogInInterceptor() {
     super(Phase.RECEIVE);
-  }
-
-  /**
-   *
-   * @param loggingMessage
-   * @return
-   */
-  protected String formatLoggingMessage(LoggingMessage loggingMessage) {
-
-    return loggingMessage.toString();
-  }
-
-  /**
-   *
-   * @return
-   */
-  @Override
-  protected Logger getLogger() {
-    return LOG;
   }
 
   /**
@@ -118,84 +75,61 @@ public class EBMSLogInInterceptor extends AbstractLoggingInterceptor {
    *
    * @param msg
    */
-  public void handleMessage(Message msg) throws Fault {
-    long l = mlog.logStart();
-    Logger logger = LOG;
+  @Override
+  public void handleMessage(SoapMessage msg)
+      throws Fault {
+    long l = LOG.logStart();
 
     boolean isRequestor = MessageUtils.isRequestor(msg);
-    String base = (String) msg.getExchange().get(EbMSConstants.EBMS_CP_BASE_LOG_SOAP_MESSAGE_FILE);
-    File f = EBMSLogUtils.getInboundFileName(isRequestor, base);
-    base = EBMSLogUtils.getBaseFileName(f);
-    msg.getExchange().put(EbMSConstants.EBMS_CP_BASE_LOG_SOAP_MESSAGE_FILE, base);
-    msg.getExchange().put(EbMSConstants.EBMS_CP_IN_LOG_SOAP_MESSAGE_FILE, f);
+    String base = (String) msg.getExchange().get(EBMSConstants.EBMS_CP_BASE_LOG_SOAP_MESSAGE_FILE);
+    File fLog = EBMSLogUtils.getInboundFileName(isRequestor, base);
+    base = EBMSLogUtils.getBaseFileName(fLog);
+    msg.getExchange().put(EBMSConstants.EBMS_CP_BASE_LOG_SOAP_MESSAGE_FILE, base);
+    msg.getExchange().put(EBMSConstants.EBMS_CP_IN_LOG_SOAP_MESSAGE_FILE, fLog);
 
-    mlog.log("In from: '" + getURI(msg) + "' " + (isRequestor ? "response" : "request")
-        + " stored to:" + f.getName());
-    try {
-      writer = new PrintWriter(f);
-    } catch (FileNotFoundException ex) {
-      String errmsg =
-          "Application error store outbound message to file: '" + f.getAbsolutePath() + "'! ";
-      mlog.logError(l, errmsg, ex);
-    }
+    LOG.log("In from: '" + getURI(msg) + "' " + (isRequestor ? "response" : "request") +
+         " stored to:" + fLog.getName());
 
-    try {
-      writer = new PrintWriter(f);
-    } catch (FileNotFoundException ex) {
-      String errmsg =
-          "Application error store outbound message to file: '" + f.getAbsolutePath() + "'! ";
-      mlog.logError(l, errmsg, ex);
-    }
+    //  create FileOutputStream to log request 
+    logging(fLog, msg);
 
-    if (writer != null || logger.isLoggable(Level.INFO)) {
-      logging(logger, msg);
-    }
   }
 
   /**
    *
    * @param message
    * @param is
-   * @param buffer
-   * @param encoding
-   * @param ct
    */
-  protected void logInputStream(Message message, InputStream is, LoggingMessage buffer,
-      String encoding, String ct) {
-    CachedOutputStream bos = new CachedOutputStream();
-    if (threshold > 0) {
-      bos.setThreshold(threshold);
-    }
+  protected void logInputStream(Message message, InputStream is, File fLog) {
+    long l = LOG.logStart();
+    //  create FileOutputStream to log request 
+
     try {
       // use the appropriate input stream and restore it later
       InputStream bis =
           is instanceof DelegatingInputStream ? ((DelegatingInputStream) is).getInputStream() : is;
 
-      // only copy up to the limit since that's all we need to log
-      // we can stream the rest
-      IOUtils.copyAtLeast(bis, bos, limit == -1 ? Integer.MAX_VALUE : limit);
-      bos.flush();
-      bis = new SequenceInputStream(bos.getInputStream(), bis);
+      try (FileOutputStream fos = new FileOutputStream(fLog)) {
+        IOUtils.copy(bis, fos);
+        fos.flush();
+      } catch (IOException ex) {
+        String errmsg =
+            "Could not log inbound message to file: '" + fLog.getAbsolutePath() + "'! ";
+        LOG.logError(l, errmsg, ex);
+        return;
+      }
+
+      FileInputStream fis = new FileInputStream(fLog);
+
 
       // restore the delegating input stream or the input stream
       if (is instanceof DelegatingInputStream) {
-        ((DelegatingInputStream) is).setInputStream(bis);
+        ((DelegatingInputStream) is).setInputStream(fis);
       } else {
-        message.setContent(InputStream.class, bis);
+        message.setContent(InputStream.class, fis);
       }
 
-      if (bos.getTempFile() != null) {
-        // large thing on disk...
-        buffer.getMessage().append("\nMessage (saved to tmp file):\n");
-        buffer.getMessage().append("Filename: ").append(bos.getTempFile().getAbsolutePath())
-            .append("\n");
-      }
-      if (bos.size() > limit && limit != -1) {
-        buffer.getMessage().append("(message truncated to ").append(limit).append(" bytes)\n");
-      }
-      writePayload(buffer.getPayload(), bos, encoding, ct);
-
-      bos.close();
+    
     } catch (Exception e) {
       throw new Fault(e);
     }
@@ -206,35 +140,29 @@ public class EBMSLogInInterceptor extends AbstractLoggingInterceptor {
    * @param message
    * @param reader
    * @param buffer
-   */
-  protected void logReader(Message message, Reader reader, LoggingMessage buffer) {
-    try {
-      CachedWriter writer = new CachedWriter();
-      IOUtils.copyAndCloseInput(reader, writer);
-      message.setContent(Reader.class, writer.getReader());
-
-      if (writer.getTempFile() != null) {
-        // large thing on disk...
-        buffer.getMessage().append("\nMessage (saved to tmp file):\n");
-        buffer.getMessage().append("Filename: ").append(writer.getTempFile().getAbsolutePath())
-            .append("\n");
-      }
-      if (writer.size() > limit && limit != -1) {
-        buffer.getMessage().append("(message truncated to ").append(limit).append(" bytes)\n");
-      }
-      writer.writeCacheTo(buffer.getPayload(), limit);
-    } catch (Exception e) {
-      throw new Fault(e);
-    }
+   *
+   * protected void logReader(Message message, Reader reader, LoggingMessage buffer) { try {
+   * CachedWriter writer = new CachedWriter(); IOUtils.copyAndCloseInput(reader, writer);
+   * message.setContent(Reader.class, writer.getReader());
+   *
+   * if (writer.getTempFile() != null) { // large thing on disk...
+   * buffer.getMessage().append("\nMessage (saved to tmp file):\n");
+   * buffer.getMessage().append("Filename: ").append(writer.getTempFile().getAbsolutePath())
+   * .append("\n"); } if (writer.size() > limit && limit != -1) {
+   * buffer.getMessage().append("(message truncated to ").append(limit).append(" bytes)\n"); }
+   * writer.writeCacheTo(buffer.getPayload(), limit); } catch (Exception e) { throw new Fault(e); }
   }
-
+   */
   /**
    *
    * @param logger
    * @param message
    * @throws Fault
    */
-  protected void logging(Logger logger, Message message) throws Fault {
+  protected void logging( File fout, Message message)
+      throws Fault {
+
+    /*// prevert duplicate logging
     if (message.containsKey(LoggingMessage.ID_KEY)) {
       return;
     }
@@ -243,9 +171,11 @@ public class EBMSLogInInterceptor extends AbstractLoggingInterceptor {
       id = LoggingMessage.nextId();
       message.getExchange().put(LoggingMessage.ID_KEY, id);
     }
+    
     message.put(LoggingMessage.ID_KEY, id);
+     */
     final LoggingMessage buffer =
-        new LoggingMessage("Inbound Message\n----------------------------", id);
+        new LoggingMessage(fout, "IN MESSAGE");
 
     if (!Boolean.TRUE.equals(message.get(Message.DECOUPLED_CHANNEL_MESSAGE))) {
       // avoid logging the default responseCode 200 for the decoupled responses
@@ -296,40 +226,9 @@ public class EBMSLogInInterceptor extends AbstractLoggingInterceptor {
       }
     }
 
-    if (!isShowBinaryContent() && isBinaryContent(ct)) {
-      buffer.getMessage().append(BINARY_CONTENT_MESSAGE).append('\n');
-      log(logger, buffer.toString());
-      return;
-    }
-    if (!isShowMultipartContent() && isMultipartContent(ct)) {
-      buffer.getMessage().append(MULTIPART_CONTENT_MESSAGE).append('\n');
-      log(logger, buffer.toString());
-      return;
-    }
-
+    LOG.log(buffer.toString());
     InputStream is = message.getContent(InputStream.class);
-    if (is != null) {
-      logInputStream(message, is, buffer, encoding, ct);
-    } else {
-      Reader reader = message.getContent(Reader.class);
-      if (reader != null) {
-        logReader(message, reader, buffer);
-      }
-    }
-    log(logger, formatLoggingMessage(buffer));
+    logInputStream(message, is,fout);
+
   }
 }
-/**
- * Licensed to the Apache Software Foundation (ASF) under one or more contributor license
- * agreements. See the NOTICE file distributed with this work for additional information regarding
- * copyright ownership. The ASF licenses this file to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance with the License. You may obtain a
- * copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software distributed under the License
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
- * or implied. See the License for the specific language governing permissions and limitations under
- * the License.
- */

@@ -39,6 +39,11 @@ Copyright 2016, Supreme Court Republic of Slovenia
                 <xs:documentation>Store  id</xs:documentation>
             </xs:annotation>
         </xs:attribute>
+        <xs:attribute name="name" type="xs:token" use="required">
+            <xs:annotation>
+                <xs:documentation>Unique store code/name</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
         <xs:attribute name="filePath" type="xs:string" use="required">
             <xs:annotation>
                 <xs:documentation xml:lang="sl">Pod do shrame</xs:documentation>

@@ -22,7 +22,7 @@ import org.apache.cxf.interceptor.Fault;
 import org.apache.cxf.phase.Phase;
 import org.msh.ebms.inbox.mail.MSHInMail;
 import org.msh.ebms.outbox.mail.MSHOutMail;
-import org.msh.svev.pmode.PMode;
+import org.msh.sed.pmode.PMode;
 import si.sed.commons.interfaces.SoapInterceptorInterface;
 import si.sed.commons.utils.SEDLogger;
 
@@ -51,7 +51,7 @@ public class MSHPluginInInterceptor extends AbstractSoapInterceptor {
   @Override
   public void handleMessage(SoapMessage msg) throws Fault {
     long l = mlog.logStart();
-    PMode pmd = msg.getExchange().get(PMode.class);
+    /*PMode pmd = msg.getExchange().get(PMode.class);
     MSHInMail inMail = msg.getExchange().get(MSHInMail.class);
     MSHOutMail outMail = msg.getExchange().get(MSHOutMail.class);
 
@@ -73,7 +73,7 @@ public class MSHPluginInInterceptor extends AbstractSoapInterceptor {
          * PluginManager.getInterceptor(System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR) +
          * File.separator + SEDSystemProperties.SYS_PROP_FOLDER_PLUGINS_DEF + File.separator +
          * filenamePlugin, classNamePlugin); ii.handleMessage(msg);
-         */
+         * /
       }
     } else if (pmd != null) {
       String str = pmd.getLegs().get(0).getBusinessInfo().getService().getInPlugin();
@@ -92,9 +92,9 @@ public class MSHPluginInInterceptor extends AbstractSoapInterceptor {
          * PluginManager.getInterceptor(System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR) +
          * File.separator + SEDSystemProperties.SYS_PROP_FOLDER_PLUGINS_DEF + File.separator +
          * filenamePlugin, classNamePlugin); ii.handleMessage(msg);
-         */
+         * /
       }
-    }
+    }*/
     mlog.logEnd(l);
   }
 

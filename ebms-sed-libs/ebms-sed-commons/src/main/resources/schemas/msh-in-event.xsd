@@ -79,7 +79,7 @@ Copyright 2015, Supreme Court Republic of Slovenia
                 </xs:restriction>
             </xs:simpleType>
         </xs:attribute>
-        <xs:attribute name="userId" use="required">
+        <xs:attribute name="userId" >
             <xs:annotation>
                 <xs:documentation xml:lang="sl">ID uporabnika, ki je sporožila spremembo statusa</xs:documentation>
             </xs:annotation>
@@ -90,5 +90,25 @@ Copyright 2015, Supreme Court Republic of Slovenia
             </xs:simpleType>
         </xs:attribute>
         <xs:attribute name="applicationId"/>
+        <xs:attribute name="evidenceMimeType" >
+            <xs:annotation>
+                <xs:documentation xml:lang="sl">Mimetip napake, potrdila o prejemu, ki je prožil dogodek: plain/text, application/pdf, plain/xml, itd..  </xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+                <xs:restriction base="xs:token">
+                    <xs:maxLength value="128"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+        <xs:attribute name="evidenceFilepath">
+            <xs:annotation>
+                <xs:documentation xml:lang="sl">Relativna pot do opisa napake, potrdila o prejemu (AS4 Receipt), ki je prožila dogodek: plain/text, application/pdf, plain/xml, itd..  </xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:maxLength value="1024"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
     </xs:complexType>
 </xs:schema>

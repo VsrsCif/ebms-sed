@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.Key;
 import java.security.KeyStore;
-import static java.security.KeyStore.getInstance;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableEntryException;
@@ -31,12 +30,11 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509KeyManager;
 import org.sed.ebms.cert.SEDCertStore;
 import org.sed.ebms.cert.SEDCertificate;
 import si.sed.commons.exception.SEDSecurityException;
@@ -46,6 +44,8 @@ import static si.sed.commons.exception.SEDSecurityException.SEDSecurityException
 import static si.sed.commons.exception.SEDSecurityException.SEDSecurityExceptionCode.ReadWriteFileException;
 import si.sed.commons.utils.SEDLogger;
 import si.sed.commons.utils.StringFormater;
+import si.sed.commons.utils.sec.tls.X509KeyManagerForAlias;
+import static java.security.KeyStore.getInstance;
 
 /**
  *
@@ -164,6 +164,7 @@ public class KeystoreUtils {
     return fac.getTrustManagers();
 
   }
+ 
 
   /**
    * Get key managers for SEDCertStore.
@@ -195,6 +196,30 @@ public class KeystoreUtils {
           ex.getMessage());
     }
     return fac.getKeyManagers();
+  }
+  
+   /**
+   * Get key managers for SEDCertStore and alias.
+   *
+   * @param sc
+   * @return
+   * @throws SEDSecurityException
+   */
+  public KeyManager[] getKeyManagersForAlias(SEDCertStore sc, String alias)
+      throws SEDSecurityException {
+
+    KeyManager[] kmsres = null;
+    KeyManager[] kms = getKeyManagers(sc);
+    if(kms!=null){
+      List<KeyManager> kmarr  = new ArrayList<>();
+      for (KeyManager km: kms){
+        if (km instanceof X509KeyManager){
+          kmarr.add(new X509KeyManagerForAlias((X509KeyManager)km, alias));
+        }
+      }
+      kmsres = kmarr.toArray(new KeyManager[0]);
+    }
+    return kmsres;
   }
 
   /**
@@ -479,7 +504,7 @@ public class KeystoreUtils {
    * @param cs
    * @return
    */
-  public Properties getSignProperties(String alias, SEDCertStore cs) {
+  public static Properties getKeystoreProperties(String alias, SEDCertStore cs) {
     Properties signProperties = new Properties();
     signProperties.put(SEC_PROVIDER, SEC_PROIDER_MERLIN);
     signProperties.put(SEC_MERLIN_KEYSTORE_ALIAS, alias);
@@ -495,14 +520,14 @@ public class KeystoreUtils {
    * @param cs
    * @return
    */
-  public static Properties getVerifySignProperties(String alias, SEDCertStore cs) {
+  public static Properties getTruststoreProperties(String alias, SEDCertStore cs) {
     Properties signVerProperties = new Properties();
     signVerProperties.put(SEC_PROVIDER, SEC_PROIDER_MERLIN);
-    signVerProperties.put(SEC_MERLIN_KEYSTORE_ALIAS, alias);
-    signVerProperties.put(SEC_MERLIN_KEYSTORE_PASS, cs.getPassword());
-    signVerProperties.put(SEC_MERLIN_KEYSTORE_FILE, StringFormater.replaceProperties(
+    signVerProperties.put(SEC_MERLIN_TRUSTSTORE_ALIAS, alias);
+    signVerProperties.put(SEC_MERLIN_TRUSTSTORE_PASS, cs.getPassword());
+    signVerProperties.put(SEC_MERLIN_TRUSTSTORE_FILE, StringFormater.replaceProperties(
         cs.getFilePath()));
-    signVerProperties.put(SEC_MERLIN_KEYSTORE_TYPE, cs.getType());
+    signVerProperties.put(SEC_MERLIN_TRUSTSTORE_TYPE, cs.getType());
     return signVerProperties;
   }
 

@@ -42,8 +42,7 @@
     </developers>
 
     <modules>
-        <module>ebms-msh-cxf</module>                
-        <module>ebms-msh-ejb</module>
+        <module>ebms-msh-cxf</module>
         <module>ebms-msh-ws</module>
         <module>ebms-msh-ear</module>	
     </modules>

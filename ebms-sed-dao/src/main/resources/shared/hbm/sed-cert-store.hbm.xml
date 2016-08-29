@@ -9,6 +9,7 @@
                 <param name="sequence">SEQ_SED_CERT_STORE</param>
             </generator>
         </id>        
+        <property column="NAME" name="Name" length="64" unique="true" type="java.lang.String" />       
         <property column="PATH" name="FilePath"  length="512" type="java.lang.String" />       
         <property column="TYPE" name="Type"  length="10" type="java.lang.String" />
         <property column="PASSWORD" name="Password"  length="64" type="java.lang.String" />

@@ -33,10 +33,11 @@ import org.msh.ebms.inbox.mail.MSHInMail;
 import org.msh.ebms.inbox.payload.MSHInPart;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
+import si.sed.commons.MimeValues;
 import si.sed.commons.SEDInboxMailStatus;
 import si.sed.commons.SEDJNDI;
-import si.sed.commons.exception.StorageException;
 import si.sed.commons.interfaces.SEDDaoInterface;
+import si.sed.commons.utils.SEDLogger;
 import si.sed.commons.utils.StorageUtils;
 import si.sed.msh.web.abst.AbstractMailView;
 
@@ -48,6 +49,7 @@ import si.sed.msh.web.abst.AbstractMailView;
 @ManagedBean(name = "InMailDataView")
 public class InMailDataView extends AbstractMailView<MSHInMail, MSHInEvent> implements Serializable {
 
+  private static final SEDLogger LOG = new SEDLogger(InMailDataView.class);
   private static final long serialVersionUID = 1L;
 
   @EJB(mappedName = SEDJNDI.JNDI_SEDDAO)
@@ -137,6 +139,28 @@ public class InMailDataView extends AbstractMailView<MSHInMail, MSHInEvent> impl
         Logger.getLogger(InMailDataView.class.getName()).log(Level.SEVERE, null, ex);
       }
     }
+    return null;
+  }
+  
+   /**
+   *
+   * @param filePath
+   * @return
+   */
+  @Override
+  public StreamedContent getEventEvidenceFile(String filePath) {
+    long l = LOG.logStart();
+    File f = StorageUtils.getFile(filePath);
+    if (f.exists()) {
+      try {
+      return new DefaultStreamedContent(new FileInputStream(f), MimeValues.getMimeTypeByFileName(
+          f.getName()),
+          f.getName());
+       } catch (FileNotFoundException ex) {
+        LOG.logError(l, ex);
+      }
+    }
+    LOG.formatedWarning("Event file '%s' not found ",filePath);
     return null;
   }
 

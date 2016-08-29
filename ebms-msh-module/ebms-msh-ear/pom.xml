@@ -16,12 +16,12 @@
     <name>ebms-msh-ear</name>
 
     <dependencies>
-        <dependency>
+        <!-- dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>ebms-msh-ejb</artifactId>
             <version>${project.version}</version>		
             <type>ejb</type>
-        </dependency>
+        </dependency -->
 
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -33,7 +33,8 @@
         <dependency>             
             <groupId>${project.groupId}</groupId>
             <artifactId>ebms-msh-cxf</artifactId>
-            <version>${project.version}</version>		
+            <version>${project.version}</version>	
+            <type>ejb</type>	
         </dependency>
         
     </dependencies>
@@ -57,7 +58,7 @@
                     <modules>
                         <ejbModule>
                             <groupId>${project.groupId}</groupId>
-                            <artifactId>ebms-msh-ejb</artifactId>                            
+                            <artifactId>ebms-msh-cxf</artifactId>                            
                         </ejbModule>
                         
                         <webModule>

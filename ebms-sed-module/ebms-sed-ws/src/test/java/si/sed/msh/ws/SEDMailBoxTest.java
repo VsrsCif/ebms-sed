@@ -8,7 +8,6 @@ import java.io.File;
 import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
@@ -63,10 +62,12 @@ import si.sed.commons.SEDSystemProperties;
 import si.sed.commons.exception.HashException;
 import si.sed.commons.exception.SVEVReturnValue;
 import si.sed.commons.exception.StorageException;
+import si.sed.commons.pmode.FilePModeManager;
 import si.sed.commons.utils.HashUtils;
 import si.sed.commons.utils.StorageUtils;
 import si.sed.commons.utils.Utils;
 import si.sed.msh.test.db.MockUserTransaction;
+import si.sed.msh.test.db.SEDTestLookup;
 
 /**
  *
@@ -75,6 +76,10 @@ import si.sed.msh.test.db.MockUserTransaction;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class SEDMailBoxTest extends TestUtils {
 
+  
+  public static final String INIT_LOOKUPS_RESOURCE_PATH = "/sed-lookups.xml";
+  public static final String INIT_PMODE_RESOURCE_PATH = "/pmode-conf.xml";
+  
   /**
      *
      */
@@ -99,9 +104,7 @@ public class SEDMailBoxTest extends TestUtils {
       // ---------------------------------
       // set system variables
       // create home dir in target
-      Files.createDirectory(Paths.get(SED_HOME));
-      Files.copy(SEDMailBoxTest.class.getResourceAsStream("/pmode-conf.xml"),
-          Paths.get(SED_HOME + "/pmode-conf.xml"), StandardCopyOption.REPLACE_EXISTING);
+      Files.createDirectory(Paths.get(SED_HOME));     
       System.getProperties().put(SEDSystemProperties.SYS_PROP_HOME_DIR, SED_HOME);
       System.setProperty(SEDSystemProperties.SYS_PROP_JNDI_PREFIX, "");
       System.setProperty(SEDSystemProperties.SYS_PROP_JNDI_JMS_PREFIX, "");
@@ -112,10 +115,14 @@ public class SEDMailBoxTest extends TestUtils {
       // mTestInstance.JNDI_CONNECTION_FACTORY = JNDI_CONNECTION_FACTORY;
       // mTestInstance.JNDI_QUEUE_NAME = SEDValues.EBMS_QUEUE_JNDI;
       mTestInstance.mqMSHQueue = mshueue;
+      
       // ---------------------------------
-      // set derby database
-      // SEDLookups msLookup = new SEDLookups();
-      // mTestInstance.mdbLookups = msLookup;
+      // set lookups     
+       mTestInstance.mdbLookups = new SEDTestLookup(SEDMailBoxTest.class.getResourceAsStream(
+        INIT_LOOKUPS_RESOURCE_PATH));
+       
+       mTestInstance.mpModeManager = new FilePModeManager(SEDMailBoxTest.class.getResourceAsStream(
+        INIT_PMODE_RESOURCE_PATH));
 
       memfMSHFactory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
       memfFactory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
@@ -211,9 +218,9 @@ public class SEDMailBoxTest extends TestUtils {
     im.setService("LegalDelivery_ZPP");
     im.setConversationId(UUID.randomUUID().toString());
     im.setReceiverName("Mr. Receiver Name");
-    im.setReceiverEBox("receiver.name@sed-box.si");
+    im.setReceiverEBox("receiver.name@test-sed.si");
     im.setSenderName("Mr. Sender Name");
-    im.setSenderEBox("sender.name@sed-box.si");
+    im.setSenderEBox("izvrsba@test-sed.si");
 
     String testContent = "Test content";
     im.setInPayload(new InPayload());
@@ -233,13 +240,13 @@ public class SEDMailBoxTest extends TestUtils {
     OutMail om = new OutMail();
 
     om.setSenderMessageId("SM_ID-" + UUID.randomUUID().toString());
-    om.setAction("action");
+    om.setAction("DeliveryNotification");
     om.setService("LegalDelivery_ZPP");
     om.setConversationId(UUID.randomUUID().toString());
     om.setReceiverName("Mr. Receiver Name");
-    om.setReceiverEBox("receiver.name@sed-box.si");
+    om.setReceiverEBox("receiver.name@test-sed.si");
     om.setSenderName("Mr. Sender Name");
-    om.setSenderEBox("sender.name@sed-box.si");
+    om.setSenderEBox("izvrsba@test-sed.si");
 
     String testContent = "Test content";
     om.setOutPayload(new OutPayload());
@@ -654,13 +661,14 @@ public class SEDMailBoxTest extends TestUtils {
 
     // -----------------------------------------
     // add new mail with unique service, action, sender box, receiver box
-    String valTest = "TEST_SERVICE"; // must be declared in pmod conf
+    String valTest = "connectivity-service"; // must be declared in pmod conf
+    String action = "submitMessage"; // must be declared in pmod conf
     OutMail om = createOutMail();
 
     om.setService(valTest);
-    om.setAction(UUID.randomUUID().toString());
-    om.setSenderEBox(UUID.randomUUID().toString() + "@sed-box.si");
-    om.setReceiverEBox(UUID.randomUUID().toString() + "@sed-box.si");
+    om.setAction("submitMessage");
+    om.setSenderEBox("ceftestparty2gw@test-sed.si");
+    om.setReceiverEBox(UUID.randomUUID().toString() + "@test-sed.si");
     smr.getData().setOutMail(om); // create new mail
     // add new mail
     SubmitMailResponse mr = mTestInstance.submitMail(smr);
@@ -877,8 +885,8 @@ public class SEDMailBoxTest extends TestUtils {
 
     im2.setService(valTest);
     im2.setAction(UUID.randomUUID().toString());
-    im2.setSenderEBox(UUID.randomUUID().toString() + "@sed-box.si");
-    im2.setReceiverEBox(UUID.randomUUID().toString() + "@sed-box.si");
+    im2.setSenderEBox(UUID.randomUUID().toString() + "@test-sed.si");
+    im2.setReceiverEBox(UUID.randomUUID().toString() + "@test-sed.si");
 
     storeInMail(im2);
 
@@ -1108,7 +1116,7 @@ public class SEDMailBoxTest extends TestUtils {
 
     assertModifyOutMail(createOutMail(), SEDOutboxMailStatus.SENT, ModifOutActionCode.ABORT, null,
         SEDExceptionCode.INVALID_DATA);
-    assertModifyOutMail(createOutMail(), SEDOutboxMailStatus.SENDING, ModifOutActionCode.ABORT,
+    assertModifyOutMail(createOutMail(), SEDOutboxMailStatus.PUSHING, ModifOutActionCode.ABORT,
         null, SEDExceptionCode.INVALID_DATA);
 
     // assert Delete
@@ -1127,7 +1135,7 @@ public class SEDMailBoxTest extends TestUtils {
         null, SEDExceptionCode.INVALID_DATA);
     assertModifyOutMail(createOutMail(), SEDOutboxMailStatus.SENT, ModifOutActionCode.DELETE, null,
         SEDExceptionCode.INVALID_DATA);
-    assertModifyOutMail(createOutMail(), SEDOutboxMailStatus.SENDING, ModifOutActionCode.DELETE,
+    assertModifyOutMail(createOutMail(), SEDOutboxMailStatus.PUSHING, ModifOutActionCode.DELETE,
         null, SEDExceptionCode.INVALID_DATA);
 
     // assert resend

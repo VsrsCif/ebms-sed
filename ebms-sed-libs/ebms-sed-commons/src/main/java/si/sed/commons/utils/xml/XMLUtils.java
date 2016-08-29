@@ -58,6 +58,7 @@ import javax.xml.validation.Validator;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.ls.DOMImplementationLS;
+import org.w3c.dom.ls.LSOutput;
 import org.w3c.dom.ls.LSSerializer;
 import org.xml.sax.SAXException;
 
@@ -266,8 +267,7 @@ public class XMLUtils {
     DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
     if (xsltSource != null) {
       TransformerFactory factory = TransformerFactory.newInstance();
-      Transformer transformer;
-      transformer = factory.newTransformer(new StreamSource(xsltSource));
+      Transformer transformer = factory.newTransformer(new StreamSource(xsltSource));
       obj = dbf.newDocumentBuilder().newDocument();
       Result result = new DOMResult(obj);
       transformer.transform(new StreamSource(source), result);
@@ -454,6 +454,18 @@ public class XMLUtils {
     // String without
     // xml-declaration
     return serializer.writeToString(rootElement);
+  }
+  
+  public static boolean serialize(Document doc, boolean setXmlDecl, File f) throws FileNotFoundException {
+    DOMImplementationLS lsImpl =
+        (DOMImplementationLS) doc.getImplementation()
+        .getFeature("LS", "3.0");
+    LSSerializer serializer = lsImpl.createLSSerializer();
+    serializer.getDomConfig().setParameter("xml-declaration", setXmlDecl); // set it to false to get
+    
+    LSOutput output = lsImpl.createLSOutput();
+    output.setByteStream(new FileOutputStream(f));
+    return serializer.write(doc, output);
   }
 
   /**

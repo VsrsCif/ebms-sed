@@ -26,8 +26,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import javax.ejb.EJB;
 import javax.ejb.Local;
@@ -35,7 +33,8 @@ import javax.ejb.Stateless;
 import org.msh.ebms.outbox.mail.MSHOutMail;
 import org.msh.ebms.outbox.payload.MSHOutPart;
 import org.msh.ebms.outbox.payload.MSHOutPayload;
-import org.msh.svev.pmode.PMode;
+import org.msh.sed.pmode.PMode;
+//import org.msh.svev.pmode.PMode;
 import org.sed.ebms.cron.SEDTaskType;
 import org.sed.ebms.cron.SEDTaskTypeProperty;
 import si.sed.commons.MimeValues;
@@ -47,7 +46,7 @@ import si.sed.commons.interfaces.SEDDaoInterface;
 import si.sed.commons.interfaces.SEDLookupsInterface;
 import si.sed.commons.interfaces.TaskExecutionInterface;
 import si.sed.commons.interfaces.exception.TaskException;
-import si.sed.commons.utils.PModeManager;
+//import si.sed.commons.utils.PModeManager;
 import si.sed.commons.utils.SEDLogger;
 import si.sed.commons.utils.StorageUtils;
 import si.sed.commons.utils.StringFormater;
@@ -85,7 +84,7 @@ public class TaskFileSubmitter implements TaskExecutionInterface {
   public static String KEY_EXPORT_FOLDER = "file.submit.folder";
 
   StorageUtils mSU = new StorageUtils();
-  PModeManager mpModeManager = new PModeManager();
+//  PModeManager mpModeManager = new PModeManager();
 
   String outFileFormat = "%s_%03d.xml";
 

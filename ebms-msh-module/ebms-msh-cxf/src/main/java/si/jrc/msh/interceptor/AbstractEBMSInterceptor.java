@@ -21,35 +21,46 @@ import org.apache.cxf.binding.soap.interceptor.AbstractSoapInterceptor;
 import org.apache.cxf.interceptor.Fault;
 import si.sed.commons.SEDJNDI;
 import si.sed.commons.interfaces.DBSettingsInterface;
+import si.sed.commons.interfaces.PModeInterface;
 import si.sed.commons.interfaces.SEDDaoInterface;
 import si.sed.commons.interfaces.SEDLookupsInterface;
 import si.sed.commons.utils.SEDLogger;
 
 /**
- *
+ * Abstract class extends from AbstractSoapInterceptor with access to apliation EJB resources as:
+ *  - ejb reference to signleton application settings 
+ *  - ejb reference to signleton application lookups 
+ *  - ejb reference to DAO services.
  * @author Joze Rihtarsic <joze.rihtarsic@sodisce.si>
  */
 public abstract class AbstractEBMSInterceptor extends AbstractSoapInterceptor {
+  
 
   String LOADED_CLASSES = "hibernate.ejb.loaded.classes";
-
-  DBSettingsInterface mDBSettings;
-  SEDDaoInterface mSedDao;
-  SEDLookupsInterface mSedLookups;
-  SEDLogger mlog = new SEDLogger(AbstractEBMSInterceptor.class);
+  // ejb reference to signleton application settings 
+  protected DBSettingsInterface mDBSettings;
+  // ejb reference to signleton application lookups 
+  protected SEDLookupsInterface mSedLookups;
+  // ejb reference to DAO services
+  protected SEDDaoInterface mSedDao;
+  
+  // ejb reference to PModeManager services
+  protected PModeInterface mPMode;
+  
+  protected static SEDLogger A_LOG = new SEDLogger(AbstractEBMSInterceptor.class);
 
   /**
-   *
-   * @param p
+   * Constructor. 
+   * @param p - CXF bus Phase. Values are defined in  org.apache.cxf.phase.Phase 
    */
   public AbstractEBMSInterceptor(String p) {
     super(p);
   }
 
   /**
-   *
-   * @param i
-   * @param p
+   * constructor
+   * @param i - Instantiates the interceptor with a specified id.
+   * @param p - CXF bus Phase. Values are defined in  org.apache.cxf.phase.Phase 
    */
   public AbstractEBMSInterceptor(String i, String p) {
     super(i, p);
@@ -57,17 +68,17 @@ public abstract class AbstractEBMSInterceptor extends AbstractSoapInterceptor {
   }
 
   /**
-   *
-   * @return
+   * Methods lookups SEDDaoInterface.
+   * @return SEDDaoInterface or null if bad application configuration.
    */
   public SEDDaoInterface getDAO() {
-    long l = mlog.logStart();
+    long l = A_LOG.logStart();
     if (mSedDao == null) {
       try {
         mSedDao = InitialContext.doLookup(SEDJNDI.JNDI_SEDDAO);
-        mlog.logEnd(l);
+        A_LOG.logEnd(l);
       } catch (NamingException ex) {
-        mlog.logError(l, ex);
+        A_LOG.logError(l, ex);
       }
     }
 
@@ -75,43 +86,60 @@ public abstract class AbstractEBMSInterceptor extends AbstractSoapInterceptor {
   }
 
   /**
-   *
-   * @return
+   * Methods lookups SEDLookupsInterface.
+   * @return SEDLookupsInterface or null if bad application configuration.
    */
   public SEDLookupsInterface getLookups() {
-    long l = mlog.logStart();
+    long l = A_LOG.logStart();
     if (mSedLookups == null) {
       try {
         mSedLookups = InitialContext.doLookup(SEDJNDI.JNDI_SEDLOOKUPS);
-        mlog.logEnd(l);
+        A_LOG.logEnd(l);
       } catch (NamingException ex) {
-        mlog.logError(l, ex);
+        A_LOG.logError(l, ex);
       }
     }
 
     return mSedLookups;
   }
 
-  /**
-   *
-   * @return
+/**
+   * Methods lookups DBSettingsInterface.
+   * @return DBSettingsInterface or null if bad application configuration.
    */
   public DBSettingsInterface getSettings() {
-    long l = mlog.logStart();
+    long l = A_LOG.logStart();
     if (mDBSettings == null) {
       try {
         mDBSettings = InitialContext.doLookup(SEDJNDI.JNDI_DBSETTINGS);
-        mlog.logEnd(l);
+        A_LOG.logEnd(l);
       } catch (NamingException ex) {
-        mlog.logError(l, ex);
+        A_LOG.logError(l, ex);
       }
     }
     return mDBSettings;
   }
+  
+  /**
+   * Methods lookups PModeInterface.
+   * @return PModeInterface or null if bad application configuration.
+   */
+  public PModeInterface getPModeManager() {
+    long l = A_LOG.logStart();
+    if (mPMode == null) {
+      try {
+        mPMode = InitialContext.doLookup(SEDJNDI.JNDI_PMODE);
+        A_LOG.logEnd(l);
+      } catch (NamingException ex) {
+        A_LOG.logError(l, ex);
+      }
+    }
+    return mPMode;
+  }
 
   /**
-   *
-   * @param t
+   * Abstract method for handling SoapMessage.
+   * @param t - soap messsage
    */
   @Override
   public abstract void handleMessage(SoapMessage t) throws Fault;

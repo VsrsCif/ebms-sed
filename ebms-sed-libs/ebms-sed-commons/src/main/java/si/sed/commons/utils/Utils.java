@@ -87,6 +87,7 @@ public class Utils {
     return strVal == null || strVal.trim().isEmpty();
   }
 
+ 
   private Utils() {
 
   }
@@ -102,6 +103,9 @@ public class Utils {
   
   public static String getUUID(String prefix) {
     return prefix + "-"+ UUID.randomUUID().toString();
+  }
+  public static String getUUIDWithDomain(String domain) {
+    return UUID.randomUUID().toString() + "@" + domain ;
   }
 
 }

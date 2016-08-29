@@ -5,8 +5,6 @@
  */
 package si.sed.commons;
 
-import javax.activation.MimeType;
-import org.junit.Assert;
 import org.junit.Test;
 import static org.junit.Assert.*;
 

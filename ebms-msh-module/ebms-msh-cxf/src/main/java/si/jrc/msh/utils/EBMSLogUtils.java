@@ -2,8 +2,6 @@ package si.jrc.msh.utils;
 
 import java.io.File;
 import java.io.IOException;
-import static java.lang.String.format;
-import static java.lang.System.getProperty;
 import java.math.BigInteger;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -12,7 +10,9 @@ import si.jrc.msh.interceptor.EBMSOutInterceptor;
 import static si.sed.commons.SEDSystemProperties.SYS_PROP_HOME_DIR;
 import si.sed.commons.exception.StorageException;
 import si.sed.commons.utils.SEDLogger;
-
+import si.sed.commons.utils.Utils;
+import static java.lang.String.format;
+import static java.lang.System.getProperty;
 
 /**
  *
@@ -20,40 +20,40 @@ import si.sed.commons.utils.SEDLogger;
  */
 public class EBMSLogUtils {
 
+  public static final String S_FORMAT_FILE = "%s_%010d-r%03d_%s-%s";
+  public static final String S_FORMAT_FILE2 = "%s_%s_%s-%s";
   /**
-     *
-     */
-  public static final String S_IN_PREFIX = "_in";
+   *
+   */
+  public static final String S_IN_PREFIX = "in";
 
   /**
-     *
-     */
-  public static final String S_OUT_PREFIX = "_out";
+   *
+   */
+  public static final String S_OUT_PREFIX = "out";
 
   /**
-     *
-     */
-  public static final String S_PREFIX = "ebms_";
+   *
+   */
+  public static final String S_PREFIX = "ebms";
 
   /**
-     *
-     */
-  public static final String S_REQUEST_SUFFIX = "-request.soap";
+   *
+   */
+  public static final String S_REQUEST_SUFFIX = "request.soap";
 
   /**
-     *
-     */
-  public static final String S_RESPONSE_SUFFIX = "-response.soap";
+   *
+   */
+  public static final String S_RESPONSE_SUFFIX = "response.soap";
   private static final String S_ROOT_FOLDER = "ebms_log";
 
   /**
-     *
-     */
-  protected static final SEDLogger mlog = new SEDLogger(EBMSOutInterceptor.class);
+   *
+   */
+  protected static final SEDLogger LOG = new SEDLogger(EBMSOutInterceptor.class);
 
-  
-  
-    /**
+  /**
    * Method returs path for LocalDate ${sed.home}/storage/[year]/[month]/[day]
    *
    * @param ld - Local date
@@ -66,9 +66,11 @@ public class EBMSLogUtils {
         format("%02d", ld.getMonthValue()),
         format("%02d", ld.getDayOfMonth()));
   }
-  private static synchronized File currentStorageFolder() throws StorageException {
 
-    File f =dateStorageFolder(LocalDate.now()).toFile();        
+  private static synchronized File currentStorageFolder()
+      throws StorageException {
+
+    File f = dateStorageFolder(LocalDate.now()).toFile();
     if (!f.exists() && !f.mkdirs()) {
       throw new StorageException(String.format(
           "Error occurred while creating storage folder: '%s'", f.getAbsolutePath()));
@@ -76,22 +78,9 @@ public class EBMSLogUtils {
     return f;
   }
 
-  /**
-   *
-   * @param prefix
-   * @param base
-   * @param suffix
-   * @return
-   */
-  public static File getBaseFile(String prefix, String base, String suffix) throws StorageException {
-    File fStore = null;
-    if (base != null) {
-      fStore = new File(currentStorageFolder(), prefix + base + suffix);
-    }
-    if (fStore == null || fStore.exists()) {
-      fStore = getNewFile(prefix, suffix);
-    }
-    return fStore;
+  public static File getLogFile(String filename)
+      throws StorageException {
+    return new File(currentStorageFolder(), filename);
   }
 
   /**
@@ -111,16 +100,30 @@ public class EBMSLogUtils {
    * @return
    */
   public static File getInboundFileName(boolean isRequestor, String baseName) {
+    File f = null;
     try {
-      return getBaseFile(S_PREFIX, baseName, S_IN_PREFIX
-          + (isRequestor ? S_RESPONSE_SUFFIX : S_REQUEST_SUFFIX));
+
+      if (Utils.isEmptyString(baseName)) {
+        f = getNewFile(S_PREFIX+ "_", "_" +S_IN_PREFIX + "-" +
+            (isRequestor ? S_RESPONSE_SUFFIX : S_REQUEST_SUFFIX));
+      } else {
+        String filename = String.format(S_FORMAT_FILE2, S_PREFIX, baseName, S_IN_PREFIX,
+            (isRequestor ? S_RESPONSE_SUFFIX : S_REQUEST_SUFFIX));
+
+        f = EBMSLogUtils.getLogFile(filename);
+        int i = 1;
+        while (f.exists()) {
+          f = EBMSLogUtils.getLogFile(filename + String.format(".%d03", i++));
+        }
+      }
     } catch (StorageException ex) {
-      mlog.logError(0, ex);
+      LOG.logError(0, ex);
     }
-    return null;
+    return f;
   }
 
-  private static File getNewFile(String prefix, String suffix) throws StorageException {
+  private static File getNewFile(String prefix, String suffix)
+      throws StorageException {
     File fStore;
     try {
       fStore = File.createTempFile(prefix, suffix, currentStorageFolder());
@@ -138,14 +141,33 @@ public class EBMSLogUtils {
    * @return
    */
   public static File getOutboundFileName(boolean isRequestor, BigInteger id, String baseName) {
+    File f = null;
     try {
-      return getBaseFile(S_PREFIX, (baseName != null ? baseName : "")
-          + (baseName != null && id != null ? "-" : "") + (id != null ? id.toString() : ""),
-          S_OUT_PREFIX + (isRequestor ? S_REQUEST_SUFFIX : S_RESPONSE_SUFFIX));
+      if (baseName != null) {
+        String filename = String.format(S_FORMAT_FILE2, S_PREFIX, baseName, S_OUT_PREFIX,
+            (isRequestor ? S_REQUEST_SUFFIX : S_RESPONSE_SUFFIX));
+
+        f = EBMSLogUtils.getLogFile(filename);
+        int i = 1;
+        while (f.exists()) {
+          f = EBMSLogUtils.getLogFile(filename + String.format(".%d03", i++));
+        }
+      } else {
+        int iValRetry = 1;
+        String filename = String.format(S_FORMAT_FILE, S_PREFIX, id, iValRetry++, S_OUT_PREFIX,
+            (isRequestor ? S_REQUEST_SUFFIX : S_RESPONSE_SUFFIX));
+
+        f = EBMSLogUtils.getLogFile(filename);
+        while (f.exists()) {
+          filename = String.format(S_FORMAT_FILE, S_PREFIX, id, iValRetry++, S_OUT_PREFIX,
+              (isRequestor ? S_REQUEST_SUFFIX : S_RESPONSE_SUFFIX));
+          f = EBMSLogUtils.getLogFile(filename);
+        }
+      }
     } catch (StorageException ex) {
-      mlog.logError(0, ex);
+      LOG.logError(0, ex);
     }
-    return null;
+    return f;
   }
 
 }

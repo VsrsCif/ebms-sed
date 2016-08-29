@@ -44,12 +44,9 @@ public class SEDValues {
      *
      */
   public static final String EBMS_QUEUE_PARAM_MAIL_ID = "ebms_queue_mail_id";
+  
 
-  /**
-     *
-     */
-  public static final String EBMS_QUEUE_PARAM_PMODE_ID = "ebms_queue_pmode_id";
-
+  
   /**
      *
      */
@@ -81,7 +78,7 @@ public class SEDValues {
   public static final String JNDI_QUEUE_EBMS = "queue/MSHQueue";
 
   /**
-     *
+     * queue name for executing 
      */
   public static final String JNDI_QUEUE_EXECUTION = "queue/SEDExecutionQueue";
 

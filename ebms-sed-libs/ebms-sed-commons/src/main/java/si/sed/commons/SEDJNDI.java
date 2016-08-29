@@ -64,5 +64,11 @@ public class SEDJNDI {
      */
   public static final String JNDI_SEDSCHEDLER =
       "java:global/ebms-sed-dao/MSHScheduler!si.sed.commons.interfaces.SEDSchedulerInterface";
+  
+  /**
+     *
+     */
+  public static final String JNDI_PMODE =
+      "java:global/ebms-sed-dao/PModeManagerBean!si.sed.commons.interfaces.PModeInterface";
 
 }

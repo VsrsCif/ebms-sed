@@ -1,6 +1,16 @@
 /*
- * To change this license header, choose License Headers in Project Properties. To change this
- * template file, choose Tools | Templates and open the template in the editor.
+ * Copyright 2016, Supreme Court Republic of Slovenia
+ * 
+ * Licensed under the EUPL, Version 1.1 or – as soon they will be approved by the European
+ * Commission - subsequent versions of the EUPL (the "Licence"); You may not use this work except in
+ * compliance with the Licence. You may obtain a copy of the Licence at:
+ * 
+ * https://joinup.ec.europa.eu/software/page/eupl
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence
+ * is distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the Licence for the specific language governing permissions and limitations under
+ * the Licence.
  */
 package si.sed.commons.utils;
 
@@ -113,7 +123,7 @@ public class JMSManager implements JMSManagerInterface {
    * @throws JMSException
    */
   @Override
-  public boolean sendMessage(long biPosiljkaId, String strPmodeId, int retry, long delay,
+  public boolean sendMessage(long biPosiljkaId, int retry, long delay,
       boolean transacted) throws NamingException, JMSException {
     boolean suc = false;
     InitialContext ic = null;
@@ -130,8 +140,6 @@ public class JMSManager implements JMSManagerInterface {
       Message message = session.createMessage();
 
       message.setLongProperty(SEDValues.EBMS_QUEUE_PARAM_MAIL_ID, biPosiljkaId);
-      message.setStringProperty(SEDValues.EBMS_QUEUE_PARAM_PMODE_ID, strPmodeId);
-
       message.setIntProperty(SEDValues.EBMS_QUEUE_PARAM_RETRY, retry);
       message.setLongProperty(SEDValues.EBMS_QUEUE_PARAM_DELAY, delay);
       message.setLongProperty(SEDValues.EBMS_QUEUE_DELAY_AMQ, delay);

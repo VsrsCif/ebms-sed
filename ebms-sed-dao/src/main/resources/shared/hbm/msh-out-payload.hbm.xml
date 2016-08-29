@@ -19,6 +19,7 @@
         <property column="ENCODING" name="Encoding"  length="128" type="java.lang.String" />
         <property column="MD5" name="Md5"  length="32" type="java.lang.String" />
         <property column="IS_ENCRYPTED" name="IsEncrypted" type="java.lang.Boolean" />
+        <property column="SOURCE" name="Source"  length="32" type="java.lang.String" />
     </class>    
     
     

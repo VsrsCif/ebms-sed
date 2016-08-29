@@ -132,7 +132,7 @@
                                 <p:column width="60" headerText="#{msg['Encrypted']}">
                                     <h:outputText value="#{plpart.isEncrypted}" />
                                 </p:column>
-                                <p:column width="60" headerText="#{msg['Download']}">
+                                <p:column width="70" headerText="#{msg['Download']}">
                                     <p:commandButton ajax="false" value="#{msg['Download']}"
                                                      onclick="PrimeFaces.monitorDownload(start, stop);" icon="ui-icon-arrowthick-1-s">
                                         <p:fileDownload value="#{OutMailDataView.getFile(plpart.id)}" />
@@ -175,6 +175,13 @@
                                 </p:column>
                                 <p:column headerText="#{msg['UsersId']}">
                                     <h:outputText value="#{mailEvents.userId}" />
+                                </p:column>
+                                <p:column width="70" headerText="#{msg['Download']}">
+                                    
+                                    <p:commandButton ajax="false" value="#{msg['Download']}" rendered="#{mailEvents.evidenceFilepath  !=null}" 
+                                                     onclick="PrimeFaces.monitorDownload(start, stop);" icon="ui-icon-arrowthick-1-s">
+                                        <p:fileDownload value="#{OutMailDataView.getEventEvidenceFile(mailEvents.evidenceFilepath)}" />
+                                    </p:commandButton>
                                 </p:column>
 
                             </p:dataTable>

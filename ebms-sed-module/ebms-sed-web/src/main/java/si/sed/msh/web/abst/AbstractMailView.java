@@ -47,30 +47,30 @@ import si.sed.msh.web.gui.OutMailDataView;
 public abstract class AbstractMailView<T, S> {
 
   /**
-     *
-     */
+   *
+   */
   protected static final SimpleDateFormat SDF_DDMMYYY_HH_MM_SS = new SimpleDateFormat(
       "dd.MM.YYYY HH:mm:ss");
 
   /**
-     *
-     */
+   *
+   */
   protected T mMail;
 
   /**
-     *
-     */
+   *
+   */
   protected AbstractMailDataModel<T> mMailModel = null;
   StringFormater mStringFomrater = new StringFormater();
 
   /**
-     *
-     */
+   *
+   */
   protected int mTabActiveIndex = 0;
 
   /**
-     *
-     */
+   *
+   */
   protected List<S> mlstMailEvents = null;
 
   private DualListModel<String> msbCBExportDualList = new DualListModel<>();
@@ -155,6 +155,13 @@ public abstract class AbstractMailView<T, S> {
    * @return
    */
   abstract public StreamedContent getFile(BigInteger bi);
+
+  /**
+   *
+   * @param bi
+   * @return
+   */
+  abstract public StreamedContent getEventEvidenceFile(String filePath);
 
   /**
    *

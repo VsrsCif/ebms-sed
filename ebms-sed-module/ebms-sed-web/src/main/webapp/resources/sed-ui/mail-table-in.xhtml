@@ -186,6 +186,13 @@
                                 <p:column headerText="#{msg['UsersId']}">
                                     <h:outputText value="#{mailEvents.userId}" />
                                 </p:column>
+                                <p:column width="60" headerText="#{msg['Download']}">
+                                    
+                                    <p:commandButton ajax="false" value="#{msg['Download']}" rendered="#{mailEvents.evidenceFilepath}" 
+                                                     onclick="PrimeFaces.monitorDownload(start, stop);" icon="ui-icon-arrowthick-1-s">
+                                        <p:fileDownload value="#{InMailDataView.getEventEvidenceFile(mailEvents.evidenceFilepath)}" />
+                                    </p:commandButton>
+                                </p:column>
 
                             </p:dataTable>
 

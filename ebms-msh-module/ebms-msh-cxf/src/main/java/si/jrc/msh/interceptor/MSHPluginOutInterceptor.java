@@ -12,7 +12,7 @@ import org.apache.cxf.interceptor.Fault;
 import org.apache.cxf.phase.Phase;
 import org.msh.ebms.inbox.mail.MSHInMail;
 import org.msh.ebms.outbox.mail.MSHOutMail;
-import org.msh.svev.pmode.PMode;
+
 import si.sed.commons.interfaces.SoapInterceptorInterface;
 import si.sed.commons.utils.SEDLogger;
 
@@ -43,7 +43,7 @@ public class MSHPluginOutInterceptor extends AbstractSoapInterceptor {
   @Override
   public void handleMessage(SoapMessage msg) throws Fault {
     long l = mlog.logStart();
-    PMode pmd = msg.getExchange().get(PMode.class);
+/*    PMode pmd = msg.getExchange().get(PMode.class);
     MSHOutMail outMail = msg.getExchange().get(MSHOutMail.class);
     MSHInMail inMail = msg.getExchange().get(MSHInMail.class);
     if (pmd != null && outMail != null) {
@@ -62,9 +62,9 @@ public class MSHPluginOutInterceptor extends AbstractSoapInterceptor {
          * PluginManager.getInterceptor(System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR) +
          * File.separator + PLUGIN_FOLDER + File.separator + filenamePlugin, classNamePlugin);
          * ii.handleMessage(msg);
-         */
+         * /
       }
-    }
+    }*/
 
     mlog.logEnd(l);
   }
