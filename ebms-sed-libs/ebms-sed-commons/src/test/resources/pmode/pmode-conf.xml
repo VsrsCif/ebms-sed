@@ -193,9 +193,9 @@
 			<tns:Leg>
 				<tns:MPC>http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/defaultMPC</tns:MPC>
 				<tns:Transport>
-					<tns:ForeChannelMessage securityIdRef="enc_att_and_sign_v1" action="submitMessage" userMessageType="request">
+					<tns:ForeChannel securityIdRef="enc_att_and_sign_v1" action="submitMessage" userMessageType="request">
 						<tns:ReceptionAwareness raPatternIdRef="AS4ReceiptResponse"/>
-					</tns:ForeChannelMessage>
+					</tns:ForeChannel>
 				</tns:Transport>
 			</tns:Leg>
 		</tns:MEP>
@@ -232,9 +232,9 @@
 			<tns:Leg>
 				<tns:MPC>http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/defaultMPC</tns:MPC>
 				<tns:Transport>
-					<tns:ForeChannelMessage securityIdRef="sign_sha256" action="DeliveryNotification" userMessageType="request">
+					<tns:ForeChannel securityIdRef="sign_sha256" action="DeliveryNotification" userMessageType="request">
 						<tns:ReceptionAwareness raPatternIdRef="AS4ReceiptResponse"/>
-					</tns:ForeChannelMessage>
+					</tns:ForeChannel>
 				</tns:Transport>
 			</tns:Leg>
 		</tns:MEP>
@@ -245,10 +245,10 @@
 			<tns:Leg>
 				<tns:MPC>http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/defaultMPC</tns:MPC>
 				<tns:Transport>
-					<tns:ForeChannelMessage securityIdRef="enc_att_and_sign_v1" action="AdviceOfDelivery" userMessageType="request">
+					<tns:ForeChannel securityIdRef="enc_att_and_sign_v1" action="AdviceOfDelivery" userMessageType="request">
 						<tns:ReceptionAwareness raPatternIdRef="AS4ReceiptResponse"/>
-					</tns:ForeChannelMessage>
-					<tns:BackChannelMessage securityIdRef="enc_att_and_sign_v1" action="EncryptedKey" userMessageType="replay"/>
+					</tns:ForeChannel>
+					<tns:BackChannel securityIdRef="enc_att_and_sign_v1" action="EncryptedKey" userMessageType="replay"/>
 				</tns:Transport>
 			</tns:Leg>
 		</tns:MEP>
@@ -259,9 +259,9 @@
 			<tns:Leg>
 				<tns:MPC>http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/defaultMPC</tns:MPC>
 				<tns:Transport>
-					<tns:ForeChannelMessage securityIdRef="enc_att_and_sign_v1" action="FictionNotification" userMessageType="request">
+					<tns:ForeChannel securityIdRef="enc_att_and_sign_v1" action="FictionNotification" userMessageType="request">
 						<tns:ReceptionAwareness raPatternIdRef="AS4ReceiptResponse"/>
-					</tns:ForeChannelMessage>
+					</tns:ForeChannel>
 				</tns:Transport>
 			</tns:Leg>
 		</tns:MEP>

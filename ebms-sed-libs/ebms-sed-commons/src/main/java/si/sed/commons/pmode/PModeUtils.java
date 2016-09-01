@@ -57,16 +57,16 @@ public class PModeUtils {
               pm.getId());
           continue;
         }
-        if (tr.getForeChannelMessage() != null && Objects.equals(
-            tr.getForeChannelMessage().getAction(), action)) {
+        if (tr.getForeChannel() != null && Objects.equals(
+            tr.getForeChannel().getAction(), action)) {
           mepLeg = mlt;
-          tct = tr.getForeChannelMessage();
+          tct = tr.getForeChannel();
           foreChannel = true;
           break;
-        } else if (tr.getBackChannelMessage() != null && Objects.equals(
-            tr.getBackChannelMessage().getAction(), action)) {
+        } else if (tr.getBackChannel() != null && Objects.equals(
+            tr.getBackChannel().getAction(), action)) {
           mepLeg = mlt;
-          tct = tr.getBackChannelMessage();
+          tct = tr.getBackChannel();
           foreChannel = false;
           break;
         }

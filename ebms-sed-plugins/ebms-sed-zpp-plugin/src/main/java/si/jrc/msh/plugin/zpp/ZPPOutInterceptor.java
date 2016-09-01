@@ -50,14 +50,14 @@ import si.sed.commons.SEDJNDI;
 import si.sed.commons.SEDOutboxMailStatus;
 import si.sed.commons.SEDSystemProperties;
 import si.sed.commons.SEDValues;
-import si.sed.commons.exception.ExceptionUtils;
+import si.sed.commons.cxf.SoapUtils;
 import si.sed.commons.exception.FOPException;
 import si.sed.commons.exception.HashException;
 import si.sed.commons.exception.SEDSecurityException;
-import si.sed.commons.exception.SOAPExceptionCode;
 import si.sed.commons.exception.StorageException;
 import si.sed.commons.interfaces.SEDDaoInterface;
 import si.sed.commons.interfaces.SoapInterceptorInterface;
+import si.sed.commons.pmode.EBMSMessageContext;
 import si.sed.commons.utils.HashUtils;
 import si.sed.commons.utils.SEDLogger;
 import si.sed.commons.utils.StorageUtils;
@@ -201,17 +201,17 @@ public class ZPPOutInterceptor implements SoapInterceptorInterface {
     boolean isRequest = MessageUtils.isRequestor(msg);
     QName sv = (isRequest ? SoapFault.FAULT_CODE_CLIENT : SoapFault.FAULT_CODE_SERVER);
 
-    MSHOutMail outMail = msg.getExchange().get(MSHOutMail.class);
+      EBMSMessageContext ectx = SoapUtils.getEBMSMessageOutContext(msg);
+    MSHOutMail outMail = SoapUtils.getMSHOutMail(msg);
     // if service ZPP delivery, action delivery
-    if (outMail != null && ZPPConstants.S_ZPP_SERVICE.equals(outMail.getService())
-        && ZPPConstants.S_ZPP_ACTION_DELIVERY_NOTIFICATION.equals(outMail.getAction())) {
+    if (outMail != null && ZPPConstants.S_ZPP_SERVICE.equals(ectx.getService().getServiceName())
+        && ZPPConstants.S_ZPP_ACTION_DELIVERY_NOTIFICATION.equals(ectx.getAction().getName())) {
       try {
         prepareToZPPDelivery(outMail, sv);
       } catch (HashException | SEDSecurityException | StorageException | FOPException
           | ZPPException ex) {
         LOG.logError(l, ex.getMessage(), ex);
-        throw ExceptionUtils.createSoapFault(SOAPExceptionCode.InternalFailure, sv,
-            ZPPConstants.S_ZPP_PLUGIN_TYPE, ex.getMessage());
+        throw new SoapFault(ex.getMessage(), sv);          
       }
     }
     LOG.logEnd(l);
@@ -223,8 +223,7 @@ public class ZPPOutInterceptor implements SoapInterceptorInterface {
 
     if (outMail.getMSHOutPayload() == null || outMail.getMSHOutPayload().getMSHOutParts().isEmpty()) {
       String mg = "Empty message: " + outMail.getId() + ". No payloads to delivery.";
-      throw ExceptionUtils.createSoapFault(SOAPExceptionCode.InternalFailure, sv,
-          ZPPConstants.S_ZPP_PLUGIN_TYPE, mg);
+      throw new SoapFault(mg, sv);
     }
 
     SEDKey skey = getSecretKeyForId(outMail.getId());
@@ -245,7 +244,7 @@ public class ZPPOutInterceptor implements SoapInterceptorInterface {
       String msg =
           "Resending out mail: " + outMail.getId()
               + ". Key and delivery nofitication already generated.";
-      mDB.setStatusToOutMail(outMail, SEDOutboxMailStatus.SENDING, msg, null,
+      mDB.setStatusToOutMail(outMail, SEDOutboxMailStatus.SCHEDULE, msg, null,
           ZPPConstants.S_ZPP_PLUGIN_TYPE);
       LOG.log(msg);
     } else {
@@ -279,7 +278,7 @@ public class ZPPOutInterceptor implements SoapInterceptorInterface {
       String str =
           "Added DeliveryNotification and encrypted parts: "
               + outMail.getMSHOutPayload().getMSHOutParts().size();
-      mDB.setStatusToOutMail(outMail, SEDOutboxMailStatus.SENDING, str, null,
+      mDB.setStatusToOutMail(outMail, SEDOutboxMailStatus.SCHEDULE, str, null,
           ZPPConstants.S_ZPP_PLUGIN_TYPE);
     }
     // set conversation id

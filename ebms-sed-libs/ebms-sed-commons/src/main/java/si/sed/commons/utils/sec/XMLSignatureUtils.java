@@ -45,7 +45,7 @@ public class XMLSignatureUtils {
   private static final String ID_PREFIX_REF = "ref";
   private static final String ID_PREFIX_SIG = "sig";
   private static final String ID_PREFIX_SIG_VAL = "sig-val";
-  private static final String ID_PREFIX_SIG_INF = "sig-inf";
+
   private static final String ID_PREFIX_SIG_PROP = "sig-prop";
   private static final String XADES_NS = "http://uri.etsi.org/01903/v1.1.1#";
 
@@ -55,7 +55,7 @@ public class XMLSignatureUtils {
   public static final String XML_SIGNATURE_PROVIDER_VALUE_2 =
       "org.apache.jcp.xml.dsig.internal.dom.XMLDSigRI";
 
-  private XAdESignatureBuilder mXAdESBuilder = new XAdESignatureBuilder();
+  private final XAdESignatureBuilder mXAdESBuilder = new XAdESignatureBuilder();
   /**
    * Logger
    */
@@ -87,7 +87,7 @@ public class XMLSignatureUtils {
     try {
       c = forName(providerName);
     } catch (ClassNotFoundException ex) {
-      LOG.logWarn(l, "XMLSignatureFactory for.'" + providerName + "' not found!", ex);
+      LOG.formatedWarning("XMLSignatureFactory for '%s'. Error: '%s'", providerName, ex.getMessage());
       return fac;
     }
 
@@ -144,7 +144,7 @@ public class XMLSignatureUtils {
    */
   public void createXAdESEnvelopedSignature(KeyStore.PrivateKeyEntry certPrivateKey,
       Element sigParentElement, List<String> strIds, DigestMethodCode digestMethodCode,
-      String sigMethod)
+      String sigMethod, String signatureReason)
       throws SEDSecurityException {
     long t = LOG.logStart(strIds);
 
@@ -159,10 +159,9 @@ public class XMLSignatureUtils {
 
     // get certificate 
     X509Certificate cert = (X509Certificate) certPrivateKey.getCertificate();
-
     // Create the XAdES QualifyingProperties
     QualifyingProperties qp = mXAdESBuilder.createXAdESQualifyingProperties(strSigId, strSigValId,
-        strSigPropId, cert, digestMethodCode, "Reason", "Maribor", "Ljubljana");
+        strSigPropId, cert, digestMethodCode, signatureReason, null, null);
     // add signature propertis to sig
     Document doc = sigParentElement.getOwnerDocument();
     XMLStructure content = mXAdESBuilder.objectToXMLStructure(doc, qp);
@@ -190,21 +189,6 @@ public class XMLSignatureUtils {
           SEDSecurityException.SEDSecurityExceptionCode.CreateSignatureException, ex,
           "Error signing document:" + ex.getMessage());
     }
-/*TODO ! 
-    // Add timestamp
-    if (mTimeStampServer != null) {
-      mXAdESBuilder.setIdnessToElemetns(doc.getDocumentElement());
-      // String strVal = calculateSignedValueDigest(strSigValId, fac, ki,
-      // certPrivateKey, sigParentElement.getOwnerDocument());
-      String strVal = calculateSignedValueDigest(strSigValId, sigParentElement.getOwnerDocument());
-      NodeList l = sigParentElement.getElementsByTagName("HashDataInfo");
-      Element nTS = doc.createElementNS(XADES_NS, "XMLTimeStamp");
-      l.item(0).getParentNode().appendChild(nTS);
-
-      Element dSigTS = mTimeStampServer.getTimeStamp(strVal);
-      Node adTSig = doc.importNode(dSigTS, true);
-      nTS.appendChild(adTSig);
-    }*/
     LOG.logEnd(t, strIds);
   }
 
@@ -213,159 +197,111 @@ public class XMLSignatureUtils {
    * @param sigNode
    * @throws MarshalException
    * @throws XMLSignatureException
-   * @throws SEDSecurityException
-   * /
-  public void validateXAdESEnvelopedSignature(Node sigNode)
-      throws MarshalException, XMLSignatureException,
-      SEDSecurityException {
-/*
-    // Create a DOM XMLSignatureFactory that will be used to unmarshal the
-    // document containing the XMLSignature
-    XMLSignatureFactory fac = getXMLSignatureFactory();
-
-    // Create a DOMValidateContext and specify a KeyValue KeySelector
-    // and document context
-    DOMValidateContext valContext =
-        new DOMValidateContext(new XAdESSigX509KeySelector(), ndVal);
-
-    // unmarshal the XMLSignature
-    XMLSignature signature = fac.unmarshalXMLSignature(valContext);
-    signature.getKeyInfo().getContent();
-
-    // Validate the XMLSignature (generated above)
-    //The REQUIRED steps of core validation include 
-    //  (1) reference validation, the verification of the digest contained in each Reference 
-    //      in SignedInfo, and 
-    //  (2) the cryptographic signature validation of the signature calculated over SignedInfo.
-    boolean coreValidity = signature.validate(valContext);
-
-    // Check core validation status
-    if (!coreValidity) {
-      StringWriter sw = new StringWriter();
-      sw.append("Core validation for signature is invalid!\n");
-      boolean sv = signature.getSignatureValue().validate(valContext);
-      sw.append("\tCryptographic validation of the signature calculated over the SignedInfo is " +
-          (sv ? "VALID" : "INVALID") + "!\n");
-      // check the validation status of each Reference
-      Iterator i = signature.getSignedInfo().getReferences().iterator();
-      for (int j = 0; i.hasNext(); j++) {
-        Reference r = ((Reference) i.next());
-        boolean refValid = r.validate(valContext);
-        sw.append("\tRef[" + j + ", id: " + r.getURI() + "] validity status: " + refValid + "\n");
-      }
-      throw new XMLSignatureException(sw.toString());
-    }
-
-  }
-
-  private String calculateSignedValueDigest(String strSigValId, Document oDoc)
-      throws SEDSecurityException {
-
-    String strDigest = null;
-    try {
-      Element el = oDoc.getElementById(strSigValId);
-
-      Canonicalizer c = Canonicalizer.getInstance(INCLUSIVE);
-      byte[] buff = c.canonicalizeSubtree(el);
-      MessageDigest md = MessageDigest.getInstance("SHA-1");
-      md.digest(); // reset digest
-      strDigest = getEncoder().encodeToString(md.digest(buff));
-    } catch (NoSuchAlgorithmException | CanonicalizationException |
-        InvalidCanonicalizerException ex) {
-
-      throw new SEDSecurityException(
-          SEDSecurityException.SEDSecurityExceptionCode.CreateSignatureException, ex,
-          "Error Calculating digest document:" + ex.getMessage());
-
-    }
-    return strDigest;
-  }
-
-  /*
-  private String calculateSignedValueDigest(String strSigValId, XMLSignatureFactory fac,
-      KeyInfo ki, KeyStore.PrivateKeyEntry certPrivateKey, Document oDoc) {
-    String strDigest = null;
-
-    try {
-
-      // todo calculate signature direct!! this si bad :>
-      DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-      dbf.setNamespaceAware(true);
-      Document doc = dbf.newDocumentBuilder().newDocument();
-      Node n = doc.adoptNode(oDoc.getDocumentElement().cloneNode(true));
-      doc.appendChild(n);
-      setIdnessToElemetns(n);
-      Reference ref_TS =
-          fac.newReference("#" + strSigValId, fac.newDigestMethod(SHA1, null), null, null, null);
-
-      List<Reference> lstRef1 = new ArrayList<>();
-      lstRef1.add(ref_TS);
-
-      // Create the SignedInfo
-      SignedInfo si =
-          fac.newSignedInfo(
-              fac.newCanonicalizationMethod(INCLUSIVE, (C14NMethodParameterSpec) null),
-              fac.newSignatureMethod(RSA_SHA1, null), lstRef1,
-              "SignedInfo1-39EB3E08-97ED-48AF-969B-ABFD697FC5FA");
-
-      XMLSignature sig2 = fac.newXMLSignature(si, ki);
-
-      DOMSignContext dsc =
-          new DOMSignContext(certPrivateKey.getPrivateKey(), doc.getDocumentElement());
-      dsc.setProperty("javax.xml.crypto.dsig.cacheReference", TRUE);
-
-      try {
-
-        // Marshal, generate (and sign) the enveloped signature
-        sig2.sign(dsc);
-        strDigest = getEncoder().encodeToString(ref_TS.getDigestValue());
-
-        InputStream is = ref_TS.getDigestInputStream();
-        byte[] bf = new byte[is.available()];
-        is.read(bf);
-
-      } catch (MarshalException | XMLSignatureException ex) {
-        LOG.error("SvevSignatureUtils.", ex);
-      } catch (Exception ex) {
-        LOG.error("SvevSignatureUtils.", ex);
-      }
-
-    } catch (ParserConfigurationException | NoSuchAlgorithmException |
-        InvalidAlgorithmParameterException ex) {
-      LOG.error("SvevSignatureUtils.", ex);
-    }
-    return strDigest;
-  }
-
-  private String calculateSignedValueDigest(String strSigValId, Document oDoc) {
-
-    String strDigest = null;
-    try {
-      Element el = oDoc.getElementById(strSigValId);
-
-      Canonicalizer c = Canonicalizer.getInstance(INCLUSIVE);
-      byte[] buff = c.canonicalizeSubtree(el);
-      MessageDigest md = MessageDigest.getInstance("SHA-1");
-      md.digest(); // reset digest
-      strDigest = getEncoder().encodeToString(md.digest(buff));
-    } catch (NoSuchAlgorithmException ex) {
-      LOG.error("NoSuchAlgorithmException.", ex);
-    } catch (CanonicalizationException ex) {
-      LOG.error("CanonicalizationException.", ex);
-    } catch (InvalidCanonicalizerException ex) {
-      LOG.error("InvalidCanonicalizerException.", ex);
-    }
-    return strDigest;
-  }
-   
-
-  private boolean isSignatureTimestamp(Node sigNode) {
-    return sigNode != null && sigNode.getParentNode() != null &&
-        XADES_XMLTimeStamp.equals(sigNode.getParentNode().getNodeName()) &&
-        XADES_NS.equals(sigNode.getParentNode().getNamespaceURI());
-
-  }*/
-
+   * @throws SEDSecurityException / public void validateXAdESEnvelopedSignature(Node sigNode) throws
+   * MarshalException, XMLSignatureException, SEDSecurityException { /* // Create a DOM
+   * XMLSignatureFactory that will be used to unmarshal the // document containing the XMLSignature
+   * XMLSignatureFactory fac = getXMLSignatureFactory();
+   *
+   * // Create a DOMValidateContext and specify a KeyValue KeySelector // and document context
+   * DOMValidateContext valContext = new DOMValidateContext(new XAdESSigX509KeySelector(), ndVal);
+   *
+   * // unmarshal the XMLSignature XMLSignature signature = fac.unmarshalXMLSignature(valContext);
+   * signature.getKeyInfo().getContent();
+   *
+   * // Validate the XMLSignature (generated above) //The REQUIRED steps of core validation include
+   * // (1) reference validation, the verification of the digest contained in each Reference // in
+   * SignedInfo, and // (2) the cryptographic signature validation of the signature calculated over
+   * SignedInfo. boolean coreValidity = signature.validate(valContext);
+   *
+   * // Check core validation status if (!coreValidity) { StringWriter sw = new StringWriter();
+   * sw.append("Core validation for signature is invalid!\n"); boolean sv =
+   * signature.getSignatureValue().validate(valContext); sw.append("\tCryptographic validation of
+   * the signature calculated over the SignedInfo is " + (sv ? "VALID" : "INVALID") + "!\n"); //
+   * check the validation status of each Reference Iterator i =
+   * signature.getSignedInfo().getReferences().iterator(); for (int j = 0; i.hasNext(); j++) {
+   * Reference r = ((Reference) i.next()); boolean refValid = r.validate(valContext);
+   * sw.append("\tRef[" + j + ", id: " + r.getURI() + "] validity status: " + refValid + "\n"); }
+   * throw new XMLSignatureException(sw.toString()); }
+   *
+   * }
+   *
+   * private String calculateSignedValueDigest(String strSigValId, Document oDoc) throws
+   * SEDSecurityException {
+   *
+   * String strDigest = null; try { Element el = oDoc.getElementById(strSigValId);
+   *
+   * Canonicalizer c = Canonicalizer.getInstance(INCLUSIVE); byte[] buff =
+   * c.canonicalizeSubtree(el); MessageDigest md = MessageDigest.getInstance("SHA-1"); md.digest();
+   * // reset digest strDigest = getEncoder().encodeToString(md.digest(buff)); } catch
+   * (NoSuchAlgorithmException | CanonicalizationException | InvalidCanonicalizerException ex) {
+   *
+   * throw new SEDSecurityException(
+   * SEDSecurityException.SEDSecurityExceptionCode.CreateSignatureException, ex, "Error Calculating
+   * digest document:" + ex.getMessage());
+   *
+   * }
+   * return strDigest; }
+   *
+   * /*
+   * private String calculateSignedValueDigest(String strSigValId, XMLSignatureFactory fac, KeyInfo
+   * ki, KeyStore.PrivateKeyEntry certPrivateKey, Document oDoc) { String strDigest = null;
+   *
+   * try {
+   *
+   * // todo calculate signature direct!! this si bad :> DocumentBuilderFactory dbf =
+   * DocumentBuilderFactory.newInstance(); dbf.setNamespaceAware(true); Document doc =
+   * dbf.newDocumentBuilder().newDocument(); Node n =
+   * doc.adoptNode(oDoc.getDocumentElement().cloneNode(true)); doc.appendChild(n);
+   * setIdnessToElemetns(n); Reference ref_TS = fac.newReference("#" + strSigValId,
+   * fac.newDigestMethod(SHA1, null), null, null, null);
+   *
+   * List<Reference> lstRef1 = new ArrayList<>(); lstRef1.add(ref_TS);
+   *
+   * // Create the SignedInfo SignedInfo si = fac.newSignedInfo(
+   * fac.newCanonicalizationMethod(INCLUSIVE, (C14NMethodParameterSpec) null),
+   * fac.newSignatureMethod(RSA_SHA1, null), lstRef1,
+   * "SignedInfo1-39EB3E08-97ED-48AF-969B-ABFD697FC5FA");
+   *
+   * XMLSignature sig2 = fac.newXMLSignature(si, ki);
+   *
+   * DOMSignContext dsc = new DOMSignContext(certPrivateKey.getPrivateKey(),
+   * doc.getDocumentElement()); dsc.setProperty("javax.xml.crypto.dsig.cacheReference", TRUE);
+   *
+   * try {
+   *
+   * // Marshal, generate (and sign) the enveloped signature sig2.sign(dsc); strDigest =
+   * getEncoder().encodeToString(ref_TS.getDigestValue());
+   *
+   * InputStream is = ref_TS.getDigestInputStream(); byte[] bf = new byte[is.available()];
+   * is.read(bf);
+   *
+   * } catch (MarshalException | XMLSignatureException ex) { LOG.error("SvevSignatureUtils.", ex); }
+   * catch (Exception ex) { LOG.error("SvevSignatureUtils.", ex); }
+   *
+   * } catch (ParserConfigurationException | NoSuchAlgorithmException |
+   * InvalidAlgorithmParameterException ex) { LOG.error("SvevSignatureUtils.", ex); } return
+   * strDigest; }
+   *
+   * private String calculateSignedValueDigest(String strSigValId, Document oDoc) {
+   *
+   * String strDigest = null; try { Element el = oDoc.getElementById(strSigValId);
+   *
+   * Canonicalizer c = Canonicalizer.getInstance(INCLUSIVE); byte[] buff =
+   * c.canonicalizeSubtree(el); MessageDigest md = MessageDigest.getInstance("SHA-1"); md.digest();
+   * // reset digest strDigest = getEncoder().encodeToString(md.digest(buff)); } catch
+   * (NoSuchAlgorithmException ex) { LOG.error("NoSuchAlgorithmException.", ex); } catch
+   * (CanonicalizationException ex) { LOG.error("CanonicalizationException.", ex); } catch
+   * (InvalidCanonicalizerException ex) { LOG.error("InvalidCanonicalizerException.", ex); } return
+   * strDigest; }
+   *
+   *
+   * private boolean isSignatureTimestamp(Node sigNode) { return sigNode != null &&
+   * sigNode.getParentNode() != null &&
+   * XADES_XMLTimeStamp.equals(sigNode.getParentNode().getNodeName()) &&
+   * XADES_NS.equals(sigNode.getParentNode().getNamespaceURI());
+   *
+   * }
+   */
   /**
    *
    * @param fDoc
@@ -453,5 +389,18 @@ public class XMLSignatureUtils {
       }
     }
     return f;
+  }
+
+  private String getValueByTypeFromPrincipalDN(String dnRFC2253, String attributeType) {
+    String[] dnParts = dnRFC2253.split(",");
+    for (String dnSplit : dnParts) {
+      if (dnSplit.trim().startsWith(attributeType)) {
+        String[] cnSplits = dnSplit.trim().split("=");
+        if (cnSplits[1] != null) {
+          return cnSplits[1].trim();
+        }
+      }
+    }
+    return "";
   }
 }

@@ -39,8 +39,9 @@
         <module>ebms-sed-dao</module>
         <module>ebms-sed-module</module>                
         <module>ebms-msh-module</module>
-        <!-- module>ebms-sed-plugins</module -->
-        <!--module>ebms-sed-tasks</module -->
+        <module>ebms-sed-tasks</module>
+        <module>ebms-sed-plugins</module>
+        
     </modules>
 
     <properties>

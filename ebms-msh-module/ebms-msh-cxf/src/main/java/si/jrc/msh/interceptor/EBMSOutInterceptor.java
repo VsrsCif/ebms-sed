@@ -18,10 +18,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Properties;
 import java.util.UUID;
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;
@@ -36,6 +34,7 @@ import org.apache.cxf.attachment.AttachmentImpl;
 import org.apache.cxf.binding.soap.SoapFault;
 import org.apache.cxf.binding.soap.SoapMessage;
 import org.apache.cxf.binding.soap.SoapVersion;
+import org.apache.cxf.message.Exchange;
 import org.apache.cxf.message.MessageUtils;
 import org.apache.cxf.phase.Phase;
 import org.apache.cxf.ws.security.wss4j.WSS4JOutInterceptor;
@@ -45,7 +44,6 @@ import org.msh.ebms.outbox.payload.MSHOutPart;
 import org.msh.sed.pmode.PMode;
 import org.msh.sed.pmode.PartyIdentitySet;
 import org.msh.sed.pmode.PartyIdentitySetType;
-import org.msh.sed.pmode.References;
 import org.msh.sed.pmode.Security;
 import org.msh.sed.pmode.X509;
 import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.Messaging;
@@ -53,12 +51,11 @@ import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.SignalMessage;
 import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.UserMessage;
 import org.sed.ebms.cert.SEDCertStore;
 import org.sed.ebms.cert.SEDCertificate;
-import si.jrc.msh.client.sec.MSHKeyPasswordCallback;
 import si.jrc.msh.client.sec.SecurityUtils;
 import si.jrc.msh.exception.EBMSError;
 import si.jrc.msh.exception.EBMSErrorCode;
 import si.jrc.msh.utils.EBMSBuilder;
-import si.jrc.msh.utils.SoapUtils;
+import si.sed.commons.cxf.SoapUtils;
 import si.sed.commons.exception.StorageException;
 import si.sed.commons.utils.GZIPUtil;
 import si.sed.commons.utils.SEDLogger;
@@ -303,7 +300,7 @@ public class EBMSOutInterceptor extends AbstractEBMSInterceptor {
       }
     } else {
       LOG.logWarn(l,
-          "Sending not encypted message. No configuration: X509/Encryption/Encrypt for message:  " +
+          "Sending not encrypted message. No configuration: X509/Encryption/Encrypt for message:  " +
           msgId, null);
     }
 
@@ -359,6 +356,7 @@ public class EBMSOutInterceptor extends AbstractEBMSInterceptor {
         }
 
         DataHandler dh = new DataHandler(new FileDataSource(fatt));
+        
         att.setDataHandler(dh);
         msg.getAttachments().add(att);
       }
@@ -374,6 +372,48 @@ public class EBMSOutInterceptor extends AbstractEBMSInterceptor {
   public void handleFault(SoapMessage message) {
     super.handleFault(message); // To change body of generated methods, choose Tools | Templates.
     LOG.log("handleFault 1");
+    Exchange map = message.getExchange();
+    map.entrySet().stream().forEach((entry) -> {
+      LOG.formatedlog("Key: %s, val: %s", entry.getKey(), entry.getValue());
+    }); /*try {
+    
+      SOAPMessage originalMsg = message.getContent(SOAPMessage.class);
+      SOAPBody body = originalMsg.getSOAPBody();
+      body.removeContents();
+      SOAPFault soapFault = body.addFault();
+      if (exception instanceof SOAPFaultException) {
+      SOAPFaultException sf = (SOAPFaultException)exception;
+      soapFault.setFaultString(sf.getFault().getFaultString());
+      soapFault.setFaultCode(sf.getFault().getFaultCodeAsQName());
+      soapFault.setFaultActor(sf.getFault().getFaultActor());
+      if (sf.getFault().hasDetail()) {
+      Node nd = originalMsg.getSOAPPart().importNode(
+      sf.getFault().getDetail()
+      .getFirstChild(), true);
+      soapFault.addDetail().appendChild(nd);
+      }
+      } else if (exception instanceof Fault) {
+      SoapFault sf = SoapFault.createFault((Fault)exception, ((SoapMessage)message)
+      .getVersion());
+      soapFault.setFaultString(sf.getReason());
+      soapFault.setFaultCode(sf.getFaultCode());
+      if (sf.hasDetails()) {
+      soapFault.addDetail();
+      Node nd = originalMsg.getSOAPPart().importNode(sf.getDetail(), true);
+      nd = nd.getFirstChild();
+      while (nd != null) {
+      soapFault.getDetail().appendChild(nd);
+      nd = nd.getNextSibling();
+      }
+      }
+      } else {
+      soapFault.setFaultString(exception.getMessage());
+      soapFault.setFaultCode(new QName("http://cxf.apache.org/faultcode", "HandleFault"));
+      }
+      } catch (SOAPException e) {
+      // do nothing
+      e.printStackTrace();
+      }*/
   }
 
 }

@@ -244,9 +244,12 @@ public class XAdESignatureBuilder {
       ssp.setSignaturePolicyIdentifier(new SignaturePolicyIdentifier());
       ssp.getSignaturePolicyIdentifier().setSignaturePolicyImplied(signatureReason);
 
-      ssp.setSignatureProductionPlace(new SignatureProductionPlace());
-      ssp.getSignatureProductionPlace().setCity(sigCity);
-      ssp.getSignatureProductionPlace().setCountryName(sigCountryName);
+      if (!Utils.isEmptyString(sigCity) || !Utils.isEmptyString(sigCountryName)) {
+        ssp.setSignatureProductionPlace(new SignatureProductionPlace());
+        ssp.getSignatureProductionPlace().setCity(sigCity);
+        ssp.getSignatureProductionPlace().setCountryName(sigCountryName);
+      }
+      
       scert.getCerts().add(sit);
       sp.setSignedSignatureProperties(ssp);
     } catch (CertificateEncodingException | NoSuchAlgorithmException ex) {

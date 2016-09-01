@@ -55,7 +55,7 @@ public class SEDRequestUtils {
         errLst.add("Mimetype (index:'" + iMP + "')!");
       }
       // check payload
-      if (mp.getValue() == null
+      if (mp.getBin() == null
           && (Utils.isEmptyString(mp.getFilepath()) || !(new File(mp.getFilepath()).exists()))) {
         errLst.add("No payload content. Add value or existing file (index:'" + iMP + "')!");
       }

@@ -27,6 +27,9 @@ import si.jrc.msh.test.ResourceFiles;
 import static si.jrc.msh.lmbd.EbmsErrorAssertion.assertFault;
 import si.jrc.msh.test.SEDTestDao;
 import si.jrc.msh.test.SEDTestLookup;
+import si.sed.commons.SEDSystemProperties;
+import static si.sed.commons.SEDSystemProperties.SYS_PROP_HOME_DIR;
+import si.sed.commons.SEDValues;
 import si.sed.commons.exception.PModeException;
 import si.sed.commons.pmode.FilePModeManager;
 
@@ -47,7 +50,7 @@ public class EBMSInInterceptorTest {
   }
 
   public static void setLogger(String fileName) {
-    System.setProperty("sed.home", System.getProperty("user.dir"));
+    
     // set logger
     ConsoleAppender console = new ConsoleAppender(); // create appender
     // configure the appender
@@ -70,6 +73,8 @@ public class EBMSInInterceptorTest {
 
   @BeforeClass
   public static void setUpClass() {
+    // set home dir to target folder
+    System.setProperty(SYS_PROP_HOME_DIR, "target");
     try {
       mTestInstance.mPMode = new FilePModeManager(EBMSInInterceptorTest.class.getResourceAsStream(
           INIT_PMODE_RESOURCE_PATH));
@@ -87,6 +92,7 @@ public class EBMSInInterceptorTest {
 
   @Before
   public void setUp() {
+    
   }
 
   /**

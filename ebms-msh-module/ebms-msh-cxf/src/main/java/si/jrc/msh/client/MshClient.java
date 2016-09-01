@@ -48,15 +48,17 @@ import org.sed.ebms.cert.SEDCertStore;
 import org.sed.ebms.cert.SEDCertificate;
 import si.jrc.msh.exception.EBMSError;
 import si.jrc.msh.exception.EBMSErrorCode;
+import si.jrc.msh.interceptor.EBMSInFaultInterceptor;
 import si.jrc.msh.interceptor.EBMSInInterceptor;
 import si.jrc.msh.interceptor.EBMSLogInInterceptor;
 import si.jrc.msh.interceptor.EBMSLogOutInterceptor;
+import si.jrc.msh.interceptor.EBMSOutFaultInterceptor;
 import si.jrc.msh.interceptor.EBMSOutInterceptor;
 import si.jrc.msh.interceptor.MSHPluginInInterceptor;
 import si.jrc.msh.interceptor.MSHPluginOutInterceptor;
-import si.jrc.msh.utils.SoapUtils;
 import si.sed.commons.MimeValues;
 import si.sed.commons.SEDJNDI;
+import si.sed.commons.cxf.SoapUtils;
 import si.sed.commons.exception.SEDSecurityException;
 import si.sed.commons.exception.StorageException;
 import si.sed.commons.interfaces.SEDLookupsInterface;
@@ -102,6 +104,11 @@ public class MshClient {
   public Dispatch<SOAPMessage> createClient(final String messageId,
       final PartyIdentitySet.TransportProtocol protocol)
       throws EBMSError {
+    
+    if (protocol== null) {
+      throw new EBMSError(EBMSErrorCode.PModeConfigurationError, messageId,
+          "Missing protocol!", SoapFault.FAULT_CODE_CLIENT);
+    }
 
     if (protocol.getAddress() == null) {
       throw new EBMSError(EBMSErrorCode.PModeConfigurationError, messageId,
@@ -138,6 +145,9 @@ public class MshClient {
     cxfClient.getOutInterceptors().add(new MSHPluginOutInterceptor());
     cxfClient.getOutInterceptors().add(new EBMSOutInterceptor());
     cxfClient.getOutInterceptors().add(new EBMSLogOutInterceptor());
+    
+    cxfClient.getInFaultInterceptors().add(new EBMSInFaultInterceptor());
+    cxfClient.getOutFaultInterceptors().add(new EBMSOutFaultInterceptor());
 
     HTTPConduit http = (HTTPConduit) cxfClient.getConduit();
     // --------------------------------------------------------------------
@@ -266,9 +276,19 @@ public class MshClient {
         r.setResultFile(res);
         r.setMimeType(MimeValues.MIME_TXT.getMimeType());
       } catch (StorageException ex1) {
-        LOG.logError(l, "ERROR saving saop fault to file!", ex1);
+        LOG.logError(l, "ERROR saving saop fault to file!", ex);
       }
       r.setError(ex);
+    }catch (Throwable ex) {
+      try {
+        String res = msStorageUtils.storeThrowableAndGetRelativePath(ex);
+        r.setResultFile(res);
+        r.setMimeType(MimeValues.MIME_TXT.getMimeType());
+      } catch (StorageException ex1) {
+        LOG.logError(l, "Unexpected error!", ex);
+      }
+      r.setError(new EBMSError(EBMSErrorCode.ApplicationError, mail.getMessageId(),
+          "Unexpected error!", ex, SoapFault.FAULT_CODE_CLIENT));
     }
 
     LOG.logEnd(l);

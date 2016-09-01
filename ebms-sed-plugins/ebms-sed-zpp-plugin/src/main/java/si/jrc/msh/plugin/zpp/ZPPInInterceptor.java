@@ -47,7 +47,7 @@ import org.apache.xml.security.keys.keyresolver.KeyResolverException;
 import org.msh.ebms.inbox.mail.MSHInMail;
 import org.msh.ebms.inbox.payload.MSHInPart;
 import org.msh.ebms.outbox.mail.MSHOutMail;
-import org.msh.svev.pmode.PMode;
+import org.msh.sed.pmode.PMode;
 import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.SignalMessage;
 import org.sed.ebms.ebox.Execute;
 import org.sed.ebms.ebox.Export;
@@ -62,6 +62,7 @@ import si.sed.commons.SEDInboxMailStatus;
 import si.sed.commons.SEDJNDI;
 import si.sed.commons.SEDOutboxMailStatus;
 import si.sed.commons.SEDSystemProperties;
+import si.sed.commons.cxf.SoapUtils;
 import si.sed.commons.exception.FOPException;
 import si.sed.commons.exception.HashException;
 import si.sed.commons.exception.SEDSecurityException;
@@ -70,6 +71,7 @@ import si.sed.commons.interfaces.JMSManagerInterface;
 import si.sed.commons.interfaces.SEDDaoInterface;
 import si.sed.commons.interfaces.SEDLookupsInterface;
 import si.sed.commons.interfaces.SoapInterceptorInterface;
+import si.sed.commons.pmode.EBMSMessageContext;
 import si.sed.commons.utils.HashUtils;
 import si.sed.commons.utils.SEDLogger;
 import si.sed.commons.utils.StorageUtils;
@@ -87,8 +89,8 @@ import si.sed.commons.utils.xml.XMLUtils;
 public class ZPPInInterceptor implements SoapInterceptorInterface {
 
   /**
-     *
-     */
+   *
+   */
   protected final SEDLogger LOG = new SEDLogger(ZPPInInterceptor.class);
   SEDCrypto mSedCrypto = new SEDCrypto();
   HashUtils mpHU = new HashUtils();
@@ -109,14 +111,14 @@ public class ZPPInInterceptor implements SoapInterceptorInterface {
   SEDLookupsInterface msedLookup;
 
   /**
-     *
-     */
+   *
+   */
   @Resource
   public UserTransaction mutUTransaction;
 
   /**
-     *
-     */
+   *
+   */
   @PersistenceContext(unitName = "ebMS_ZPP_PU", name = "ebMS_ZPP_PU")
   public EntityManager memEManager;
 
@@ -127,27 +129,30 @@ public class ZPPInInterceptor implements SoapInterceptorInterface {
   @Override
   public void handleMessage(SoapMessage msg) {
     long l = LOG.logStart();
-    PMode pmd = msg.getExchange().get(PMode.class);
-    SEDBox sb = msg.getExchange().get(SEDBox.class);
 
-    MSHInMail mInMail = msg.getExchange().get(MSHInMail.class);
-    MSHOutMail moutMail = msg.getExchange().get(MSHOutMail.class);
+    SEDBox sb = SoapUtils.getMSHInMailReceiverBox(msg);
+
+    //EBMSMessageContext ectx = SoapUtils.getEBMSMessageOutContext(msg);
+    MSHOutMail moutMail = SoapUtils.getMSHOutMail(msg);
+    MSHInMail mInMail = SoapUtils.getMSHInMail(msg);
+
     Object sigAnies = msg.getExchange().get("SIGNAL_ELEMENTS");
 
     try {
-      if (mInMail != null && ZPPConstants.S_ZPP_SERVICE.equals(mInMail.getService())
-          && ZPPConstants.S_ZPP_ACTION_DELIVERY_NOTIFICATION.equals(mInMail.getAction())) {
-        processInZPPDelivery(mInMail, pmd);
-
+      if (mInMail != null && ZPPConstants.S_ZPP_SERVICE.equals(mInMail.getService()) &&
+           ZPPConstants.S_ZPP_ACTION_DELIVERY_NOTIFICATION.equals(mInMail.getAction())) {
+        processInZPPDelivery(mInMail);
       }
 
-      if (mInMail != null && ZPPConstants.S_ZPP_SERVICE.equals(mInMail.getService())
-          && ZPPConstants.S_ZPP_ACTION_ADVICE_OF_DELIVERY.equals(mInMail.getAction())) {
-        processInZPPAdviceOfDelivery(mInMail, pmd, msg);
+      if (mInMail != null && ZPPConstants.S_ZPP_SERVICE.equals(mInMail.getService()) &&
+           ZPPConstants.S_ZPP_ACTION_ADVICE_OF_DELIVERY.equals(mInMail.getAction())) {
+        processInZPPAdviceOfDelivery(mInMail, msg);
       }
 
       if (sigAnies != null) {
-        List<Element> lst = (List<Element>) sigAnies;
+        LOG.log("Proccess in signal elments");
+        processSignalMessages((List<Element>) sigAnies, moutMail, sb);
+        /* List<Element> lst = (List<Element>) sigAnies;
         Key k = null;
         for (Element e : lst) {
           if (e.getLocalName().equals(ZPPConstants.ELM_SIGNAL_ENCRYPTED_KEY)) {
@@ -197,15 +202,15 @@ public class ZPPInInterceptor implements SoapInterceptorInterface {
             break;
 
           }
-        }
+        
         LOG.log("ZPPInInterceptor 3, key: " + k);
         if (moutMail != null && k != null) {
           LOG.log("ZPPInInterceptor 4, key: " + k);
           decryptMail(k, moutMail.getConversationId(), sb);
 
         }
+      }*/
       }
-
     } catch (FOPException | HashException | SEDSecurityException ex) {
       LOG.logError(l, ex);
       if (mInMail != null) {
@@ -231,15 +236,79 @@ public class ZPPInInterceptor implements SoapInterceptorInterface {
     LOG.logEnd(l);
   }
 
+  public void processSignalMessages(List<Element> signalElements, MSHOutMail moutMail, SEDBox sb)
+      throws SEDSecurityException {
+    long l = LOG.logStart();
+    if (signalElements != null) {
+
+      Key k = null;
+      for (Element e : signalElements) {
+        if (e.getLocalName().equals(ZPPConstants.ELM_SIGNAL_ENCRYPTED_KEY)) {
+
+          // get encrypte key
+          EncryptedKey ek = mSedCrypto.element2SimetricEncryptedKey(e);
+          // resolve certificate
+          X509Certificate xc;
+          try {
+            xc = ek.getKeyInfo().getX509Certificate();
+          } catch (KeyResolverException ex) {
+            LOG.logError(l, ex);
+            String errmsg =
+                "Could not resolve Cert info from Encrypted key key DeliveryAdvice " +
+                 moutMail.getId() + "Err:" + ex.getMessage();
+            LOG.logError(l, errmsg, ex);
+            try {
+              mDB.setStatusToOutMail(moutMail, SEDOutboxMailStatus.ERROR, errmsg, null,
+                  ZPPConstants.S_ZPP_PLUGIN_TYPE);
+            } catch (StorageException ex1) {
+              LOG.logError(l, "Error setting status ERROR to MSHInMail :'" + moutMail.getId() +
+                   "'!", ex1);
+            }
+            return;
+          }
+          Key pk = mkeyUtils.getPrivateKeyForX509Cert(msedLookup.getSEDCertStore(), xc);
+          if (pk == null) {
+            String errmsg =
+                "Could not get private key for cert: " + xc.getSubjectDN() +
+                 ". Private key is needed to decrypt Encrypted key for " +
+                 moutMail.getConversationId();
+            LOG.logError(l, errmsg, null);
+            try {
+              mDB.setStatusToOutMail(moutMail, SEDOutboxMailStatus.ERROR, errmsg, null,
+                  ZPPConstants.S_ZPP_PLUGIN_TYPE);
+            } catch (StorageException ex) {
+              LOG.logError(l, "Error setting status ERROR to MSHInMail :'" + moutMail.getId() +
+                   "'!", ex);
+            }
+
+            return;
+          }
+          // String singDAAlias = "";
+          // SEDCertStore sc = msedLookup.getSEDCertStoreByCertAlias(singDAAlias, true);
+
+          k = mSedCrypto.decryptEncryptedKey(e, pk, SEDCrypto.SymEncAlgorithms.AES128_CBC);
+          break;
+
+        }
+      }
+      LOG.log("ZPPInInterceptor 3, key: " + k);
+      if (moutMail != null && k != null) {
+        LOG.log("ZPPInInterceptor 4, key: " + k);
+        decryptMail(k, moutMail.getConversationId(), sb);
+
+      }
+    }
+    LOG.logEnd(l);
+  }
+
   /**
    *
    * @param mInMail
-   * @param pmd
    * @param msg
    * @throws FOPException
    * @throws HashException
    */
-  public void processInZPPAdviceOfDelivery(MSHInMail mInMail, PMode pmd, SoapMessage msg)
+  public void processInZPPAdviceOfDelivery(MSHInMail mInMail, SoapMessage msg)
       throws FOPException, HashException {
     long l = LOG.logStart();
     try {
@@ -267,8 +336,7 @@ public class ZPPInInterceptor implements SoapInterceptorInterface {
 
       }
 
-    } catch ( JAXBException | TransformerException | IOException
-        | SEDSecurityException ex) {
+    } catch (JAXBException | TransformerException | IOException | SEDSecurityException ex) {
       LOG.logError(l, ex);
     }
     LOG.logEnd(l);
@@ -277,11 +345,11 @@ public class ZPPInInterceptor implements SoapInterceptorInterface {
   /**
    *
    * @param mInMail
-   * @param pmd
    * @throws FOPException
    * @throws HashException
    */
-  public void processInZPPDelivery(MSHInMail mInMail, PMode pmd) throws FOPException, HashException {
+  public void processInZPPDelivery(MSHInMail mInMail)
+      throws FOPException, HashException {
     long l = LOG.logStart();
     mInMail.setStatus(SEDInboxMailStatus.PLUGINLOCKED.getValue());
     mInMail.setStatusDate(Calendar.getInstance().getTime());
@@ -302,13 +370,13 @@ public class ZPPInInterceptor implements SoapInterceptorInterface {
   public FOPUtils getFOP() {
     if (mfpFop == null) {
       File fconf =
-          new File(System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR) + File.separator
-              + ZPPConstants.SVEV_FOLDER + File.separator + ZPPConstants.FOP_CONFIG_FILENAME);
+          new File(System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR) + File.separator +
+               ZPPConstants.SVEV_FOLDER + File.separator + ZPPConstants.FOP_CONFIG_FILENAME);
 
       mfpFop =
-          new FOPUtils(fconf, System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR)
-              + File.separator + ZPPConstants.SVEV_FOLDER + File.separator
-              + ZPPConstants.XSLT_FOLDER);
+          new FOPUtils(fconf, System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR) +
+               File.separator + ZPPConstants.SVEV_FOLDER + File.separator +
+               ZPPConstants.XSLT_FOLDER);
     }
     return mfpFop;
   }
@@ -319,7 +387,8 @@ public class ZPPInInterceptor implements SoapInterceptorInterface {
    * @return
    * @throws IOException
    */
-  public Key getEncryptionKeyForDeliveryAdvice(MSHInMail mi) throws IOException {
+  public Key getEncryptionKeyForDeliveryAdvice(MSHInMail mi)
+      throws IOException {
     // conv id is [send mailID]@domain
     String convId = mi.getConversationId();
 
@@ -346,9 +415,9 @@ public class ZPPInInterceptor implements SoapInterceptorInterface {
           mDB.getInMailConvIdAndAction(ZPPConstants.S_ZPP_ACTION_DELIVERY_NOTIFICATION, convID);
       if (lst.isEmpty()) {
         String errMsg =
-            "Mail with convid: " + convID + " and action: "
-                + ZPPConstants.S_ZPP_ACTION_DELIVERY_NOTIFICATION + " not found!"
-                + "Nothing to decrypt!";
+            "Mail with convid: " + convID + " and action: " +
+             ZPPConstants.S_ZPP_ACTION_DELIVERY_NOTIFICATION + " not found!" +
+             "Nothing to decrypt!";
         LOG.logError(l, errMsg, null);
       }
       for (MSHInMail mi : lst) {
@@ -359,8 +428,8 @@ public class ZPPInInterceptor implements SoapInterceptorInterface {
 
         String exporFileName = null;
         File exportFolder = null;
-        if (sb != null && sb.getExport() != null && sb.getExport().getActive()
-            && sb.getExport().getFileMask() != null) {
+        if (sb != null && sb.getExport() != null && sb.getExport().getActive() &&
+             sb.getExport().getFileMask() != null) {
           Export e = sb.getExport();
           exporFileName = msfFormat.format(e.getFileMask(), mi);
           String folder = StringFormater.replaceProperties(e.getFolder());
@@ -383,7 +452,7 @@ public class ZPPInInterceptor implements SoapInterceptorInterface {
             File fNew;
             try (FileInputStream fis = new FileInputStream(StorageUtils.getFile(mip.getFilepath()));
                 FileOutputStream bos =
-                    new FileOutputStream(fNew = StorageUtils.getFile(newFileName))) {
+                new FileOutputStream(fNew = StorageUtils.getFile(newFileName))) {
               LOG.log("Decrypt file: " + newFileName);
               mSedCrypto.decryptStream(fis, bos, key);
 
@@ -404,8 +473,8 @@ public class ZPPInInterceptor implements SoapInterceptorInterface {
               miDec.setMd5(mpHU.getMD5Hash(fNew));
               miDec.setFilepath(StorageUtils.getRelativePath(fNew));
               lstDec.add(miDec);
-              if (sb != null && sb.getExport() != null && exportFolder != null
-                  && exporFileName != null) {
+              if (sb != null && sb.getExport() != null && exportFolder != null &&
+                   exporFileName != null) {
                 String filPrefix = exportFolder.getAbsolutePath() + File.separator + exporFileName;
                 if (sb.getExport().getExportMetaData()) {
                   String fn = filPrefix + "." + MimeValues.MIME_XML.getSuffix();
@@ -424,8 +493,8 @@ public class ZPPInInterceptor implements SoapInterceptorInterface {
               }
 
             } catch (IOException | StorageException | SEDSecurityException | HashException ex) {
-              LOG.logError(l, "Error occured while decrypting  file: '" + oldFileName
-                  + "' for inmail:" + mi.getId(), ex);
+              LOG.logError(l, "Error occured while decrypting  file: '" + oldFileName +
+                   "' for inmail:" + mi.getId(), ex);
             }
           }
         }
@@ -439,8 +508,8 @@ public class ZPPInInterceptor implements SoapInterceptorInterface {
           LOG.logError(l, "Error updating mail :'" + mi.getId() + "'!", ex);
         }
 
-        if (sb != null && sb.getExecute() != null && sb.getExecute().getActive()
-            && sb.getExecute().getCommand() != null) {
+        if (sb != null && sb.getExecute() != null && sb.getExecute().getActive() &&
+             sb.getExecute().getCommand() != null) {
           Execute e = sb.getExecute();
           String params = msfFormat.format(e.getParameters(), mi);
           try {

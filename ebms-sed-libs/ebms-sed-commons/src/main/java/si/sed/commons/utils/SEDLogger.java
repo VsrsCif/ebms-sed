@@ -19,9 +19,9 @@ import static java.lang.Thread.currentThread;
 import static java.util.Calendar.getInstance;
 import org.apache.log4j.Logger;
 
-
 /**
- * Common method logger. 
+ * Common method logger.
+ *
  * @author Joze Rihtarsic <joze.rihtarsic@sodisce.si>
  */
 public class SEDLogger {
@@ -52,7 +52,8 @@ public class SEDLogger {
    * @return
    */
   protected String getCurrentMethodName() {
-    return currentThread().getStackTrace().length > miMethodStack ? currentThread().getStackTrace()[miMethodStack]
+    return currentThread().getStackTrace().length > miMethodStack ?
+        currentThread().getStackTrace()[miMethodStack]
         .getMethodName() : "NULL METHOD";
   }
 
@@ -87,9 +88,10 @@ public class SEDLogger {
     mlgLogger.info(getCurrentMethodName() + ":" + (strParams != null ? strParams : ""));
     return mlTime;
   }
-  
-   /**
+
+  /**
    * String formated log
+   *
    * @param format - format form
    * @param param - params
    * @return
@@ -99,15 +101,13 @@ public class SEDLogger {
     mlgLogger.info(getCurrentMethodName() + ":" + String.format(format, param));
     return mlTime;
   }
-  
+
   public long formatedWarning(final String format, final Object... param) {
     long mlTime = getTime();
     mlgLogger.warn(getCurrentMethodName() + ":" + String.format(format, param));
     return mlTime;
   }
- 
 
- 
   /**
    *
    * @param lTime
@@ -124,8 +124,8 @@ public class SEDLogger {
       strParams = sw.toString();
     }
 
-    mlgLogger.info(getCurrentMethodName() + ": - END ( " + (getTime() - lTime) + " ms) "
-        + strParams);
+    mlgLogger.info(getCurrentMethodName() + ": - END ( " + (getTime() - lTime) + " ms) " +
+         strParams);
   }
 
   /**
@@ -135,8 +135,9 @@ public class SEDLogger {
    * @param ex
    */
   public void logError(long lTime, String strMessage, Throwable ex) {
-    
-    mlgLogger.error(getCurrentMethodName() + ": - ERROR MSG: '" + strMessage + "', first cause '"+getFirstCauseMessage(ex)+"' ( "
+
+    mlgLogger.error(getCurrentMethodName() + ": - ERROR MSG: '" + strMessage + "'" + (ex == null ?
+        "." : ", first cause '" + getFirstCauseMessage(ex) + "')") + "( "
         + (getTime() - lTime) + " ms )", ex);
   }
 
@@ -146,8 +147,9 @@ public class SEDLogger {
    * @param ex
    */
   public void logError(long lTime, Throwable ex) {
-    mlgLogger.error(getCurrentMethodName() + ": - ERROR MSG: '"
-        + (ex != null ? ex.getMessage() : "") + "' first cause '"+getFirstCauseMessage(ex)+"' ( " + (getTime() - lTime) + " ms )", ex);
+    mlgLogger.error(getCurrentMethodName() + ": - ERROR MSG: '" +
+         (ex != null ? ex.getMessage() : "") + "' first cause '" + getFirstCauseMessage(ex) + "' ( " +
+        (getTime() - lTime) + " ms )", ex);
   }
 
   /**
@@ -170,8 +172,8 @@ public class SEDLogger {
       strParams = sw.toString();
     }
 
-    mlgLogger.debug(getCurrentMethodName() + ": - BEGIN' "
-        + (strParams != null ? " params: " + strParams : ""));
+    mlgLogger.debug(getCurrentMethodName() + ": - BEGIN' " +
+         (strParams != null ? " params: " + strParams : ""));
     return mlTime;
   }
 
@@ -182,37 +184,41 @@ public class SEDLogger {
    * @param ex
    */
   public void logWarn(long lTime, String strMessage, Exception ex) {
-    mlgLogger.warn(getCurrentMethodName() + ": - WARN MSG: '" + strMessage + "', first cause '"+getFirstCauseMessage(ex)+"' ( "
-        + (getTime() - lTime) + " ms )", ex);
+    mlgLogger.warn(getCurrentMethodName() + ": - WARN MSG: '" + strMessage + "', first cause '" +
+        getFirstCauseMessage(ex) + "' ( " +
+         (getTime() - lTime) + " ms )", ex);
   }
-   /**
+
+  /**
    *
    * @param lTime
    * @param strMessage
    * @param ex
    */
   public void logWarn(String strMessage, Exception ex) {
-    mlgLogger.warn(getCurrentMethodName() + ": - WARN MSG: '" + strMessage + "', first cause '"+getFirstCauseMessage(ex)+"'.", ex);
+    mlgLogger.warn(getCurrentMethodName() + ": - WARN MSG: '" + strMessage + "', first cause '" +
+        getFirstCauseMessage(ex) + "'.", ex);
   }
-  
+
   /**
-   * Method returs first cause message in throwable stack. If Throwable is null, null is returned. 
+   * Method returs first cause message in throwable stack. If Throwable is null, null is returned.
+   *
    * @param tw throwable
-   * @return 
+   * @return
    */
-  public static String getFirstCauseMessage(Throwable tw){
-    if (tw == null || tw.getCause() == null){
+  public static String getFirstCauseMessage(Throwable tw) {
+    if (tw == null || tw.getCause() == null) {
       return null;
     }
     Throwable twCause = tw.getCause();
-    while (twCause.getCause()!= null) {
+    while (twCause.getCause() != null) {
       twCause = twCause.getCause();
     }
     return twCause.getMessage();
-  
+
   }
-  
-   public Logger getLogger() {
+
+  public Logger getLogger() {
     return mlgLogger;
 
   }

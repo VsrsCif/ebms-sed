@@ -2,7 +2,7 @@
  * To change this license header, choose License Headers in Project Properties. To change this
  * template file, choose Tools | Templates and open the template in the editor.
  */
-package si.jrc.msh.utils;
+package si.sed.commons.cxf;
 
 /**
  *
@@ -29,6 +29,12 @@ public class EBMSConstants {
    * Interceptor context variable for sender party identityset 
    */
   public static final String EBMS_CP_IN_CONTEXT = "sed.ebms.cp.context.int";
+  
+  
+  /**
+   * Interceptor context parammeter for in mail for receiver box
+   */
+  public static final String EBMS_CP_INMAIL_RECEIVER = "sed.ebms.cp.inmail.receiver";
   
   
   /**
@@ -100,7 +106,7 @@ public class EBMSConstants {
    * SVEV PartyInfoID Type for address
    */
   public static final String EBMS_PARTY_TYPE_EBOX =
-      "urn:oasis:names:tc:ebcore:partyid-type:unregistered:si-svev:e-box";
+      "urn:oasis:names:tc:ebcore:partyid-type:unregistered:si-svev:sed-box";
 
   /**
    *SVEV PartyInfoID Type for name

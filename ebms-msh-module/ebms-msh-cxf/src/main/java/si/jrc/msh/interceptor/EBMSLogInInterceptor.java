@@ -29,7 +29,7 @@ import org.apache.cxf.message.Message;
 import org.apache.cxf.message.MessageUtils;
 import org.apache.cxf.phase.Phase;
 import si.jrc.msh.utils.EBMSLogUtils;
-import si.jrc.msh.utils.EBMSConstants;
+import si.sed.commons.cxf.EBMSConstants;
 import si.sed.commons.utils.SEDLogger;
 
 /**

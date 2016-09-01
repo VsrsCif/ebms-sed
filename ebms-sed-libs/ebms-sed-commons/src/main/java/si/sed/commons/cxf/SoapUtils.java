@@ -12,13 +12,15 @@
  * or implied. See the Licence for the specific language governing permissions and limitations under
  * the Licence.
  */
-package si.jrc.msh.utils;
+package si.sed.commons.cxf;
 
+import si.sed.commons.cxf.EBMSConstants;
 import java.io.File;
 import java.net.URI;
 import org.apache.cxf.message.Message;
 import org.msh.ebms.inbox.mail.MSHInMail;
 import org.msh.ebms.outbox.mail.MSHOutMail;
+import org.sed.ebms.ebox.SEDBox;
 import si.sed.commons.pmode.EBMSMessageContext;
 
 /**
@@ -55,6 +57,14 @@ public class SoapUtils {
 
   public static void setMSHInMail(MSHInMail imail, Message message) {
     message.getExchange().put(EBMSConstants.EBMS_CP_INMAIL, imail);
+  }
+  
+   public static SEDBox getMSHInMailReceiverBox(Message message) {
+    return (SEDBox) message.getExchange().get(EBMSConstants.EBMS_CP_INMAIL_RECEIVER);
+  }
+
+  public static void setMSHInMailReceiverBox(SEDBox imail, Message message) {
+    message.getExchange().put(EBMSConstants.EBMS_CP_INMAIL_RECEIVER, imail);
   }
 
   public static EBMSMessageContext getEBMSMessageOutContext(Message message) {

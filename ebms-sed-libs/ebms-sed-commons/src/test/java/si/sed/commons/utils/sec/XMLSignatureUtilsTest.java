@@ -5,7 +5,6 @@
  */
 package si.sed.commons.utils.sec;
 
-import static java.lang.System.out;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -13,17 +12,12 @@ import java.security.UnrecoverableKeyException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.XMLConstants;
-import javax.xml.crypto.MarshalException;
 import javax.xml.crypto.dsig.SignatureMethod;
-import javax.xml.crypto.dsig.XMLSignatureException;
 import javax.xml.crypto.dsig.XMLSignatureFactory;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
@@ -36,9 +30,7 @@ import si.sed.commons.utils.Utils;
 import static si.sed.commons.utils.sec.XMLSignatureUtils.XML_SIGNATURE_PROVIDER_PROP;
 import static si.sed.commons.utils.sec.XMLSignatureUtils.XML_SIGNATURE_PROVIDER_VALUE_1;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import org.w3c.dom.NodeList;
 import si.sed.commons.exception.SEDSecurityException;
 import si.sed.commons.utils.xml.SchemaErrorHandler;
@@ -207,7 +199,7 @@ public class XMLSignatureUtilsTest {
     String sigMethod = SignatureMethod.RSA_SHA1;
     XMLSignatureUtils instance = new XMLSignatureUtils();
     instance.createXAdESEnvelopedSignature(certPrivateKey, sigEl, strIds,
-        digestMethodCode, sigMethod);
+        digestMethodCode, sigMethod, "Test reason");
 
     return doc;
   }

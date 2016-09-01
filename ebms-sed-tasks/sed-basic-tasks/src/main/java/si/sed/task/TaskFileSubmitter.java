@@ -34,6 +34,7 @@ import org.msh.ebms.outbox.mail.MSHOutMail;
 import org.msh.ebms.outbox.payload.MSHOutPart;
 import org.msh.ebms.outbox.payload.MSHOutPayload;
 import org.msh.sed.pmode.PMode;
+import org.msh.sed.pmode.PartyIdentitySet;
 //import org.msh.svev.pmode.PMode;
 import org.sed.ebms.cron.SEDTaskType;
 import org.sed.ebms.cron.SEDTaskTypeProperty;
@@ -42,10 +43,12 @@ import si.sed.commons.SEDJNDI;
 import si.sed.commons.SEDOutboxMailStatus;
 import si.sed.commons.exception.PModeException;
 import si.sed.commons.exception.StorageException;
+import si.sed.commons.interfaces.PModeInterface;
 import si.sed.commons.interfaces.SEDDaoInterface;
 import si.sed.commons.interfaces.SEDLookupsInterface;
 import si.sed.commons.interfaces.TaskExecutionInterface;
 import si.sed.commons.interfaces.exception.TaskException;
+import si.sed.commons.pmode.EBMSMessageContext;
 //import si.sed.commons.utils.PModeManager;
 import si.sed.commons.utils.SEDLogger;
 import si.sed.commons.utils.StorageUtils;
@@ -61,6 +64,9 @@ import si.sed.task.exception.FSException;
 @Local(TaskExecutionInterface.class)
 public class TaskFileSubmitter implements TaskExecutionInterface {
 
+
+  
+  
   private static final DateFormat SDF = SimpleDateFormat.getDateTimeInstance(
       SimpleDateFormat.DEFAULT, SimpleDateFormat.DEFAULT);
 
@@ -84,7 +90,6 @@ public class TaskFileSubmitter implements TaskExecutionInterface {
   public static String KEY_EXPORT_FOLDER = "file.submit.folder";
 
   StorageUtils mSU = new StorageUtils();
-//  PModeManager mpModeManager = new PModeManager();
 
   String outFileFormat = "%s_%03d.xml";
 
@@ -95,6 +100,9 @@ public class TaskFileSubmitter implements TaskExecutionInterface {
 
   @EJB(mappedName = SEDJNDI.JNDI_SEDLOOKUPS)
   SEDLookupsInterface mLookups;
+  
+  @EJB (mappedName = SEDJNDI.JNDI_PMODE)
+  protected PModeInterface mpModeManager;
 
   /**
    *
@@ -295,23 +303,22 @@ public class TaskFileSubmitter implements TaskExecutionInterface {
       mout.getMSHOutPayload().getMSHOutParts().add(mp);
     }
 
-    String pmodeId = mout.getService() + ":" + Utils.getDomainFromAddress(mout.getReceiverEBox());
-    PMode pm = null;
+    
+    EBMSMessageContext ectx = null;
     try {
-      pm = mpModeManager.getPModeById(pmodeId);
+      // validate message 
+      ectx = mpModeManager.createMessageContextForOutMail(mout);      
     } catch (PModeException ex) {
       String errDesc =
-          "Error reading pmodes for id: '" + pmodeId + "'. Err:" + ex.getMessage() +
+          "Error configurating send context for mail. Err:" + ex.getMessage() +
            ".  Message with id '" + mout.getMessageId() + "' is not procesed!";
 
       throw new FSException(errDesc, ex);
     }
-    if (pm == null) {
-      throw new FSException("PMode configuration '" + pmodeId + "' not exists", null);
-    }
+    
 
     try {
-      mdao.serializeOutMail(mout, "", "file-submitter", pmodeId);
+      mdao.serializeOutMail(mout, "", "file-submitter", ectx.getPMode().getId());
       res = mout.getId();
     } catch (StorageException ex) {
       throw new FSException("Error serializing mail", ex);

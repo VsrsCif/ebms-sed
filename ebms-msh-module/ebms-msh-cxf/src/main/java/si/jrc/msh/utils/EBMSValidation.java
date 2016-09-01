@@ -14,11 +14,9 @@
  */
 package si.jrc.msh.utils;
 
-import java.io.IOException;
+import si.sed.commons.cxf.EBMSConstants;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
 import javax.xml.soap.SOAPException;
@@ -37,6 +35,7 @@ import si.jrc.msh.exception.EBMSError;
 import si.jrc.msh.exception.EBMSErrorCode;
 import si.jrc.msh.exception.EBMSErrorMessage;
 import si.jrc.msh.interceptor.EBMSInInterceptor;
+import si.sed.commons.cxf.SoapUtils;
 import si.sed.commons.utils.SEDLogger;
 import si.sed.commons.utils.xml.XMLUtils;
 
@@ -145,11 +144,10 @@ public class EBMSValidation {
   }
 
   /**
-   * Method validates UserMessageUnit: 
-   * validate payload validate properties validate signature
+   * Method validates UserMessageUnit: validate payload validate properties validate signature
    *    * <ul>
    * <li>Payload (if referenced payloads exists)</li>
-   * <li>Existence  and type of value:  aggrement, service</li>   
+   * <li>Existence and type of value: aggrement, service</li>
    * </ul>
    * Method validates: validate payload validate properties validate signature
    *
@@ -163,7 +161,7 @@ public class EBMSValidation {
     String msgId = EBMSBuilder.getUserMessageId(um);
     if (um.getMpc() == null) {
       LOG.logWarn(l, "Null MPC for inbound user message: '" + msgId + "'.", null);
-     
+
     }
 
     CollaborationInfo ci = um.getCollaborationInfo();
@@ -175,7 +173,7 @@ public class EBMSValidation {
       // If the type attribute is not present, the content of the eb:AgreementRef element
       // MUST be a URI. 
       String msg = EBMSErrorMessage.INVALID_AGR_REF_URI + ". Message agreement reference: '" +
-           ar.getValue() + "'";
+          ar.getValue() + "'";
       throw new EBMSError(EBMSErrorCode.ValueInconsistent, msgId,
           msg, sv);
     }
@@ -263,15 +261,24 @@ public class EBMSValidation {
   public void vaildateSignalMessage(SoapMessage soap, SignalMessage sm, QName sv) {
     long l = LOG.logStart();
     String msgId = EBMSBuilder.getSignalMessageId(sm);
-    if (!sm.getAnies().isEmpty()) {
-      throw new EBMSError(EBMSErrorCode.FeatureNotSupportedFailure, msgId,
-          "Signal type " + sm.getAnies().get(0).getTagName() + " not suppored!", sv);
+    for (Element el : sm.getAnies()) {
+      if (!el.getLocalName().equals("EncryptedKey")) {
+        throw new EBMSError(EBMSErrorCode.FeatureNotSupportedFailure, msgId,
+            "Signal type " + el.getTagName() + " not suppored!", sv);
+
+      }else {
+        // add anies to exchange
+        soap.getExchange().put("SIGNAL_ELEMENTS", sm.getAnies()); // TODO
+      }
     }
+    
+
+
     if (sm.getPullRequest() != null) {
       throw new EBMSError(EBMSErrorCode.FeatureNotSupportedFailure, msgId,
           "Signal PullRequest not suppored!", sv);
     }
-    
+
     LOG.logEnd(l, msgId);
   }
 

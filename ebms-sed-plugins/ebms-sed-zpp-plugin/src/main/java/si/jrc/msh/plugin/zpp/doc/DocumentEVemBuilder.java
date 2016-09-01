@@ -61,7 +61,7 @@ public class DocumentEVemBuilder extends DocumentBuilder {
     // String strNotfMail = Settings.getInstance().getNotificationMail();
     // send document
     Document document = new Document();
-    List<String[]> lstSignatureIDS = new ArrayList<String[]>();
+    List<String> lstSignatureIDS = new ArrayList<>();
     // --------------------- create message ----------------------
     Message mt = new Message();
     // --------------------- ADDRESSES ----------------------
@@ -95,7 +95,7 @@ public class DocumentEVemBuilder extends DocumentBuilder {
     mt.setSubject(dce.getSubject());
     DataType dt = new DataType();
     dt.setId(Utils.getInstance().getGuidString());
-    lstSignatureIDS.add(new String[] {dt.getId(), NM_DATA});
+    lstSignatureIDS.add(dt.getId());
     DataObjectFormatType doft = new DataObjectFormatType();
     doft.setIdentifier(" "); // obvezen element
     doft.setMimeType(MIME_TXT); // obvezen element
@@ -119,7 +119,7 @@ public class DocumentEVemBuilder extends DocumentBuilder {
         VisualisationType vst = new VisualisationType();
         vst.setDescription(d.getDescription());
         vst.setId(Utils.getInstance().getGuidString());
-        lstSignatureIDS.add(new String[] {vst.getId(), NM_VIS});
+        lstSignatureIDS.add(vst.getId());
         doft = new DataObjectFormatType();
         doft.setIdentifier(" ");
         doft.setMimeType(d.getMimeType() == null ? "application/pdf" : d.getMimeType());
@@ -152,7 +152,7 @@ public class DocumentEVemBuilder extends DocumentBuilder {
             at.setFileName("sod_" + encId + "_" + id + "."
                 + getFilePrefixForMimeType(d.getMimeType()));
 
-            lstSignatureIDS.add(new String[] {at.getId(), NM_VIS});
+            lstSignatureIDS.add(at.getId());
             DataObjectFormatType atft = new DataObjectFormatType();
             atft.setIdentifier(Utils.getInstance().getGuidString());
             atft.setMimeType(d.getMimeType() == null ? "application/pdf" : d.getMimeType());

@@ -44,5 +44,6 @@
     <modules>
         <module>ebms-sed-zpp-plugin</module>
         <module>ebms-sed-meps-plugin</module>
+        <module>ebms-sed-esens-plugin</module>
     </modules>
 </project>

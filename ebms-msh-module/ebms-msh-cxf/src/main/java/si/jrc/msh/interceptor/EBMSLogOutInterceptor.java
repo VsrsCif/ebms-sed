@@ -19,8 +19,8 @@ import org.apache.cxf.message.MessageUtils;
 import org.apache.cxf.phase.Phase;
 import org.msh.ebms.outbox.mail.MSHOutMail;
 import si.jrc.msh.utils.EBMSLogUtils;
-import si.jrc.msh.utils.EBMSConstants;
-import si.jrc.msh.utils.SoapUtils;
+import si.sed.commons.cxf.EBMSConstants;
+import si.sed.commons.cxf.SoapUtils;
 import si.sed.commons.utils.SEDLogger;
 
 /**

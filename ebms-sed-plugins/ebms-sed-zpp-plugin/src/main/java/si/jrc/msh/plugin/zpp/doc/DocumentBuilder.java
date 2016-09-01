@@ -5,10 +5,19 @@ import java.io.IOException;
 import java.security.KeyStore;
 import java.util.Calendar;
 import java.util.List;
+import java.util.logging.Level;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import javax.xml.crypto.dsig.SignatureMethod;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import org.apache.log4j.Logger;
 import org.msh.ebms.outbox.mail.MSHOutMail;
 import org.w3c.dom.Document;
@@ -16,73 +25,67 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import si.sed.commons.exception.SEDSecurityException;
 import si.sed.commons.utils.StorageUtils;
+import si.sed.commons.utils.sec.DigestMethodCode;
 import si.sed.commons.utils.sec.XMLSignatureUtils;
 
 /**
  *
- * @author logos
+ * @author Jože Rihtaršič
  */
 public abstract class DocumentBuilder {
 
+  public static final String SIGNATURE_REASON = "ebms-sed: Legal delivery advice";
   /**
-     *
-     */
+   *
+   */
   public static final String CREA_V1 = "CREA_V1";
 
   /**
-     *
-     */
+   *
+   */
   protected static final String DELIVERY_TYPE = "Legal-ZPP2";
 
   /**
-     *
-     */
+   *
+   */
   protected static final String DOCUMENT_TYPE = "Message";
 
   /**
-     *
-     */
+   *
+   */
   protected static final String ENC_TYPE_B64 = "base64";
 
   /**
-     *
-     */
+   *
+   */
   protected static final String ENC_TYPE_UTF8 = "UTF-8";
-  private static final String HLSSDK_JKSPATH = "JKSPATH";
 
   /**
-     *
-     */
+   *
+   */
   protected static final String IDPFX_DATA = "dat-test";
 
-  private static final String IDPFX_SIG = "sig-test";
-  private static final String IDPFX_SIG_PROP = "sigprop-test";
-
   /**
-     *
-     */
+   *
+   */
   protected static final String IDPFX_VIS = "vis-test";
 
   /**
-     *
-     */
+   *
+   */
   protected static final String MIME_PDF = "application/pdf";
 
   /**
-     *
-     */
+   *
+   */
   protected static final String MIME_TXT = "text/xml";
   private static final String SIGNATURE_ELEMENT_NAME = "Signatures";
   // schema type
 
   /**
-     *
-     */
+   *
+   */
   public static final String SOD_V1 = "SOD_V1";
-  private static final String XAdESCertificateDigestAlgorithm =
-      "http://www.w3.org/2000/09/xmldsig#sha1";
-  private static final String XAdESignatureProductionPlace = "Ljubljana";
-  private static final String XMLHEADER = "<?";
 
   /**
    *
@@ -111,7 +114,8 @@ public abstract class DocumentBuilder {
    * @return
    * @throws SEDSecurityException
    */
-  protected Document convertEpDoc2W3cDoc(Object jaxBDoc, Class[] cls) throws SEDSecurityException {
+  protected Document convertEpDoc2W3cDoc(Object jaxBDoc, Class[] cls)
+      throws SEDSecurityException {
     Document xDoc = null;
     try {
       javax.xml.parsers.DocumentBuilderFactory dbf =
@@ -125,15 +129,15 @@ public abstract class DocumentBuilder {
       marshaller.marshal(jaxBDoc, xDoc);
     } catch (JAXBException ex) {
       String strMsg =
-          "DocumentBuilder.convertEpDoc2W3cDoc: could marshal Document: JAXBException: '"
-              + ex.getMessage() + "'.";
+          "DocumentBuilder.convertEpDoc2W3cDoc: could marshal Document: JAXBException: '" +
+          ex.getMessage() + "'.";
       mlgLogger.error(strMsg, ex);
       throw new SEDSecurityException(
           SEDSecurityException.SEDSecurityExceptionCode.CreateSignatureException, ex);
     } catch (ParserConfigurationException ex) {
       String strMsg =
-          "DocumentBuilder.convertEpDoc2W3cDoc: could not create w3c document: ParserConfigurationException: '"
-              + ex.getMessage() + "'.";
+          "DocumentBuilder.convertEpDoc2W3cDoc: could not create w3c document: ParserConfigurationException: '" +
+          ex.getMessage() + "'.";
       mlgLogger.error(strMsg, ex);
       throw new SEDSecurityException(
           SEDSecurityException.SEDSecurityExceptionCode.CreateSignatureException, ex);
@@ -164,7 +168,6 @@ public abstract class DocumentBuilder {
     return mssuSignUtils;
   }
 
-
   /**
    *
    * @return
@@ -181,17 +184,31 @@ public abstract class DocumentBuilder {
    * @param key
    * @throws SEDSecurityException
    */
-  protected synchronized void singDocument(Document xDoc, List<String[]> strIds,
-      FileOutputStream fos, KeyStore.PrivateKeyEntry key) throws SEDSecurityException {
+  protected synchronized void singDocument(Document xDoc, List<String> strIds,
+      FileOutputStream fos, KeyStore.PrivateKeyEntry key)
+      throws SEDSecurityException {
     long t = getTime();
     mlgLogger.info("DocumentBuilder.singDocument: begin ");
 
     NodeList lst = xDoc.getDocumentElement().getElementsByTagName(SIGNATURE_ELEMENT_NAME);
     Element eltSignature = (Element) lst.item(0);
-  
-    // todo change signature - dev stoped because of e-sens testing
+
     // method is necessery for SVEV integrations
-    //getSignUtils().singDocument(key, eltSignature, strIds, fos);
+    getSignUtils().createXAdESEnvelopedSignature(key, eltSignature, strIds, DigestMethodCode.SHA256,
+        SignatureMethod.RSA_SHA1, SIGNATURE_REASON);
+
+    // write it to output..            
+    TransformerFactory tf = TransformerFactory.newInstance();
+    Transformer trans;
+    try {
+      trans = tf.newTransformer();
+
+      trans.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+      trans.transform(new DOMSource(xDoc), new StreamResult(fos));
+    } catch (TransformerException ex) {
+      throw new SEDSecurityException(SEDSecurityException.SEDSecurityExceptionCode.ReadWriteFileException);
+      
+    }
 
     mlgLogger.info("DocumentBuilder.singDocument: - end (" + (getTime() - t) + "ms)");
   }

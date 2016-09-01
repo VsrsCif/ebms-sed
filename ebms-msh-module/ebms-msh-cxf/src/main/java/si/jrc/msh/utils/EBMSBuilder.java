@@ -14,6 +14,7 @@
  */
 package si.jrc.msh.utils;
 
+import si.sed.commons.cxf.EBMSConstants;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -55,6 +56,7 @@ import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.Receipt;
 import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.SignalMessage;
 import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.To;
 import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.UserMessage;
+import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.Error;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
@@ -442,6 +444,23 @@ public class EBMSBuilder {
       return getSignalMessageId(mi.getSignalMessages().get(0));
     }
     return null;
+  }
+  
+  
+  public static Error createErrorSignal(EBMSError err){
+      Error er = new Error();
+      er.setDescription(new Description());
+      er.getDescription().setLang("en");
+      er.getDescription().setValue(err.getEbmsErrorCode().getDescription());
+      er.setErrorDetail(err.getSubMessage());
+      er.setCategory(err.getEbmsErrorCode().getCategory());
+      er.setRefToMessageInError(err.getRefToMessage());
+      er.setErrorCode(err.getEbmsErrorCode().getCode());
+      er.setOrigin(err.getEbmsErrorCode().getOrigin());
+      er.setSeverity(err.getEbmsErrorCode().getSeverity());
+      er.setShortDescription(err.getEbmsErrorCode().getName());
+      
+      return er;
   }
 
 }

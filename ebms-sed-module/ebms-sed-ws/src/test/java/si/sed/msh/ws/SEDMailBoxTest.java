@@ -227,8 +227,18 @@ public class SEDMailBoxTest extends TestUtils {
     InPart ip = new InPart();
     ip.setFilename("Test.txt");
     ip.setDescription("test attachment");
-    ip.setValue(testContent.getBytes());
+    ip.setBin(testContent.getBytes());
     ip.setMimeType(MimeValues.MIME_TEXI.getMimeType());
+    InPart.Property iprop1 = new InPart.Property();
+    iprop1.setName("Property 1");
+    iprop1.setValue("value");
+    InPart.Property iprop2 = new InPart.Property();
+    iprop2.setName("Property 2");
+    iprop2.setValue("value");
+    
+    ip.getProperties().add(iprop1);
+    ip.getProperties().add(iprop2);
+    
     im.getInPayload().getInParts().add(ip);
 
     return im;
@@ -253,8 +263,20 @@ public class SEDMailBoxTest extends TestUtils {
     OutPart op = new OutPart();
     op.setFilename("Test.txt");
     op.setDescription("test attachment");
-    op.setValue(testContent.getBytes());
+    op.setBin(testContent.getBytes());
     op.setMimeType(MimeValues.MIME_TEXI.getMimeType());
+    
+    
+    OutPart.Property iprop1 = new OutPart.Property();
+    iprop1.setName("Property 1");
+    iprop1.setValue("value");
+    OutPart.Property iprop2 = new OutPart.Property();
+    iprop2.setName("Property 2");
+    iprop2.setValue("value");
+    
+    op.getProperties().add(iprop1);
+    op.getProperties().add(iprop2);
+    
     om.getOutPayload().getOutParts().add(op);
 
     return om;
@@ -294,8 +316,8 @@ public class SEDMailBoxTest extends TestUtils {
         for (InPart p : mail.getInPayload().getInParts()) {
           File fout = null;
 
-          if (p.getValue() != null) {
-            fout = msuStorageUtils.storeInFile(p.getMimeType(), p.getValue());
+          if (p.getBin() != null) {
+            fout = msuStorageUtils.storeInFile(p.getMimeType(), p.getBin());
             // purge binary data
             // p.setValue(null);
           } else if (!Utils.isEmptyString(p.getFilepath())) {
@@ -386,8 +408,8 @@ public class SEDMailBoxTest extends TestUtils {
           for (OutPart p : mail.getOutPayload().getOutParts()) {
             File fout = null;
 
-            if (p.getValue() != null) {
-              fout = msuStorageUtils.storeOutFile(p.getMimeType(), p.getValue());
+            if (p.getBin() != null) {
+              fout = msuStorageUtils.storeOutFile(p.getMimeType(), p.getBin());
               // purge binary data
               // p.setValue(null);
             } else if (!Utils.isEmptyString(p.getFilepath())) {
@@ -1040,7 +1062,10 @@ public class SEDMailBoxTest extends TestUtils {
     assertNotNull("Response/RData/InMail", mer.getRData().getInMail());
     assertEquals("Response/RData/InMail", im.getId(), mer.getRData().getInMail().getId());
     assertArrayEquals("Response/RData/getPyloadPart", im.getInPayload().getInParts().get(0)
-        .getValue(), mer.getRData().getInMail().getInPayload().getInParts().get(0).getValue());
+        .getBin(), mer.getRData().getInMail().getInPayload().getInParts().get(0).getBin());
+    
+    
+    
 
   }
 

@@ -17,7 +17,24 @@
         <property column="MIME_TYPE" name="MimeType"  length="128" type="java.lang.String" />
         <property column="ENCODING" name="Encoding"  length="128" type="java.lang.String" />
         <property column="MD5" name="Md5"  length="32" type="java.lang.String" />
-    </class>    
+        
+         <bag name="properties"  access="field" cascade="all" lazy="false" order-by="Id asc" >
+                <key not-null="true">
+                    <column name="OUTPART_ID" scale="0" />
+                </key>
+                <one-to-many class="org.sed.ebms.outbox.payload.OutPart$Property" />
+        </bag>
+    </class>  
+     <class name="org.sed.ebms.outbox.payload.OutPart$Property" table="SED_OUTBOX_PAYLOAD_PROPERTY">
+        <id name="Id" type="java.math.BigInteger">
+            <column name="ID" scale="0" />
+            <generator class="sequence">
+                <param name="sequence">SEQ_SED_OUTBOX_PAYLOAD_PROP</param>
+            </generator>
+        </id>		
+        <property column="NAME" name="Name" type="java.lang.String"  length="128" /> 
+        <property column="VALUE" name="Value" type="java.lang.String" length="512" />         
+    </class>  
     
 
 </hibernate-mapping>

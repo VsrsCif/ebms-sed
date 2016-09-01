@@ -208,8 +208,8 @@
 					<xs:attribute name="partyIdentitySetIdRef" type="xs:string" use="required"/>
 				</xs:complexType>
 			</xs:element>
-			<xs:element name="ForeChannelMessage" type="tns:TransportChannelType"/>
-			<xs:element name="BackChannelMessage" type="tns:TransportChannelType" minOccurs="0">
+			<xs:element name="ForeChannel" type="tns:TransportChannelType"/>
+			<xs:element name="BackChannel" type="tns:TransportChannelType" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>In case of two-way transport </xs:documentation>
 				</xs:annotation>
@@ -275,17 +275,6 @@
 			<xs:annotation>
 				<xs:documentation>action from bussines procees </xs:documentation>
 			</xs:annotation>
-		</xs:attribute>
-		<xs:attribute name="userMessageType">
-			<xs:annotation>
-				<xs:documentation>If replay in two-way comunication RefMessageId must be filed</xs:documentation>
-			</xs:annotation>
-			<xs:simpleType>
-				<xs:restriction base="xs:token">
-					<xs:enumeration value="request"/>
-					<xs:enumeration value="replay"/>
-				</xs:restriction>
-			</xs:simpleType>
 		</xs:attribute>
 		<xs:attribute name="securityIdRef" type="xs:NCName"/>
 		<xs:attribute name="errorHandlingIdRef" type="xs:NCName"/>

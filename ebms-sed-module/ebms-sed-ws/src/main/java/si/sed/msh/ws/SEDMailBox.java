@@ -335,7 +335,7 @@ public class SEDMailBox implements SEDMailBoxWS {
       if (im.getInPayload() != null && !im.getInPayload().getInParts().isEmpty()) {
         for (InPart ip : im.getInPayload().getInParts()) {
           try {
-            ip.setValue(msuStorageUtils.getByteArray(ip.getFilepath()));
+            ip.setBin(msuStorageUtils.getByteArray(ip.getFilepath()));            
           } catch (StorageException ingore) {
 
           }
@@ -899,8 +899,8 @@ public class SEDMailBox implements SEDMailBoxWS {
         for (OutPart p : mail.getOutPayload().getOutParts()) {
           File fout = null;
 
-          if (p.getValue() != null) {
-            fout = msuStorageUtils.storeOutFile(p.getMimeType(), p.getValue());
+          if (p.getBin() != null) {
+            fout = msuStorageUtils.storeOutFile(p.getMimeType(), p.getBin());
             // purge binary data
             // p.setValue(null);
           } else if (!Utils.isEmptyString(p.getFilepath())) {

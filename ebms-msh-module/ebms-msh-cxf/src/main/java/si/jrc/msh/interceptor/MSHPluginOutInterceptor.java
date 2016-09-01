@@ -4,17 +4,21 @@
  */
 package si.jrc.msh.interceptor;
 
+import java.util.List;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import org.apache.cxf.binding.soap.SoapMessage;
 import org.apache.cxf.binding.soap.interceptor.AbstractSoapInterceptor;
 import org.apache.cxf.interceptor.Fault;
 import org.apache.cxf.phase.Phase;
-import org.msh.ebms.inbox.mail.MSHInMail;
 import org.msh.ebms.outbox.mail.MSHOutMail;
+import org.msh.sed.pmode.PluginType;
+import si.sed.commons.cxf.SoapUtils;
 
 import si.sed.commons.interfaces.SoapInterceptorInterface;
+import si.sed.commons.pmode.EBMSMessageContext;
 import si.sed.commons.utils.SEDLogger;
+import si.sed.commons.utils.Utils;
 
 /**
  *
@@ -22,12 +26,10 @@ import si.sed.commons.utils.SEDLogger;
  */
 public class MSHPluginOutInterceptor extends AbstractSoapInterceptor {
 
-  private static final String PLUGIN_FOLDER = "plugins";
-
   /**
      *
      */
-  protected final SEDLogger mlog = new SEDLogger(MSHPluginOutInterceptor.class);
+  protected final static SEDLogger LOG = new SEDLogger(MSHPluginOutInterceptor.class);
 
   /**
      *
@@ -42,31 +44,31 @@ public class MSHPluginOutInterceptor extends AbstractSoapInterceptor {
    */
   @Override
   public void handleMessage(SoapMessage msg) throws Fault {
-    long l = mlog.logStart();
-/*    PMode pmd = msg.getExchange().get(PMode.class);
-    MSHOutMail outMail = msg.getExchange().get(MSHOutMail.class);
-    MSHInMail inMail = msg.getExchange().get(MSHInMail.class);
-    if (pmd != null && outMail != null) {
-      // todo
-      String str = pmd.getLegs().get(0).getBusinessInfo().getService().getOutPlugin();
-      if (str != null) {
-        try {
-          SoapInterceptorInterface example = InitialContext.doLookup(str);
-          example.handleMessage(msg);
-        } catch (NamingException ex) {
-          mlog.logError(l, ex);
+    long l = LOG.logStart();
+     EBMSMessageContext ectx = SoapUtils.getEBMSMessageOutContext(msg);
+    MSHOutMail outMail = SoapUtils.getMSHOutMail(msg);
+    if (outMail == null){
+      LOG.logWarn("No MSHOutMail object  found to process!", null);
+    } else if (ectx == null){
+      LOG.formatedlog("No EBMSMessageContext context for out mail: '%d'." ,outMail.getId() );
+    } else if (ectx.getPMode().getOutPlugins() != null) {
+      List<PluginType> lst = ectx.getPMode().getOutPlugins().getPlugins();
+      for (PluginType pt : lst) {
+        // todo
+        String str = pt.getValue();
+        if (!Utils.isEmptyString(str)) {
+          try {
+            SoapInterceptorInterface example = InitialContext.doLookup(str);
+            example.handleMessage(msg);
+          } catch (NamingException ex) {
+            LOG.logError(l, ex);
+          }
         }
-        /*
-         * String[] lst = str.split("!"); String filenamePlugin = lst[0]; String classNamePlugin =
-         * lst[1]; mlog.log("Invoke: plugin :  " + str); AbstractPluginInterceptor ii =
-         * PluginManager.getInterceptor(System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR) +
-         * File.separator + PLUGIN_FOLDER + File.separator + filenamePlugin, classNamePlugin);
-         * ii.handleMessage(msg);
-         * /
       }
-    }*/
-
-    mlog.logEnd(l);
+    } else {
+      LOG.formatedlog("No plugin interceptor found for mail: '%d' pmode '%s'." ,outMail.getId(), ectx.getPMode().getId() );
+    }
+    LOG.logEnd(l);
   }
 
 }

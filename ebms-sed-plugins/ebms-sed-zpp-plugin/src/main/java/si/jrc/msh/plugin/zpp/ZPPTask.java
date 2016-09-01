@@ -26,6 +26,7 @@ import org.sed.ebms.cert.SEDCertStore;
 import org.sed.ebms.cron.SEDTaskType;
 import org.sed.ebms.cron.SEDTaskTypeProperty;
 import si.jrc.msh.plugin.zpp.doc.DocumentSodBuilder;
+import si.jrc.msh.plugin.zpp.exception.ZPPException;
 import si.jrc.msh.plugin.zpp.utils.FOPUtils;
 import si.jrc.msh.sec.SEDCrypto;
 import si.sed.commons.MimeValues;
@@ -59,6 +60,7 @@ public class ZPPTask implements TaskExecutionInterface {
 
   private static final SEDLogger LOG = new SEDLogger(ZPPTask.class);
   private static final String SIGN_ALIAS = "zpp.sign.key.alias";
+  private static final String SIGN_KEYSTORE = "zpp.sign.keystore";
   private static final String REC_SEDBOX = "zpp.sedbox";
 
   SEDCrypto mSedCrypto = new SEDCrypto();
@@ -93,12 +95,19 @@ public class ZPPTask implements TaskExecutionInterface {
     StringWriter sw = new StringWriter();
     sw.append("Start zpp plugin task: \n");
 
-    String singDAAlias = "";
+    String signKeyAlias = "";
+    String keystore = "";
     if (!p.containsKey(SIGN_ALIAS)) {
       throw new TaskException(TaskException.TaskExceptionCode.InitException,
           "Missing parameter:  '" + SIGN_ALIAS + "'!");
     } else {
-      singDAAlias = p.getProperty(SIGN_ALIAS);
+      signKeyAlias = p.getProperty(SIGN_ALIAS);
+    }
+    if (!p.containsKey(SIGN_KEYSTORE)) {
+      throw new TaskException(TaskException.TaskExceptionCode.InitException,
+          "Missing parameter:  '" + SIGN_KEYSTORE + "'!");
+    } else {
+      keystore = p.getProperty(SIGN_KEYSTORE);
     }
 
     String sedBox = "";
@@ -117,10 +126,13 @@ public class ZPPTask implements TaskExecutionInterface {
     sw.append("got " + lst.size() + " mails for sedbox: '" + sedBox + "'!");
     for (MSHInMail m : lst) {
       try {
-        processInZPPDelivery(m, singDAAlias);
-      } catch (FOPException | HashException ex) {
-        LOG.logError(l, ex);
-        sw.append("Error occurred processing: " + m.getId() + " err: " + ex.getMessage());
+        processInZPPDelivery(m, signKeyAlias, keystore);
+      } catch (FOPException | HashException | ZPPException ex) {
+        String msg = String.format("Error occurred processing mail: '%s'. Err: %s.", m.getId(),
+            ex.getMessage());
+        LOG.logError(l, msg, ex);
+
+        sw.append(msg);
       }
     }
 
@@ -140,7 +152,7 @@ public class ZPPTask implements TaskExecutionInterface {
     tt.setDescription("Sign deliveryadvice for incomming mail");
     tt.getSEDTaskTypeProperties().add(createTTProperty(REC_SEDBOX, "Receiver sedbox."));
     tt.getSEDTaskTypeProperties().add(createTTProperty(SIGN_ALIAS, "Signature key alias."));
-
+    tt.getSEDTaskTypeProperties().add(createTTProperty(SIGN_KEYSTORE, "Keystore name."));
     return tt;
   }
 
@@ -163,22 +175,31 @@ public class ZPPTask implements TaskExecutionInterface {
   /**
    *
    * @param mInMail
-   * @param singDAAlias
+   * @param signAlias
+   * @param keystore
    * @throws FOPException
    * @throws HashException
+   * @throws si.jrc.msh.plugin.zpp.exception.ZPPException
    */
-  public void processInZPPDelivery(MSHInMail mInMail, String singDAAlias)
+  public void processInZPPDelivery(MSHInMail mInMail, String signAlias, String keystore)
       throws FOPException,
-      HashException {
+      HashException,
+      ZPPException {
     long l = LOG.logStart();
     // create delivery advice
     File fDNViz = null;
     File fDA = null;
     try {
+      // vizualization
       fDNViz = StorageUtils.getNewStorageFile("pdf", "AdviceOfDelivery");
-      fDA = new File(fDNViz.getAbsoluteFile() + ".xml"); // create deliveryadvice
+      String path = fDNViz.getAbsolutePath();
+      path = path.substring(0, path.lastIndexOf(".pdf")) + ".xml";
+      // xml enveloped delivery advice
+      fDA = new File(path); // create deliveryadvice
     } catch (StorageException ex) {
-      Logger.getLogger(ZPPInInterceptor.class.getName()).log(Level.SEVERE, null, ex);
+      String msg = "Error occured while creating delivery advice file!";
+      throw new ZPPException(msg, ex);
+
     }
 
     getFOP().generateVisualization(mInMail, fDNViz, FOPUtils.FopTransformations.AdviceOfDelivery,
@@ -210,10 +231,10 @@ public class ZPPTask implements TaskExecutionInterface {
       mp.setMimeType(MimeValues.MIME_XML.getMimeType());
       mout.getMSHOutPayload().getMSHOutParts().add(mp);
 
-      SEDCertStore cs = msedLookup.getSEDCertStoreByCertAlias(singDAAlias, true);
+      SEDCertStore cs = msedLookup.getSEDCertStoreByName(keystore);
 
       // create signed delivery advice
-      dsbSodBuilder.createMail(mout, fos, mkeyUtils.getPrivateKeyEntryForAlias(singDAAlias, cs));
+      dsbSodBuilder.createMail(mout, fos, mkeyUtils.getPrivateKeyEntryForAlias(signAlias, cs));
       mp.setDescription("DeliveryAdvice");
 
       mp.setFilepath(StorageUtils.getRelativePath(fDA));
@@ -229,7 +250,8 @@ public class ZPPTask implements TaskExecutionInterface {
       mDB.updateInMail(mInMail, "DeliveryAdviceGenerated and submited to sender", null);
 
     } catch (IOException | SEDSecurityException | StorageException ex) {
-      LOG.logError(l, ex);
+      String msg = "Error occured while creating delivery advice file!";
+      throw new ZPPException(msg, ex);
     }
 
     LOG.logEnd(l);
@@ -243,12 +265,12 @@ public class ZPPTask implements TaskExecutionInterface {
     if (mfpFop == null) {
       File fconf =
           new File(System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR) + File.separator +
-               ZPPConstants.SVEV_FOLDER + File.separator + ZPPConstants.FOP_CONFIG_FILENAME);
+              ZPPConstants.SVEV_FOLDER + File.separator + ZPPConstants.FOP_CONFIG_FILENAME);
 
       mfpFop =
           new FOPUtils(fconf, System.getProperty(SEDSystemProperties.SYS_PROP_HOME_DIR) +
-               File.separator + ZPPConstants.SVEV_FOLDER + File.separator +
-               ZPPConstants.XSLT_FOLDER);
+              File.separator + ZPPConstants.SVEV_FOLDER + File.separator +
+              ZPPConstants.XSLT_FOLDER);
     }
     return mfpFop;
   }

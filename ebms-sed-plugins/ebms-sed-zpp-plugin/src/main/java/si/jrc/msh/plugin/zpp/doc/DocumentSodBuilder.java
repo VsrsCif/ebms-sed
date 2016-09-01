@@ -58,7 +58,7 @@ public class DocumentSodBuilder extends DocumentBuilder {
       // send document
       Document document = new Document();
       document.setSchemaVersion(SCHEMA_VERSION);
-      List<String[]> lstSignatureIDS = new ArrayList<String[]>();
+      List<String> lstSignatureIDS = new ArrayList<>();
       // --------------------- create message ----------------------
       Message mt = new Message();
       mt.setSchemaVersion(SCHEMA_VERSION);
@@ -86,7 +86,7 @@ public class DocumentSodBuilder extends DocumentBuilder {
       mt.setSubject(dce.getSubject());
       DataType dt = new DataType();
       dt.setId(Utils.getInstance().getGuidString());
-      lstSignatureIDS.add(new String[] {dt.getId(), NM_DATA});
+      lstSignatureIDS.add(dt.getId());
       DataObjectFormatType doft = new DataObjectFormatType();
       doft.setIdentifier(""); // obvezen element
 
@@ -110,7 +110,7 @@ public class DocumentSodBuilder extends DocumentBuilder {
         vst.setDescription(d.getDescription());
         lstVst.getVisualisations().add(vst);
         vst.setId(Utils.getInstance().getGuidString());
-        lstSignatureIDS.add(new String[] {vst.getId(), NM_VIS});
+        lstSignatureIDS.add(vst.getId());
         doft = new DataObjectFormatType();
         doft.setIdentifier(d.getId() + "");
         doft.setMimeType(d.getMimeType() == null ? "application/pdf" : d.getMimeType());
@@ -133,7 +133,7 @@ public class DocumentSodBuilder extends DocumentBuilder {
       org.w3c.dom.Document dw3c =
           convertEpDoc2W3cDoc(document, new Class[] {Document.class, Message.class});
 
-      // sign document and return value
+      // sign document and store file to file
       singDocument(dw3c, lstSignatureIDS, fos, key);
       mlgLogger.info("DocumentBuilder.DocumentBuilder: - end (" + (getTime() - t) + "ms)");
     } catch (StorageException ex) {

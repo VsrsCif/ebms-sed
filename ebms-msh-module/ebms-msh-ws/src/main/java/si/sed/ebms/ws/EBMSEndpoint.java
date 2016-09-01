@@ -20,7 +20,6 @@ import javax.xml.ws.WebServiceProvider;
 import javax.xml.ws.soap.SOAPBinding;
 import org.apache.cxf.jaxws.context.WrappedMessageContext;
 import org.apache.cxf.message.Attachment;
-import org.apache.cxf.message.Exchange;
 import org.apache.cxf.message.Message;
 import org.msh.ebms.inbox.mail.MSHInMail;
 import org.msh.ebms.inbox.payload.MSHInPart;
@@ -30,6 +29,7 @@ import si.sed.commons.MimeValues;
 import si.sed.commons.SEDInboxMailStatus;
 import si.sed.commons.SEDJNDI;
 import si.sed.commons.SEDSystemProperties;
+import si.sed.commons.cxf.SoapUtils;
 import si.sed.commons.exception.StorageException;
 import si.sed.commons.interfaces.SEDDaoInterface;
 import si.sed.commons.utils.HashUtils;
@@ -51,6 +51,10 @@ import si.sed.commons.utils.xml.XMLUtils;
 @org.apache.cxf.interceptor.OutInterceptors(interceptors = {
     "si.jrc.msh.interceptor.EBMSLogOutInterceptor", "si.jrc.msh.interceptor.EBMSOutInterceptor",
     "si.jrc.msh.interceptor.MSHPluginOutInterceptor"})
+@org.apache.cxf.interceptor.OutFaultInterceptors(interceptors = {
+    "si.jrc.msh.interceptor.EBMSOutFaultInterceptor"})
+@org.apache.cxf.interceptor.InFaultInterceptors(interceptors = {
+    "si.jrc.msh.interceptor.EBMSInFaultInterceptor"})
 
 public class EBMSEndpoint implements Provider<SOAPMessage> {
 
@@ -87,12 +91,19 @@ public class EBMSEndpoint implements Provider<SOAPMessage> {
 
       // Using this cxf specific code you can access the CXF Message and Exchange objects
       WrappedMessageContext wmc = (WrappedMessageContext) wsContext.getMessageContext();
-      Message msg = wmc.getWrappedMessage();
-      Exchange ex = msg.getExchange();
-      MSHInMail inmail = (MSHInMail) ex.get(MSHInMail.class);
-      SEDBox sb = (SEDBox) ex.get(SEDBox.class);
+      Message msg = wmc.getWrappedMessage();      
+      MSHInMail inmail = SoapUtils.getMSHInMail(msg);
+      if (inmail == null){
+        
+        LOG.logWarn("No inbox message", null);
+        // todo application error
+        return null;
+      }
+      
+      SEDBox sb = SoapUtils.getMSHInMailReceiverBox(msg);
 
       if (sb == null) {
+        LOG.formatedWarning("Inbox message %s but no inbox found  for message: %s", inmail.getId(), inmail.getReceiverEBox());
         // return error
       } else if (inmail.getStatus().equals(SEDInboxMailStatus.RECEIVE.getValue())) {
         serializeMail(inmail, msg.getAttachments(), sb);

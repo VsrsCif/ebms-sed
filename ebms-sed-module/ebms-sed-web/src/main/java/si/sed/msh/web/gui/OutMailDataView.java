@@ -42,6 +42,7 @@ import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 import org.primefaces.model.UploadedFile;
+import org.sed.ebms.ebox.SEDBox;
 import si.sed.commons.MimeValues;
 import si.sed.commons.SEDJNDI;
 import si.sed.commons.SEDOutboxMailStatus;
@@ -49,6 +50,7 @@ import si.sed.commons.exception.HashException;
 import si.sed.commons.exception.StorageException;
 import si.sed.commons.interfaces.JMSManagerInterface;
 import si.sed.commons.interfaces.SEDDaoInterface;
+import si.sed.commons.interfaces.SEDLookupsInterface;
 import si.sed.commons.utils.HashUtils;
 import si.sed.commons.utils.SEDLogger;
 import si.sed.commons.utils.StorageUtils;
@@ -75,8 +77,12 @@ public class OutMailDataView extends AbstractMailView<MSHOutMail, MSHOutEvent> i
 
   private static final long serialVersionUID = 1L;
 
+  
   @EJB(mappedName = SEDJNDI.JNDI_SEDDAO)
   SEDDaoInterface mDB;
+  
+  @EJB(mappedName = SEDJNDI.JNDI_SEDLOOKUPS)
+  SEDLookupsInterface mLookup;
 
   @EJB(mappedName = SEDJNDI.JNDI_JMSMANAGER)
   JMSManagerInterface mJMS;
@@ -239,8 +245,15 @@ public class OutMailDataView extends AbstractMailView<MSHOutMail, MSHOutEvent> i
   public void composeNewMail() {
     long l = LOG.logStart();
     MSHOutMail m = new MSHOutMail();
-    m.setSenderEBox("izvrsba@sed-court.si");
-    m.setReceiverEBox("k-vpisnik@sed-court.si");
+    
+    List<SEDBox> sblst =  mLookup.getSEDBoxes();
+    if(!sblst.isEmpty()){    
+      m.setSenderEBox(sblst.get(0).getBoxName());
+      m.setReceiverEBox(sblst.get(sblst.size()-1).getBoxName());
+    } else {
+      m.setSenderEBox("");
+      m.setReceiverEBox("");
+    }
     m.setService("LegalDelivery_ZPP");
     m.setAction("DeliveryNotification");
     m.setSenderMessageId(Utils.getInstance().getGuidString());
