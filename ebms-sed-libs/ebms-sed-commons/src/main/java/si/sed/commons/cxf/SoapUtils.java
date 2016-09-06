@@ -14,20 +14,29 @@
  */
 package si.sed.commons.cxf;
 
-import si.sed.commons.cxf.EBMSConstants;
 import java.io.File;
 import java.net.URI;
+import javax.xml.soap.SOAPException;
+import javax.xml.soap.SOAPMessage;
 import org.apache.cxf.message.Message;
 import org.msh.ebms.inbox.mail.MSHInMail;
 import org.msh.ebms.outbox.mail.MSHOutMail;
 import org.sed.ebms.ebox.SEDBox;
+import org.w3c.dom.NodeList;
 import si.sed.commons.pmode.EBMSMessageContext;
+import si.sed.commons.utils.SEDLogger;
 
 /**
  *
  * @author Jože Rihtaršič
  */
 public class SoapUtils {
+  
+  public static final String WSSE_LN = "Security";
+  public static final String WSSE_NS = "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd";
+  public static final String WSSE11_NS = "http://docs.oasis-open.org/wss/oasis-wss-wssecurity-secext-1.1.xsd";
+  
+   static final SEDLogger LOG = new SEDLogger(SoapUtils.class);
 
   public static boolean isRequestMessage(Message message) {
     Boolean requestor = (Boolean) message.get(Message.REQUESTOR_ROLE);
@@ -94,8 +103,39 @@ public class SoapUtils {
       final URI uri = new URI(validateUri.trim());
       return true;
     } catch (Exception e1) {
+      LOG.formatedWarning("String %s is not valid URI. Error: %s",validateUri, e1.getMessage());
+      return false;
+    }
+  }
+  
+  
+  public static boolean isSoapFault(SOAPMessage sm){  
+    
+    try {
+      return sm.getSOAPPart().getEnvelope().getBody().hasFault();
+    } catch (SOAPException ex) {
+      LOG.formatedWarning("Error checking SOAPMessage type. Error: %s", ex.getMessage());
       return false;
     }
   }
 
+  public static boolean hasSecurity(SOAPMessage request){
+
+    try {    
+      if (request.getSOAPHeader() == null) {
+        return false;
+      }
+
+      NodeList lstND =
+          request.getSOAPHeader().getElementsByTagNameNS(WSSE_NS,WSSE_LN);
+       NodeList lstND1 =
+          request.getSOAPHeader().getElementsByTagNameNS(WSSE11_NS,WSSE_LN);
+      return lstND != null && lstND.getLength() > 0 || lstND1 != null && lstND1.getLength() > 0;
+    } catch (SOAPException ex) {
+      LOG.formatedWarning("Error checking SOAPMessage type. Error: %s", ex.getMessage());
+    }
+    return false;
+    
+  }
+  
 }

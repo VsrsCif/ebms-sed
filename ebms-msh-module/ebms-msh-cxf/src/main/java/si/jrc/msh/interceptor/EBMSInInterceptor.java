@@ -21,31 +21,25 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import javax.activation.DataHandler;
 import javax.xml.namespace.QName;
 import javax.xml.soap.SOAPMessage;
+import org.apache.cxf.binding.soap.SOAPBindingUtil;
 import org.apache.cxf.binding.soap.SoapFault;
 import org.apache.cxf.binding.soap.SoapMessage;
 import org.apache.cxf.binding.soap.SoapVersion;
 import org.apache.cxf.message.Attachment;
-import org.apache.cxf.message.Exchange;
 import org.apache.cxf.phase.Phase;
 import org.apache.cxf.ws.security.wss4j.CryptoCoverageChecker;
 import org.apache.cxf.ws.security.wss4j.WSS4JInInterceptor;
-import org.apache.wss4j.dom.handler.WSHandlerConstants;
 import org.msh.ebms.inbox.mail.MSHInMail;
 import org.msh.ebms.inbox.payload.MSHInPart;
 import org.msh.sed.pmode.PartyIdentitySet;
-import org.msh.sed.pmode.PartyIdentitySetType;
 import org.msh.sed.pmode.Security;
-import org.msh.sed.pmode.X509;
 import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.Messaging;
 import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.SignalMessage;
 import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.UserMessage;
-import org.sed.ebms.cert.SEDCertStore;
-import org.sed.ebms.cert.SEDCertificate;
 import org.sed.ebms.ebox.SEDBox;
 import si.jrc.msh.client.sec.SecurityUtils;
 import si.jrc.msh.exception.EBMSError;
@@ -67,7 +61,6 @@ import si.sed.commons.utils.HashUtils;
 import si.sed.commons.utils.SEDLogger;
 import si.sed.commons.utils.StorageUtils;
 import si.sed.commons.utils.Utils;
-import si.sed.commons.utils.sec.KeystoreUtils;
 
 /**
  *
@@ -85,15 +78,11 @@ public class EBMSInInterceptor extends AbstractEBMSInterceptor {
 
   final StorageUtils msuStorageUtils = new StorageUtils();
   final EBMSValidation mebmsValidation = new EBMSValidation();
-  final EBMSBuilder mebmsUtils = new EBMSBuilder();
   final HashUtils mpHU = new HashUtils();
   final GZIPUtil mGZIPUtils = new GZIPUtil();
   final EBMSParser mebmsParser = new EBMSParser();
   final CryptoCoverageChecker checker = new CryptoCoverageChecker();
-  /**
-   * Keystore tools
-   */
-  private final KeystoreUtils mKSUtis = new KeystoreUtils();
+
 
   /**
    *
@@ -159,9 +148,7 @@ public class EBMSInInterceptor extends AbstractEBMSInterceptor {
       mebmsValidation.vaildateSignalMessage(msg, sm, SoapFault.FAULT_CODE_CLIENT);
       
     }
-    
 
-    Security sec = null;
 
     // if backchannel out EBMSMessageContext must be  registred
     if (isBackChannel) {
@@ -267,8 +254,11 @@ public class EBMSInInterceptor extends AbstractEBMSInterceptor {
       }
       SoapUtils.setEBMSMessageOutContext(outmctx, msg);
     }
-
-    if (inmctx.getSecurity() != null) {
+    
+    if (SoapUtils.isSoapFault(request) && !SoapUtils.hasSecurity(request)){
+      LOG.formatedWarning("Message is soap fault with no Security. Message: '%s', pmode '%s'!'", messageId,
+          inmctx.getPMode().getId());
+    } else if (inmctx.getSecurity() != null) {
       handleMessageSecurity(msg, inmctx, messageId);
     } else {
       LOG.formatedWarning("No Security policy for message: '%s', pmode '%s'!'", messageId,
@@ -289,6 +279,8 @@ public class EBMSInInterceptor extends AbstractEBMSInterceptor {
 
   public void processUserMessageUnit(SoapMessage msg, UserMessage um, EBMSMessageContext ectx) {
     long l = LOG.logStart();
+    
+    SOAPMessage request = msg.getContent(SOAPMessage.class);
 
     MSHInMail mMail = mebmsParser.parseUserMessage(um, ectx, SoapFault.FAULT_CODE_CLIENT);
     SoapUtils.setMSHInMail(mMail, msg);
@@ -296,18 +288,25 @@ public class EBMSInInterceptor extends AbstractEBMSInterceptor {
     if (receiverBox == null || receiverBox.trim().isEmpty()) {
       String errmsg = "Missing receiver box!";
       LOG.logError(l, errmsg, null);
-      throw new EBMSError(EBMSErrorCode.Other, mMail.getMessageId(), errmsg,
+      throw new EBMSError(EBMSErrorCode.ValueInconsistent, mMail.getMessageId(), errmsg,
           SoapFault.FAULT_CODE_CLIENT);
     }
 
-    SEDBox inSb = getSedBoxByName(mMail.getReceiverEBox());
+    SEDBox inSb = getSedBoxByName(receiverBox);
+    if (inSb == null){
+      String errmsg = String.format("Receiver '%s' is not defined in this MSH!", receiverBox);
+      LOG.logError(l, errmsg, null);
+      throw new EBMSError(EBMSErrorCode.ValueNotRecognized, mMail.getMessageId(), errmsg,
+          SoapFault.FAULT_CODE_CLIENT);
+    
+    }
     mMail.setReceiverEBox(inSb.getBoxName());
     if (inSb.getActiveToDate() != null && inSb.getActiveToDate().before(
         Calendar.getInstance().getTime())) {
       String errmsg =
           "Receiver box: '" + mMail.getReceiverEBox() + "' not exists or is not active.";
       LOG.logError(l, errmsg, null);
-      throw new EBMSError(EBMSErrorCode.Other, mMail.getMessageId(), errmsg,
+      throw new EBMSError(EBMSErrorCode.ValueNotRecognized, mMail.getMessageId(), errmsg,
           SoapFault.FAULT_CODE_CLIENT);
     }
     // set inbox to message context
@@ -361,10 +360,10 @@ public class EBMSInInterceptor extends AbstractEBMSInterceptor {
 
     msg.getExchange().put(MSHInMail.class, mMail);
 
-    SOAPMessage request = msg.getContent(SOAPMessage.class);
+    
     LOG.log("Generate AS4Receipt");
     SignalMessage as4Receipt =
-        mebmsUtils.generateAS4ReceiptSignal(mMail.getMessageId(),
+        EBMSBuilder.generateAS4ReceiptSignal(mMail.getMessageId(),
             ectx.getReceiverPartyIdentitySet().getDomain(), request.getSOAPPart()
             .getDocumentElement(), dt);
     msg.getExchange().put(SignalMessage.class, as4Receipt);
@@ -376,109 +375,13 @@ public class EBMSInInterceptor extends AbstractEBMSInterceptor {
 
   }
   
-
-  /*
-  // receive
-  private void processResponseSignals(List<SignalMessage> lstSignals, PMode pm, SoapMessage msg)
-      throws EBMSError {
-    SoapVersion version = msg.getVersion();
-    long l = LOG.logStart();
-
-    for (SignalMessage sm : lstSignals) {
-      MessageInfo mi = sm.getMessageInfo();
-      if (mi == null) {
-        String errmsg = "Missing MessageInfo in SignalMessage";
-        LOG.logError(l, errmsg, null);
-        throw new SoapFault(errmsg, version.getReceiver());
-      }
-
-      if (sm.getPullRequest() != null) {
-        String errmsg = "Pull MEP is not supported! Pull signal is ignored";
-        LOG.logError(l, errmsg, null);
-
-      }
-
-      if (mi.getRefToMessageId() == null || mi.getRefToMessageId().trim().isEmpty()) {
-        String errmsg = "Missing missing RefToMessageId";
-        LOG.logError(l, errmsg, null);
-        throw new SoapFault(errmsg, version.getReceiver());
-      }
-
-      MSHOutMail outmsg = msg.getExchange().get(MSHOutMail.class);
-      String strOutMsg = outmsg.getMessageId() + "@" + getSettings().getDomain();
-      if (strOutMsg != null && !strOutMsg.equals(mi.getRefToMessageId())) {
-        String errmsg =
-            "Outgoing msg ID '" + strOutMsg +
-            "' not equals to received response signal RefToMessageId: '" +
-            mi.getRefToMessageId() + "' ";
-        LOG.logError(l, errmsg, null);
-        // throw new SoapFault(errmsg, version.getReceiver());
-      }
-
-      if (sm.getErrors() != null && !sm.getErrors().isEmpty()) {
-        String desc = "";
-        for (org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.Error er : sm.getErrors()) {
-          desc =
-              er.getOrigin() + "" + er.getSeverity() + " " + er.getErrorCode() + " " +
-              er.getErrorDetail();
-          break;
-        }
-
-        try {
-          getDAO().setStatusToOutMail(outmsg, SEDOutboxMailStatus.EBMSERROR, desc);
-        } catch (StorageException ex) {
-          String msgErr =
-              "Error occured when setting MSHOutMail (id" + outmsg.getId() +
-              ") status to EBMSERROR";
-          LOG.logError(l, msgErr, ex);
-        }
-
-      } else if (sm.getReceipt() != null) {
-        outmsg.setReceivedDate(mi.getTimestamp());
-        try {
-          getDAO().setStatusToOutMail(outmsg, SEDOutboxMailStatus.SENT,
-              "Mail received to receiver MSH");
-        } catch (StorageException ex) {
-          String msgErr =
-              "Error occured when setting MSHOutMail (id" + outmsg.getId() + ") status to SENT";
-          LOG.logError(l, msgErr, ex);
-        }
-
-      }
-
-      msg.getExchange().put("SIGNAL_ELEMENTS", sm.getAnies());
-
-      for (Element e : sm.getAnies()) {
-        super.A_LOG.log("Got elements in signal: " + e.getLocalName());
-        /*
-         * if (e.getLocalName().equals("SVEVEncryptionKey")) {
-         * System.out.println("********************** got encryptionKey"); try { SVEVEncryptionKey
-         * se = (SVEVEncryptionKey) XMLUtils.deserialize(e, SVEVEncryptionKey.class);
-         * MshIncomingMail mm = mSHDB.getIncomingMailByActionAndByConversationId(SVEVConstants.
-         * SVEV_ACTION_DeliveryNotification, se.getId()); if (mm == null) { String errmsg =
-         * "Incoming mail with message ID: " + se.getId() + " not exists!"; LOG.error(errmsg); throw
-         * new EBMSError(EBMSErrorCode.ProcessingModeMismatch, null, errmsg); }
-         * System.out.println("SET enc key"); mm.getMmshMail().setSVEVEncryptionKey(se);
-         * System.out.println("update incoming mail!!!!"); mSHDB.update(mm);
-         * 
-         * } catch (JAXBException ex) { String errmsg = "Error parsing  '" + e.getNamespaceURI() +
-         * "', tagname: '" + e.getLocalName() + "'! Error: " + ex.getMessage(); LOG.error(errmsg,
-         * ex); throw new EBMSError(EBMSErrorCode.ProcessingModeMismatch, null, errmsg, ex); } }
-         * else { String errmsg = "Error parsing  '" + e.getNamespaceURI() + "', tagname: '" +
-         * e.getLocalName() + "'!"; LOG.logError(l, errmsg); throw new
-         * EBMSError(EBMSErrorCode.ProcessingModeMismatch, null, errmsg); }
-         * /
-      }
-
-    }
-  }*/
   private void handleMessageSecurity(SoapMessage msg, EBMSMessageContext ectx, String messageId) {
     PartyIdentitySet rPID = ectx.getReceiverPartyIdentitySet();
     PartyIdentitySet sPID = ectx.getSenderPartyIdentitySet();
     long l = LOG.logStart();
     try {
       WSS4JInInterceptor sc =
-          configureSecurityInterceptors(ectx.getSecurity(), rPID.getLocalPartySecurity(),
+          configureInSecurityInterceptors(ectx.getSecurity(), rPID.getLocalPartySecurity(),
               sPID.getExchangePartySecurity(), messageId,
               SoapFault.FAULT_CODE_CLIENT);
       sc.handleMessage(msg);
@@ -506,102 +409,7 @@ public class EBMSInInterceptor extends AbstractEBMSInterceptor {
     LOG.logEnd(l);
   }
 
-  private WSS4JInInterceptor configureSecurityInterceptors(Security sc,
-      PartyIdentitySetType.LocalPartySecurity lps, PartyIdentitySetType.ExchangePartySecurity eps,
-      String msgId, QName sv)
-      throws EBMSError {
-
-    long l = LOG.logStart();
-    WSS4JInInterceptor sec = null;
-    Map<String, Object> outProps = null;
-
-    if (sc.getX509() == null) {
-      LOG.logWarn(l,
-          "Sending not message with not security policy. No security configuration (pmode) for message:" +
-          msgId, null);
-      return null;
-    }
-    if (sc.getX509().getSignature() != null && sc.getX509().getSignature().getReference() != null) {
-      X509.Signature sig = sc.getX509().getSignature();
-
-      // create signature priperties
-      SEDCertStore cs = getLookups().getSEDCertStoreByName(eps.getTrustoreName());
-      if (cs == null) {
-        String msg = "Truststore for name '" + eps.getTrustoreName() +
-            "' do not exists - check configuration!";
-        LOG.logError(l, msg, null);
-        throw new EBMSError(EBMSErrorCode.PModeConfigurationError, msgId, msg, sv);
-      }
-      SEDCertificate aliasCrt = getLookups().getSEDCertificatForAlias(eps.getSignatureCertAlias(),
-          cs, false);
-      if (aliasCrt == null) {
-        String msg = "Certificate for alias '" + eps.getSignatureCertAlias() +
-            "' do not exists in keystore:" + eps.getTrustoreName();
-        LOG.logError(l, msg, null);
-        throw new EBMSError(EBMSErrorCode.PModeConfigurationError, msgId, msg, sv);
-      }
-      outProps = SecurityUtils.createSignatureValidationConfiguration(sig, cs, aliasCrt);
-      if (outProps == null) {
-        LOG.logWarn(l,
-            "Sending not signed message. Incomplete configuration: X509/Signature for message:  " +
-            msgId, null);
-      }
-    } else {
-      LOG.logWarn(l,
-          "Sending not signed message. No configuration: X509/Signature/Sign for message:  " + msgId,
-          null);
-    }
-
-    if (sc.getX509().getEncryption() != null && sc.getX509().getEncryption().getReference() != null) {
-      X509.Encryption enc = sc.getX509().getEncryption();
-      SEDCertStore cs = getLookups().getSEDCertStoreByName(lps.getKeystoreName());
-      if (cs == null) {
-        String msg = "Keystore for name '" + lps.getKeystoreName() +
-            "' do not exists - check configuration!";
-        LOG.logError(l, msg, null);
-        throw new EBMSError(EBMSErrorCode.PModeConfigurationError, msgId, msg, sv);
-      }
-      SEDCertificate aliasCrt = getLookups().getSEDCertificatForAlias(lps.getDecryptionKeyAlias(),
-          cs, true);
-      if (aliasCrt == null) {
-        String msg = "Decryptiong key for alias '" + lps.getDecryptionKeyAlias() +
-            "' do not exist in keystore '" +
-            lps.getKeystoreName() + "' !";
-        LOG.logError(l, msg, null);
-        throw new EBMSError(EBMSErrorCode.PModeConfigurationError, msgId, msg, sv);
-      }
-
-      Map<String, Object> penc =
-          SecurityUtils.createDecryptionConfiguration(enc, cs, aliasCrt);
-      if (enc == null) {
-        LOG.logWarn(l,
-            "Sending not encrypted message. Incomplete configuration: X509/Encryption/Encryp for message:  " +
-            msgId, null);
-      } else if (outProps == null) {
-        outProps = penc;
-      } else {
-        String action = (String) outProps.get(WSHandlerConstants.ACTION);
-        action += " " + (String) penc.get(WSHandlerConstants.ACTION);
-        outProps.putAll(penc);
-        outProps.put(WSHandlerConstants.ACTION, action);
-      }
-    } else {
-      LOG.logWarn(l,
-          "Sending not encypted message. No configuration: X509/Encryption/Encrypt for message:  " +
-          msgId, null);
-    }
-
-    if (outProps != null) {
-
-      sec = new WSS4JInInterceptor(outProps);
-    } else {
-      LOG.logWarn(l,
-          "Sending not message with not security policy. Bad/incomplete security configuration (pmode) for message:" +
-          msgId, null);
-    }
-    LOG.logEnd(l);
-    return sec;
-  }
+  
 
   /**
    *
@@ -610,17 +418,7 @@ public class EBMSInInterceptor extends AbstractEBMSInterceptor {
   @Override
   public void handleFault(SoapMessage message) {
     super.handleFault(message);
-    LOG.log("handle fault interceptor");
-
-    LOG.log("SoapMessage: ********************************************************");
-    message.entrySet().stream().forEach((entry) -> {
-      LOG.formatedlog("Key: %s, val: %s", entry.getKey(), entry.getValue());
-    });
-    LOG.log("Exchange: ********************************************************");
-    Exchange map = message.getExchange();
-    map.entrySet().stream().forEach((entry) -> {
-      LOG.formatedlog("Key: %s, val: %s", entry.getKey(), entry.getValue());
-    });
+    
   }
 
   private void serializeAttachments(MSHInPart p, Collection<Attachment> lstAttch, boolean compressed)

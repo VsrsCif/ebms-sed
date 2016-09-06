@@ -631,8 +631,8 @@ public class FilePModeManager implements PModeInterface {
         });
       }
 
-      if (mshSettings.getSecurityPatterns() != null) {
-        mshSettings.getSecurityPatterns().getSecurities().forEach((sc) -> {
+      if (mshSettings.getSecurityPolicies() != null) {
+        mshSettings.getSecurityPolicies().getSecurities().forEach((sc) -> {
           mmpSecurity.put(sc.getId(), sc);
         });
       }

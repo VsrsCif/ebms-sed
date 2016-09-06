@@ -124,7 +124,7 @@
 			</tns:TransportProtocol>
 		</tns:PartyIdentitySet>
 	</tns:Parties>
-	<tns:SecurityPatterns>
+	<tns:SecurityPolicies>
 		<tns:Security WSSVersion="1.1" id="enc_att_and_sign_v1">
 			<tns:X509>
 				<tns:Signature hashFunction="http://www.w3.org/2001/04/xmlenc#sha256" algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256">
@@ -156,7 +156,7 @@
 				</tns:Signature>
 			</tns:X509>
 		</tns:Security>
-	</tns:SecurityPatterns>
+	</tns:SecurityPolicies>
 	<tns:ReceptionAwarenessPatterns>
 		<tns:ReceptionAwareness id="AS4ReceiptResponse" replyPattern="response" receiptType="AS4Receipt">
 			<tns:Retry period="5678" maxRetries="3" multiplyPeriod="3"/>

@@ -79,11 +79,6 @@ public class EBMSOutInterceptor extends AbstractEBMSInterceptor {
   protected final static SEDLogger LOG = new SEDLogger(EBMSOutInterceptor.class);
 
   /**
-   * ebms message tools for converting between ebms and ebms-sed message entity
-   */
-  protected final EBMSBuilder mEBMSUtil = new EBMSBuilder();
-
-  /**
    * GZIP utils
    */
   protected final GZIPUtil mGZIPUtils = new GZIPUtil();
@@ -128,13 +123,12 @@ public class EBMSOutInterceptor extends AbstractEBMSInterceptor {
 
     LOG.log("Prepare to submit message: " + msgId);
     // get pmode data
-    PartyIdentitySet sPID  = ectx.getSenderPartyIdentitySet();
+    PartyIdentitySet sPID = ectx.getSenderPartyIdentitySet();
     PartyIdentitySet rPID = ectx.getReceiverPartyIdentitySet();
     PMode pMode = ectx.getPMode();
-    
 
     // create message 
-    Messaging msgHeader = mEBMSUtil.createMessaging(version);
+    Messaging msgHeader = EBMSBuilder.createMessaging(version);
     // create usermessageunit for out mail 
     if (outMail != null) {
       // add user message
@@ -157,7 +151,7 @@ public class EBMSOutInterceptor extends AbstractEBMSInterceptor {
         }
         // create user message
         LOG.log("Create userMessage unit for  message: " + msgId);
-        um = mEBMSUtil.createUserMessage(ectx, outMail, outMail.getSentDate(), qnFault);
+        um = EBMSBuilder.createUserMessage(ectx, outMail, outMail.getSentDate(), qnFault);
         msgHeader.getUserMessages().add(um);
       } catch (EBMSError ex) {
 
@@ -178,7 +172,7 @@ public class EBMSOutInterceptor extends AbstractEBMSInterceptor {
 
     if (err != null) {
       SignalMessage sm =
-          mEBMSUtil.generateErrorSignal(err, getSettings().getDomain(), Calendar.getInstance()
+          EBMSBuilder.createErrorSignal(err, getSettings().getDomain(), Calendar.getInstance()
               .getTime());
 
       msgHeader.getSignalMessages().add(sm);
@@ -208,7 +202,7 @@ public class EBMSOutInterceptor extends AbstractEBMSInterceptor {
     if (ectx.getSecurity() != null) {
 
       WSS4JOutInterceptor sc =
-          configureSecurityInterceptors(ectx.getSecurity(), sPID.getLocalPartySecurity(),
+          configureOutSecurityInterceptors(ectx.getSecurity(), sPID.getLocalPartySecurity(),
               rPID.getExchangePartySecurity(), msgId,
               SoapFault.FAULT_CODE_CLIENT);
 
@@ -222,103 +216,6 @@ public class EBMSOutInterceptor extends AbstractEBMSInterceptor {
   }
 
   
-
-  public WSS4JOutInterceptor configureSecurityInterceptors(Security sc,
-      PartyIdentitySetType.LocalPartySecurity lps, PartyIdentitySetType.ExchangePartySecurity epx,
-      String msgId, QName sv)
-      throws EBMSError {
-    long l = LOG.logStart();
-    WSS4JOutInterceptor sec = null;
-    Map<String, Object> outProps = null;
-
-    if (sc.getX509() == null) {
-      LOG.logWarn(l,
-          "Sending not message with not security policy. No security configuration (pmode) for message:" +
-          msgId, null);
-      return null;
-    }
-
-    if (sc.getX509().getSignature() != null && sc.getX509().getSignature().getReference() != null) {
-      X509.Signature sig = sc.getX509().getSignature();
-      
-      
-      SEDCertStore cs = getLookups().getSEDCertStoreByName(lps.getKeystoreName());
-    if (cs == null) {
-      String msg = "Keystore for name '" + lps.getKeystoreName() + "' do not exists - check configuration!";
-      LOG.logError(l, msg, null);
-      throw new EBMSError(EBMSErrorCode.PModeConfigurationError, msgId, msg, sv);
-    }
-
-    SEDCertificate aliasCrt = getLookups().getSEDCertificatForAlias( lps.getSignatureKeyAlias(), cs, true);
-    if (aliasCrt == null) {
-      String msg = "Key for alias '" +  lps.getSignatureKeyAlias() + "' do not exists!";
-      LOG.logError(l, msg, null);
-      throw new EBMSError(EBMSErrorCode.PModeConfigurationError, msgId, msg, sv);
-    }
-    
-      outProps =
-          SecurityUtils.createSignatureConfiguration(sig, cs, aliasCrt);
-      if (outProps == null) {
-        LOG.logWarn(l,
-            "Sending not signed message. Incomplete configuration: X509/Signature for message:  " +
-            msgId, null);
-      }
-    } else {
-      LOG.logWarn(l,
-          "Sending not signed message. No configuration: X509/Signature/Sign for message:  " + msgId,
-          null);
-    }
-
-    if (sc.getX509().getEncryption() != null && sc.getX509().getEncryption().getReference() != null) {
-      X509.Encryption enc = sc.getX509().getEncryption();
-      
-      SEDCertStore cs = getLookups().getSEDCertStoreByName(epx.getTrustoreName());
-    if (cs == null) {
-      String msg = "Trustore for name '" + epx.getTrustoreName() + "' do not exists - check configuration!";
-      LOG.logError(l, msg, null);
-      throw new EBMSError(EBMSErrorCode.PModeConfigurationError, msgId, msg, sv);
-    }
-    SEDCertificate aliasCrt = getLookups().getSEDCertificatForAlias(epx.getEncryptionCertAlias(), cs, false);
-    if (aliasCrt == null) {
-      String msg = "Ecryptiong cert for alias '" + epx.getEncryptionCertAlias() + "' do not exists!";
-      LOG.logError(l, msg, null);
-      throw new EBMSError(EBMSErrorCode.PModeConfigurationError, msgId, msg, sv);
-    }
-      
-      Map<String, Object> penc =SecurityUtils.createEncryptionConfiguration(enc, cs,aliasCrt);
-      if (enc == null) {
-        LOG.logWarn(l,
-            "Sending not encrypted message. Incomplete configuration: X509/Encryption/Encryp for message:  " +
-            msgId, null);
-      } else if (outProps == null) {
-        outProps = penc;
-      } else {
-        String action = (String) outProps.get(WSHandlerConstants.ACTION);
-        action += " " + (String) penc.get(WSHandlerConstants.ACTION);
-        outProps.putAll(penc);
-        outProps.put(WSHandlerConstants.ACTION, action);
-      }
-    } else {
-      LOG.logWarn(l,
-          "Sending not encrypted message. No configuration: X509/Encryption/Encrypt for message:  " +
-          msgId, null);
-    }
-
-    if (outProps != null) {
-      LOG.log("Set security parameters");
-      for (Iterator<String> it = outProps.keySet().iterator(); it.hasNext();) {
-        String key = it.next();
-        LOG.log(key + ": " + outProps.get(key));
-      }
-      sec = new WSS4JOutInterceptor(outProps);
-    } else {
-      LOG.logWarn(l,
-          "Sending not message with not security policy. Bad/incomplete security configuration (pmode) for message:" +
-          msgId, null);
-    }
-    LOG.logEnd(l);
-    return sec;
-  }
 
   /**
    * Method sets attachments to outgoing ebmsUserMessage.
@@ -356,7 +253,7 @@ public class EBMSOutInterceptor extends AbstractEBMSInterceptor {
         }
 
         DataHandler dh = new DataHandler(new FileDataSource(fatt));
-        
+
         att.setDataHandler(dh);
         msg.getAttachments().add(att);
       }
@@ -375,7 +272,8 @@ public class EBMSOutInterceptor extends AbstractEBMSInterceptor {
     Exchange map = message.getExchange();
     map.entrySet().stream().forEach((entry) -> {
       LOG.formatedlog("Key: %s, val: %s", entry.getKey(), entry.getValue());
-    }); /*try {
+    });
+    /*try {
     
       SOAPMessage originalMsg = message.getContent(SOAPMessage.class);
       SOAPBody body = originalMsg.getSOAPBody();

@@ -14,10 +14,12 @@
  */
 package si.jrc.msh.interceptor;
 
+import java.io.IOException;
+import java.util.Calendar;
+import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
-import javax.xml.namespace.QName;
 import javax.xml.soap.MessageFactory;
 import javax.xml.soap.SOAPBody;
 import javax.xml.soap.SOAPConstants;
@@ -25,25 +27,22 @@ import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPFault;
 import javax.xml.soap.SOAPHeader;
 import javax.xml.soap.SOAPMessage;
-import javax.xml.ws.soap.SOAPFaultException;
 import org.apache.cxf.binding.soap.SoapFault;
 import org.apache.cxf.binding.soap.SoapMessage;
 import org.apache.cxf.binding.soap.SoapVersion;
 import org.apache.cxf.interceptor.Fault;
 import org.apache.cxf.message.Exchange;
-import org.apache.cxf.message.MessageUtils;
 import org.apache.cxf.phase.Phase;
-import static org.bouncycastle.asn1.x500.style.RFC4519Style.l;
-import org.w3c.dom.Node;
-import si.jrc.msh.exception.EBMSError;
-import static si.jrc.msh.interceptor.EBMSInFaultInterceptor.LOG;
-import static si.jrc.msh.interceptor.EBMSOutInterceptor.LOG;
-import si.jrc.msh.utils.EBMSBuilder;
-import si.sed.commons.utils.SEDLogger;
-import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.Error;
+import org.apache.cxf.transport.http.AbstractHTTPDestination;
+import org.apache.cxf.ws.security.wss4j.WSS4JOutInterceptor;
 import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.Messaging;
 import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.SignalMessage;
-import si.jrc.msh.exception.EBMSErrorCode;
+import org.w3c.dom.Node;
+import si.jrc.msh.exception.EBMSError;
+import si.jrc.msh.utils.EBMSBuilder;
+import si.sed.commons.cxf.SoapUtils;
+import si.sed.commons.pmode.EBMSMessageContext;
+import si.sed.commons.utils.SEDLogger;
 
 /**
  * Sets up the outgoing chain to build a ebms 3.0 (AS4) form message. First it will create Messaging
@@ -64,6 +63,8 @@ public class EBMSOutFaultInterceptor extends AbstractEBMSInterceptor {
    */
   protected final EBMSBuilder mEBMSUtil = new EBMSBuilder();
 
+  private boolean handleMessageCalled;
+
   /**
    * Contstructor EBMSOutFaultInterceptor for setting instance in a phase Phase.PRE_PROTOCOL
    */
@@ -72,28 +73,10 @@ public class EBMSOutFaultInterceptor extends AbstractEBMSInterceptor {
     getAfter().add(EBMSOutInterceptor.class.getName());
   }
 
-  /**
-   *
-   *
-   * @param message: SoapMessage handled in CXF bus
-   */
   @Override
-  public void handleMessage(SoapMessage message) {
-
-    long l = LOG.logStart();
-    SoapVersion version = message.getVersion();
-    // is out mail request or response
-    boolean isRequest = MessageUtils.isRequestor(message);
-    QName qnFault = (isRequest ? SoapFault.FAULT_CODE_CLIENT : SoapFault.FAULT_CODE_SERVER);
-
-    Exception exc = message.getContent(Exception.class);
-    Object sm = message.getContent(SOAPMessage.class);
-
-    LOG.formatedlog("Object %s message %s", exc, sm);
-    if (exc instanceof EBMSError) {
-      System.out.println("IT IS EBMS ERROR");
-    }
-
+  public void handleMessage(SoapMessage message)
+      throws Fault {
+    
     LOG.log("SoapMessage: ********************************************************");
     message.entrySet().stream().forEach((entry) -> {
       LOG.formatedlog("Key: %s, val: %s", entry.getKey(), entry.getValue());
@@ -103,73 +86,133 @@ public class EBMSOutFaultInterceptor extends AbstractEBMSInterceptor {
     map.entrySet().stream().forEach((entry) -> {
       LOG.formatedlog("Key: %s, val: %s", entry.getKey(), entry.getValue());
     });
+    
+    
+    SoapVersion sv = message.getVersion();
+    handleMessageCalled = true;
+
+    Exception ex = message.getContent(Exception.class);
+    if (ex == null) {
+      throw new RuntimeException("Exception is expected");
+    }
+    if (!(ex instanceof Fault)) {
+      throw new RuntimeException("Fault is expected");
+    }
+    SOAPMessage sm = createSoapFault(ex, sv);
+    message.setContent(SOAPMessage.class, sm);
+    message.removeContent(Exception.class);
+    
+    EBMSMessageContext ectx = SoapUtils.getEBMSMessageOutContext(message);
+    if (ectx!= null ) {
+       WSS4JOutInterceptor sc =
+      configureOutSecurityInterceptors(ectx.getSecurity(), ectx.getSenderPartyIdentitySet().getLocalPartySecurity(),
+              ectx.getReceiverPartyIdentitySet().getExchangePartySecurity(), "",
+              SoapFault.FAULT_CODE_CLIENT);
+       LOG.formatedlog("Security for soapfault setted! Security: '%s', Sender '%s', receiver: '%s'.", ectx.getSecurity().getId(), ectx.getSenderPartyIdentitySet().getId(),
+              ectx.getReceiverPartyIdentitySet().getId());
+        sc.handleMessage(message);
+    }
+        
+    
+    // deal with the actual exception : fault.getCause()
+    HttpServletResponse response = (HttpServletResponse) message.getExchange()
+        .getInMessage().get(AbstractHTTPDestination.HTTP_RESPONSE);
+    response.setStatus(500);
+    response.setContentType("application/soap+xml");
 
     try {
-      MessageFactory mf = MessageFactory.newInstance(SOAPConstants.SOAP_1_2_PROTOCOL);
-      SOAPMessage request = mf.createMessage();
+      sm.writeTo(response.getOutputStream());
 
-      message.put(SOAPMessage.class, request);
+    
+      response.getOutputStream().flush();
+      message.getInterceptorChain().abort();
+    } catch (IOException ioex) {
+      throw new RuntimeException("Error writing the response");
+    } catch (SOAPException ex1) {
+      throw new RuntimeException("Error writing the response");
+    }
+
+  }
+
+  protected boolean handleMessageCalled() {
+    return handleMessageCalled;
+  }
+
+  private SOAPMessage createSoapFault(Exception exc, SoapVersion sv) {
+    long l = LOG.logStart();
+    SOAPMessage request = null;
+    try {
+      MessageFactory mf = MessageFactory.newInstance(SOAPConstants.SOAP_1_2_PROTOCOL);
+      request = mf.createMessage();
+
       SOAPBody body = request.getSOAPBody();
-      body.removeContents();
       SOAPFault soapFault = body.addFault();
+
+      Messaging msgHeader = null;
       if (exc instanceof EBMSError) {
 
         EBMSError sf = (EBMSError) exc;
 
         soapFault.setFaultString(((EBMSError) exc).getSubMessage());
-        soapFault.setFaultCode(SoapFault.FAULT_CODE_SERVER);
+        soapFault.setFaultCode(SOAPConstants.SOAP_SENDER_FAULT);
 
-        Messaging msgHeader = mEBMSUtil.createMessaging(version);
-        SignalMessage sgnl = new SignalMessage();
-        sgnl.getErrors().add(mEBMSUtil.createErrorSignal(sf));
+        msgHeader = EBMSBuilder.createMessaging(sv);
+
+        SignalMessage sm =
+            EBMSBuilder.createErrorSignal(sf, getSettings().getDomain(), Calendar.getInstance()
+                .getTime());
+
+        msgHeader.getSignalMessages().add(sm);
+
+      } else if (exc instanceof Fault) {
+
+        Fault sf = (Fault) exc;
+
+        soapFault.setFaultString(sf.getMessage());
+        soapFault.setFaultCode(SOAPConstants.SOAP_RECEIVER_FAULT);
+
+        msgHeader = EBMSBuilder.createMessaging(sv);
+        SignalMessage sgnl = EBMSBuilder.createErrorSignal(sf, null, sf.getMessage(),
+            getSettings().getDomain(), Calendar.getInstance()
+            .getTime());
         msgHeader.getSignalMessages().add(sgnl);
 
-        try {
-
-          SOAPHeader sh = request.getSOAPHeader();
-          Marshaller marshaller = JAXBContext.newInstance(Messaging.class).createMarshaller();
-          marshaller.marshal(msgHeader, sh);
-          request.saveChanges();
-        } catch (JAXBException |  SOAPException ex) {
-          String errMsg = "Error adding ebms header to soap: " + ex.getMessage();
-          LOG.logError(l, errMsg, ex);
-
-        }
-        /*        
-           
-        soapFault.setFaultString(sf.getFault().getFaultString());
-        soapFault.setFaultCode(sf.getFault().getFaultCodeAsQName());
-        soapFault.setFaultActor(sf.getFault().getFaultActor());
-        if (sf.getFault().hasDetail()) {
-          Node nd = originalMsg.getSOAPPart().importNode(
-              sf.getFault().getDetail()
-              .getFirstChild(), true);
-          soapFault.addDetail().appendChild(nd);
-        }*/
-      } else if (exc instanceof Fault) {
-        SoapFault sf = SoapFault.createFault((Fault) exc, ((SoapMessage) message)
-            .getVersion());
-        soapFault.setFaultString(sf.getReason());
-        soapFault.setFaultCode(sf.getFaultCode());
         if (sf.hasDetails()) {
-          soapFault.addDetail();
-          Node nd = request.getSOAPPart().importNode(sf.getDetail(), true);
-          nd = nd.getFirstChild();
-          while (nd != null) {
-            soapFault.getDetail().appendChild(nd);
-            nd = nd.getNextSibling();
+          try {
+            soapFault.addDetail();
+
+            Node nd = request.getSOAPPart().importNode(sf.getDetail(), true);
+            nd = nd.getFirstChild();
+            while (nd != null) {
+              soapFault.getDetail().appendChild(nd);
+              nd = nd.getNextSibling();
+            }
+          } catch (SOAPException ex) {
+            LOG.logError(l, "Error occured while adding detail to Soap fault. ", ex);
           }
         }
       } else {
         soapFault.setFaultString(exc.getMessage());
-        soapFault.setFaultCode(new QName("http://cxf.apache.org/faultcode", "HandleFault"));
+        soapFault.setFaultCode(SOAPConstants.SOAP_RECEIVER_FAULT);
+      }
+
+      try {
+        if (msgHeader != null) {
+          SOAPHeader sh = request.getSOAPHeader();
+          Marshaller marshaller = JAXBContext.newInstance(Messaging.class).createMarshaller();
+          marshaller.marshal(msgHeader, sh);
+          request.saveChanges();
+        }
+      } catch (JAXBException | SOAPException ex) {
+        String errMsg = "Error adding ebms header to soap: " + ex.getMessage();
+        LOG.logError(l, errMsg, ex);
+
       }
     } catch (SOAPException e) {
       // do nothing
       e.printStackTrace();
     }
-
-    LOG.logEnd(l);
+    return request;
   }
 
 }

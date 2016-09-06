@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<con:soapui-project id="9a77e2cc-81c4-470f-aad6-2898ed6c0f11" activeEnvironment="Default" name="sed-mailbox" resourceRoot="" soapui-version="5.2.1" xmlns:con="http://eviware.com/soapui/config"><con:settings/><con:interface xsi:type="con:WsdlInterface" id="5604105e-fdc1-4101-97e1-f6ebd1d5b597" wsaVersion="NONE" name="SEDMailBoxPortBinding" type="wsdl" bindingName="{http://ebms.sed.org/}SEDMailBoxPortBinding" soapVersion="1_1" anonymous="optional" definition="http://localhost:8580/ebms-sed-ws/sed-mailbox?wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="http://localhost:8580/ebms-sed-ws/sed-mailbox?wsdl"><con:part><con:url>http://localhost:8580/ebms-sed-ws/sed-mailbox?wsdl</con:url><con:content><![CDATA[<definitions name="sed-mailbox" targetNamespace="http://ebms.sed.org/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://ebms.sed.org/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ns="http://schemas.xmlsoap.org/soap/encoding/" xmlns="http://schemas.xmlsoap.org/wsdl/">
+<con:soapui-project id="9a77e2cc-81c4-470f-aad6-2898ed6c0f11" activeEnvironment="Default" name="sed-mailbox" resourceRoot="" soapui-version="5.2.1" abortOnError="false" runType="SEQUENTIAL" xmlns:con="http://eviware.com/soapui/config"><con:settings/><con:interface xsi:type="con:WsdlInterface" id="5604105e-fdc1-4101-97e1-f6ebd1d5b597" wsaVersion="NONE" name="SEDMailBoxPortBinding" type="wsdl" bindingName="{http://ebms.sed.org/}SEDMailBoxPortBinding" soapVersion="1_1" anonymous="optional" definition="http://localhost:8580/ebms-sed-ws/sed-mailbox?wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="http://localhost:8580/ebms-sed-ws/sed-mailbox?wsdl"><con:part><con:url>http://localhost:8580/ebms-sed-ws/sed-mailbox?wsdl</con:url><con:content><![CDATA[<definitions name="sed-mailbox" targetNamespace="http://ebms.sed.org/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://ebms.sed.org/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ns="http://schemas.xmlsoap.org/soap/encoding/" xmlns="http://schemas.xmlsoap.org/wsdl/">
   <documentation>WSDL določa servise za integracijo s SVEV-MSH modulom
         * za odpremo pošiljke preko MSH modula
         * prevzemanje statusov izhodnih pošiljk
@@ -2312,15 +2312,15 @@ Author: Joze Rihtarsic-->
          <Data receiverEBox="?" mailId="?"/>
       </ebms:InMailEventListRequest>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://ebms.sed.org/getInMailEventList"/></con:call></con:operation><con:operation id="1cc3c598-29f6-4753-84f4-744dcff62b5a" isOneWay="false" action="http://ebms.sed.org/getInMailList" name="getInMailList" bindingOperationName="getInMailList" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="22cdd75e-a844-4582-b9d7-c9e57ac93c0d" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8580/ebms-sed-ws/sed-mailbox</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ebms="http://ebms.sed.org/">
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://ebms.sed.org/getInMailEventList"/></con:call></con:operation><con:operation id="1cc3c598-29f6-4753-84f4-744dcff62b5a" isOneWay="false" action="http://ebms.sed.org/getInMailList" name="getInMailList" bindingOperationName="getInMailList" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="22cdd75e-a844-4582-b9d7-c9e57ac93c0d" name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8580/ebms-sed-ws/sed-mailbox</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ebms="http://ebms.sed.org/">
    <soapenv:Header/>
    <soapenv:Body>
       <ebms:InMailListRequest>
-         <Control userId="?" applicationId="?" startIndex="0" responseSize="10000" sortBy="Id" sortOrder="DESC"/>
-         <Data senderEBox="?" receiverEBox="?" receivedDateFrom="?" receivedDateTo="?" status="?" service="?" action="?" conversationId="?"/>
+         <Control userId="userId" applicationId="applicationId" startIndex="0" responseSize="10000" sortBy="Id" sortOrder="DESC"/>
+         <Data senderEBox="a.department@test-sed.org" />
       </ebms:InMailListRequest>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://ebms.sed.org/getInMailList"/></con:call></con:operation><con:operation id="ff7046fc-a30c-44ab-8e85-88e3d0374278" isOneWay="false" action="http://ebms.sed.org/getOutMailEventList" name="getOutMailEventList" bindingOperationName="getOutMailEventList" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="1bae1c31-6efd-4f2d-a099-80c3fe1d78f0" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8580/ebms-sed-ws/sed-mailbox</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ebms="http://ebms.sed.org/">
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://ebms.sed.org/getInMailList"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation id="ff7046fc-a30c-44ab-8e85-88e3d0374278" isOneWay="false" action="http://ebms.sed.org/getOutMailEventList" name="getOutMailEventList" bindingOperationName="getOutMailEventList" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="1bae1c31-6efd-4f2d-a099-80c3fe1d78f0" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8580/ebms-sed-ws/sed-mailbox</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ebms="http://ebms.sed.org/">
    <soapenv:Header/>
    <soapenv:Body>
       <ebms:OutMailEventListRequest>
@@ -2328,15 +2328,15 @@ Author: Joze Rihtarsic-->
          <Data senderEBox="?" mailId="?" senderMessageId="?"/>
       </ebms:OutMailEventListRequest>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://ebms.sed.org/getOutMailEventList"/></con:call></con:operation><con:operation id="6454755b-f2a8-4b9c-9e45-75bb14484771" isOneWay="false" action="http://ebms.sed.org/getOutMailList" name="getOutMailList" bindingOperationName="getOutMailList" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="ea559651-12e6-4a6e-ac9a-5ceef86a80dd" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8580/ebms-sed-ws/sed-mailbox</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ebms="http://ebms.sed.org/">
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://ebms.sed.org/getOutMailEventList"/></con:call></con:operation><con:operation id="6454755b-f2a8-4b9c-9e45-75bb14484771" isOneWay="false" action="http://ebms.sed.org/getOutMailList" name="getOutMailList" bindingOperationName="getOutMailList" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="ea559651-12e6-4a6e-ac9a-5ceef86a80dd" name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8580/ebms-sed-ws/sed-mailbox</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ebms="http://ebms.sed.org/">
    <soapenv:Header/>
    <soapenv:Body>
       <ebms:OutMailListRequest>
-         <Control userId="?" applicationId="?" startIndex="0" responseSize="10000" sortBy="Id" sortOrder="DESC"/>
-         <Data senderEBox="?" receiverEBox="?" submittedDateFrom="?" submittedDateTo="?" status="?" service="?" action="?" conversationId="?"/>
+         <Control userId="userId" applicationId="applicationId" startIndex="0" responseSize="10000" sortBy="Id" sortOrder="DESC"/>
+         <Data senderEBox="b.department@test-sed.org" />
       </ebms:OutMailListRequest>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://ebms.sed.org/getOutMailList"/></con:call></con:operation><con:operation id="07824bf0-0814-423a-a263-875a65e67186" isOneWay="false" action="http://ebms.sed.org/modifyInMail" name="modifyInMail" bindingOperationName="modifyInMail" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="6f6faebf-5f50-4b95-8509-10e02af96724" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8580/ebms-sed-ws/sed-mailbox</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ebms="http://ebms.sed.org/">
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://ebms.sed.org/getOutMailList"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation id="07824bf0-0814-423a-a263-875a65e67186" isOneWay="false" action="http://ebms.sed.org/modifyInMail" name="modifyInMail" bindingOperationName="modifyInMail" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="6f6faebf-5f50-4b95-8509-10e02af96724" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8580/ebms-sed-ws/sed-mailbox</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ebms="http://ebms.sed.org/">
    <soapenv:Header/>
    <soapenv:Body>
       <ebms:ModifyInMailRequest>
@@ -2352,43 +2352,7 @@ Author: Joze Rihtarsic-->
          <Data senderEBox="?" mailId="?" action="?"/>
       </ebms:ModifyOutMailRequest>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://ebms.sed.org/modifyOutMail"/></con:call></con:operation><con:operation id="a80b6cb0-2498-40dd-9c8a-78444dafddde" isOneWay="false" action="http://ebms.sed.org/submitMail" name="submitMail" bindingOperationName="submitMail" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="cc25b042-ce07-463a-a56f-b7e41b406fff" name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8580/ebms-sed-ws/sed-mailbox</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" 
-xmlns:ebms="http://ebms.sed.org/" 
-xmlns:mail="http://ebms.sed.org/outbox/mail" 
-xmlns:prop="http://ebms.sed.org/outbox/property"
-xmlns:pay="http://ebms.sed.org/outbox/payload">
-   <soapenv:Header/>
-   <soapenv:Body>
-      <ebms:SubmitMailRequest>
-         <Control userId="userId" applicationId="applicationId" />
-         <Data>
-            <mail:OutMail 
-            senderMessageId="207"
-            service="DeliveryWithReceipt"
-            action="Delivery"
-            conversationId="1"
-            subject="Vloga 1/2015"             
-            receiverEBox="izvrsba@sed-court.si" 
-            receiverName="Okrajno sodisce v Ljubljani, CoVL" 
-            senderEBox="izvrsba@sed-court.si"
-            senderName="Banka Koper">
-               <pay:OutPayload>                 
-                  <pay:OutPart name="Vloga" 
-                  description="testnaDatoteka"
-                  type="1" filename="testnaDatotek.txt" 
-                  mimeType="text/plain" 
-                  encoding="utf-8" filepath="123">VGVzdG5vIHNwb3JvY2lsbw==</pay:OutPart>
-               </pay:OutPayload>
-               <prop:OutProperties>
-                  <prop:OutProperty  name="sodisce">S20</prop:OutProperty>
-                  <prop:OutProperty  name="vpisnik">00</prop:OutProperty>
-                  <prop:OutProperty  name="Opravilna stevilka">1/2015</prop:OutProperty>
-               </prop:OutProperties>
-            </mail:OutMail>
-         </Data>
-      </ebms:SubmitMailRequest>
-   </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://ebms.sed.org/submitMail"/><con:wsrmConfig version="1.2"/></con:call><con:call id="c5324918-aca5-4bc0-b537-6ca1881a2c8e" name="DeliveryWithReceipt_self-test"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8580/ebms-sed-ws/sed-mailbox</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ebms="http://ebms.sed.org/" xmlns:mail="http://ebms.sed.org/outbox/mail" xmlns:prop="http://ebms.sed.org/outbox/property" xmlns:pay="http://ebms.sed.org/outbox/payload">
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://ebms.sed.org/modifyOutMail"/></con:call></con:operation><con:operation id="a80b6cb0-2498-40dd-9c8a-78444dafddde" isOneWay="false" action="http://ebms.sed.org/submitMail" name="submitMail" bindingOperationName="submitMail" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="c5324918-aca5-4bc0-b537-6ca1881a2c8e" name="DeliveryWithReceipt_self-test"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8580/ebms-sed-ws/sed-mailbox</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ebms="http://ebms.sed.org/" xmlns:mail="http://ebms.sed.org/outbox/mail" xmlns:prop="http://ebms.sed.org/outbox/property" xmlns:pay="http://ebms.sed.org/outbox/payload">
    <soapenv:Header/>
    <soapenv:Body>
       <ebms:SubmitMailRequest>
@@ -2426,6 +2390,125 @@ xmlns:pay="http://ebms.sed.org/outbox/payload">
                      <pay:Bin>VGVzdG5vIHNwb3JvY2lsbw==</pay:Bin>
                   </pay:OutPart>
                </pay:OutPayload>
+            </mail:OutMail>
+         </Data>
+      </ebms:SubmitMailRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://ebms.sed.org/submitMail"/><con:wsrmConfig version="1.2"/></con:call><con:call id="0c77fd6e-711f-46f6-9ddc-7f12fcdc13ad" name="LegalDelivery_ZPP_self-test"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8580/ebms-sed-ws/sed-mailbox</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ebms="http://ebms.sed.org/" xmlns:mail="http://ebms.sed.org/outbox/mail" xmlns:prop="http://ebms.sed.org/outbox/property" xmlns:pay="http://ebms.sed.org/outbox/payload">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <ebms:SubmitMailRequest>
+         <Control userId="userId" applicationId="applicationID?" />
+         <Data>
+            <mail:OutMail 
+            senderMessageId="msg-id-0002"
+            service="LegalDelivery_ZPP"
+            action="DeliveryNotification"
+            conversationId="1"
+            subject="Legal delivery by ZPP test"             
+            receiverEBox="a.department@test-sed.org" 
+            receiverName="Department A"
+            senderEBox="b.department@test-sed.org" 
+            senderName="Department B">
+               <!--Optional:-->
+               <prop:OutProperties>
+                  <prop:OutProperty name="property.one">Value one</prop:OutProperty>
+                  <prop:OutProperty name="property.two">Value two</prop:OutProperty>
+               </prop:OutProperties>
+               <!--Optional:-->
+               <pay:OutPayload>
+                  <!--Zero or more repetitions:-->
+                  <pay:OutPart name="Test file"
+                  description="Long description of test file"
+                  type="1" 
+                  filename="test-file.txt" 
+                  mimeType="text/plain" 
+                  encoding="utf-8" >
+                     <!--Zero or more repetitions:-->
+                     <pay:Property name="special.property.1">first value of file property</pay:Property>
+                     <pay:Property name="special.property.2">second value of file property</pay:Property>
+                     <!--Optional:-->
+                     <pay:Bin>VGVzdG5vIHNwb3JvY2lsbw==</pay:Bin>
+                  </pay:OutPart>
+               </pay:OutPayload>
+            </mail:OutMail>
+         </Data>
+      </ebms:SubmitMailRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://ebms.sed.org/submitMail"/><con:wsrmConfig version="1.2"/></con:call><con:call id="39b28fdb-1fbc-4249-88b1-5ae6614e1a8b" name="DeliveryWithReceipt_self-test-bad"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8580/ebms-sed-ws/sed-mailbox</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ebms="http://ebms.sed.org/" xmlns:mail="http://ebms.sed.org/outbox/mail" xmlns:prop="http://ebms.sed.org/outbox/property" xmlns:pay="http://ebms.sed.org/outbox/payload">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <ebms:SubmitMailRequest>
+         <Control userId="userId" applicationId="applicationID?" />
+         <Data>
+            <mail:OutMail 
+            senderMessageId="msg-id-0003"
+            service="DeliveryWithReceipt"
+            action="Delivery"
+            conversationId="3"
+            subject="Connectivity test"             
+            receiverEBox="c.department@test-sed.org" 
+            receiverName="Department C - not exist"
+            senderEBox="b.department@test-sed.org" 
+            senderName="Department B" 
+            >
+               <!--Optional:-->
+               <prop:OutProperties>
+                  <prop:OutProperty name="property.one">Value one</prop:OutProperty>
+                  <prop:OutProperty name="property.two">Value two</prop:OutProperty>
+               </prop:OutProperties>
+               <!--Optional:-->
+               <pay:OutPayload>
+                  <!--Zero or more repetitions:-->
+                  <pay:OutPart name="Test file"
+                  description="Long description of test file"
+                  type="1" 
+                  filename="test-file.txt" 
+                  mimeType="text/plain" 
+                  encoding="utf-8" >
+                     <!--Zero or more repetitions:-->
+                     <pay:Property name="special.property.1">first value of file property</pay:Property>
+                     <pay:Property name="special.property.2">second value of file property</pay:Property>
+                     <!--Optional:-->
+                     <pay:Bin>VGVzdG5vIHNwb3JvY2lsbw==</pay:Bin>
+                  </pay:OutPart>
+               </pay:OutPayload>
+            </mail:OutMail>
+         </Data>
+      </ebms:SubmitMailRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://ebms.sed.org/submitMail"/><con:wsrmConfig version="1.2"/></con:call><con:call id="0e0854f3-4f26-4a22-92e5-e7220b0222bc" name="domibus"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8580/ebms-sed-ws/sed-mailbox</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" 
+xmlns:ebms="http://ebms.sed.org/" 
+xmlns:mail="http://ebms.sed.org/outbox/mail" 
+xmlns:prop="http://ebms.sed.org/outbox/property"
+xmlns:pay="http://ebms.sed.org/outbox/payload">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <ebms:SubmitMailRequest>
+         <Control userId="userId" applicationId="applicationId" />
+         <Data>
+            <mail:OutMail 
+            senderMessageId="3"
+            service="connectivity-service"
+            action="submitMessage"
+            conversationId="2"
+            subject="Test ebms"             
+            receiverEBox="ceftestparty2gw@domibus.eu" 
+            receiverName="Okrajno sodisce v Ljubljani, CoVL" 
+            senderEBox="ceftestparty2gw@test-sed.org"
+            senderName="Banka Koper">
+               <pay:OutPayload>                 
+                  <pay:OutPart name="Vloga" 
+                  description="As4Message"
+                  type="1" filename="testnaDatotek.txt" 
+                  mimeType="text/xml" 
+                  encoding="utf-8" ><pay:Bin>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4NCjxSZXF1ZXN0Pg0KSGVsbG8gV29ybGQNCjwvUmVxdWVzdD4NCg==</pay:Bin></pay:OutPart>
+               </pay:OutPayload>
+               <prop:OutProperties>
+                  <prop:OutProperty  name="originalSender">urn:oasis:names:tc:ebcore:partyid-type:unregistered:C1</prop:OutProperty>
+                  <prop:OutProperty  name="finalRecipient">urn:oasis:names:tc:ebcore:partyid-type:unregistered:C4</prop:OutProperty>                  
+                  <prop:OutProperty  name="NOTVALIDPARAM">urn:oasis:names:tc:ebcore:partyid-type:unregistered:C4</prop:OutProperty>
+               </prop:OutProperties>
             </mail:OutMail>
          </Data>
       </ebms:SubmitMailRequest>
