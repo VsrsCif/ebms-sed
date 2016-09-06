@@ -4,6 +4,7 @@
         <li><a href="#install:quickwildfly">Hitra namestitev na aplikacijski strežnik wildfly</a><br  /></li>
         <li><a href="#install/build:start">Izgradnja aplikacije ebms-sed</a><br  /></li>
         <li><a href="#install/wildfly:start">Namestitev na aplikacijski strežnik wildfly</a><br  /></li>
+        <li><a href="#pmode/pmode">Namestitevena datoteka PMode</a><br  /></li>
     </ul>
 </div>
 <div class="main">
@@ -34,15 +35,15 @@
         Aplikacija ebms-sed je ti. java poslovna aplikacija (JEE), ki za svoje delovanje potrebuje aplikacijski strežnik wildfly-10.1.0.Final, ki je dosegljiv 
         na povezavi <a href="http://wildfly.org/downloads/">wildfly aplikacijski strežnik</a>. Aplikacijski strežnik namestite tako, 
         da razširite (zip) vsebino namestitvenega paketa v mapo v katero želite namestiteti aplikacijski strežnik: <br />
-        Windows OS:<br /><code>c:\Server\</code> <br />
-        Linux OS:<br /><code>/opt/Server/</code> <br />
-        (Mapa strežnika ( primer: <code>c:\Server\wildfly-10.0.0.Final</code> in <code>/opt/Server/wildfly-10.0.0.Final</code>)  
+        Windows OS:<pre><code class='DOS'>c:\Server\</code></pre>
+        Linux OS:<pre><code class='Bash'>/opt/Server/</code></pre>
+        (Mapa strežnika ( primer: <pre><code class='DOS'>c:\Server\wildfly-10.0.0.Final</code></pre> in <pre><code class='Bash'>/opt/Server/wildfly-10.0.0.Final</code></pre>)  
         je v nadaljevanju označena z: [WILDFLY_HOME]  )
         <br /><br />
 
         Delovanje aplikacijskega strežnika preverite tako, da poženete skripto:<br />
-        Windows OS:<br /><code>[WILDFLY_HOME]\bin\standalone.bat</code> <br />
-        Linux OS:<br /><code>[WILDFLY_HOME]/bin/standalone.sh</code><br /><br />
+        Windows OS:<pre><code class='DOS'>[WILDFLY_HOME]\bin\standalone.bat</code></pre>
+        Linux OS:<pre><code class='Bash'>[WILDFLY_HOME]/bin/standalone.sh</code></pre><br /><br />
         in v brskalniku vnesite naslov <a href="http://localhost:8080/">http://localhost:8080/</a>. Test je uspešen, če se prikaže
         pozdravna stran aplikacijskega strežnika Widlfy.<b> Za nadaljevanje namestive strežnik nato ugasnite.</b> <br /><br />
 
@@ -50,13 +51,13 @@
         Za hitro namestitev aplikacije <b>ebms-sed</b> potrebujete še namestitveni paket 
         <a href="https://github.com/VsrsCif/ebms-sed/releases">ebms-sed-[date_time].zip</a>, ki je dosegljiv spletni strani github https://github.com/VsrsCif/ebms-sed/releases. 
         Odpakirajte vsebino namestivenega paketa npr.: v mapo:<br />
-        Windows OS:<br /> <code>c:\Server\</code> <br />
-        Linux:<br /> <code>/opt/Server/</code> <br /><br />
+        Windows OS:<pre><code class='DOS'>c:\Server\</code></pre>
+        Linux:<pre><code class='Bash'>/opt/Server/</code></pre><br />
 
         Nato poženite skripto za namestitev:<br />        
-        <code>ebms-sed-[yyyy-mm-dd]/widlfly-10/deploy-sed.(bat|sh) --init -w [WILDFLY_HOME]</code><br/>
-        Windows OS:<br /><code>c:\Server\ebms-sed-[yyyy-mm-dd]/widlfly-10\deploy-sed.bat --init -w  [WILDFLY_HOME]  </code> <br />
-        Linux:<br /> <code>/opt/Server/ebms-sed-[yyyy-mm-dd]/widlfly-10/deploy-sed.sh --init -w  [WILDFLY_HOME]</code> <br /><br />
+        <pre><code class='DOS'>ebms-sed-[yyyy-mm-dd]/widlfly-10/deploy-sed.(bat|sh) --init -w [WILDFLY_HOME]</code></pre>
+        Windows OS:<pre><code class='DOS'>c:\Server\ebms-sed-[yyyy-mm-dd]/widlfly-10\deploy-sed.bat --init -w  [WILDFLY_HOME]  </code></pre>
+        Linux:<pre><code >/opt/Server/ebms-sed-[yyyy-mm-dd]/widlfly-10/deploy-sed.sh --init -w  [WILDFLY_HOME]</code></pre><br />
 
         Skripta namesti:
         <ul>
@@ -66,7 +67,7 @@
             <li><b>ebms-sed zagonske skripte</b>  v primeru parametra --init se namestijo zagonske skripte v v mapo: WILDFLY_HOME/bin</li>
         </ul>
         Parametri skripte:
-        <code>.\deploy-sed.(bat|sh) --init -b [SED_BUNDLE] -w [WILDFLY_HOME] -s [SED_HOME]</code>
+        <pre><code class='Bash'>.\deploy-sed.(bat|sh) --init -b [SED_BUNDLE] -w [WILDFLY_HOME] -s [SED_HOME]</code></pre>
         <ul><li>--init: parameter "inicializira" mapo sed-home in nastavitve wildfly strežnika.</li>
             <li>-w   WILDFLY_HOME -  pot do wildfly aplikacijskega strežnika. Npr.: c:\temp\wildfly-10.0.0.Final\.</li>
             <li>-b   SED_BUNDLE   - pot do "razširjenega" ebms-sed paketa. če parameter ni podan je privzeta mapa: "..\".</li>
@@ -75,8 +76,8 @@
 
         za prvi zagon poženite skripto
         <br />
-        Windows OS:<br /><code>[WILDFLY_HOME]\bin\start-sed.bat --init</code> <br />
-        Linux:<br /> <code>[WILDFLY_HOME]/bin/start-sed.sh --init</code> <br /><br />
+        Windows OS:<pre><code class='DOS'>[WILDFLY_HOME]\bin\start-sed.bat --init</code></pre>
+        Linux:<pre><code class='Bash'>[WILDFLY_HOME]/bin/start-sed.sh --init</code></pre><br />
         <b>Ob zagonu skripte "start-sed.(bat|sh) --init" se generirajo bazni objekti ter se napolnijo z demo podatki.</b><br /><br />
         Dodatna opcijska parametra sta še:
         <ul>
